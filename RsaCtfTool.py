@@ -68,7 +68,7 @@ class PrivateKey(object):
         """
         t = (p-1)*(q-1)
         d = self.find_inverse(e, t)
-        self.key = RSA.construct((n, e, d))
+        self.key = RSA.construct((n, e, d, p, q))
 
     def decrypt(self, cipher):
         """Uncipher data with private key
