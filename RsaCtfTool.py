@@ -14,6 +14,11 @@ from Crypto.PublicKey import RSA
 import requests
 import re
 import argparse
+import sys
+
+
+class FactorizationError(Exception):
+    pass
 
 
 class PublicKey(object):
@@ -43,10 +48,16 @@ class PublicKey(object):
             r_2 = requests.get(url_2 % q_id)
             self.p = int(regex.findall(r_1.text)[0])
             self.q = int(regex.findall(r_2.text)[0])
+            if self.p == self.q == self.n:
+                raise FactorizationError()
+        except FactorizationError:
+            print "[!] Factordb Cannot factor n : %i" % self.n
+            sys.exit()
         except:
             # Ok, it's not nice to catch every exception, but
             # i'm bored right now
             print "[!] Error with factordb.com"
+            sys.exit()
 
     def __str__(self):
         """Print armored public key
