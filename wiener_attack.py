@@ -1,56 +1,32 @@
 # -*- coding: utf-8 -*-
 
-from sympy.solvers import solve
-from sympy import Symbol
+import ContinuedFractions
+import Arithmetic
 
 
 class WienerAttack(object):
 
-    def solveQuadratic(self, a, b, c):
-        x = Symbol('x')
-        return solve(a * x ** 2 + b * x + c, x)
+    def __init__(self, e, n):
+        '''
+        Finds d knowing (e,n)
+        applying the Wiener continued fraction attack
+        '''
+        self.d = None
+        frac = ContinuedFractions.rational_to_contfrac(e, n)
+        convergents = ContinuedFractions.convergents_from_contfrac(frac)
+        for (k, d) in convergents:
+            if k != 0 and (e * d - 1) % k == 0:
+                phi = (e * d - 1) // k
+                s = n - phi + 1
+                discr = s*s - 4*n
+                if(discr >= 0):
+                    t = Arithmetic.is_perfect_square(discr)
+                    if t != -1 and (s + t) % 2 == 0:
+                        self.d = d
 
-    def makeIndexedConvergent(self, sequence, index):
-        (a, b) = (1, sequence[index])
-        while index > 0:
-            index -= 1
-            (a, b) = (b, sequence[index] * b + a)
-        return (b, a)
 
-    def makeConvergents(self, sequence):
-        r = []
-        for i in xrange(0, len(sequence)):
-            r.append(self.makeIndexedConvergent(sequence, i))
-        return r
-
-    def makeNextFraction(self, fraction):
-        (a, b) = fraction
-        res = b / a
-        a1 = b % a
-        b1 = a
-        return res, (a1, b1)
-
-    def makeContinuedFraction(self, fraction):
-        (a, b) = fraction
-        v = []
-        v.append(0)
-        while not a == 1:
-            r, fraction = self.makeNextFraction(fraction)
-            (a, b) = fraction
-            v.append(r)
-        v.append(b)
-        return v
-
-    def __init__(self, n, e):
-        conv = self.makeConvergents(self.makeContinuedFraction((e, n)))
-        for frac in conv:
-            (k, d) = frac
-            if k == 0:
-                continue
-            phiN = ((e * d) - 1) / k
-            roots = self.solveQuadratic(1, -(n-phiN+1), n)
-            if len(roots) == 2:
-                p, q = roots[0] % n, roots[1] % n
-                if p*q == n:
-                    self.p = p
-                    self.q = q
+if __name__ == "__main__":
+    e = 183660146490422285798428660546754134418661142835604115682836778081011910238113418914160492357183479746113831224890276245963351969616299252487295456989541604200510147067942532456361592226745633044460474515423373513962661902371609185806409826177631960057301188704604462752401029826856647332290955631046413984399
+    n = 389515408296655148290581563863000908898325888640756426496565058741991532048866570395053437819242171431189565463308618089884040388226018251206386599176051383704265563914856452346660884236282775256432787225396880333641673220361268798095615195711784817151469713312677969226724758279474230622503252678286043442157
+    wiener = WienerAttack(e, n)
+    print wiener.d

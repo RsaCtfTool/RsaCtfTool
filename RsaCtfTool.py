@@ -12,10 +12,11 @@ this stuff is worth it, you can buy me a beer in return.
 
 from Crypto.PublicKey import RSA
 from wiener_attack import WienerAttack
+import gmpy
+from libnum import *
 import requests
 import re
 import argparse
-import sys
 
 
 class FactorizationError(Exception):
@@ -51,14 +52,8 @@ class PublicKey(object):
             self.q = int(regex.findall(r_2.text)[0])
             if self.p == self.q == self.n:
                 raise FactorizationError()
-        except FactorizationError:
-            print "[!] Factordb Cannot factor n : %i" % self.n
-            sys.exit()
         except:
-            # Ok, it's not nice to catch every exception, but
-            # i'm bored right now
-            print "[!] Error with factordb.com"
-            sys.exit()
+            raise FactorizationError()
 
     def __str__(self):
         """Print armored public key
@@ -115,14 +110,10 @@ if __name__ == "__main__":
                         dest='public_key',
                         help='public key file',
                         required=True)
-    parser.add_argument('--private',
-                        dest='private',
-                        help='display private key',
-                        action='store_true')
     parser.add_argument('--uncipher',
                         dest='uncipher',
                         help='uncipher a file',
-                        default=None)
+                        required=True)
     parser.add_argument('--verbose',
                         dest='verbose',
                         help='verbose mode (display n, e, p and q)',
@@ -130,39 +121,60 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    if not args.private and not args.uncipher:
-        print "Select between --private and --uncipher"
-    else:
-        # Load public key
-        key = open(args.public_key, 'r').read()
-        pub_key = PublicKey(key)
-        if pub_key.e == 3:
-            # Wiener attack
-            wiener = WienerAttack(pub_key.n, pub_key.e)
-            pub_key.p = wiener.p
-            pub_key.q = wiener.q
-        else:
-            # Weak key factorization
-            pub_key.prime_factors()
+    # Open cipher file
+    cipher = open(args.uncipher, 'r').read().strip()
+    unciphered = None
 
-        # If verbose, display components
+    # Load public key
+    key = open(args.public_key, 'r').read()
+    pub_key = PublicKey(key)
+
+    # Small exponent attack
+    if pub_key.e == 3:
         if args.verbose:
-            print "n : %i" % pub_key.n
-            print "e : %i" % pub_key.e
-            print "p : %i" % pub_key.p
-            print "q : %i" % pub_key.q
+            print "Try small exponent attack"
 
-        # Try to factorise p & q from small key
-        priv_key = PrivateKey(pub_key.p,
-                              pub_key.q,
-                              pub_key.e,
-                              pub_key.n)
+        orig = s2n(cipher)
+        c = orig
+        while True:
+            m = gmpy.root(c, 3)[0]
+            if pow(m, 3, pub_key.n) == orig:
+                unciphered = n2s(m)
+                break
+            c += pub_key.n
+    else:
+        if args.verbose:
+            print "Try Wiener's attack"
 
-        # Display private key
-        if args.private:
+        # Wiener's attack
+        wiener = WienerAttack(pub_key.n,
+                              pub_key.e)
+        if wiener.d is not None:
+            # TODO uncipher
+            print "n = %s" % pub_key.n
+            print "e = %s" % pub_key.e
+            print "d = %s" % wiener.d
+            unciphered = None
+            print "Wiener not implemented"
+
+    # Weak key factorization
+    if unciphered is None:
+        if args.verbose:
+            print "Try weak key attack"
+        try:
+            pub_key.prime_factors()
+            priv_key = PrivateKey(long(pub_key.p),
+                                  long(pub_key.q),
+                                  long(pub_key.e),
+                                  long(pub_key.n))
+
+            # because it's nice to have private key when we can
             print priv_key
+            unciphered = priv_key.decrypt(cipher)
+        except FactorizationError:
+            unciphered = None
 
-        # Uncipher file content
-        if args.uncipher is not None:
-            cipher = open(args.uncipher, 'r').read().strip()
-            print priv_key.decrypt(cipher)
+    if unciphered is not None:
+        print "Clear text : %s" % unciphered
+    else:
+        print "Sorry, cracking failed"
