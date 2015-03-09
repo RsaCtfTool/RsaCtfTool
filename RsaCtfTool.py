@@ -11,6 +11,7 @@ this stuff is worth it, you can buy me a beer in return.
 """
 
 from Crypto.PublicKey import RSA
+from wiener_attack import WienerAttack
 import requests
 import re
 import argparse
@@ -135,7 +136,14 @@ if __name__ == "__main__":
         # Load public key
         key = open(args.public_key, 'r').read()
         pub_key = PublicKey(key)
-        pub_key.prime_factors()
+        if pub_key.e == 3:
+            # Wiener attack
+            wiener = WienerAttack(pub_key.n, pub_key.e)
+            pub_key.p = wiener.p
+            pub_key.q = wiener.q
+        else:
+            # Weak key factorization
+            pub_key.prime_factors()
 
         # If verbose, display components
         if args.verbose:
