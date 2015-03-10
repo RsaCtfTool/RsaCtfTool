@@ -134,7 +134,7 @@ if __name__ == "__main__":
     # Load public key
     key = open(args.public_key, 'r').read()
     pub_key = PublicKey(key)
-    iv_key = None
+    priv_key = None
 
     # Hastad's attack
     if pub_key.e == 3 and args.uncipher is not None:
@@ -188,4 +188,5 @@ if __name__ == "__main__":
     if unciphered is not None and args.uncipher is not None:
         print "Clear text : %s" % unciphered
     else:
-        print "Sorry, cracking failed"
+        if args.uncipher is not None:
+            print "Sorry, cracking failed"
