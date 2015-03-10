@@ -114,10 +114,14 @@ if __name__ == "__main__":
     parser.add_argument('--uncipher',
                         dest='uncipher',
                         help='uncipher a file',
-                        required=True)
+                        default=None)
     parser.add_argument('--verbose',
                         dest='verbose',
                         help='verbose mode (display n, e, p and q)',
+                        action='store_true')
+    parser.add_argument('--private',
+                        dest='private',
+                        help='Display private key if recovered',
                         action='store_true')
 
     args = parser.parse_args()
@@ -132,7 +136,7 @@ if __name__ == "__main__":
     iv_key = None
 
     # Hastad's attack
-    if pub_key.e == 3:
+    if pub_key.e == 3 and args.uncipher is not None:
         if args.verbose:
             print "Try Hastad's attack"
 
@@ -146,22 +150,6 @@ if __name__ == "__main__":
             c += pub_key.n
     else:
         if args.verbose:
-            print "Try Wiener's attack"
-
-        # Wiener's attack
-        wiener = WienerAttack(pub_key.n,
-                              pub_key.e)
-        if wiener.p is not None and wiener.q is not None:
-            priv_key = PrivateKey(long(pub_key.p),
-                                  long(pub_key.q),
-                                  long(pub_key.e),
-                                  long(pub_key.n))
-
-            unciphered = priv_key.decrypt(cipher)
-
-    # Weak key factorization
-    if unciphered is None:
-        if args.verbose:
             print "Try weak key attack"
         try:
             pub_key.prime_factors()
@@ -170,13 +158,33 @@ if __name__ == "__main__":
                                   long(pub_key.e),
                                   long(pub_key.n))
 
-            unciphered = priv_key.decrypt(cipher)
+            if args.uncipher is not None:
+                unciphered = priv_key.decrypt(cipher)
         except FactorizationError:
             unciphered = None
 
-    if unciphered is not None:
-        if priv_key is not None:
-            print priv_key
+    if unciphered is None:
+        if args.verbose:
+            print "Try Wiener's attack"
+
+        # Wiener's attack
+        wiener = WienerAttack(pub_key.n,
+                              pub_key.e)
+        if wiener.p is not None and wiener.q is not None:
+            pub_key.p = wiener.p
+            pub_key.q = wiener.q
+            priv_key = PrivateKey(long(pub_key.p),
+                                  long(pub_key.q),
+                                  long(pub_key.e),
+                                  long(pub_key.n))
+
+            if args.uncipher is not None:
+                unciphered = priv_key.decrypt(cipher)
+
+    if priv_key is not None and args.private:
+        print priv_key
+
+    if unciphered is not None and args.uncipher is not None:
         print "Clear text : %s" % unciphered
     else:
         print "Sorry, cracking failed"
