@@ -127,8 +127,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Open cipher file
-    cipher = open(args.uncipher, 'r').read().strip()
-    unciphered = None
+    if args.uncipher is not None:
+        cipher = open(args.uncipher, 'r').read().strip()
+        unciphered = None
 
     # Load public key
     key = open(args.public_key, 'r').read()
@@ -163,7 +164,7 @@ if __name__ == "__main__":
         except FactorizationError:
             unciphered = None
 
-    if unciphered is None:
+    if unciphered is None and priv_key is None:
         if args.verbose:
             print "Try Wiener's attack"
 
