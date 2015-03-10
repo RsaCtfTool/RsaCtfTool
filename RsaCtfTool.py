@@ -102,6 +102,7 @@ class PrivateKey(object):
             inv += y
         return inv
 
+
 if __name__ == "__main__":
     """Main method (entrypoint)
     """
@@ -128,11 +129,12 @@ if __name__ == "__main__":
     # Load public key
     key = open(args.public_key, 'r').read()
     pub_key = PublicKey(key)
+    iv_key = None
 
-    # Small exponent attack
+    # Hastad's attack
     if pub_key.e == 3:
         if args.verbose:
-            print "Try small exponent attack"
+            print "Try Hastad's attack"
 
         orig = s2n(cipher)
         c = orig
@@ -149,13 +151,13 @@ if __name__ == "__main__":
         # Wiener's attack
         wiener = WienerAttack(pub_key.n,
                               pub_key.e)
-        if wiener.d is not None:
-            # TODO uncipher
-            print "n = %s" % pub_key.n
-            print "e = %s" % pub_key.e
-            print "d = %s" % wiener.d
-            unciphered = None
-            print "Wiener not implemented"
+        if wiener.p is not None and wiener.q is not None:
+            priv_key = PrivateKey(long(pub_key.p),
+                                  long(pub_key.q),
+                                  long(pub_key.e),
+                                  long(pub_key.n))
+
+            unciphered = priv_key.decrypt(cipher)
 
     # Weak key factorization
     if unciphered is None:
@@ -168,13 +170,13 @@ if __name__ == "__main__":
                                   long(pub_key.e),
                                   long(pub_key.n))
 
-            # because it's nice to have private key when we can
-            print priv_key
             unciphered = priv_key.decrypt(cipher)
         except FactorizationError:
             unciphered = None
 
     if unciphered is not None:
+        if priv_key is not None:
+            print priv_key
         print "Clear text : %s" % unciphered
     else:
         print "Sorry, cracking failed"
