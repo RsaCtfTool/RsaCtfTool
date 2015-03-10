@@ -8,7 +8,6 @@ Attacks :
 
 # WORK IN PROGRESS !
  - Wiener not fully implemented
- - Small exponent attack not fully tested
 
 ## Usage:
 usage: RsaCtfTool.py [-h] --publickey ./pub.pem --uncipher ./cipher [--verbose]
