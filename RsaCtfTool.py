@@ -127,9 +127,9 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # Open cipher file
+    unciphered = None
     if args.uncipher is not None:
         cipher = open(args.uncipher, 'r').read().strip()
-        unciphered = None
 
     # Load public key
     key = open(args.public_key, 'r').read()
