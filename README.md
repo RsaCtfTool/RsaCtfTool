@@ -6,6 +6,9 @@ Attacks :
  - Weak public key factorization
  - Wiener's attack
  - Hastad's attack (Small exponent attack)
+ - Small q (q<100,000)
+ - Common factor between ciphertext and modulus attack
+ - Fermat's factorisation for close p and q
 
 ## Usage:
 usage: RsaCtfTool.py [-h] --publickey ./pub.pem [--uncipher ./cipher [--verbose]] [--private]

@@ -12,6 +12,8 @@ this stuff is worth it, you can buy me a beer in return.
 
 from Crypto.PublicKey import RSA
 from wiener_attack import WienerAttack
+from fermat import fermat
+import signal
 import gmpy
 from libnum import *
 import requests
@@ -35,6 +37,7 @@ class PublicKey(object):
         self.key = key
 
     def prime_factors(self):
+        #raise FactorizationError() # uncomment this to skip factordb during testing
         """Factorize n using factordb.com
         """
         try:
@@ -102,6 +105,21 @@ class PrivateKey(object):
             inv += y
         return inv
 
+class TimeoutError(Exception):
+	pass
+# source http://stackoverflow.com/a/22348885
+class timeout:
+    def __init__(self, seconds=1, error_message='[-] Timeout'):
+        self.seconds = seconds
+        self.error_message = error_message
+    def handle_timeout(self, signum, frame):
+        raise TimeoutError(self.error_message)
+    def __enter__(self):
+        signal.signal(signal.SIGALRM, self.handle_timeout)
+        signal.alarm(self.seconds)
+    def __exit__(self, type, value, traceback):
+        signal.alarm(0)
+
 
 if __name__ == "__main__":
     """Main method (entrypoint)
@@ -139,7 +157,7 @@ if __name__ == "__main__":
     # Hastad's attack
     if pub_key.e == 3 and args.uncipher is not None:
         if args.verbose:
-            print "Try Hastad's attack"
+            print "[*] Try Hastad's attack"
 
         orig = s2n(cipher)
         c = orig
@@ -151,7 +169,7 @@ if __name__ == "__main__":
             c += pub_key.n
     else:
         if args.verbose:
-            print "Try weak key attack"
+            print "[*] Try weak key attack via factordb.com"
         try:
             pub_key.prime_factors()
             priv_key = PrivateKey(long(pub_key.p),
@@ -166,7 +184,7 @@ if __name__ == "__main__":
 
     if unciphered is None and priv_key is None:
         if args.verbose:
-            print "Try Wiener's attack"
+            print "[*] Try Wiener's attack"
 
         # Wiener's attack
         wiener = WienerAttack(pub_key.n,
@@ -182,11 +200,66 @@ if __name__ == "__main__":
             if args.uncipher is not None:
                 unciphered = priv_key.decrypt(cipher)
 
+    if unciphered is None and priv_key is None:
+        if args.verbose:
+            print "[*] Try Small q attack"
+
+	# Try an attack where q < 100,000, from BKPCTF2016 - sourcekris
+	for prime in primes(100000):
+	    if pub_key.n % prime == 0:
+		pub_key.q = prime
+		pub_key.p = pub_key.n / pub_key.q
+		priv_key = PrivateKey(long(pub_key.p),
+				  long(pub_key.q),
+				  long(pub_key.e),
+				  long(pub_key.n))
+
+		if args.uncipher is not None:
+			unciphered = priv_key.decrypt(cipher)
+    try: 
+	    if unciphered is None and priv_key is None and cipher is not None:	
+		if args.verbose:
+			print "[*] Try common factor attack"
+
+		# Try an attack where the public key has a common factor with the ciphertext - sourcekris
+		commonfactor = gcd(pub_key.n, s2n(cipher))
+		
+		if commonfactor > 1:
+			pub_key.q = commonfactor
+			pub_key.p = pub_key.n / pub_key.q
+			priv_key = PrivateKey(long(pub_key.p),
+				       long(pub_key.q),
+				       long(pub_key.e),
+				       long(pub_key.n))
+
+			if args.uncipher is not None:
+				unciphered = priv_key.decrypt(cipher)
+    except NameError:
+	# ciphertext wasnt loaded from cli
+	pass
+
+    if unciphered is None and priv_key is None:	
+        if args.verbose:
+		print "[*] Try fermat factorization due to close primes attack"
+
+	# Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
+	with timeout(seconds=30):	
+		pub_key.p, pub_key.q = fermat(pub_key.n)	
+
+	if pub_key.q is not None:
+		priv_key = PrivateKey(long(pub_key.p),
+                               long(pub_key.q),
+                               long(pub_key.e),
+                               long(pub_key.n))
+
+		if args.uncipher is not None:
+			unciphered = priv_key.decrypt(cipher)
+
     if priv_key is not None and args.private:
         print priv_key
 
     if unciphered is not None and args.uncipher is not None:
-        print "Clear text : %s" % unciphered
+        print "[+] Clear text : %s" % unciphered
     else:
         if args.uncipher is not None:
-            print "Sorry, cracking failed"
+            print "[-] Sorry, cracking failed"
