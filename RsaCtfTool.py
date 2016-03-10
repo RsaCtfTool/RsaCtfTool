@@ -122,13 +122,8 @@ class RSAAttack(object):
         # Factors available online?
         try:
             self.pub_key.prime_factors()
-            self.priv_key = PrivateKey(long(self.pub_key.p),
-                              long(self.pub_key.q),
-                              long(self.pub_key.e),
-                              long(self.pub_key.n))
-
-            if self.args.uncipher is not None:
-                self.unciphered = self.priv_key.decrypt(self.cipher)
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
 
             return
 
@@ -149,13 +144,9 @@ class RSAAttack(object):
         if wiener.p is not None and wiener.q is not None:
             self.pub_key.p = wiener.p
             self.pub_key.q = wiener.q
-            self.priv_key = PrivateKey(long(self.pub_key.p),
-                                  long(self.pub_key.q),
-                                  long(self.pub_key.e),
-                                  long(self.pub_key.n))
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
 
-            if self.args.uncipher is not None:
-                self.unciphered = self.priv_key.decrypt(self.cipher)
         return
 
     def smallq(self):
@@ -164,13 +155,9 @@ class RSAAttack(object):
             if self.pub_key.n % prime == 0:
                 self.pub_key.q = prime
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
-                self.priv_key = PrivateKey(long(self.pub_key.p),
-                      long(self.pub_key.q),
-                      long(self.pub_key.e),
-                      long(self.pub_key.n))
+                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                           long(self.pub_key.e), long(self.pub_key.n))
 
-                if self.args.uncipher is not None:
-                    self.unciphered = self.priv_key.decrypt(self)
         return
 
     def fermat(self,fermat_timeout=60):
@@ -183,21 +170,29 @@ class RSAAttack(object):
                 print "[*] Fermat factorization module missing (fermat.py)"
             return
 
-        with timeout(seconds=fermat_timeout):   
-            self.pub_key.p, self.pub_key.q = fermat(self.pub_key.n)    
+        try:
+            with timeout(seconds=fermat_timeout):   
+                self.pub_key.p, self.pub_key.q = fermat(self.pub_key.n)    
+        except FactorizationError:
+            return
 
         if self.pub_key.q is not None:
-           self.priv_key = PrivateKey(long(self.pub_key.p),
-                                   long(self.pub_key.q),
-                                   long(self.pub_key.e),
-                                   long(self.pub_key.n))
-
-        if self.args.uncipher is not None:
-            self.unciphered = self.priv_key.decrypt(self.cipher)
+           self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                      long(self.pub_key.e), long(self.pub_key.n))
 
         return
 
-    def cheeky(self):
+    def noveltyprimes(self):
+        # "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070" 
+        # not all numbers in this form are prime but some are (25 digit is prime)
+        maxlen = 25 # max number of digits in the final integer
+        for i in range(maxlen-4):
+            prime = long("3133" + ("3" * i) + "7")
+            if self.pub_key.n % prime == 0:
+                self.pub_key.q = prime
+                self.pub_key.p = self.pub_key.n / self.pub_key.q
+                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                           long(self.pub_key.e), long(self.pub_key.n))        
         return
 
     def commonfactors(self):
@@ -208,10 +203,8 @@ class RSAAttack(object):
             if commonfactor > 1:
                 self.pub_key.q = commonfactor
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
-                self.priv_key = PrivateKey(long(self.pub_key.p),
-                           long(self.pub_key.q),
-                           long(self.pub_key.e),
-                           long(self.pub_key.n))
+                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q), 
+                                           long(self.pub_key.e), long(self.pub_key.n))
 
                 unciphered = self.priv_key.decrypt(self.cipher)
 
@@ -221,7 +214,8 @@ class RSAAttack(object):
         # NYI requires support for multiple public keys
         return
 
-    implemented_attacks = [ hastads, factordb, smallq, wiener, commonfactors ]
+    #implemented_attacks = [ hastads, factordb, noveltyprimes, smallq, wiener, commonfactors ]
+    implemented_attacks = [ hastads, noveltyprimes, smallq, wiener, commonfactors, fermat ]
     
 
 # source http://stackoverflow.com/a/22348885
@@ -268,12 +262,21 @@ if __name__ == "__main__":
         getattr(attackobj, attack.__name__)()
 
         # check and print resulting private key
-        if attackobj.priv_key is not None and args.private:
-            print attackobj.priv_key
+        if attackobj.priv_key is not None:
+            if args.private:
+                print attackobj.priv_key
+
             break
 
-    if attackobj.unciphered is not None and args.uncipher is not None:
-        print "[+] Clear text : %s" % attackobj.unciphered
+        if attackobj.unciphered is not None:
+            break
+
+    # If we wanted to decrypt, do it now
+    if args.uncipher is not None and attackobj.priv_key is not None:
+            attackobj.unciphered = attackobj.priv_key.decrypt(attackobj.cipher)
+            print "[+] Clear text : %s" % attackobj.unciphered
+    elif attackobj.unciphered is not None:
+            print "[+] Clear text : %s" % attackobj.unciphered
     else:
         if args.uncipher is not None:
             print "[-] Sorry, cracking failed"
