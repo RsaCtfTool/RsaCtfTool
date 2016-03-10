@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
+RsaCtfTool-Continued - RSA CTF Cracking tool for simple CTF challenges
+author: sourcekris (@CTFKris)
+
+Original author's license below:
 ----------------------------------------------------------------------------
 "THE BEER-WARE LICENSE" (Revision 42):
 ganapati (@G4N4P4T1) wrote this file. As long as you retain this notice you
@@ -11,8 +15,6 @@ this stuff is worth it, you can buy me a beer in return.
 """
 
 from Crypto.PublicKey import RSA
-from wiener_attack import WienerAttack
-from fermat import fermat
 import signal
 import gmpy
 from libnum import *
@@ -23,7 +25,6 @@ import argparse
 
 class FactorizationError(Exception):
     pass
-
 
 class PublicKey(object):
     def __init__(self, key):
@@ -37,9 +38,7 @@ class PublicKey(object):
         self.key = key
 
     def prime_factors(self):
-        #raise FactorizationError() # uncomment this to skip factordb during testing
-        """Factorize n using factordb.com
-        """
+        # Factorize n using factordb.com
         try:
             url_1 = 'http://www.factordb.com/index.php?query=%i'
             url_2 = 'http://www.factordb.com/index.php?id=%s'
@@ -59,8 +58,7 @@ class PublicKey(object):
             raise FactorizationError()
 
     def __str__(self):
-        """Print armored public key
-        """
+        # Print armored public key
         return self.key
 
 
@@ -77,7 +75,7 @@ class PrivateKey(object):
            :type n: int
         """
         t = (p-1)*(q-1)
-        d = self.find_inverse(e, t)
+        d = invmod(e,t)
         self.key = RSA.construct((n, e, d, p, q))
 
     def decrypt(self, cipher):
@@ -88,178 +86,194 @@ class PrivateKey(object):
         return self.key.decrypt(cipher)
 
     def __str__(self):
-        """Print armored private key
-        """
+        # Print armored private key
         return self.key.exportKey()
 
-    def eea(self, a, b):
-        if b == 0:
-            return (1, 0)
-        (q, r) = (a//b, a % b)
-        (s, t) = self.eea(b, r)
-        return (t, s-(q * t))
+class RSAAttack(object):
+    def __init__(self, args):
+        # Load public key
+        key = open(args.publickey, 'r').read()
+        self.pub_key = PublicKey(key)
+        self.priv_key = None
+        self.args = args
+        self.unciphered = None
+        # Load ciphertext
+        if args.uncipher is not None:
+            self.cipher = open(args.uncipher, 'r').read().strip()
+        else:
+            self.cipher = None
 
-    def find_inverse(self, x, y):
-        inv = self.eea(x, y)[0]
-        if inv < 1:
-            inv += y
-        return inv
+        return 
 
-class TimeoutError(Exception):
-	pass
+    def hastads(self):
+        # Hastad's attack
+        if self.pub_key.e == 3 and self.args.uncipher is not None:
+            orig = s2n(self.cipher)
+            c = orig
+            while True: # todo - test if this needs a timeout for certain cases?
+                m = gmpy.root(c, 3)[0]
+                if pow(m, 3, self.pub_key.n) == orig:
+                    self.unciphered = n2s(m)
+                    break
+                c += self.pub_key.n
+        return
+
+    def factordb(self):
+        # Factors available online?
+        try:
+            self.pub_key.prime_factors()
+            self.priv_key = PrivateKey(long(self.pub_key.p),
+                              long(self.pub_key.q),
+                              long(self.pub_key.e),
+                              long(self.pub_key.n))
+
+            if self.args.uncipher is not None:
+                self.unciphered = self.priv_key.decrypt(self.cipher)
+
+            return
+
+        except FactorizationError:
+            return
+
+    def wiener(self):
+        # this attack module can be optional
+        try:
+            from wiener_attack import WienerAttack
+        except ImportError:
+            if args.verbose:
+                print "[*] Wiener attack module missing (wiener_attack.py)"
+            return
+
+        # Wiener's attack
+        wiener = WienerAttack(self.pub_key.n, self.pub_key.e)
+        if wiener.p is not None and wiener.q is not None:
+            self.pub_key.p = wiener.p
+            self.pub_key.q = wiener.q
+            self.priv_key = PrivateKey(long(self.pub_key.p),
+                                  long(self.pub_key.q),
+                                  long(self.pub_key.e),
+                                  long(self.pub_key.n))
+
+            if args.uncipher is not None:
+                self.unciphered = self.priv_key.decrypt(self.cipher)
+        return
+
+    def smallq(self):
+        # Try an attack where q < 100,000, from BKPCTF2016 - sourcekris
+        for prime in primes(100000):
+            if self.pub_key.n % prime == 0:
+                self.pub_key.q = prime
+                self.pub_key.p = self.pub_key.n / self.pub_key.q
+                self.priv_key = PrivateKey(long(self.pub_key.p),
+                      long(self.pub_key.q),
+                      long(self.pub_key.e),
+                      long(self.pub_key.n))
+
+                if self.args.uncipher is not None:
+                    self.unciphered = self.priv_key.decrypt(self)
+        return
+
+    def fermat(self,fermat_timeout=60):
+        # Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
+        # this attack module can be optional
+        try:
+            from fermat import fermat
+        except ImportError:
+            if args.verbose:
+                print "[*] Fermat factorization module missing (fermat.py)"
+            return
+
+        with timeout(seconds=fermat_timeout):   
+            self.pub_key.p, self.pub_key.q = fermat(self.pub_key.n)    
+
+        if self.pub_key.q is not None:
+           self.priv_key = PrivateKey(long(self.pub_key.p),
+                                   long(self.pub_key.q),
+                                   long(self.pub_key.e),
+                                   long(self.pub_key.n))
+
+        if args.uncipher is not None:
+            self.unciphered = self.priv_key.decrypt(self.cipher)
+
+        return
+
+    def cheeky(self):
+        return
+
+    def commonfactors(self):
+        if self.args.uncipher:
+            # Try an attack where the public key has a common factor with the ciphertext - sourcekris
+            commonfactor = gcd(self.pub_key.n, s2n(self.cipher))
+            
+            if commonfactor > 1:
+                self.pub_key.q = commonfactor
+                self.pub_key.p = self.pub_key.n / self.pub_key.q
+                self.priv_key = PrivateKey(long(self.pub_key.p),
+                           long(self.pub_key.q),
+                           long(self.pub_key.e),
+                           long(self.pub_key.n))
+
+                unciphered = self.priv_key.decrypt(self.cipher)
+
+        return
+
+    def commonmodulus(self):
+        # NYI requires support for multiple public keys
+        return
+
+    implemented_attacks = [ hastads, factordb, smallq, wiener, commonfactors ]
+    
+
 # source http://stackoverflow.com/a/22348885
 class timeout:
-    def __init__(self, seconds=1, error_message='[-] Timeout'):
+    def __init__(self, seconds=10, error_message='[-] Timeout'):
         self.seconds = seconds
         self.error_message = error_message
     def handle_timeout(self, signum, frame):
-        raise TimeoutError(self.error_message)
+        raise FactorizationError(self.error_message)
     def __enter__(self):
         signal.signal(signal.SIGALRM, self.handle_timeout)
         signal.alarm(self.seconds)
     def __exit__(self, type, value, traceback):
         signal.alarm(0)
 
-
 if __name__ == "__main__":
-    """Main method (entrypoint)
-    """
-    parser = argparse.ArgumentParser(description='RSA CTF Tool')
-    parser.add_argument('--publickey',
-                        dest='public_key',
-                        help='public key file',
-                        required=True)
-    parser.add_argument('--uncipher',
-                        dest='uncipher',
-                        help='uncipher a file',
-                        default=None)
-    parser.add_argument('--verbose',
-                        dest='verbose',
-                        help='verbose mode (display n, e, p and q)',
-                        action='store_true')
-    parser.add_argument('--private',
-                        dest='private',
-                        help='Display private key if recovered',
-                        action='store_true')
+    parser = argparse.ArgumentParser(description='RSA CTF Tool Continued')
+    group = parser.add_mutually_exclusive_group(required=True)
+    group.add_argument('--publickey', help='public key file')
+    group.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
+    parser.add_argument('--uncipher', help='uncipher a file', default=None)
+    parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
+    parser.add_argument('--private', help='Display private key if recovered', action='store_true')
+    parser.add_argument('--n', type=long, help='Specify the modulus in --createpub mode.')
+    parser.add_argument('--e', type=long, help='Specify the public exponent in --createpub mode.')
 
     args = parser.parse_args()
 
-    # Open cipher file
-    unciphered = None
-    if args.uncipher is not None:
-        cipher = open(args.uncipher, 'r').read().strip()
+    # if createpub mode generate public key then quit
+    if args.createpub:
+        if args.n is None or args.e is None:
+            raise Exception("Specify both a modulus and exponent on the command line. See --help for info.")
+        print RSA.construct((args.n, args.e)).publickey().exportKey()
+        quit()
 
-    # Load public key
-    key = open(args.public_key, 'r').read()
-    pub_key = PublicKey(key)
-    priv_key = None
+    # Create a new attack object that holds all our keys and methods
+    attackobj = RSAAttack(args)
 
-    # Hastad's attack
-    if pub_key.e == 3 and args.uncipher is not None:
+    # loop through implemented attack methods and conduct attacks
+    for attack in attackobj.implemented_attacks:
         if args.verbose:
-            print "[*] Try Hastad's attack"
+            print "[*] Performing " + attack.__name__ + " attack."
 
-        orig = s2n(cipher)
-        c = orig
-        while True:
-            m = gmpy.root(c, 3)[0]
-            if pow(m, 3, pub_key.n) == orig:
-                unciphered = n2s(m)
-                break
-            c += pub_key.n
-    else:
-        if args.verbose:
-            print "[*] Try weak key attack via factordb.com"
-        try:
-            pub_key.prime_factors()
-            priv_key = PrivateKey(long(pub_key.p),
-                                  long(pub_key.q),
-                                  long(pub_key.e),
-                                  long(pub_key.n))
+        getattr(attackobj, attack.__name__)()
 
-            if args.uncipher is not None:
-                unciphered = priv_key.decrypt(cipher)
-        except FactorizationError:
-            unciphered = None
+        # check and print resulting private key
+        if attackobj.priv_key is not None and args.private:
+            print attackobj.priv_key
+            break
 
-    if unciphered is None and priv_key is None:
-        if args.verbose:
-            print "[*] Try Wiener's attack"
-
-        # Wiener's attack
-        wiener = WienerAttack(pub_key.n,
-                              pub_key.e)
-        if wiener.p is not None and wiener.q is not None:
-            pub_key.p = wiener.p
-            pub_key.q = wiener.q
-            priv_key = PrivateKey(long(pub_key.p),
-                                  long(pub_key.q),
-                                  long(pub_key.e),
-                                  long(pub_key.n))
-
-            if args.uncipher is not None:
-                unciphered = priv_key.decrypt(cipher)
-
-    if unciphered is None and priv_key is None:
-        if args.verbose:
-            print "[*] Try Small q attack"
-
-	# Try an attack where q < 100,000, from BKPCTF2016 - sourcekris
-	for prime in primes(100000):
-	    if pub_key.n % prime == 0:
-		pub_key.q = prime
-		pub_key.p = pub_key.n / pub_key.q
-		priv_key = PrivateKey(long(pub_key.p),
-				  long(pub_key.q),
-				  long(pub_key.e),
-				  long(pub_key.n))
-
-		if args.uncipher is not None:
-			unciphered = priv_key.decrypt(cipher)
-    try: 
-	    if unciphered is None and priv_key is None and cipher is not None:	
-		if args.verbose:
-			print "[*] Try common factor attack"
-
-		# Try an attack where the public key has a common factor with the ciphertext - sourcekris
-		commonfactor = gcd(pub_key.n, s2n(cipher))
-		
-		if commonfactor > 1:
-			pub_key.q = commonfactor
-			pub_key.p = pub_key.n / pub_key.q
-			priv_key = PrivateKey(long(pub_key.p),
-				       long(pub_key.q),
-				       long(pub_key.e),
-				       long(pub_key.n))
-
-			if args.uncipher is not None:
-				unciphered = priv_key.decrypt(cipher)
-    except NameError:
-	# ciphertext wasnt loaded from cli
-	pass
-
-    if unciphered is None and priv_key is None:	
-        if args.verbose:
-		print "[*] Try fermat factorization due to close primes attack"
-
-	# Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
-	with timeout(seconds=30):	
-		pub_key.p, pub_key.q = fermat(pub_key.n)	
-
-	if pub_key.q is not None:
-		priv_key = PrivateKey(long(pub_key.p),
-                               long(pub_key.q),
-                               long(pub_key.e),
-                               long(pub_key.n))
-
-		if args.uncipher is not None:
-			unciphered = priv_key.decrypt(cipher)
-
-    if priv_key is not None and args.private:
-        print priv_key
-
-    if unciphered is not None and args.uncipher is not None:
-        print "[+] Clear text : %s" % unciphered
+    if attackobj.unciphered is not None and args.uncipher is not None:
+        print "[+] Clear text : %s" % attackobj.unciphered
     else:
         if args.uncipher is not None:
             print "[-] Sorry, cracking failed"
