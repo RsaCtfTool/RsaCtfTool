@@ -210,12 +210,25 @@ class RSAAttack(object):
 
         return
 
+    def pastctfprimes(self):
+        primes = [long(x) for x in open('pastctfprimes.txt','r').readlines() if not x.startswith('#') and not x.startswith('\n')]
+        if self.args.verbose:
+            print "[*] Loaded " + str(len(primes)) + " primes"
+        for prime in primes:
+            if self.pub_key.n % prime == 0:
+                self.pub_key.q = prime
+                self.pub_key.p = self.pub_key.n / self.pub_key.q
+                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                           long(self.pub_key.e), long(self.pub_key.n))        
+        return
+
     def commonmodulus(self):
         # NYI requires support for multiple public keys
         return
 
-    #implemented_attacks = [ hastads, factordb, noveltyprimes, smallq, wiener, commonfactors ]
-    implemented_attacks = [ hastads, noveltyprimes, smallq, wiener, commonfactors, fermat ]
+    #implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
+    #implemented_attacks = [ hastads, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
+    implemented_attacks = [ pastctfprimes ]
     
 
 # source http://stackoverflow.com/a/22348885
