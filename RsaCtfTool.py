@@ -140,7 +140,7 @@ class RSAAttack(object):
         try:
             from wiener_attack import WienerAttack
         except ImportError:
-            if args.verbose:
+            if self.args.verbose:
                 print "[*] Wiener attack module missing (wiener_attack.py)"
             return
 
@@ -154,7 +154,7 @@ class RSAAttack(object):
                                   long(self.pub_key.e),
                                   long(self.pub_key.n))
 
-            if args.uncipher is not None:
+            if self.args.uncipher is not None:
                 self.unciphered = self.priv_key.decrypt(self.cipher)
         return
 
@@ -179,7 +179,7 @@ class RSAAttack(object):
         try:
             from fermat import fermat
         except ImportError:
-            if args.verbose:
+            if self.args.verbose:
                 print "[*] Fermat factorization module missing (fermat.py)"
             return
 
@@ -192,7 +192,7 @@ class RSAAttack(object):
                                    long(self.pub_key.e),
                                    long(self.pub_key.n))
 
-        if args.uncipher is not None:
+        if self.args.uncipher is not None:
             self.unciphered = self.priv_key.decrypt(self.cipher)
 
         return
