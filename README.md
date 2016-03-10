@@ -10,6 +10,7 @@ Attacks :
  - Common factor between ciphertext and modulus attack
  - Fermat's factorisation for close p and q
  - Gimmicky Primes method
+ - Past CTF Primes method
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub\)
@@ -42,6 +43,7 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
  - close\_primes.pub, close\_primes.cipher : public key with primes suceptible to fermat factorization
  - elite\_primes.pub : public key with a gimmick prime
  - fermat.pub : public key with another vulnerability to fermat factorization
+ - pastctfprimes.pub : public key with a prime from a past CTF
 
 #### Requirements:
  - GMPY

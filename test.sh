@@ -15,6 +15,8 @@ echo "Test fermat"
 ./RsaCtfTool.py --publickey examples/close_primes.pub --verbose --private --uncipher examples/close_primes.cipher
 echo "Test fermat2"
 ./RsaCtfTool.py --publickey examples/fermat.pub --verbose --private 
+echo "Test pastctfprimes"
+./RsaCtfTool.py --publickey examples/pastctfprimes.pub --verbose --private
 echo "Test createpub"
 ./RsaCtfTool.py --createpub --n 8616460799 --e 65537
 echo "Test createpub with no modulus should raise exception"

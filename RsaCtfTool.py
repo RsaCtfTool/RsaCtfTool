@@ -226,9 +226,7 @@ class RSAAttack(object):
         # NYI requires support for multiple public keys
         return
 
-    #implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
-    #implemented_attacks = [ hastads, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
-    implemented_attacks = [ pastctfprimes ]
+    implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
     
 
 # source http://stackoverflow.com/a/22348885
