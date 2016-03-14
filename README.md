@@ -48,3 +48,12 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
 #### Requirements:
  - GMPY
  - libnum (https://github.com/hellman/libnum.git)
+
+#### Todo
+ - Implement multiple key handling, for common modulus attacks
+ - Implement multiple ciphertext handling for more attacks
+ - Implement "yafu" support as an option for ECM factoring
+ - Implement support for MultiPrime RSA (see 0ctf 2016)
+ - Possibly implement Msieve support...
+ - Some kind of polynomial search...
+ - Brainstorm moar attack types!
