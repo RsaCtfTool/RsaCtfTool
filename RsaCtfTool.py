@@ -110,7 +110,7 @@ class RSAAttack(object):
         if self.pub_key.e == 3 and self.args.uncipher is not None:
             orig = s2n(self.cipher)
             c = orig
-            while True: # todo - test if this needs a timeout for certain cases?
+            while True: 
                 m = gmpy.root(c, 3)[0]
                 if pow(m, 3, self.pub_key.n) == orig:
                     self.unciphered = n2s(m)
