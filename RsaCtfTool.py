@@ -21,6 +21,7 @@ from libnum import *
 import requests
 import re
 import argparse
+from glob import glob
 
 
 class FactorizationError(Exception):
@@ -66,13 +67,9 @@ class PrivateKey(object):
     def __init__(self, p, q, e, n):
         """Create private key from base components
            :param p: extracted from n
-           :type p: int
            :param q: extracted from n
-           :type q: int
            :param e: exponent
-           :type e: int
            :param n: n from public key
-           :type n: int
         """
         t = (p-1)*(q-1)
         d = invmod(e,t)
@@ -93,6 +90,7 @@ class RSAAttack(object):
     def __init__(self, args):
         # Load public key
         key = open(args.publickey, 'r').read()
+        self.pubkeyfile = args.publickey
         self.pub_key = PublicKey(key)
         self.priv_key = None
         self.args = args
@@ -226,6 +224,34 @@ class RSAAttack(object):
         # NYI requires support for multiple public keys
         return
 
+    def attack(self):
+        # loop through implemented attack methods and conduct attacks
+        for attack in self.implemented_attacks:
+            if self.args.verbose:
+                print "[*] Performing " + attack.__name__ + " attack."
+
+            getattr(self, attack.__name__)()
+
+            # check and print resulting private key
+            if self.priv_key is not None:
+                if self.args.private:
+                    print self.priv_key
+
+                break
+
+            if self.unciphered is not None:
+                break
+
+        # If we wanted to decrypt, do it now
+        if self.args.uncipher is not None and self.priv_key is not None:
+                self.unciphered = self.priv_key.decrypt(self.cipher)
+                print "[+] Clear text : %s" % self.unciphered
+        elif self.unciphered is not None:
+                print "[+] Clear text : %s" % self.unciphered
+        else:
+            if self.args.uncipher is not None:
+                print "[-] Sorry, cracking failed"
+
     implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
     
 
@@ -245,7 +271,7 @@ class timeout:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='RSA CTF Tool Continued')
     group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--publickey', help='public key file')
+    group.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
     group.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
     parser.add_argument('--uncipher', help='uncipher a file', default=None)
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
@@ -262,32 +288,42 @@ if __name__ == "__main__":
         print RSA.construct((args.n, args.e)).publickey().exportKey()
         quit()
 
-    # Create a new attack object that holds all our keys and methods
-    attackobj = RSAAttack(args)
-
-    # loop through implemented attack methods and conduct attacks
-    for attack in attackobj.implemented_attacks:
+    # Multi Key case
+    if '*' in args.publickey or '?' in args.publickey:
+        # do multikey stuff
+        pubkeyfilelist = glob(args.publickey)
         if args.verbose:
-            print "[*] Performing " + attack.__name__ + " attack."
+            print "[*] Multikey mode is EXPERIMENTAL."
+            print "[*] Keys: " + repr(pubkeyfilelist)
 
-        getattr(attackobj, attack.__name__)()
+        # naive case, just iterate the public keys
+        attackobjs = []
+        for p in pubkeyfilelist:
+            if args.verbose:
+                print 
+                print "[*] Attacking key: " + p
+            args.publickey = p # bit kludgey yes
+            # build a list of attackobjects along the way
+            attackobjs.append(RSAAttack(args))
+            attackobjs[-1].attack()
 
-        # check and print resulting private key
-        if attackobj.priv_key is not None:
-            if args.private:
-                print attackobj.priv_key
+        # check our array of RSAAttack objects then perform common factor attacks
+        if args.verbose:
+            print "[*] Performing multi key attacks."
+        for x in attackobjs:
+            for y in attackobjs:
+                if x.pub_key.n <> y.pub_key.n:
+                    g = gcd(x.pub_key.n, y.pub_key.n)
+                    if g != 1:
+                        print g
+                        print x.pub_key.n
+                        print y.pub_key.n
+                        print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
+                     
+      
 
-            break
-
-        if attackobj.unciphered is not None:
-            break
-
-    # If we wanted to decrypt, do it now
-    if args.uncipher is not None and attackobj.priv_key is not None:
-            attackobj.unciphered = attackobj.priv_key.decrypt(attackobj.cipher)
-            print "[+] Clear text : %s" % attackobj.unciphered
-    elif attackobj.unciphered is not None:
-            print "[+] Clear text : %s" % attackobj.unciphered
     else:
-        if args.uncipher is not None:
-            print "[-] Sorry, cracking failed"
+        # Single key case
+        attackobj = RSAAttack(args)
+        attackobj.attack()
+
