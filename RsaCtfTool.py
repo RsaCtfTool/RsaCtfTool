@@ -134,7 +134,7 @@ class RSAAttack(object):
             from wiener_attack import WienerAttack
         except ImportError:
             if self.args.verbose:
-                print "[*] Wiener attack module missing (wiener_attack.py)"
+                print "[*] Warning: Wiener attack module missing (wiener_attack.py)"
             return
 
         # Wiener's attack
@@ -165,7 +165,7 @@ class RSAAttack(object):
             from fermat import fermat
         except ImportError:
             if self.args.verbose:
-                print "[*] Fermat factorization module missing (fermat.py)"
+                print "[*] Warning: Fermat factorization module missing (fermat.py)"
             return
 
         try:
@@ -224,6 +224,29 @@ class RSAAttack(object):
         # NYI requires support for multiple public keys
         return
 
+    def siqs(self):
+        # attempt a Self-Initializing Quadratic Sieve
+        # this attack module can be optional
+        try:
+            from siqs import SiqsAttack
+        except ImportError:
+            if self.args.verbose:
+                print "[*] Warning: Yafu SIQS attack module missing (siqs.py)"
+            return
+
+        siqsobj = SiqsAttack(self.args, self.pub_key.n)
+
+        if siqsobj.checkyafu() and siqsobj.testyafu():
+            siqsobj.doattack()
+
+        if siqsobj.p and siqsobj.q:
+            self.pub_key.q = siqsobj.q
+            self.pub_key.p = siqsobj.p
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))        
+    
+        return
+
     def attack(self):
         # loop through implemented attack methods and conduct attacks
         for attack in self.implemented_attacks:
@@ -236,7 +259,6 @@ class RSAAttack(object):
             if self.priv_key is not None:
                 if self.args.private:
                     print self.priv_key
-
                 break
 
             if self.unciphered is not None:
@@ -252,7 +274,7 @@ class RSAAttack(object):
             if self.args.uncipher is not None:
                 print "[-] Sorry, cracking failed"
 
-    implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat ]
+    implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat, siqs ]
     
 
 # source http://stackoverflow.com/a/22348885
@@ -315,13 +337,11 @@ if __name__ == "__main__":
                 if x.pub_key.n <> y.pub_key.n:
                     g = gcd(x.pub_key.n, y.pub_key.n)
                     if g != 1:
+                        # TODO: Finish this :P
                         print g
                         print x.pub_key.n
                         print y.pub_key.n
                         print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
-                     
-      
-
     else:
         # Single key case
         attackobj = RSAAttack(args)

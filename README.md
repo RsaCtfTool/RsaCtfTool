@@ -11,6 +11,8 @@ Attacks :
  - Fermat's factorisation for close p and q
  - Gimmicky Primes method
  - Past CTF Primes method
+ - Self-Initializing Quadratic Sieve (SIQS) using Yafu - NEW
+ - Common factor attacks across multiple keys - NEW
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub\)
@@ -18,7 +20,7 @@ usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub\)
                          [--e E]
 
 Mode 1 - Attack RSA (specify --publickey)
- - publickey : public rsa key to crack
+ - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
  - uncipher : cipher message to decrypt
  - private : display private rsa key if recovered
 
@@ -44,15 +46,15 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
  - elite\_primes.pub : public key with a gimmick prime
  - fermat.pub : public key with another vulnerability to fermat factorization
  - pastctfprimes.pub : public key with a prime from a past CTF
+ - siqs.pub: 256bit public key that is factored in 30 seconds with SIQS
 
 #### Requirements:
  - GMPY
  - libnum (https://github.com/hellman/libnum.git)
 
 #### Todo
- - Implement multiple key handling, for common modulus attacks
  - Implement multiple ciphertext handling for more attacks
- - Implement "yafu" support as an option for ECM factoring
+ - Implement ECM factoring
  - Implement support for MultiPrime RSA (see 0ctf 2016)
  - Possibly implement Msieve support...
  - Some kind of polynomial search...
