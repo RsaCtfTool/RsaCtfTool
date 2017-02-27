@@ -234,6 +234,10 @@ class RSAAttack(object):
                 print "[*] Warning: Yafu SIQS attack module missing (siqs.py)"
             return
 
+        if self.pub_key.n.bit_length() > 1024:
+            print "[*] Warning: Modulus too large for SIQS attack module"
+    
+
         siqsobj = SiqsAttack(self.args, self.pub_key.n)
 
         if siqsobj.checkyafu() and siqsobj.testyafu():
