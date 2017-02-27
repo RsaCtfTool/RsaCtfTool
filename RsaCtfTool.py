@@ -236,6 +236,7 @@ class RSAAttack(object):
 
         if self.pub_key.n.bit_length() > 1024:
             print "[*] Warning: Modulus too large for SIQS attack module"
+            return
     
 
         siqsobj = SiqsAttack(self.args, self.pub_key.n)
