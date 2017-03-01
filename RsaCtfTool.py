@@ -89,7 +89,7 @@ class PrivateKey(object):
 class RSAAttack(object):
     def __init__(self, args):
         # Load public key
-        key = open(args.publickey, 'r').read()
+        key = open(args.publickey, 'rb').read()
         self.pubkeyfile = args.publickey
         self.pub_key = PublicKey(key)
         self.priv_key = None
@@ -97,7 +97,7 @@ class RSAAttack(object):
         self.unciphered = None
         # Load ciphertext
         if args.uncipher is not None:
-            self.cipher = open(args.uncipher, 'r').read().strip()
+            self.cipher = open(args.uncipher, 'rb').read().strip()
         else:
             self.cipher = None
 
@@ -300,11 +300,13 @@ if __name__ == "__main__":
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
     group.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
+    group.add_argument('--dumpkey', help='Just dump the RSA variables from a key - n,e,d,p,q', action='store_true')
     parser.add_argument('--uncipher', help='uncipher a file', default=None)
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
     parser.add_argument('--private', help='Display private key if recovered', action='store_true')
     parser.add_argument('--n', type=long, help='Specify the modulus in --createpub mode.')
     parser.add_argument('--e', type=long, help='Specify the public exponent in --createpub mode.')
+    parser.add_argument('--key', help='Specify the input key file in --dumpkey mode.')
 
     args = parser.parse_args()
 
@@ -313,6 +315,21 @@ if __name__ == "__main__":
         if args.n is None or args.e is None:
             raise Exception("Specify both a modulus and exponent on the command line. See --help for info.")
         print RSA.construct((args.n, args.e)).publickey().exportKey()
+        quit()
+
+    # if dumpkey mode dump the key components then quit
+    if args.dumpkey:
+        if args.key is None:
+            raise Exception("Specify a key file to dump with --key. See --help for info.")
+        #print RSA.construct((args.n, args.e)).publickey().exportKey()
+        key_data = open(args.key,'rb').read() 
+        key = RSA.importKey(key_data)
+        print "[*] n: " + str(key.n)
+        print "[*] e: " + str(key.e)
+        if key.has_private():
+            print "[*] d: " + str(key.d)
+            print "[*] p: " + str(key.p)
+            print "[*] q: " + str(key.q)
         quit()
 
     # Multi Key case
@@ -343,10 +360,10 @@ if __name__ == "__main__":
                     g = gcd(x.pub_key.n, y.pub_key.n)
                     if g != 1:
                         # TODO: Finish this :P
-                        print g
-                        print x.pub_key.n
-                        print y.pub_key.n
                         print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
+                        print "[*] Common factor: " + str(g)
+                        #print x.pub_key.n
+                        #print y.pub_key.n
     else:
         # Single key case
         attackobj = RSAAttack(args)
