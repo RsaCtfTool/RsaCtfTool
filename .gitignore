@@ -2,8 +2,14 @@
 __pycache__/
 *.py[cod]
 
+# yafu logs
+siqs.dat
+session.log
+factor.log
+
 # C extensions
 *.so
+*.swp
 
 # Distribution / packaging
 .Python
