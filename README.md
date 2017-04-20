@@ -15,9 +15,9 @@ Attacks :
  - Common factor attacks across multiple keys - NEW
 
 ## Usage:
-usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub\)
+usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
                          [--uncipher UNCIPHER] [--verbose] [--private] [--n N]
-                         [--e E]
+                         [--e E] [--key KEY]
 
 Mode 1 - Attack RSA (specify --publickey)
  - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
@@ -28,14 +28,23 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
  - n - modulus
  - e - public exponent
 
+Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or private key (specify --dumpkey)
+ - key - the public or private key in PEM or DER format
+
 ### Uncipher file :
 ./RsaCtfTool.py --publickey ./key.pub --uncipher ./ciphered\_file
 
 ### Print private key :
 ./RsaCtfTool.py --publickey ./key.pub --private
 
+### Attempt to break multiple public keys with common factor attacks or individually
+./RsaCtfTool.py --publickey "\*.pub" --private
+
 ### Generate a public key :
 ./RsaCtfTool.py --createpub --n 7828374823761928712873129873981723...12837182 --e 65537
+
+### Dump the parameters from a key:
+./RsaCtfTool.py --dumpkey --key ./key.pub
 
 #### Examples :
  - weak\_public.pub, weak\_public.cipher : weak public key
@@ -50,6 +59,7 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
 
 #### Requirements:
  - GMPY
+ - SymPy
  - libnum (https://github.com/hellman/libnum.git)
 
 #### Todo
@@ -60,3 +70,4 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
  - Some kind of polynomial search...
  - Brainstorm moar attack types!
  - Saw a CTF where the supplied N was a 2048 bit prime. Detect this and solve using phi = (n - 1) * (n - 1) which seemed to work for that CTF
+ - Pollards p-1 for relatively smooth numbers
