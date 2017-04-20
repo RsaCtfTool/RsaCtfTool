@@ -40,6 +40,7 @@ class PublicKey(object):
 
     def prime_factors(self):
         # Factorize n using factordb.com
+        # TODO: Move this into RSAAttack()
         try:
             url_1 = 'http://www.factordb.com/index.php?query=%i'
             url_2 = 'http://www.factordb.com/index.php?id=%s'
@@ -88,19 +89,34 @@ class PrivateKey(object):
 
 class RSAAttack(object):
     def __init__(self, args):
-        # Load public key
-        key = open(args.publickey, 'rb').read()
-        self.pubkeyfile = args.publickey
-        self.pub_key = PublicKey(key)
-        self.priv_key = None
-        self.args = args
-        self.unciphered = None
-        # Load ciphertext
-        if args.uncipher is not None:
-            self.cipher = open(args.uncipher, 'rb').read().strip()
-        else:
-            self.cipher = None
+        if '*' in args.publickey or '?' in args.publickey:
+            # get list of public keys from wildcard expression
+            self.pubkeyfilelist = glob(args.publickey)
+            self.args = args
 
+            if args.verbose:
+                print "[*] Multikey mode using keys: " + repr(self.pubkeyfilelist)
+
+            # Initialize a list of objects by recursively calling this on each key
+            self.attackobjs = []
+            for pub in self.pubkeyfilelist:
+                args.publickey = pub  # is this a kludge or is this elegant?
+                self.attackobjs.append(RSAAttack(args))
+        else:
+            # Load single public key
+            key = open(args.publickey, 'rb').read()
+            self.pubkeyfile = args.publickey
+            self.pub_key = PublicKey(key)
+            self.priv_key = None
+            self.displayed = False   # have we already spammed the user with this private key?
+            self.args = args
+            self.unciphered = None
+            self.attackobjs = None  # This is how we'll know this object represents 1 key
+            # Load ciphertext
+            if args.uncipher is not None:
+                self.cipher = open(args.uncipher, 'rb').read().strip()
+            else:
+                self.cipher = None
         return 
 
     def hastads(self):
@@ -118,23 +134,23 @@ class RSAAttack(object):
 
     def factordb(self):
         # Factors available online?
+        # TODO: Why is this done this way? Its sort of totally different to everywhere else? Inherited?
         try:
             self.pub_key.prime_factors()
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                        long(self.pub_key.e), long(self.pub_key.n))
 
             return
-
         except FactorizationError:
             return
 
     def wiener(self):
-        # this attack module can be optional
+        # this attack module can be optional based on sympy and wiener_attack.py existing
         try:
             from wiener_attack import WienerAttack
         except ImportError:
             if self.args.verbose:
-                print "[*] Warning: Wiener attack module missing (wiener_attack.py)"
+                print "[*] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?"
             return
 
         # Wiener's attack
@@ -158,7 +174,7 @@ class RSAAttack(object):
 
         return
 
-    def fermat(self,fermat_timeout=60):
+    def fermat(self, fermat_timeout=60):
         # Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
         # this attack module can be optional
         try:
@@ -193,9 +209,9 @@ class RSAAttack(object):
                                            long(self.pub_key.e), long(self.pub_key.n))        
         return
 
-    def commonfactors(self):
+    def comfact_cn(self):
+        # Try an attack where the public key has a common factor with the ciphertext - sourcekris
         if self.args.uncipher:
-            # Try an attack where the public key has a common factor with the ciphertext - sourcekris
             commonfactor = gcd(self.pub_key.n, s2n(self.cipher))
             
             if commonfactor > 1:
@@ -205,6 +221,33 @@ class RSAAttack(object):
                                            long(self.pub_key.e), long(self.pub_key.n))
 
                 unciphered = self.priv_key.decrypt(self.cipher)
+
+        return
+
+    def commonfactors(self):
+        # Try to find the gcd between each pair of modulii and resolve the private keys if gcd > 1
+        for x in self.attackobjs:
+            for y in self.attackobjs:
+                if x.pub_key.n <> y.pub_key.n:
+                    g = gcd(x.pub_key.n, y.pub_key.n)
+                    if g != 1:
+                        if self.args.verbose and not x.displayed and not y.displayed:
+                            print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
+
+                        # update each attackobj with a private_key
+                        x.pub_key.p = g
+                        x.pub_key.q = x.pub_key.n / g
+                        y.pub_key.p = g
+                        y.pub_key.q = y.pub_key.n / g
+                        x.priv_key = PrivateKey(long(x.pub_key.p),long(x.pub_key.q),
+                                                long(x.pub_key.e), long(x.pub_key.n))
+                        y.priv_key = PrivateKey(long(y.pub_key.p), long(y.pub_key.q),
+                                                long(y.pub_key.e), long(y.pub_key.n))
+
+                    # call attack method to print the private keys at the nullattack step or attack singularly
+                    # depending on the success of the gcd operation
+                    x.attack()
+                    y.attack()
 
         return
 
@@ -222,6 +265,11 @@ class RSAAttack(object):
 
     def commonmodulus(self):
         # NYI requires support for multiple public keys
+        return
+
+    def prime_modulus(self):
+        # an attack where the modulus is not a composite number, so the math is unique
+        # NYI
         return
 
     def siqs(self):
@@ -252,34 +300,43 @@ class RSAAttack(object):
     
         return
 
+    def nullattack(self):
+        # do nothing, used for multi-key attacks that succeeded so we just print the
+        # private key without spending any time factoring
+        return
+
     def attack(self):
-        # loop through implemented attack methods and conduct attacks
-        for attack in self.implemented_attacks:
-            if self.args.verbose:
-                print "[*] Performing " + attack.__name__ + " attack."
-
-            getattr(self, attack.__name__)()
-
-            # check and print resulting private key
-            if self.priv_key is not None:
-                if self.args.private:
-                    print self.priv_key
-                break
-
-            if self.unciphered is not None:
-                break
-
-        # If we wanted to decrypt, do it now
-        if self.args.uncipher is not None and self.priv_key is not None:
-                self.unciphered = self.priv_key.decrypt(self.cipher)
-                print "[+] Clear text : %s" % self.unciphered
-        elif self.unciphered is not None:
-                print "[+] Clear text : %s" % self.unciphered
+        if self.attackobjs is not None:
+            self.commonfactors()
         else:
-            if self.args.uncipher is not None:
-                print "[-] Sorry, cracking failed"
+            # loop through implemented attack methods and conduct attacks
+            for attack in self.implemented_attacks:
+                if self.args.verbose and "nullattack" not in attack.__name__:
+                    print "[*] Performing " + attack.__name__ + " attack."
 
-    implemented_attacks = [ hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, commonfactors, fermat, siqs ]
+                getattr(self, attack.__name__)()
+
+                # check and print resulting private key
+                if self.priv_key is not None:
+                    if self.args.private and not self.displayed:
+                        print self.priv_key
+                        self.displayed = True
+                    break
+
+                if self.unciphered is not None:
+                    break
+
+            # If we wanted to decrypt, do it now
+            if self.args.uncipher is not None and self.priv_key is not None:
+                    self.unciphered = self.priv_key.decrypt(self.cipher)
+                    print "[+] Clear text : %s" % self.unciphered
+            elif self.unciphered is not None:
+                    print "[+] Clear text : %s" % self.unciphered
+            else:
+                if self.args.uncipher is not None:
+                    print "[-] Sorry, cracking failed"
+
+    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs ]
     
 
 # source http://stackoverflow.com/a/22348885
@@ -287,11 +344,14 @@ class timeout:
     def __init__(self, seconds=10, error_message='[-] Timeout'):
         self.seconds = seconds
         self.error_message = error_message
+
     def handle_timeout(self, signum, frame):
         raise FactorizationError(self.error_message)
+
     def __enter__(self):
         signal.signal(signal.SIGALRM, self.handle_timeout)
         signal.alarm(self.seconds)
+
     def __exit__(self, type, value, traceback):
         signal.alarm(0)
 
@@ -321,7 +381,7 @@ if __name__ == "__main__":
     if args.dumpkey:
         if args.key is None:
             raise Exception("Specify a key file to dump with --key. See --help for info.")
-        #print RSA.construct((args.n, args.e)).publickey().exportKey()
+
         key_data = open(args.key,'rb').read() 
         key = RSA.importKey(key_data)
         print "[*] n: " + str(key.n)
@@ -332,40 +392,6 @@ if __name__ == "__main__":
             print "[*] q: " + str(key.q)
         quit()
 
-    # Multi Key case
-    if '*' in args.publickey or '?' in args.publickey:
-        # do multikey stuff
-        pubkeyfilelist = glob(args.publickey)
-        if args.verbose:
-            print "[*] Multikey mode is EXPERIMENTAL."
-            print "[*] Keys: " + repr(pubkeyfilelist)
-
-        # naive case, just iterate the public keys
-        attackobjs = []
-        for p in pubkeyfilelist:
-            if args.verbose:
-                print 
-                print "[*] Attacking key: " + p
-            args.publickey = p # bit kludgey yes
-            # build a list of attackobjects along the way
-            attackobjs.append(RSAAttack(args))
-            attackobjs[-1].attack()
-
-        # check our array of RSAAttack objects then perform common factor attacks
-        if args.verbose:
-            print "[*] Performing multi key attacks."
-        for x in attackobjs:
-            for y in attackobjs:
-                if x.pub_key.n <> y.pub_key.n:
-                    g = gcd(x.pub_key.n, y.pub_key.n)
-                    if g != 1:
-                        # TODO: Finish this :P
-                        print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
-                        print "[*] Common factor: " + str(g)
-                        #print x.pub_key.n
-                        #print y.pub_key.n
-    else:
-        # Single key case
-        attackobj = RSAAttack(args)
-        attackobj.attack()
+    attackobj = RSAAttack(args)
+    attackobj.attack()
 

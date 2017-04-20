@@ -1,6 +1,8 @@
 #!/bin/bash
 
 # Test all the pub and ciphers
+echo "Test multikey mode"
+./RsaCtfTool.py --publickey "examples/multikey-?.pub" --verbose --private
 echo "Test hastads"
 ./RsaCtfTool.py --publickey examples/small_exponent.pub --verbose --private --uncipher examples/small_exponent.cipher
 echo "Test noveltyprimes"
