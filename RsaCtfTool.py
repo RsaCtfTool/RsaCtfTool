@@ -38,27 +38,6 @@ class PublicKey(object):
         self.e = pub.e
         self.key = key
 
-    def prime_factors(self):
-        # Factorize n using factordb.com
-        # TODO: Move this into RSAAttack()
-        try:
-            url_1 = 'http://www.factordb.com/index.php?query=%i'
-            url_2 = 'http://www.factordb.com/index.php?id=%s'
-            r = requests.get(url_1 % self.n)
-            regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
-            ids = regex.findall(r.text)
-            p_id = ids[1]
-            q_id = ids[2]
-            regex = re.compile("value=\"([0-9]+)\"", re.IGNORECASE)
-            r_1 = requests.get(url_2 % p_id)
-            r_2 = requests.get(url_2 % q_id)
-            self.p = int(regex.findall(r_1.text)[0])
-            self.q = int(regex.findall(r_2.text)[0])
-            if self.p == self.q == self.n:
-                raise FactorizationError()
-        except:
-            raise FactorizationError()
-
     def __str__(self):
         # Print armored public key
         return self.key
@@ -134,12 +113,23 @@ class RSAAttack(object):
 
     def factordb(self):
         # Factors available online?
-        # TODO: Why is this done this way? Its sort of totally different to everywhere else? Inherited?
         try:
-            self.pub_key.prime_factors()
+            url_1 = 'http://www.factordb.com/index.php?query=%i'
+            url_2 = 'http://www.factordb.com/index.php?id=%s'
+            r = requests.get(url_1 % self.pub_key.n)
+            regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
+            ids = regex.findall(r.text)
+            p_id = ids[1]
+            q_id = ids[2]
+            regex = re.compile("value=\"([0-9]+)\"", re.IGNORECASE)
+            r_1 = requests.get(url_2 % p_id)
+            r_2 = requests.get(url_2 % q_id)
+            self.pub_key.p = int(regex.findall(r_1.text)[0])
+            self.pub_key.q = int(regex.findall(r_2.text)[0])
+            if self.pub_key.p == self.pub_key.q == self.pub_key.n:
+                raise FactorizationError()
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                        long(self.pub_key.e), long(self.pub_key.n))
-
             return
         except FactorizationError:
             return
