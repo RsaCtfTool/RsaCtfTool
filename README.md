@@ -56,6 +56,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - fermat.pub : public key with another vulnerability to fermat factorization
  - pastctfprimes.pub : public key with a prime from a past CTF
  - siqs.pub: 256bit public key that is factored in 30 seconds with SIQS
+ - factordb_parsing.pub: a public key with a prime that is described as an expression on factordb.com
 
 #### Requirements:
  - GMPY
