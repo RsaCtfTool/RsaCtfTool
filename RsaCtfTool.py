@@ -148,7 +148,6 @@ class RSAAttack(object):
                                        long(self.pub_key.e), long(self.pub_key.n))
             return
         except Exception as e:
-            raise FactorizationError()
             return
 
     def wiener(self):
