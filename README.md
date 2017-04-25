@@ -68,7 +68,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
 ### MacOS-specific Instructions
 If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
-`easy_install `cat requirements.txt``
+`` easy_install `cat requirements.txt` ``
 
 #### Todo
  - Implement multiple ciphertext handling for more attacks
