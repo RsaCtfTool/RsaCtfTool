@@ -32,19 +32,19 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - key - the public or private key in PEM or DER format
 
 ### Uncipher file :
-./RsaCtfTool.py --publickey ./key.pub --uncipher ./ciphered\_file
+`./RsaCtfTool.py --publickey ./key.pub --uncipher ./ciphered\_file`
 
 ### Print private key :
-./RsaCtfTool.py --publickey ./key.pub --private
+`./RsaCtfTool.py --publickey ./key.pub --private`
 
 ### Attempt to break multiple public keys with common factor attacks or individually
-./RsaCtfTool.py --publickey "\*.pub" --private
+`./RsaCtfTool.py --publickey "\*.pub" --private`
 
 ### Generate a public key :
-./RsaCtfTool.py --createpub --n 7828374823761928712873129873981723...12837182 --e 65537
+`./RsaCtfTool.py --createpub --n 7828374823761928712873129873981723...12837182 --e 65537`
 
 ### Dump the parameters from a key:
-./RsaCtfTool.py --dumpkey --key ./key.pub
+`./RsaCtfTool.py --dumpkey --key ./key.pub`
 
 #### Examples :
  - weak\_public.pub, weak\_public.cipher : weak public key
@@ -71,3 +71,5 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - Brainstorm moar attack types!
  - Saw a CTF where the supplied N was a 2048 bit prime. Detect this and solve using phi = (n - 1) * (n - 1) which seemed to work for that CTF
  - Pollards p-1 for relatively smooth numbers
+ - Replicate all functionality of rsatool.py
+ - Support more types of expression based primes from factordb.com?
