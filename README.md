@@ -37,8 +37,8 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
 ### Print private key :
 `./RsaCtfTool.py --publickey ./key.pub --private`
 
-### Attempt to break multiple public keys with common factor attacks or individually
-`./RsaCtfTool.py --publickey "\*.pub" --private`
+### Attempt to break multiple public keys with common factor attacks or individually - use quotes around wildcards to stop bash expansion
+`./RsaCtfTool.py --publickey "*.pub" --private`
 
 ### Generate a public key :
 `./RsaCtfTool.py --createpub --n 7828374823761928712873129873981723...12837182 --e 65537`
