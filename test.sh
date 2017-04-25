@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Test factordb parsing notation where the modulus is noted as a number such as 2^1453-1
+echo "Test factordb parsing"
+./RsaCtfTool.py --publickey "examples/factordb_parse.pub" --verbose --private
 # Test all the pub and ciphers
 echo "Test multikey mode"
 ./RsaCtfTool.py --publickey "examples/multikey-?.pub" --verbose --private

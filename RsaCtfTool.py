@@ -112,26 +112,43 @@ class RSAAttack(object):
         return
 
     def factordb(self):
+        # if factordb returns some math to derive the prime, solve for p without using an eval
+        def solveforp(equation):
+            if '^' in equation: k,j = equation.split('^')
+            if '-' in j: j,sub = j.split('-')
+            try:
+                eq = map(int, [k,j,sub])
+                return pow(eq[0],eq[1])-eq[2]
+            except Exception as e:
+                if self.args.verbose:
+                    print "[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation,e)
+                raise FactorizationError()
+
         # Factors available online?
         try:
             url_1 = 'http://www.factordb.com/index.php?query=%i'
             url_2 = 'http://www.factordb.com/index.php?id=%s'
-            r = requests.get(url_1 % self.pub_key.n)
+            s = requests.Session()
+            r = s.get(url_1 % self.pub_key.n)
             regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
             ids = regex.findall(r.text)
             p_id = ids[1]
             q_id = ids[2]
-            regex = re.compile("value=\"([0-9]+)\"", re.IGNORECASE)
-            r_1 = requests.get(url_2 % p_id)
-            r_2 = requests.get(url_2 % q_id)
-            self.pub_key.p = int(regex.findall(r_1.text)[0])
-            self.pub_key.q = int(regex.findall(r_2.text)[0])
+            # bugfix: See https://github.com/sourcekris/RsaCtfTool/commit/16d4bb258ebb4579aba2bfc185b3f717d2d91330#commitcomment-21878835
+            regex = re.compile("value=\"([0-9\^\-]+)\"", re.IGNORECASE)
+            r_1 = s.get(url_2 % p_id)
+            r_2 = s.get(url_2 % q_id)
+            key_p = regex.findall(r_1.text)[0]
+            key_q = regex.findall(r_2.text)[0]
+            self.pub_key.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
+            self.pub_key.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
             if self.pub_key.p == self.pub_key.q == self.pub_key.n:
                 raise FactorizationError()
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                        long(self.pub_key.e), long(self.pub_key.n))
             return
-        except FactorizationError:
+        except Exception as e:
+            raise FactorizationError()
             return
 
     def wiener(self):
