@@ -99,13 +99,13 @@ class RSAAttack(object):
         return 
 
     def hastads(self):
-        # Hastad's attack
-        if self.pub_key.e == 3 and self.args.uncipher is not None:
+        # Hastad attack for low public exponent, this has found success for e = 3, and e = 5 previously
+        if self.pub_key.e <= 11 and self.args.uncipher is not None:
             orig = s2n(self.cipher)
             c = orig
             while True: 
-                m = gmpy.root(c, 3)[0]
-                if pow(m, 3, self.pub_key.n) == orig:
+                m = gmpy.root(c, self.pub_key.e)[0]
+                if pow(m, self.pub_key.e, self.pub_key.n) == orig:
                     self.unciphered = n2s(m)
                     break
                 c += self.pub_key.n
