@@ -5,14 +5,16 @@ Automatic selection of best attack for the given public key
 Attacks :
  - Weak public key factorization
  - Wiener's attack
- - Hastad's attack (Small exponent attack)
- - Small q (q<100,000)
+ - Hastad's attack (Small public exponent attack)
+ - Small q (q < 100,000)
  - Common factor between ciphertext and modulus attack
  - Fermat's factorisation for close p and q
  - Gimmicky Primes method
  - Past CTF Primes method
- - Self-Initializing Quadratic Sieve (SIQS) using Yafu - NEW
- - Common factor attacks across multiple keys - NEW
+ - Self-Initializing Quadratic Sieve (SIQS) using Yafu
+ - Common factor attacks across multiple keys
+ - Small fractions method when p/q is close to a small fraction
+ - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
@@ -49,7 +51,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
 #### Examples :
  - weak\_public.pub, weak\_public.cipher : weak public key
  - wiener.pub, wiener.cipher : key vulnerable to Wiener's attack
- - small\exponent.pub, small\_exponent.cipher : key with e=3, vulnerable to Hastad's attack
+ - small\_exponent.pub, small\_exponent.cipher : key with e=3, vulnerable to Hastad's attack
  - small\_q.pub, small\_q.cipher : public key with a small prime
  - close\_primes.pub, close\_primes.cipher : public key with primes suceptible to fermat factorization
  - elite\_primes.pub : public key with a gimmick prime
@@ -57,6 +59,9 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - pastctfprimes.pub : public key with a prime from a past CTF
  - siqs.pub: 256bit public key that is factored in 30 seconds with SIQS
  - factordb_parsing.pub: a public key with a prime that is described as an expression on factordb.com
+ - smallfraction.pub: a public key where p/q is close to a small fraction
+ - boneh\_durfee.pub: a public key factorable using boneh\_durfee method
+ - multikey-0.pub and multikey-1.pub: Public keys that share a common factor
 
 #### Requirements:
  - GMPY
@@ -64,6 +69,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - libnum (https://github.com/hellman/libnum.git)
  - PyCrypto
  - Requests
+ - SageMath - optional but advisable
  
 ### MacOS-specific Instructions
 If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.

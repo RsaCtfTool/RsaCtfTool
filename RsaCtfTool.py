@@ -21,6 +21,7 @@ from libnum import *
 import requests
 import re
 import argparse
+import subprocess
 from glob import glob
 
 
@@ -91,12 +92,18 @@ class RSAAttack(object):
             self.args = args
             self.unciphered = None
             self.attackobjs = None  # This is how we'll know this object represents 1 key
+
+            # Test if sage is working and if so, load additional sage based attacks
+            if args.sageworks:
+                self.implemented_attacks.append(self.smallfraction)
+                self.implemented_attacks.append(self.boneh_durfee)
+
             # Load ciphertext
             if args.uncipher is not None:
                 self.cipher = open(args.uncipher, 'rb').read().strip()
             else:
                 self.cipher = None
-        return 
+        return
 
     def hastads(self):
         # Hastad attack for low public exponent, this has found success for e = 3, and e = 5 previously
@@ -114,9 +121,9 @@ class RSAAttack(object):
     def factordb(self):
         # if factordb returns some math to derive the prime, solve for p without using an eval
         def solveforp(equation):
-            if '^' in equation: k,j = equation.split('^')
-            if '-' in j: j,sub = j.split('-')
             try:
+                if '^' in equation: k,j = equation.split('^')
+                if '-' in j: j,sub = j.split('-')
                 eq = map(int, [k,j,sub])
                 return pow(eq[0],eq[1])-eq[2]
             except Exception as e:
@@ -169,6 +176,25 @@ class RSAAttack(object):
 
         return
 
+    def boneh_durfee(self):
+        # use boneh durfee method, should return a d value, else returns 0
+        # only works if the sageworks() function returned True
+        # many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
+        # TODO: get an example public key solvable by boneh_durfee but not wiener
+        sageresult = int(subprocess.check_output(['sage','boneh_durfee.sage',str(self.pub_key.n),str(self.pub_key.e)]))
+
+        if sageresult > 0:
+            # use PyCrypto _slowmath rsa_construct to resolve p and q from d
+            from Crypto.PublicKey import _slowmath
+            tmp_priv = _slowmath.rsa_construct(long(self.pub_key.n), long(self.pub_key.e), d=long(sageresult))
+
+            self.pub_key.p = tmp_priv.p
+            self.pub_key.q = tmp_priv.q
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
+
+        return
+
     def smallq(self):
         # Try an attack where q < 100,000, from BKPCTF2016 - sourcekris
         for prime in primes(100000):
@@ -178,6 +204,17 @@ class RSAAttack(object):
                 self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                            long(self.pub_key.e), long(self.pub_key.n))
 
+        return
+
+    def smallfraction(self):
+        # Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
+        # only works if the sageworks() function returned True
+        sageresult = int(subprocess.check_output(['sage', 'smallfraction.sage',str(self.pub_key.n)]))
+        if sageresult > 0:
+            self.pub_key.p = sageresult
+            self.pub_key.q = self.pub_key.n / self.pub_key.p
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
         return
 
     def fermat(self, fermat_timeout=60):
@@ -343,7 +380,6 @@ class RSAAttack(object):
                     print "[-] Sorry, cracking failed"
 
     implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs ]
-    
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
@@ -360,6 +396,19 @@ class timeout:
 
     def __exit__(self, type, value, traceback):
         signal.alarm(0)
+
+def sageworks():
+    # Check if sage is installed and working
+    try:
+        sageversion = subprocess.check_output(['sage', '-v'])
+    except OSError:
+        return False
+
+    if 'SageMath version' in sageversion:
+
+        return True
+    else:
+        return False
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='RSA CTF Tool Continued')
@@ -397,6 +446,11 @@ if __name__ == "__main__":
             print "[*] p: " + str(key.p)
             print "[*] q: " + str(key.q)
         quit()
+
+    if sageworks():
+        args.sageworks = True
+    else:
+        args.sageworks = False
 
     attackobj = RSAAttack(args)
     attackobj.attack()

@@ -1,5 +1,10 @@
 #!/bin/bash
 
+
+# Test smallfraction module
+echo "Test smallfraction module"
+./RsaCtfTool.py --publickey "examples/smallfraction.pub" --verbose --private
+
 # Test factordb parsing notation where a prime is noted as an expression such as 2^1453-1
 echo "Test factordb expression parsing"
 ./RsaCtfTool.py --publickey "examples/factordb_parse.pub" --verbose --private
