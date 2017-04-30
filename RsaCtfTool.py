@@ -203,7 +203,6 @@ class RSAAttack(object):
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
                 self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                            long(self.pub_key.e), long(self.pub_key.n))
-
         return
 
     def smallfraction(self):
