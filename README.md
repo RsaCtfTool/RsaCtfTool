@@ -15,11 +15,12 @@ Attacks :
  - Common factor attacks across multiple keys
  - Small fractions method when p/q is close to a small fraction
  - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
+ - Elliptic Curve Method
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
                          [--uncipher UNCIPHER] [--verbose] [--private] [--n N]
-                         [--e E] [--key KEY]
+                         [--e E] [--ecmdigits DIGITS] [--key KEY]
 
 Mode 1 - Attack RSA (specify --publickey)
  - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
@@ -48,6 +49,9 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
 ### Dump the parameters from a key:
 `./RsaCtfTool.py --dumpkey --key ./key.pub`
 
+### Factor with ECM when you know the approximate length in digits of a prime:
+`./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
+
 #### Examples :
  - weak\_public.pub, weak\_public.cipher : weak public key
  - wiener.pub, wiener.cipher : key vulnerable to Wiener's attack
@@ -62,6 +66,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - smallfraction.pub: a public key where p/q is close to a small fraction
  - boneh\_durfee.pub: a public key factorable using boneh\_durfee method
  - multikey-0.pub and multikey-1.pub: Public keys that share a common factor
+ - ecm_method.pub: Public key with a 25 digit prime factorable with ECM method in around 2 minutes (use --ecmdigits 25 to test)
 
 #### Requirements:
  - GMPY
@@ -78,7 +83,6 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
 
 #### Todo
  - Implement multiple ciphertext handling for more attacks
- - Implement ECM factoring
  - Implement support for MultiPrime RSA (see 0ctf 2016)
  - Possibly implement Msieve support...
  - Some kind of polynomial search...

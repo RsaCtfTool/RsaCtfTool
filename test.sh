@@ -29,6 +29,8 @@ echo "Test pastctfprimes"
 ./RsaCtfTool.py --publickey examples/pastctfprimes.pub --verbose --private
 echo "Test SIQS"
 ./RsaCtfTool.py --publickey examples/siqs.pub --verbose --private
+echo "Test ECM"
+./RsaCtfTool.py --publickey examples/ecm_method.pub --verbose --private --ecmdigits 25
 echo "Test createpub"
 ./RsaCtfTool.py --createpub --n 8616460799 --e 65537
 echo "Test createpub with no modulus should raise exception"

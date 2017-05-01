@@ -97,6 +97,7 @@ class RSAAttack(object):
             if args.sageworks:
                 self.implemented_attacks.append(self.smallfraction)
                 self.implemented_attacks.append(self.boneh_durfee)
+                self.implemented_attacks.append(self.ecm)           # make sure ECM always comes last!
 
             # Load ciphertext
             if args.uncipher is not None:
@@ -174,6 +175,22 @@ class RSAAttack(object):
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                        long(self.pub_key.e), long(self.pub_key.n))
 
+        return
+
+    def ecm(self):
+        # use elliptic curve method, may return a prime or may never return
+        # only works if the sageworks() function returned True
+        print "[*] ECM Method can run forever and may never succeed. Hit Ctrl-C to bail out."
+        if self.args.ecmdigits:
+            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n),str(self.args.ecmdigits)]))
+        else:
+            sageresult = int(subprocess.check_output(['sage','ecm.sage',str(self.pub_key.n)]))
+
+        if sageresult > 0:
+            self.pub_key.p = sageresult
+            self.pub_key.q = self.pub_key.n / self.pub_key.p
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
         return
 
     def boneh_durfee(self):
@@ -418,6 +435,7 @@ if __name__ == "__main__":
     parser.add_argument('--uncipher', help='uncipher a file', default=None)
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
     parser.add_argument('--private', help='Display private key if recovered', action='store_true')
+    parser.add_argument('--ecmdigits', type=int, help='Optionally an estimate as to how long one of the primes is for ECM method', default=None)
     parser.add_argument('--n', type=long, help='Specify the modulus in --createpub mode.')
     parser.add_argument('--e', type=long, help='Specify the public exponent in --createpub mode.')
     parser.add_argument('--key', help='Specify the input key file in --dumpkey mode.')
