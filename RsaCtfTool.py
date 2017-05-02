@@ -21,6 +21,7 @@ from libnum import *
 import requests
 import re
 import argparse
+import os
 from glob import glob
 
 
@@ -209,7 +210,10 @@ class RSAAttack(object):
         return
 
     def pastctfprimes(self):
-        primes = [long(x) for x in open('pastctfprimes.txt','r').readlines() if not x.startswith('#') and not x.startswith('\n')]
+        path = os.path.dirname(os.path.abspath(__file__))
+        pastctfprimes_path = os.path.join(path, 'pastctfprimes.txt')
+        print pastctfprimes_path
+        primes = [long(x) for x in open(pastctfprimes_path,'r').readlines() if not x.startswith('#') and not x.startswith('\n')]
         if self.args.verbose:
             print "[*] Loaded " + str(len(primes)) + " primes"
         for prime in primes:
