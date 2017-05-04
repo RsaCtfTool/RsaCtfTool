@@ -314,7 +314,7 @@ class RSAAttack(object):
     def pastctfprimes(self):
         path = os.path.dirname(os.path.abspath(__file__))
         pastctfprimes_path = os.path.join(path, 'pastctfprimes.txt')
-        primes = [long(x) for x in open('pastctfprimes.txt','r').readlines() if not x.startswith('#') and not x.startswith('\n')]
+        primes = [long(x) for x in open(pastctfprimes_path,'r').readlines() if not x.startswith('#') and not x.startswith('\n')]
         if self.args.verbose:
             print "[*] Loaded " + str(len(primes)) + " primes"
         for prime in primes:
