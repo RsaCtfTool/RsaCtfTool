@@ -58,3 +58,9 @@ docs/_build/
 
 # PyBuilder
 target/
+
+# PyCharm
+.idea/
+
+# Sage stuff
+*.sage.py

@@ -1,6 +1,16 @@
 #!/bin/bash
 
+
+# Test smallfraction module
+echo "Test smallfraction module"
+./RsaCtfTool.py --publickey "examples/smallfraction.pub" --verbose --private
+
+# Test factordb parsing notation where a prime is noted as an expression such as 2^1453-1
+echo "Test factordb expression parsing"
+./RsaCtfTool.py --publickey "examples/factordb_parse.pub" --verbose --private
 # Test all the pub and ciphers
+echo "Test multikey mode"
+./RsaCtfTool.py --publickey "examples/multikey-?.pub" --verbose --private
 echo "Test hastads"
 ./RsaCtfTool.py --publickey examples/small_exponent.pub --verbose --private --uncipher examples/small_exponent.cipher
 echo "Test noveltyprimes"
@@ -19,6 +29,8 @@ echo "Test pastctfprimes"
 ./RsaCtfTool.py --publickey examples/pastctfprimes.pub --verbose --private
 echo "Test SIQS"
 ./RsaCtfTool.py --publickey examples/siqs.pub --verbose --private
+echo "Test ECM"
+./RsaCtfTool.py --publickey examples/ecm_method.pub --verbose --private --ecmdigits 25
 echo "Test createpub"
 ./RsaCtfTool.py --createpub --n 8616460799 --e 65537
 echo "Test createpub with no modulus should raise exception"
