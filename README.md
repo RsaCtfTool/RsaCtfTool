@@ -16,6 +16,7 @@ Attacks :
  - Small fractions method when p/q is close to a small fraction
  - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
  - Elliptic Curve Method
+ - Pollards p-1 for relatively smooth numbers
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
@@ -88,6 +89,5 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
  - Some kind of polynomial search...
  - Brainstorm moar attack types!
  - Saw a CTF where the supplied N was a 2048 bit prime. Detect this and solve using phi = (n - 1) * (n - 1) which seemed to work for that CTF
- - Pollards p-1 for relatively smooth numbers
  - Replicate all functionality of rsatool.py
  - Support more types of expression based primes from factordb.com?
