@@ -358,8 +358,20 @@ class RSAAttack(object):
             self.pub_key.q = siqsobj.q
             self.pub_key.p = siqsobj.p
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
-                                       long(self.pub_key.e), long(self.pub_key.n))        
-    
+                                       long(self.pub_key.e), long(self.pub_key.n))
+        return
+
+    def Pollard_p_1(self):
+        # Pollard P minus 1 factoring, using the algorithm as described by https://math.berkeley.edu/~sagrawal/su14_math55/notes_pollard.pdf
+        from p_1 import pollard_P_1
+
+        # Pollard P-1 attack
+        self.pub_key.p, self.pub_key.q = pollard_P_1(self.pub_key.n)
+
+        if self.pub_key.q is not None:
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                      long(self.pub_key.e), long(self.pub_key.n))
+
         return
 
     def nullattack(self):
@@ -398,7 +410,7 @@ class RSAAttack(object):
                 if self.args.uncipher is not None:
                     print "[-] Sorry, cracking failed"
 
-    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs ]
+    implemented_attacks = [ nullattack,Pollard_p_1, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs ]
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
