@@ -372,7 +372,7 @@ class RSAAttack(object):
 
         # Pollard P-1 attack
         poll_res = pollard_P_1(self.pub_key.n)
-        if poll_res:
+        if poll_res and len(poll_res) > 1:
             self.pub_key.p, self.pub_key.q = poll_res
 
         if self.pub_key.q is not None:
