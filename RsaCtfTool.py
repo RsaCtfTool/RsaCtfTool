@@ -112,7 +112,7 @@ class RSAAttack(object):
         if self.pub_key.e <= 11 and self.args.uncipher is not None:
             orig = s2n(self.cipher)
             c = orig
-            while True: 
+            while True:
                 m = gmpy.root(c, self.pub_key.e)[0]
                 if pow(m, self.pub_key.e, self.pub_key.n) == orig:
                     self.unciphered = n2s(m)
@@ -245,8 +245,8 @@ class RSAAttack(object):
             return
 
         try:
-            with timeout(seconds=fermat_timeout):   
-                self.pub_key.p, self.pub_key.q = fermat(self.pub_key.n)    
+            with timeout(seconds=fermat_timeout):
+                self.pub_key.p, self.pub_key.q = fermat(self.pub_key.n)
         except FactorizationError:
             return
 
@@ -257,7 +257,7 @@ class RSAAttack(object):
         return
 
     def noveltyprimes(self):
-        # "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070" 
+        # "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
         # not all numbers in this form are prime but some are (25 digit is prime)
         maxlen = 25 # max number of digits in the final integer
         for i in range(maxlen-4):
@@ -266,18 +266,18 @@ class RSAAttack(object):
                 self.pub_key.q = prime
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
                 self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
-                                           long(self.pub_key.e), long(self.pub_key.n))        
+                                           long(self.pub_key.e), long(self.pub_key.n))
         return
 
     def comfact_cn(self):
         # Try an attack where the public key has a common factor with the ciphertext - sourcekris
         if self.args.uncipher:
             commonfactor = gcd(self.pub_key.n, s2n(self.cipher))
-            
+
             if commonfactor > 1:
                 self.pub_key.q = commonfactor
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
-                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q), 
+                self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
                                            long(self.pub_key.e), long(self.pub_key.n))
 
                 unciphered = self.priv_key.decrypt(self.cipher)
@@ -322,7 +322,7 @@ class RSAAttack(object):
                 self.pub_key.q = prime
                 self.pub_key.p = self.pub_key.n / self.pub_key.q
                 self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
-                                           long(self.pub_key.e), long(self.pub_key.n))        
+                                           long(self.pub_key.e), long(self.pub_key.n))
         return
 
     def commonmodulus(self):
@@ -347,7 +347,7 @@ class RSAAttack(object):
         if self.pub_key.n.bit_length() > 1024:
             print "[*] Warning: Modulus too large for SIQS attack module"
             return
-    
+
 
         siqsobj = SiqsAttack(self.args, self.pub_key.n)
 
@@ -365,8 +365,15 @@ class RSAAttack(object):
         # Pollard P minus 1 factoring, using the algorithm as described by https://math.berkeley.edu/~sagrawal/su14_math55/notes_pollard.pdf
         from p_1 import pollard_P_1
 
+        if not hasattr(self.pub_key, "p"):
+            self.pub_key.p = None
+        if not hasattr(self.pub_key, "q"):
+            self.pub_key.q = None
+
         # Pollard P-1 attack
-        self.pub_key.p, self.pub_key.q = pollard_P_1(self.pub_key.n)
+        poll_res = pollard_P_1(self.pub_key.n)
+        if poll_res:
+            self.pub_key.p, self.pub_key.q = poll_res
 
         if self.pub_key.q is not None:
             self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
@@ -469,7 +476,7 @@ if __name__ == "__main__":
         if args.key is None:
             raise Exception("Specify a key file to dump with --key. See --help for info.")
 
-        key_data = open(args.key,'rb').read() 
+        key_data = open(args.key,'rb').read()
         key = RSA.importKey(key_data)
         print "[*] n: " + str(key.n)
         print "[*] e: " + str(key.e)
