@@ -46,4 +46,4 @@ def pollard_P_1(n):
                 q = n//y
                 return p,q
             if(i>=len(z)):
-                return 0
+                return 0, None
