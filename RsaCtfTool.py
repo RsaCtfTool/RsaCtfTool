@@ -24,7 +24,9 @@ import argparse
 import os
 import subprocess
 from glob import glob
+import sys
 
+sys.setrecursionlimit(2000)
 
 class FactorizationError(Exception):
     pass
@@ -417,7 +419,7 @@ class RSAAttack(object):
                 if self.args.uncipher is not None:
                     print "[-] Sorry, cracking failed"
 
-    implemented_attacks = [ nullattack,Pollard_p_1, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs ]
+    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs, Pollard_p_1 ]
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
@@ -493,4 +495,3 @@ if __name__ == "__main__":
 
     attackobj = RSAAttack(args)
     attackobj.attack()
-
