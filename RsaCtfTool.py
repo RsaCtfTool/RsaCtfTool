@@ -388,6 +388,25 @@ class RSAAttack(object):
         # private key without spending any time factoring
         return
 
+    def mersenne_primes(self):
+        p = q = None
+        mersenne_tab = [2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521,
+                         607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941,
+                         11213, 19937, 21701, 23209, 44497, 86243, 110503,
+                         132049, 216091, 756839, 859433, 1257787, 1398269,
+                         2976221, 3021377, 6972593, 13466917, 20336011,
+                         24036583, 25964951, 30402457, 32582657, 37156667,
+                         42643801, 43112609, 57885161, 74207281, 77232917]
+        for mersenne_prime in mersenne_tab:
+            if self.pub_key.n % ((2**mersenne_prime)-1) == 0:
+                p = (2**mersenne_prime)-1
+                q = self.pub_key.n / ((2**mersenne_prime)-1)
+                break
+        if p is not None and q is not None:
+            self.priv_key = PrivateKey(long(p), long(q),
+                                      long(self.pub_key.e), long(self.pub_key.n))
+        return
+
     def attack(self):
         if self.attackobjs is not None:
             self.commonfactors()
@@ -419,7 +438,7 @@ class RSAAttack(object):
                 if self.args.uncipher is not None:
                     print "[-] Sorry, cracking failed"
 
-    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs, Pollard_p_1 ]
+    implemented_attacks = [ nullattack, mersenne_primes, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs, Pollard_p_1 ]
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
