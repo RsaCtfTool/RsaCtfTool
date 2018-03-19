@@ -2,21 +2,19 @@
 # -*- coding: utf-8 -*-
 
 """
-RsaCtfTool-Continued - RSA CTF Cracking tool for simple CTF challenges
-author: sourcekris (@CTFKris)
-
-Original author's license below:
 ----------------------------------------------------------------------------
 "THE BEER-WARE LICENSE" (Revision 42):
 ganapati (@G4N4P4T1) wrote this file. As long as you retain this notice you
 can do whatever you want with this stuff. If we meet some day, and you think
 this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
+Additionnal contributors :
+@CTFKris (sourcekris)
 """
 
 from Crypto.PublicKey import RSA
 import signal
-import gmpy
+import gmpy2
 from libnum import *
 import requests
 import re

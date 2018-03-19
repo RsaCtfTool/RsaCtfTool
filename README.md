@@ -17,6 +17,7 @@ Attacks :
  - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
  - Elliptic Curve Method
  - Pollards p-1 for relatively smooth numbers
+ - Mersenne primes factorization
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
@@ -76,7 +77,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - PyCrypto
  - Requests
  - SageMath - optional but advisable
- 
+
 ### MacOS-specific Instructions
 If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
