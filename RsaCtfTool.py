@@ -14,7 +14,7 @@ Additionnal contributors :
 
 from Crypto.PublicKey import RSA
 import signal
-import gmpy2
+import gmpy
 from libnum import *
 import requests
 import re
