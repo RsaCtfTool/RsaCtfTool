@@ -16,7 +16,7 @@ try:
     for den in xrange(2,depth+1):
       for num in xrange(1,den):
         if gcd(num,den)==1:
-          r=Integer(den)/Integer(num); 
+          r=Integer(den)/Integer(num);
           phint = int(sqrt(nn*r))
           f = x - phint
           sr = f.small_roots(beta=0.5)
@@ -24,10 +24,10 @@ try:
           if len(sr)>0:
             p = int(phint - sr[0])
             if n%p==0:
-              print p
+              print(p)
               break
     if p == 0:
-        print p
+        print(p)
 except:
-    print 0
+    print(0)
     pass

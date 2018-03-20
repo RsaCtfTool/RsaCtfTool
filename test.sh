@@ -1,9 +1,7 @@
 #!/bin/bash
 
 
-# Test smallfraction module
-echo "Test smallfraction module"
-./RsaCtfTool.py --publickey "examples/smallfraction.pub" --verbose --private
+
 
 # Test factordb parsing notation where a prime is noted as an expression such as 2^1453-1
 echo "Test factordb expression parsing"
@@ -14,7 +12,7 @@ echo "Test multikey mode"
 echo "Test hastads"
 ./RsaCtfTool.py --publickey examples/small_exponent.pub --verbose --private --uncipher examples/small_exponent.cipher
 echo "Test noveltyprimes"
-./RsaCtfTool.py --publickey examples/elite_primes.pub --verbose --private 
+./RsaCtfTool.py --publickey examples/elite_primes.pub --verbose --private
 echo "Test small_q"
 ./RsaCtfTool.py --publickey examples/small_q.pub --verbose --private --uncipher examples/small_q.cipher
 echo "Test wiener"
@@ -24,7 +22,7 @@ echo "Test commonfactors"
 echo "Test fermat"
 ./RsaCtfTool.py --publickey examples/close_primes.pub --verbose --private --uncipher examples/close_primes.cipher
 echo "Test fermat2"
-./RsaCtfTool.py --publickey examples/fermat.pub --verbose --private 
+./RsaCtfTool.py --publickey examples/fermat.pub --verbose --private
 echo "Test pastctfprimes"
 ./RsaCtfTool.py --publickey examples/pastctfprimes.pub --verbose --private
 echo "Test SIQS"
@@ -37,5 +35,8 @@ echo "Test createpub with no modulus should raise exception"
 ./RsaCtfTool.py --createpub --e 3
 echo "Createpub into Crack feedback"
 ./RsaCtfTool.py --createpub --n 163325259729739139586456854939342071588766536976661696628405612100543978684304953042431845499808366612030757037530278155957389217094639917994417350499882225626580260012564702898468467277918937337494297292631474713546289580689715170963879872522418640251986734692138838546500522994170062961577034037699354013013 --e 65537 > /tmp/crackme.txt
-./RsaCtfTool.py --publickey /tmp/crackme.txt --verbose --private 
+./RsaCtfTool.py --publickey /tmp/crackme.txt --verbose --private
 rm -f /tmp/crackme.txt
+# Test smallfraction module
+echo "Test smallfraction module"
+./RsaCtfTool.py --publickey "examples/smallfraction.pub" --verbose --private

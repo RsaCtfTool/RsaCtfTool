@@ -9,7 +9,7 @@ import libnum
 # Based on:
 # RSA? Challenge in 0ctf 2016
 
-# we are given a private key masked and have the components of the 
+# we are given a private key masked and have the components of the
 # chinese remainder theorem and a partial "q"
 
 # The above writeup detailed a method to derive q candidates
@@ -29,7 +29,7 @@ import libnum
 # e * dP             = 1 mod (p - 1)
 # e * dP - k*(p - 1) = 1
 # e * dP             = 1 + k*(p-1)
-# e * dP -1          = k*(p-1)  
+# e * dP -1          = k*(p-1)
 # (e * dP -1)/k      = (p-1)
 # (e * dP -1)/k +1   = p
 
@@ -40,7 +40,7 @@ import libnum
 # e * dQ             = 1 mod (q - 1)
 # e * dQ - k*(p - 1) = 1
 # e * dQ             = 1 + k*(q-1)
-# e * dQ -1          = k*(q-1)  
+# e * dQ -1          = k*(q-1)
 # (e * dQ -1)/k      = (q-1)
 # (e * dQ -1)/k +1   = p
 
@@ -50,7 +50,7 @@ import libnum
 # q * qInv        = 1 (mod p)
 # q * qInv - k*p  = 1            (For some value "k")
 # q * qInv        = 1 + k*p
-# q * qInv - 1    = k*p 
+# q * qInv - 1    = k*p
 # (q * qInv -1)/k = p
 
 # Additionally the following paper details an algorithm to generate
@@ -60,14 +60,14 @@ import libnum
 
 def partial_q(e,dp,dq,qi,part_q):
     # Tunable to search longer
-    N = 100000  
+    N = 100000
 
-    for j in range(N,1,-1):  
+    for j in range(N,1,-1):
         q = (e * dq -1)/j +1
         if str(hex(q)).strip('L').endswith(part_q):
             break
 
-    for k in range(1,N,1):  
+    for k in range(1,N,1):
         p = (e * dp -1)/k +1
         try:
             m = libnum.invmod(q, p)
@@ -75,9 +75,9 @@ def partial_q(e,dp,dq,qi,part_q):
                 break
         except:
             pass
-    
-    print "p = " + str(p)
-    print "q = " + str(q)
+
+    print("p = " + str(p))
+    print("q = " + str(q))
 
 if __name__ == "__main__":
     # import the private key manually

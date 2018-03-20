@@ -8,8 +8,8 @@ n = int(sys.argv[1])
 
 try:
     if len(sys.argv) > 2:
-        print ecm.find_factor(n, int(sys.argv[2]))[0]
+        print(ecm.find_factor(n, int(sys.argv[2]))[0])
     else:
-        print ecm.find_factor(n)[0]
+        print(ecm.find_factor(n)[0])
 except:
-    print 0
+    print(0)

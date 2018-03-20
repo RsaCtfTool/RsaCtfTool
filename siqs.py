@@ -34,13 +34,13 @@ class SiqsAttack(object):
         if '48670331' in yafutest:
             # yafu is working
             if self.verbose:
-                print "[*] Yafu SIQS is working."
+                print("[*] Yafu SIQS is working.")
             return True
         else:
             if self.verbose:
-                print "[*] Yafu SIQS is not working."
+                print("[*] Yafu SIQS is not working.")
             return False
-                     
+
 
     def checkyafu(self):
         # check if yafu exists and we can execute it
@@ -50,7 +50,7 @@ class SiqsAttack(object):
             return False
 
     def benchmarksiqs(self):
-        # NYI 
+        # NYI
         # return the time to factor a 256 bit RSA modulus
         return
 
@@ -65,7 +65,7 @@ class SiqsAttack(object):
 
             if 'input too big for SIQS' in yafurun:
                 if self.verbose:
-                    print "[-] Modulus too big for SIQS method."
+                    print("[-] Modulus too big for SIQS method.")
                 return
 
             for line in yafurun.splitlines():
@@ -78,10 +78,10 @@ class SiqsAttack(object):
 
             if len(primesfound) > 2:
                 if self.verbose:
-                    print "[*] > 2 primes found. Is key multiprime?"
+                    print("[*] > 2 primes found. Is key multiprime?")
 
             if len(primesfound) < 2:
                 if self.verbose:
-                    print "[*] SIQS did not factor modulus."
-                
+                    print("[*] SIQS did not factor modulus.")
+
         return

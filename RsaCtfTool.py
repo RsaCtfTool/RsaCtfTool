@@ -22,6 +22,7 @@ import argparse
 import os
 import subprocess
 from glob import glob
+import tempfile
 import sys
 
 sys.setrecursionlimit(2000)
@@ -76,7 +77,7 @@ class RSAAttack(object):
             self.args = args
 
             if args.verbose:
-                print "[*] Multikey mode using keys: " + repr(self.pubkeyfilelist)
+                print("[*] Multikey mode using keys: " + repr(self.pubkeyfilelist))
 
             # Initialize a list of objects by recursively calling this on each key
             self.attackobjs = []
@@ -130,7 +131,7 @@ class RSAAttack(object):
                 return pow(eq[0],eq[1])-eq[2]
             except Exception as e:
                 if self.args.verbose:
-                    print "[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation,e)
+                    print("[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation,e))
                 raise FactorizationError()
 
         # Factors available online?
@@ -165,7 +166,7 @@ class RSAAttack(object):
             from wiener_attack import WienerAttack
         except ImportError:
             if self.args.verbose:
-                print "[*] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?"
+                print("[*] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?")
             return
 
         # Wiener's attack
@@ -178,10 +179,34 @@ class RSAAttack(object):
 
         return
 
+    def primefac(self, primefac_timeout=60):
+        # this attack rely on primefac
+        try:
+            from primefac import primefac
+        except ImportError:
+            if self.args.verbose:
+                print("[*] Warning: primefac attack module missing")
+            return
+
+        # use primefac
+        try:
+            with timeout(seconds=primefac_timeout):
+                result = list(primefac(self.pub_key.n))
+        except FactorizationError:
+            return
+
+        if len(result) == 2:
+            self.pub_key.p = int(result[0])
+            self.pub_key.q = int(result[1])
+            self.priv_key = PrivateKey(long(self.pub_key.p), long(self.pub_key.q),
+                                       long(self.pub_key.e), long(self.pub_key.n))
+
+        return
+
     def ecm(self):
         # use elliptic curve method, may return a prime or may never return
         # only works if the sageworks() function returned True
-        print "[*] ECM Method can run forever and may never succeed. Hit Ctrl-C to bail out."
+        print("[*] ECM Method can run forever and may never succeed. Hit Ctrl-C to bail out.")
         if self.args.ecmdigits:
             sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n),str(self.args.ecmdigits)]))
         else:
@@ -241,7 +266,7 @@ class RSAAttack(object):
             from fermat import fermat
         except ImportError:
             if self.args.verbose:
-                print "[*] Warning: Fermat factorization module missing (fermat.py)"
+                print("[*] Warning: Fermat factorization module missing (fermat.py)")
             return
 
         try:
@@ -288,11 +313,11 @@ class RSAAttack(object):
         # Try to find the gcd between each pair of modulii and resolve the private keys if gcd > 1
         for x in self.attackobjs:
             for y in self.attackobjs:
-                if x.pub_key.n <> y.pub_key.n:
+                if x.pub_key.n != y.pub_key.n:
                     g = gcd(x.pub_key.n, y.pub_key.n)
                     if g != 1:
                         if self.args.verbose and not x.displayed and not y.displayed:
-                            print "[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile
+                            print("[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile)
 
                         # update each attackobj with a private_key
                         x.pub_key.p = g
@@ -316,7 +341,7 @@ class RSAAttack(object):
         pastctfprimes_path = os.path.join(path, 'pastctfprimes.txt')
         primes = [long(x) for x in open(pastctfprimes_path,'r').readlines() if not x.startswith('#') and not x.startswith('\n')]
         if self.args.verbose:
-            print "[*] Loaded " + str(len(primes)) + " primes"
+            print("[*] Loaded " + str(len(primes)) + " primes")
         for prime in primes:
             if self.pub_key.n % prime == 0:
                 self.pub_key.q = prime
@@ -341,11 +366,11 @@ class RSAAttack(object):
             from siqs import SiqsAttack
         except ImportError:
             if self.args.verbose:
-                print "[*] Warning: Yafu SIQS attack module missing (siqs.py)"
+                print("[*] Warning: Yafu SIQS attack module missing (siqs.py)")
             return
 
         if self.pub_key.n.bit_length() > 1024:
-            print "[*] Warning: Modulus too large for SIQS attack module"
+            print("[*] Warning: Modulus too large for SIQS attack module")
             return
 
 
@@ -389,12 +414,12 @@ class RSAAttack(object):
     def mersenne_primes(self):
         p = q = None
         mersenne_tab = [2, 3, 5, 7, 13, 17, 19, 31, 61, 89, 107, 127, 521,
-                         607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941,
-                         11213, 19937, 21701, 23209, 44497, 86243, 110503,
-                         132049, 216091, 756839, 859433, 1257787, 1398269,
-                         2976221, 3021377, 6972593, 13466917, 20336011,
-                         24036583, 25964951, 30402457, 32582657, 37156667,
-                         42643801, 43112609, 57885161, 74207281, 77232917]
+                        607, 1279, 2203, 2281, 3217, 4253, 4423, 9689, 9941,
+                        11213, 19937, 21701, 23209, 44497, 86243, 110503,
+                        132049, 216091, 756839, 859433, 1257787, 1398269,
+                        2976221, 3021377, 6972593, 13466917, 20336011,
+                        24036583, 25964951, 30402457, 32582657, 37156667,
+                        42643801, 43112609, 57885161, 74207281, 77232917]
         for mersenne_prime in mersenne_tab:
             if self.pub_key.n % ((2**mersenne_prime)-1) == 0:
                 p = (2**mersenne_prime)-1
@@ -412,14 +437,14 @@ class RSAAttack(object):
             # loop through implemented attack methods and conduct attacks
             for attack in self.implemented_attacks:
                 if self.args.verbose and "nullattack" not in attack.__name__:
-                    print "[*] Performing " + attack.__name__ + " attack."
+                    print("[*] Performing " + attack.__name__ + " attack.")
 
                 getattr(self, attack.__name__)()
 
                 # check and print resulting private key
                 if self.priv_key is not None:
                     if self.args.private and not self.displayed:
-                        print self.priv_key
+                        print(self.priv_key)
                         self.displayed = True
                     break
 
@@ -429,14 +454,14 @@ class RSAAttack(object):
             # If we wanted to decrypt, do it now
             if self.args.uncipher is not None and self.priv_key is not None:
                     self.unciphered = self.priv_key.decrypt(self.cipher)
-                    print "[+] Clear text : %s" % self.unciphered
+                    print("[+] Clear text : %s" % self.unciphered)
             elif self.unciphered is not None:
-                    print "[+] Clear text : %s" % self.unciphered
+                    print("[+] Clear text : %s" % self.unciphered)
             else:
                 if self.args.uncipher is not None:
-                    print "[-] Sorry, cracking failed"
+                    print("[-] Sorry, cracking failed")
 
-    implemented_attacks = [ nullattack, mersenne_primes, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, fermat, siqs, Pollard_p_1 ]
+    implemented_attacks = [ nullattack, mersenne_primes, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, primefac, fermat, siqs, Pollard_p_1]
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
@@ -467,27 +492,74 @@ def sageworks():
     else:
         return False
 
+def loadkeys(keys):
+    """ Load one or more keys
+    """
+    return []
+
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='RSA CTF Tool Continued')
-    group = parser.add_mutually_exclusive_group(required=True)
-    group.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
-    group.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
-    group.add_argument('--dumpkey', help='Just dump the RSA variables from a key - n,e,d,p,q', action='store_true')
+    parser = argparse.ArgumentParser(description='RSA CTF Tool')
+    parser.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
+    parser.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
+    parser.add_argument('--dumpkey', help='Just dump the RSA variables from a key - n,e,d,p,q', action='store_true')
     parser.add_argument('--uncipher', help='uncipher a file', default=None)
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
     parser.add_argument('--private', help='Display private key if recovered', action='store_true')
     parser.add_argument('--ecmdigits', type=int, help='Optionally an estimate as to how long one of the primes is for ECM method', default=None)
-    parser.add_argument('--n', type=long, help='Specify the modulus in --createpub mode.')
-    parser.add_argument('--e', type=long, help='Specify the public exponent in --createpub mode.')
+    parser.add_argument('-n', help='Specify the modulus. format : int or 0xhex')
+    parser.add_argument('-p', help='Specify the first prime number. format : int or 0xhex')
+    parser.add_argument('-q', help='Specify the second prime number. format : int or 0xhex')
+    parser.add_argument('-e', help='Specify the public exponent. format : int or 0xhex')
     parser.add_argument('--key', help='Specify the input key file in --dumpkey mode.')
 
     args = parser.parse_args()
 
+    # Parse longs if exists
+    if args.p and args.q is not None:
+        if args.p.startswith("0x"):
+            args.p = long(args.p, 16)
+        else:
+            args.p = long(args.p)
+
+        if args.q.startswith("0x"):
+            args.q = long(args.q, 16)
+        else:
+            args.q = long(args.q)
+
+        args.n = args.p*args.q
+    elif args.n is not None:
+        if args.n.startswith("0x"):
+            args.n = long(args.n, 16)
+        else:
+            args.n = long(args.n)
+
+    if args.e is not None:
+        if args.e.startswith("0x"):
+            args.e = long(args.e, 16)
+        else:
+            args.e = long(args.e)
+
+    # If we already have all informations
+    if args.p is not None and args.q is not None and args.e is not None:
+        priv_key = PrivateKey(args.p, args.q, args.e, args.n)
+        if args.private:
+            print(priv_key)
+
+        if args.uncipher is not None:
+            cipher = open(args.uncipher, 'rb').read().strip()
+            unciphered = priv_key.decrypt(cipher)
+            print("[+] Clear text : %s" % unciphered)
+
+        if args.createpub:
+            print(RSA.construct((args.n, args.e)).publickey().exportKey())
+        quit()
+
     # if createpub mode generate public key then quit
     if args.createpub:
-        if args.n is None or args.e is None:
+        if (args.n is None and (args.p is None or args.q is None)) or args.e is None:
             raise Exception("Specify both a modulus and exponent on the command line. See --help for info.")
-        print RSA.construct((args.n, args.e)).publickey().exportKey()
+
+        print(RSA.construct((args.n, args.e)).publickey().exportKey())
         quit()
 
     # if dumpkey mode dump the key components then quit
@@ -497,18 +569,25 @@ if __name__ == "__main__":
 
         key_data = open(args.key,'rb').read()
         key = RSA.importKey(key_data)
-        print "[*] n: " + str(key.n)
-        print "[*] e: " + str(key.e)
+        print("[*] n: " + str(key.n))
+        print("[*] e: " + str(key.e))
         if key.has_private():
-            print "[*] d: " + str(key.d)
-            print "[*] p: " + str(key.p)
-            print "[*] q: " + str(key.q)
+            print("[*] d: " + str(key.d))
+            print("[*] p: " + str(key.p))
+            print("[*] q: " + str(key.q))
         quit()
 
     if sageworks():
         args.sageworks = True
     else:
         args.sageworks = False
+
+    tmpfile = None
+    if args.publickey is None and args.e is not None and args.n is not None:
+        tmpfile = tempfile.NamedTemporaryFile()
+        with open(tmpfile.name, "wb") as tmpfd:
+            tmpfd.write(RSA.construct((args.n, args.e)).publickey().exportKey())
+        args.publickey = tmpfile.name
 
     attackobj = RSAAttack(args)
     attackobj.attack()
