@@ -436,10 +436,14 @@ class RSAAttack(object):
         else:
             # loop through implemented attack methods and conduct attacks
             for attack in self.implemented_attacks:
-                if self.args.verbose and "nullattack" not in attack.__name__:
-                    print("[*] Performing " + attack.__name__ + " attack.")
-
-                getattr(self, attack.__name__)()
+                if self.args.attack is not None and self.args.attack == attack.__name__:
+                    if self.args.verbose:
+                        print "[*] Performing " + attack.__name__ + " attack."
+                    getattr(self, attack.__name__)()
+                elif self.args.attack is None or (self.args.attack is not None and self.args.attack == "all"):
+                    if self.args.verbose and "nullattack" not in attack.__name__:
+                        print("[*] Performing " + attack.__name__ + " attack.")
+                    getattr(self, attack.__name__)()
 
                 # check and print resulting private key
                 if self.priv_key is not None:
@@ -458,10 +462,10 @@ class RSAAttack(object):
             elif self.unciphered is not None:
                     print("[+] Clear text : %s" % self.unciphered)
             else:
-                if self.args.uncipher is not None:
+                if self.args.uncipher is not None and self.args.attack is None:
                     print("[-] Sorry, cracking failed")
 
-    implemented_attacks = [ nullattack, mersenne_primes, hastads, factordb, pastctfprimes, noveltyprimes, smallq, wiener, comfact_cn, primefac, fermat, siqs, Pollard_p_1]
+    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes, mersenne_primes, noveltyprimes, smallq, wiener, comfact_cn, primefac, fermat, siqs, Pollard_p_1]
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
@@ -511,6 +515,8 @@ if __name__ == "__main__":
     parser.add_argument('-q', help='Specify the second prime number. format : int or 0xhex')
     parser.add_argument('-e', help='Specify the public exponent. format : int or 0xhex')
     parser.add_argument('--key', help='Specify the input key file in --dumpkey mode.')
+    attacks_list = [_.__name__ for _ in RSAAttack.implemented_attacks if _.__name__ is not "nullattack"] + ["all"]
+    parser.add_argument('--attack', help='Specify the attack mode.', default="all", choices=attacks_list)
 
     args = parser.parse_args()
 
