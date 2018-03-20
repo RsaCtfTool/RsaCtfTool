@@ -9,7 +9,7 @@ def pollard_P_1(n):
         return gcd(b,a%b)
 
     def e(a,b):
-        return pow(a,b)%n
+        return pow(a,b,n)
 
     def mysqrt(n):
         x=n
