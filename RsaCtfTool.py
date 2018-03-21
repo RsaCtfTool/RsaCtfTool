@@ -562,7 +562,12 @@ if __name__ == "__main__":
 
     # If we already have all informations
     if args.p is not None and args.q is not None and args.e is not None:
-        priv_key = PrivateKey(args.p, args.q, args.e, args.n)
+        try:
+            priv_key = PrivateKey(args.p, args.q, args.e, args.n)
+        except ValueError:
+            if args.verbose:
+                print("[!] No invmod for e and t, maybe an error in your args ?")
+            sys.exit(0)
         if args.private:
             print(priv_key)
 
