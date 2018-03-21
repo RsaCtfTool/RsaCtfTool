@@ -31,7 +31,7 @@ class SiqsAttack(object):
             except:
                 yafutest = ""
 
-        if '48670331' in yafutest:
+        if b'48670331' in yafutest:
             # yafu is working
             if self.verbose:
                 print("[*] Yafu SIQS is working.")
@@ -63,7 +63,7 @@ class SiqsAttack(object):
 
             primesfound = []
 
-            if 'input too big for SIQS' in yafurun:
+            if b'input too big for SIQS' in yafurun:
                 if self.verbose:
                     print("[-] Modulus too big for SIQS method.")
                 return
