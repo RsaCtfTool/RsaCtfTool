@@ -102,9 +102,7 @@ class RSAAttack(object):
                 self.implemented_attacks.append(self.ecm)           # make sure ECM always comes last!
 
             # Load ciphertext
-            if args.uncipherfile is not None:
-                self.cipher = open(args.uncipherfile, 'rb').read().strip()
-            elif args.uncipher is not None:
+            if args.uncipher is not None:
                 self.cipher = args.uncipher
             else:
                 self.cipher = None
@@ -557,6 +555,10 @@ if __name__ == "__main__":
         else:
             args.uncipher = int(args.uncipher)
         args.uncipher = n2s(args.uncipher)
+        
+    elif args.uncipherfile is not None:
+        cipher = open(args.uncipherfile, 'rb').read().strip()
+        args.uncipher = cipher
 
     # If we already have all informations
     if args.p is not None and args.q is not None and args.e is not None:
@@ -564,16 +566,13 @@ if __name__ == "__main__":
         if args.private:
             print(priv_key)
 
-        if args.uncipherfile is not None:
-            cipher = open(args.uncipherfile, 'rb').read().strip()
-            args.uncipher = cipher
+        if args.createpub:
+            print(RSA.construct((args.n, args.e)).publickey().exportKey())
 
         if args.uncipher is not None:
             unciphered = priv_key.decrypt(args.uncipher)
             print("[+] Clear text : %s" % unciphered)
 
-        if args.createpub:
-            print(RSA.construct((args.n, args.e)).publickey().exportKey())
         quit()
 
     # if createpub mode generate public key then quit
