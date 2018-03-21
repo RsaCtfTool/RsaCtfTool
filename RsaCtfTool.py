@@ -566,8 +566,11 @@ if __name__ == "__main__":
 
         if args.uncipherfile is not None:
             cipher = open(args.uncipherfile, 'rb').read().strip()
-            unciphered = priv_key.decrypt(cipher)
-            print("[+] Clear text : %s" % unciphered.decode("utf-8"))
+            args.uncipher = cipher
+
+        if args.uncipher is not None:
+            unciphered = priv_key.decrypt(args.uncipher)
+            print("[+] Clear text : %s" % unciphered)
 
         if args.createpub:
             print(RSA.construct((args.n, args.e)).publickey().exportKey())
