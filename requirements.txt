@@ -1,4 +1,4 @@
 PyCrypto
-GMPY
+GMPY2
 SymPy
 requests

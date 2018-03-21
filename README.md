@@ -71,9 +71,8 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - ecm_method.pub: Public key with a 25 digit prime factorable with ECM method in around 2 minutes (use --ecmdigits 25 to test)
 
 #### Requirements:
- - GMPY
+ - GMPY2
  - SymPy
- - libnum (https://github.com/hellman/libnum.git)
  - PyCrypto
  - Requests
  - SageMath - optional but advisable
