@@ -14,7 +14,7 @@ Additionnal contributors :
 
 from Crypto.PublicKey import RSA
 import signal
-import gmpy
+import gmpy2
 from rsalibnum import *
 import requests
 import re
@@ -114,7 +114,7 @@ class RSAAttack(object):
             orig = s2n(self.cipher)
             c = orig
             while True:
-                m = gmpy.root(c, self.pub_key.e)[0]
+                m = gmpy2.iroot(c, self.pub_key.e)[0]
                 if pow(m, self.pub_key.e, self.pub_key.n) == orig:
                     self.unciphered = n2s(m)
                     break
@@ -555,7 +555,7 @@ if __name__ == "__main__":
         else:
             args.uncipher = int(args.uncipher)
         args.uncipher = n2s(args.uncipher)
-        
+
     elif args.uncipherfile is not None:
         cipher = open(args.uncipherfile, 'rb').read().strip()
         args.uncipher = cipher
