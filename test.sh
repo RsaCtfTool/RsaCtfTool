@@ -13,7 +13,7 @@ echo "Test noveltyprimes"
 echo "Test small_q"
 ./RsaCtfTool.py --publickey examples/small_q.pub --verbose --private --uncipherfile examples/small_q.cipher
 echo "Test wiener"
-./RsaCtfTool.py --publickey examples/wiener.pub --verbose --private --uncipherfile examples/wiener.cipher
+./RsaCtfTool.py --publickey examples/wiener.pub --verbose --private --uncipherfile examples/wiener.cipher --attack wiener
 echo "Test commonfactors"
 ./RsaCtfTool.py --publickey examples/common_factor.pub --verbose --private --uncipherfile examples/common_factor.cipher
 echo "Test fermat"
