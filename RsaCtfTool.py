@@ -56,6 +56,7 @@ class PrivateKey(object):
            :param e: exponent
            :param n: n from public key
         """
+
         t = (p-1)*(q-1)
         d = invmod(e, t)
         self.key = RSA.construct((n, e, d, p, q))
@@ -65,7 +66,30 @@ class PrivateKey(object):
            :param cipher: input cipher
            :type cipher: string
         """
-        return self.key.decrypt(cipher)
+
+        try:
+            tmp_priv_key = tempfile.NamedTemporaryFile()
+            with open(tmp_priv_key.name, "wb") as tmpfd:
+                tmpfd.write(str(self).encode('utf8'))
+            tmp_priv_key_name = tmp_priv_key.name
+
+            tmp_cipher = tempfile.NamedTemporaryFile()
+            with open(tmp_cipher.name, "wb") as tmpfd:
+                tmpfd.write(cipher)
+            tmp_cipher_name = tmp_cipher.name
+
+            with open('/dev/null') as DN:
+                openssl_result = subprocess.check_output(['openssl',
+                                                          'rsautl',
+                                                          '-decrypt',
+                                                          '-in',
+                                                          tmp_cipher_name,
+                                                          '-inkey',
+                                                          tmp_priv_key_name],
+                                                         stderr=DN)
+                return openssl_result
+        except:
+            return self.key.decrypt(cipher)
 
     def __str__(self):
         # Print armored private key
@@ -132,7 +156,7 @@ class RSAAttack(object):
                     k, j = equation.split('^')
                 if '-' in j:
                     j, sub = j.split('-')
-                eq = map(int, [k, j, sub])
+                eq = list(map(int, [k, j, sub]))
                 return pow(eq[0], eq[1])-eq[2]
             except Exception as e:
                 if self.args.verbose:
@@ -567,7 +591,7 @@ if __name__ == "__main__":
         args.uncipher = n2s(args.uncipher)
 
     elif args.uncipherfile is not None:
-        cipher = open(args.uncipherfile, 'rb').read().strip()
+        cipher = open(args.uncipherfile, 'rb').read()
         args.uncipher = cipher
 
     # If we already have all informations
