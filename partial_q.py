@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 from subprocess import check_output
 import libnum
@@ -58,17 +58,18 @@ import libnum
 
 # https://eprint.iacr.org/2004/147.pdf
 
-def partial_q(e,dp,dq,qi,part_q):
+
+def partial_q(e, dp, dq, qi, part_q):
     # Tunable to search longer
     N = 100000
 
-    for j in range(N,1,-1):
-        q = (e * dq -1)/j +1
+    for j in range(N, 1, -1):
+        q = (e * dq - 1) / j + 1
         if str(hex(q)).strip('L').endswith(part_q):
             break
 
-    for k in range(1,N,1):
-        p = (e * dp -1)/k +1
+    for k in range(1, N, 1):
+        p = (e * dp - 1) / k + 1
         try:
             m = libnum.invmod(q, p)
             if m == qi:
@@ -79,11 +80,12 @@ def partial_q(e,dp,dq,qi,part_q):
     print("p = " + str(p))
     print("q = " + str(q))
 
+
 if __name__ == "__main__":
     # import the private key manually
     keyfile = 'examples/masked.pem'
-    keycmd  = ['openssl','asn1parse','-in',keyfile]
-    private_key = [long(x.split(':')[3],16) for x in check_output(keycmd).splitlines() if 'INTEGER' in x]
+    keycmd = ['openssl', 'asn1parse', '-in', keyfile]
+    private_key = [long(x.split(':')[3], 16) for x in check_output(keycmd).splitlines() if 'INTEGER' in x]
 
     # dq from examples/masked.pem
     dp = private_key[4]
@@ -91,8 +93,8 @@ if __name__ == "__main__":
     qi = private_key[6]
 
     # the last part of q we recovered in examples/masked.pem
-    part_q = hex(private_key[3]).strip('L').replace('0x','')
+    part_q = hex(private_key[3]).strip('L').replace('0x', '')
 
     # guessing exponent is standard
-    e=65537
-    partial_q(e,dp,dq,qi,part_q)
+    e = 65537
+    partial_q(e, dp, dq, qi, part_q)

@@ -12,12 +12,15 @@ import os
 import subprocess
 import re
 
+
 class SiqsAttack(object):
     def __init__(self, args, n):
-        # Configuration
-        self.yafubin = "./yafu" # where the binary is
-        self.threads = 2       # number of threads
-        self.maxtime = 180     # max time to try the sieve
+        """Configuration
+        """
+
+        self.yafubin = "./yafu"  # where the binary is
+        self.threads = 2  # number of threads
+        self.maxtime = 180  # max time to try the sieve
 
         self.n = n
         self.p = None
@@ -27,7 +30,9 @@ class SiqsAttack(object):
     def testyafu(self):
         with open('/dev/null') as DN:
             try:
-                yafutest = subprocess.check_output([self.yafubin,'siqs(1549388302999519)'], stderr=DN)
+                yafutest = subprocess.check_output([self.yafubin,
+                                                   'siqs(1549388302999519)'],
+                                                   stderr=DN)
             except:
                 yafutest = ""
 
@@ -40,7 +45,6 @@ class SiqsAttack(object):
             if self.verbose:
                 print("[*] Yafu SIQS is not working.")
             return False
-
 
     def checkyafu(self):
         # check if yafu exists and we can execute it
@@ -57,9 +61,9 @@ class SiqsAttack(object):
     def doattack(self):
         with open('/dev/null') as DN:
             yafurun = subprocess.check_output(
-                [self.yafubin,'siqs('+str(self.n)+')',
+                [self.yafubin, 'siqs(' + str(self.n) + ')',
                  '-siqsT',  str(self.maxtime),
-                 '-threads',str(self.threads)], stderr=DN)
+                 '-threads', str(self.threads)], stderr=DN)
 
             primesfound = []
 
@@ -69,7 +73,7 @@ class SiqsAttack(object):
                 return
 
             for line in yafurun.splitlines():
-                if re.search('^P[0-9]+\ =\ [0-9]+$',line):
+                if re.search('^P[0-9]+\ =\ [0-9]+$', line):
                     primesfound.append(int(line.split('=')[1]))
 
             if len(primesfound) == 2:

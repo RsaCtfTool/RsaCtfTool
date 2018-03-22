@@ -5,9 +5,10 @@ from sympy import Symbol
 # A reimplementation of pablocelayes rsa-wiener-attack for this purpose
 # https://github.com/pablocelayes/rsa-wiener-attack/
 
+
 class WienerAttack(object):
-    def rational_to_contfrac (self, x, y):
-        a = x//y
+    def rational_to_contfrac(self, x, y):
+        a = x // y
         if a * y == x:
             return [a]
         else:
@@ -15,15 +16,15 @@ class WienerAttack(object):
             pquotients.insert(0, a)
             return pquotients
 
-    def convergents_from_contfrac(self, frac):    
-        convs = [];
+    def convergents_from_contfrac(self, frac):
+        convs = []
         for i in range(len(frac)):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
-    def contfrac_to_rational (self, frac):
+    def contfrac_to_rational(self, frac):
         if len(frac) == 0:
-            return (0,1)
+            return (0, 1)
         elif len(frac) == 1:
             return (frac[0], 1)
         else:
@@ -32,17 +33,17 @@ class WienerAttack(object):
             return (frac[0] * num + denom, num)
 
     def is_perfect_square(self, n):
-        h = n & 0xF; 
+        h = n & 0xF
         if h > 9:
-            return -1 
+            return -1
 
-        if ( h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8 ):
+        if (h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8):
             t = self.isqrt(n)
             if t*t == n:
                 return t
             else:
                 return -1
-        
+
         return -1
 
     def isqrt(self, n):
@@ -56,7 +57,6 @@ class WienerAttack(object):
                 return x
             x = y
 
-
     def __init__(self, n, e):
         self.d = None
         self.p = None
@@ -64,18 +64,18 @@ class WienerAttack(object):
         sys.setrecursionlimit(100000)
         frac = self.rational_to_contfrac(e, n)
         convergents = self.convergents_from_contfrac(frac)
-        
-        for (k,d) in convergents:
-            if k!=0 and (e*d-1)%k == 0:
-                phi = (e*d-1)//k
+
+        for (k, d) in convergents:
+            if k != 0 and (e * d - 1) % k == 0:
+                phi = (e * d - 1) // k
                 s = n - phi + 1
                 discr = s*s - 4*n
-                if(discr>=0):
+                if(discr >= 0):
                     t = self.is_perfect_square(discr)
-                    if t!=-1 and (s+t)%2==0:
+                    if t != -1 and (s + t) % 2 == 0:
                         self.d = d
                         x = Symbol('x')
-                        roots = solve(x**2 - s*x + n, x)
+                        roots = solve(x**2 - s * x + n, x)
                         if len(roots) == 2:
                             self.p = roots[0]
                             self.q = roots[1]
