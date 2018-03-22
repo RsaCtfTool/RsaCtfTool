@@ -27,8 +27,10 @@ import sys
 
 sys.setrecursionlimit(2000)
 
+
 class FactorizationError(Exception):
     pass
+
 
 class PublicKey(object):
     def __init__(self, key):
@@ -55,7 +57,7 @@ class PrivateKey(object):
            :param n: n from public key
         """
         t = (p-1)*(q-1)
-        d = invmod(e,t)
+        d = invmod(e, t)
         self.key = RSA.construct((n, e, d, p, q))
 
     def decrypt(self, cipher):
@@ -68,6 +70,7 @@ class PrivateKey(object):
     def __str__(self):
         # Print armored private key
         return self.key.exportKey().decode("utf-8")
+
 
 class RSAAttack(object):
     def __init__(self, args):
@@ -125,13 +128,15 @@ class RSAAttack(object):
         # if factordb returns some math to derive the prime, solve for p without using an eval
         def solveforp(equation):
             try:
-                if '^' in equation: k,j = equation.split('^')
-                if '-' in j: j,sub = j.split('-')
-                eq = map(int, [k,j,sub])
-                return pow(eq[0],eq[1])-eq[2]
+                if '^' in equation:
+                    k, j = equation.split('^')
+                if '-' in j:
+                    j, sub = j.split('-')
+                eq = map(int, [k, j, sub])
+                return pow(eq[0], eq[1])-eq[2]
             except Exception as e:
                 if self.args.verbose:
-                    print("[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation,e))
+                    print("[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s" % (equation, e))
                 raise FactorizationError()
 
         # Factors available online?
@@ -208,9 +213,9 @@ class RSAAttack(object):
         # only works if the sageworks() function returned True
         print("[*] ECM Method can run forever and may never succeed. Hit Ctrl-C to bail out.")
         if self.args.ecmdigits:
-            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n),str(self.args.ecmdigits)]))
+            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n), str(self.args.ecmdigits)]))
         else:
-            sageresult = int(subprocess.check_output(['sage','ecm.sage',str(self.pub_key.n)]))
+            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n)]))
 
         if sageresult > 0:
             self.pub_key.p = sageresult
@@ -224,7 +229,8 @@ class RSAAttack(object):
         # only works if the sageworks() function returned True
         # many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
         # TODO: get an example public key solvable by boneh_durfee but not wiener
-        sageresult = int(subprocess.check_output(['sage','boneh_durfee.sage',str(self.pub_key.n),str(self.pub_key.e)]))
+        sageresult = int(subprocess.check_output(['sage', 'boneh_durfee.sage',
+                                                  str(self.pub_key.n), str(self.pub_key.e)]))
 
         if sageresult > 0:
             # use PyCrypto _slowmath rsa_construct to resolve p and q from d
@@ -251,7 +257,7 @@ class RSAAttack(object):
     def smallfraction(self):
         # Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
         # only works if the sageworks() function returned True
-        sageresult = int(subprocess.check_output(['sage', 'smallfraction.sage',str(self.pub_key.n)]))
+        sageresult = int(subprocess.check_output(['sage', 'smallfraction.sage', str(self.pub_key.n)]))
         if sageresult > 0:
             self.pub_key.p = sageresult
             self.pub_key.q = self.pub_key.n // self.pub_key.p
@@ -276,15 +282,15 @@ class RSAAttack(object):
             return
 
         if self.pub_key.q is not None:
-           self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
-                                      int(self.pub_key.e), int(self.pub_key.n))
+            self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
+                                       int(self.pub_key.e), int(self.pub_key.n))
 
         return
 
     def noveltyprimes(self):
         # "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
         # not all numbers in this form are prime but some are (25 digit is prime)
-        maxlen = 25 # max number of digits in the final integer
+        maxlen = 25  # max number of digits in the final integer
         for i in range(maxlen-4):
             prime = int("3133" + ("3" * i) + "7")
             if self.pub_key.n % prime == 0:
@@ -324,7 +330,7 @@ class RSAAttack(object):
                         x.pub_key.q = x.pub_key.n // g
                         y.pub_key.p = g
                         y.pub_key.q = y.pub_key.n // g
-                        x.priv_key = PrivateKey(int(x.pub_key.p),int(x.pub_key.q),
+                        x.priv_key = PrivateKey(int(x.pub_key.p), int(x.pub_key.q),
                                                 int(x.pub_key.e), int(x.pub_key.n))
                         y.priv_key = PrivateKey(int(y.pub_key.p), int(y.pub_key.q),
                                                 int(y.pub_key.e), int(y.pub_key.n))
@@ -339,7 +345,7 @@ class RSAAttack(object):
     def pastctfprimes(self):
         path = os.path.dirname(os.path.abspath(__file__))
         pastctfprimes_path = os.path.join(path, 'pastctfprimes.txt')
-        primes = [int(x) for x in open(pastctfprimes_path,'r').readlines() if not x.startswith('#') and not x.startswith('\n')]
+        primes = [int(x) for x in open(pastctfprimes_path, 'r').readlines() if not x.startswith('#') and not x.startswith('\n')]
         if self.args.verbose:
             print("[*] Loaded " + str(len(primes)) + " primes")
         for prime in primes:
@@ -373,7 +379,6 @@ class RSAAttack(object):
             print("[!] Warning: Modulus too large for SIQS attack module")
             return
 
-
         siqsobj = SiqsAttack(self.args, self.pub_key.n)
 
         if siqsobj.checkyafu() and siqsobj.testyafu():
@@ -402,7 +407,7 @@ class RSAAttack(object):
 
         if self.pub_key.q is not None:
             self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
-                                      int(self.pub_key.e), int(self.pub_key.n))
+                                       int(self.pub_key.e), int(self.pub_key.n))
 
         return
 
@@ -427,7 +432,8 @@ class RSAAttack(object):
                 break
         if p is not None and q is not None:
             self.priv_key = PrivateKey(int(p), int(q),
-                                      int(self.pub_key.e), int(self.pub_key.n))
+                                       int(self.pub_key.e),
+                                       int(self.pub_key.n))
         return
 
     def attack(self):
@@ -465,9 +471,10 @@ class RSAAttack(object):
                 if self.cipher is not None and self.args.attack is None:
                     print("[-] Sorry, cracking failed")
 
-    implemented_attacks = [ nullattack, hastads, factordb, pastctfprimes,
-                            mersenne_primes, noveltyprimes, smallq, wiener,
-                            comfact_cn, primefac, fermat, siqs, Pollard_p_1]
+    implemented_attacks = [nullattack, hastads, factordb, pastctfprimes,
+                           mersenne_primes, noveltyprimes, smallq, wiener,
+                           comfact_cn, primefac, fermat, siqs, Pollard_p_1]
+
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
@@ -485,6 +492,7 @@ class timeout:
     def __exit__(self, type, value, traceback):
         signal.alarm(0)
 
+
 def sageworks():
     # Check if sage is installed and working
     try:
@@ -498,10 +506,12 @@ def sageworks():
     else:
         return False
 
+
 def loadkeys(keys):
     """ Load one or more keys
     """
     return []
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='RSA CTF Tool')
@@ -593,7 +603,7 @@ if __name__ == "__main__":
         if args.key is None:
             raise Exception("Specify a key file to dump with --key. See --help for info.")
 
-        key_data = open(args.key,'rb').read()
+        key_data = open(args.key, 'rb').read()
         key = RSA.importKey(key_data)
         print("[*] n: " + str(key.n))
         print("[*] e: " + str(key.e))
