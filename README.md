@@ -21,7 +21,7 @@ Attacks :
 
 ## Usage:
 usage: RsaCtfTool.py [-h] \(--publickey PUBLICKEY | --createpub | --dumpkey\)
-                         [--uncipher UNCIPHER] [--verbose] [--private] [--n N]
+                         [--uncipherfile UNCIPHERFILE] [--verbose] [--private] [--n N]
                          [--e E] [--ecmdigits DIGITS] [--key KEY]
 
 Mode 1 - Attack RSA (specify --publickey)
@@ -37,7 +37,7 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - key - the public or private key in PEM or DER format
 
 ### Uncipher file :
-`./RsaCtfTool.py --publickey ./key.pub --uncipher ./ciphered\_file`
+`./RsaCtfTool.py --publickey ./key.pub --uncipherfile ./ciphered\_file`
 
 ### Print private key :
 `./RsaCtfTool.py --publickey ./key.pub --private`
