@@ -526,7 +526,7 @@ def sageworks():
     except OSError:
         return False
 
-    if 'SageMath version' in sageversion:
+    if 'SageMath version' in sageversion.decode('utf-8'):
 
         return True
     else:
