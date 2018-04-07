@@ -558,6 +558,9 @@ if __name__ == "__main__":
     parser.add_argument('--attack', help='Specify the attack mode.', default="all", choices=attacks_list)
 
     args = parser.parse_args()
+    if len(sys.argv) == 1:
+        parser.print_help()
+        sys.exit(1)
 
     # Parse longs if exists
     if args.p and args.q is not None:
