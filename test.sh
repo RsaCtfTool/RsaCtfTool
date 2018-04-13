@@ -1,5 +1,7 @@
 #!/bin/bash
 
+cd "$(dirname "$0")"
+
 # Test factordb parsing notation where a prime is noted as an expression such as 2^1453-1
 echo "Test factordb expression parsing"
 ./RsaCtfTool.py --publickey "examples/factordb_parse.pub" --verbose --private --attack factordb
