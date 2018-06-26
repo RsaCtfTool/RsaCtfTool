@@ -497,6 +497,9 @@ class RSAAttack(object):
                 if self.cipher is not None and self.args.attack is None:
                     print("[-] Sorry, cracking failed")
 
+            if self.priv_key is None and self.args.private:
+                print("[-] Sorry, cracking failed")
+
     implemented_attacks = [nullattack, hastads, factordb, pastctfprimes,
                            mersenne_primes, noveltyprimes, smallq, wiener,
                            comfact_cn, primefac, fermat, siqs, Pollard_p_1]
