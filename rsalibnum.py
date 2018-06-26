@@ -25,7 +25,7 @@ def invmod(a, n):
 
 def xgcd(a, b):
     """
-    Extented Euclid GCD algorithm.
+    Extended Euclid GCD algorithm.
     Return (x, y, g) : a * x + b * y = gcd(a, b) = g.
     """
     if a == 0:
