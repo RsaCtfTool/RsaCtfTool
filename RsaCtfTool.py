@@ -108,13 +108,21 @@ class RSAAttack(object):
             if args.verbose:
                 print("[*] Multikey mode using keys: " + repr(self.pubkeyfilelist))
 
-            # Initialize a list of objects by recursively calling this on each key
             self.attackobjs = []
+
+            # Try to build new key if e is huge (so d is small) and after try wiener on this new key
+            self.same_n_huge_e_attack()
+
+            # Initialize a list of objects by recursively calling this on each key
             for pub in self.pubkeyfilelist:
                 args.publickey = pub  # is this a kludge or is this elegant?
                 self.attackobjs.append(RSAAttack(args))
+
         else:
             # Load single public key
+            if not isinstance(args.publickey, str):
+                args.publickey = args.publickey.name
+
             key = open(args.publickey, 'rb').read()
             self.pubkeyfile = args.publickey
             self.pub_key = PublicKey(key)
@@ -136,6 +144,24 @@ class RSAAttack(object):
             else:
                 self.cipher = None
         return
+
+    def same_n_huge_e_attack(self):
+        parsed_keys = []
+        for k in self.pubkeyfilelist:
+            key = open(k, 'rb').read()
+            parsed_keys.append(PublicKey(key))
+
+        if len(set([_.n for _ in parsed_keys])) == 1:
+            new_e = 1
+            for k in parsed_keys:
+                new_e = new_e * k.e
+            tmpfile = tempfile.NamedTemporaryFile()
+            with open(tmpfile.name, "wb") as tmpfd:
+                tmpfd.write(RSA.construct((parsed_keys[0].n, new_e)).publickey().exportKey())
+            self.same_n_huge_e = tmpfile
+            return True
+        else:
+            return None
 
     def hastads(self):
         # Hastad attack for low public exponent, this has found success for e = 3, and e = 5 previously
@@ -465,6 +491,13 @@ class RSAAttack(object):
     def attack(self):
         if self.attackobjs is not None:
             self.commonfactors()
+            try:
+                if self.same_n_huge_e:
+                    args.attackobjs = None
+                    args.publickey = self.same_n_huge_e
+                    RSAAttack(args).attack()
+            except AttributeError:
+                pass
         else:
             # loop through implemented attack methods and conduct attacks
             for attack in self.implemented_attacks:
