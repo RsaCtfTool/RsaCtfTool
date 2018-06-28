@@ -236,7 +236,7 @@ class RSAAttack(object):
 
         return
 
-    def primefac(self, primefac_timeout=60):
+    def primefac(self, primefac_timeout=45):
         # this attack rely on primefac
         try:
             from primefac import primefac
@@ -248,7 +248,7 @@ class RSAAttack(object):
         # use primefac
         try:
             with timeout(seconds=primefac_timeout):
-                result = list(primefac(self.pub_key.n))
+                result = list(primefac(self.pub_key.n, timeout=primefac_timeout))
         except FactorizationError:
             return
 
