@@ -34,7 +34,7 @@ class SiqsAttack(object):
                                                    'siqs(1549388302999519)'],
                                                    stderr=DN)
             except:
-                yafutest = ""
+                yafutest = b''
 
         if b'48670331' in yafutest:
             # yafu is working
