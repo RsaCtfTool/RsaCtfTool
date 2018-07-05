@@ -40,7 +40,11 @@ class PublicKey(object):
            :param key: public key file content
            :type key: string
         """
-        pub = RSA.importKey(key)
+        try:
+            pub = RSA.importKey(key)
+        except ValueError as e:
+            print(e)
+            sys.exit(1)
         self.n = pub.n
         self.e = pub.e
         self.key = key
@@ -249,7 +253,7 @@ class RSAAttack(object):
         try:
             with timeout(seconds=primefac_timeout):
                 result = list(primefac(self.pub_key.n, timeout=primefac_timeout))
-        except FactorizationError:
+        except FactorizationError :
             return
 
         if len(result) == 2:
@@ -264,11 +268,13 @@ class RSAAttack(object):
         # use elliptic curve method, may return a prime or may never return
         # only works if the sageworks() function returned True
         print("[*] ECM Method can run forever and may never succeed. Hit Ctrl-C to bail out.")
-        if self.args.ecmdigits:
-            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n), str(self.args.ecmdigits)]))
-        else:
-            sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n)]))
-
+        try:
+            if self.args.ecmdigits:
+                sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n), str(self.args.ecmdigits)]))
+            else:
+                sageresult = int(subprocess.check_output(['sage', 'ecm.sage', str(self.pub_key.n)]))
+        except subprocess.CalledProcessError:
+            return
         if sageresult > 0:
             self.pub_key.p = sageresult
             self.pub_key.q = self.pub_key.n // self.pub_key.p
@@ -281,9 +287,11 @@ class RSAAttack(object):
         # only works if the sageworks() function returned True
         # many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
         # TODO: get an example public key solvable by boneh_durfee but not wiener
-        sageresult = int(subprocess.check_output(['sage', 'boneh_durfee.sage',
-                                                  str(self.pub_key.n), str(self.pub_key.e)]))
-
+        try:
+            sageresult = int(subprocess.check_output(['sage', 'boneh_durfee.sage',
+                                                      str(self.pub_key.n), str(self.pub_key.e)]))
+        except subprocess.CalledProcessError:
+            return
         if sageresult > 0:
             # use PyCrypto _slowmath rsa_construct to resolve p and q from d
             from Crypto.PublicKey import _slowmath
@@ -309,12 +317,15 @@ class RSAAttack(object):
     def smallfraction(self):
         # Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
         # only works if the sageworks() function returned True
-        sageresult = int(subprocess.check_output(['sage', 'smallfraction.sage', str(self.pub_key.n)]))
-        if sageresult > 0:
-            self.pub_key.p = sageresult
-            self.pub_key.q = self.pub_key.n // self.pub_key.p
-            self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
-                                       int(self.pub_key.e), int(self.pub_key.n))
+        try:
+            sageresult = int(subprocess.check_output(['sage', 'smallfraction.sage', str(self.pub_key.n)]))
+            if sageresult > 0:
+                self.pub_key.p = sageresult
+                self.pub_key.q = self.pub_key.n // self.pub_key.p
+                self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
+                                           int(self.pub_key.e), int(self.pub_key.n))
+        except subprocess.CalledProcessError:
+            return
         return
 
     def fermat(self, fermat_timeout=60):

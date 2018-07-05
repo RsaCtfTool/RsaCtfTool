@@ -17,7 +17,10 @@ def multifactor(n, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _
     from six.moves import xrange, reduce
     import six
     def factory(method, n, output):
-        g = method(n)
+        try:
+            g = method(n)
+        except OverflowError:
+            return None
         if g is not None:
           output.put((g, str(method).split()[1]))
     factors = mpQueue()
