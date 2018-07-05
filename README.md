@@ -86,7 +86,7 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
 `` easy_install `cat requirements.txt` ``
 
 #### Todo
- - Implement multiple ciphertext handling for more attacks
+ - Implement multiple ciphertext handling for more attacks (Common modulus attack)
  - Implement support for MultiPrime RSA (see 0ctf 2016)
  - Possibly implement Msieve support...
  - Some kind of polynomial search...
