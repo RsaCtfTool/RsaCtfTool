@@ -658,11 +658,12 @@ if __name__ == "__main__":
             if not args.e:
                 args.e = pkey.e
 
-    # If we have p or q the other can be calculated
-    if args.p and not args.q:
-        args.q = args.n // args.p
-    if args.q and not args.p:
-        args.p = args.n // args.q
+    # If we have n and one of p and q, calculated the other
+    if args.n and (args.p or args.q):
+        if args.p and not args.q:
+            args.q = args.n // args.p
+        if args.q and not args.p:
+            args.p = args.n // args.q
 
     # If we already have all informations
     if args.p is not None and args.q is not None and args.e is not None:
