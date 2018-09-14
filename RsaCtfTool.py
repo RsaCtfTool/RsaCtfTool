@@ -197,8 +197,8 @@ class RSAAttack(object):
 
         # Factors available online?
         try:
-            url_1 = 'http://www.factordb.com/index.php?query=%i'
-            url_2 = 'http://www.factordb.com/index.php?id=%s'
+            url_1 = 'https://factordb.com/index.php?query=%i'
+            url_2 = 'https://factordb.com/index.php?id=%s'
             s = requests.Session()
             r = s.get(url_1 % self.pub_key.n)
             regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
