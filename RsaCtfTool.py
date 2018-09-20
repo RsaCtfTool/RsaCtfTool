@@ -87,6 +87,7 @@ class PrivateKey(object):
             with open('/dev/null') as DN:
                 openssl_result = subprocess.check_output(['openssl',
                                                           'rsautl',
+                                                          '-raw',
                                                           '-decrypt',
                                                           '-in',
                                                           tmp_cipher_name,
