@@ -20,12 +20,14 @@ Attacks :
  - Mersenne primes factorization
 
 ## Usage:
+
+```
 usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
                      [-p P] [-q Q] [-e E] [--key KEY]
                      [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,all}]
-
+```
 
 Mode 1 - Attack RSA (specify --publickey)
  - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
@@ -79,6 +81,11 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - PyCrypto
  - Requests
  - SageMath - optional but advisable
+### Ubuntu 18.04 and Kali specific Instructions ###
+git clone https://github.com/Ganapati/RsaCtfTool.git
+sudo apt-get install libgmp3-dev libmpc-dev
+pip install -r "requirements.txt"
+python2.7 RsaCtfTool.py
 
 ### MacOS-specific Instructions
 If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.

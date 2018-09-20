@@ -198,8 +198,8 @@ class RSAAttack(object):
 
         # Factors available online?
         try:
-            url_1 = 'http://www.factordb.com/index.php?query=%i'
-            url_2 = 'http://www.factordb.com/index.php?id=%s'
+            url_1 = 'https://factordb.com/index.php?query=%i'
+            url_2 = 'https://factordb.com/index.php?id=%s'
             s = requests.Session()
             r = s.get(url_1 % self.pub_key.n)
             regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
@@ -611,18 +611,20 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Parse longs if exists
-    if args.p and args.q is not None:
+    if args.p is not None:
         if args.p.startswith("0x"):
             args.p = int(args.p, 16)
         else:
             args.p = int(args.p)
 
+    if args.q is not None:
         if args.q.startswith("0x"):
             args.q = int(args.q, 16)
         else:
             args.q = int(args.q)
 
-        args.n = args.p*args.q
+    if args.p and args.q is not None:
+       args.n = args.p * args.q
     elif args.n is not None:
         if args.n.startswith("0x"):
             args.n = int(args.n, 16)
@@ -646,6 +648,23 @@ if __name__ == "__main__":
     elif args.uncipherfile is not None:
         cipher = open(args.uncipherfile, 'rb').read()
         args.uncipher = cipher
+
+    # Read n/e from publickey file
+    if args.publickey:
+        if not args.n or not args.e:
+            key = open(args.publickey, 'rb').read()
+            pkey = PublicKey(key)
+            if not args.n:
+                args.n = pkey.n
+            if not args.e:
+                args.e = pkey.e
+
+    # If we have n and one of p and q, calculated the other
+    if args.n and (args.p or args.q):
+        if args.p and not args.q:
+            args.q = args.n // args.p
+        if args.q and not args.p:
+            args.p = args.n // args.q
 
     # If we already have all informations
     if args.p is not None and args.q is not None and args.e is not None:
