@@ -73,8 +73,8 @@ class SiqsAttack(object):
                 return
 
             for line in yafurun.splitlines():
-                if re.search('^P[0-9]+\ =\ [0-9]+$', line):
-                    primesfound.append(int(line.split('=')[1]))
+                if re.search(b'^P[0-9]+\ =\ [0-9]+$', line):
+                    primesfound.append(int(line.split(b'=')[1]))
 
             if len(primesfound) == 2:
                 self.p = primesfound[0]
