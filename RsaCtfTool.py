@@ -137,6 +137,14 @@ class RSAAttack(object):
             self.unciphered = None
             self.attackobjs = None  # This is how we'll know this object represents 1 key
 
+            # Read n/e from publickey file
+            if not args.n or not args.e:
+                pkey = PublicKey(key)
+                if not args.n:
+                    args.n = pkey.n
+                if not args.e:
+                    args.e = pkey.e
+
             # Test if sage is working and if so, load additional sage based attacks
             if args.sageworks:
                 self.implemented_attacks.append(self.smallfraction)
@@ -648,16 +656,6 @@ if __name__ == "__main__":
     elif args.uncipherfile is not None:
         cipher = open(args.uncipherfile, 'rb').read()
         args.uncipher = cipher
-
-    # Read n/e from publickey file
-    if args.publickey:
-        if not args.n or not args.e:
-            key = open(args.publickey, 'rb').read()
-            pkey = PublicKey(key)
-            if not args.n:
-                args.n = pkey.n
-            if not args.e:
-                args.e = pkey.e
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
