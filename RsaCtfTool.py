@@ -17,6 +17,7 @@ import signal
 import gmpy2
 from rsalibnum import *
 import requests
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import re
 import argparse
 import os
@@ -24,6 +25,8 @@ import subprocess
 from glob import glob
 import tempfile
 import sys
+
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 sys.setrecursionlimit(2000)
 if sys.version_info < (3, 0):
@@ -209,15 +212,15 @@ class RSAAttack(object):
             url_1 = 'https://factordb.com/index.php?query=%i'
             url_2 = 'https://factordb.com/index.php?id=%s'
             s = requests.Session()
-            r = s.get(url_1 % self.pub_key.n)
+            r = s.get(url_1 % self.pub_key.n, verify=False)
             regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
             ids = regex.findall(r.text)
             p_id = ids[1]
             q_id = ids[2]
             # bugfix: See https://github.com/sourcekris/RsaCtfTool/commit/16d4bb258ebb4579aba2bfc185b3f717d2d91330#commitcomment-21878835
             regex = re.compile("value=\"([0-9\^\-]+)\"", re.IGNORECASE)
-            r_1 = s.get(url_2 % p_id)
-            r_2 = s.get(url_2 % q_id)
+            r_1 = s.get(url_2 % p_id, verify=False)
+            r_2 = s.get(url_2 % q_id, verify=False)
             key_p = regex.findall(r_1.text)[0]
             key_q = regex.findall(r_2.text)[0]
             self.pub_key.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
