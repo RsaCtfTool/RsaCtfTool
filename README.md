@@ -82,10 +82,12 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
  - Requests
  - SageMath - optional but advisable
 ### Ubuntu 18.04 and Kali specific Instructions ###
+```
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
 pip install -r "requirements.txt"
 python2.7 RsaCtfTool.py
+```
 
 ### MacOS-specific Instructions
 If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
