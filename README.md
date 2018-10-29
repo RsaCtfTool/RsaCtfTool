@@ -34,15 +34,21 @@ Mode 1 - Attack RSA (specify --publickey)
  - uncipher : cipher message to decrypt
  - private : display private rsa key if recovered
 
-Mode 2 - Create a Public Key File Given n and e (specify --createpub)
+Mode 2 - Create a Public Key File Either Given n and e Or Private Key (specify --createpub)
  - n - modulus
  - e - public exponent
+ - privatekey - private key file (specify either this or n and e)
 
 Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or private key (specify --dumpkey)
  - key - the public or private key in PEM or DER format
 
+ Mode 4 - Uncipher RSA with known private key (specify --privatekey)
+  - uncipher/uncipherfile : cipher message to decrypt
+
 ### Uncipher file :
 `./RsaCtfTool.py --publickey ./key.pub --uncipherfile ./ciphered\_file`
+
+`./RsaCtfTool.py --privatekey ./key.pri --uncipher 1298798372987991204....234234987`
 
 ### Print private key :
 `./RsaCtfTool.py --publickey ./key.pub --private`
@@ -52,6 +58,8 @@ Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or 
 
 ### Generate a public key :
 `./RsaCtfTool.py --createpub -n 7828374823761928712873129873981723...12837182 -e 65537`
+
+`./RsaCtfTool.py --createpub --privatekey key.pri`
 
 ### Dump the parameters from a key:
 `./RsaCtfTool.py --dumpkey --key ./key.pub`

@@ -608,6 +608,7 @@ if __name__ == "__main__":
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
     parser.add_argument('--private', help='Display private key if recovered', action='store_true')
     parser.add_argument('--ecmdigits', type=int, help='Optionally an estimate as to how long one of the primes is for ECM method', default=None)
+    parser.add_argument('--privatekey', help='private key file.')
     parser.add_argument('-n', help='Specify the modulus. format : int or 0xhex')
     parser.add_argument('-p', help='Specify the first prime number. format : int or 0xhex')
     parser.add_argument('-q', help='Specify the second prime number. format : int or 0xhex')
@@ -647,6 +648,24 @@ if __name__ == "__main__":
             args.e = int(args.e, 16)
         else:
             args.e = int(args.e)
+
+    # do we have a known private key
+    if args.privatekey is not None:
+        try:
+            with open(args.privatekey, 'rb') as key_data:
+                priv_key = RSA.importKey(key_data.read())
+        except FileNotFoundError:
+            print("[!] Loading private key failed, file does not exist?")
+            sys.exit(1)
+        except PermissionError:
+            print("[!] Loading private key failed, permission error")
+            sys.exit(1)
+        args.n = priv_key.n
+        args.e = priv_key.e
+        if priv_key.has_private():
+            args.d = priv_key.d
+            args.p = priv_key.p
+            args.q = priv_key.q
 
     # if we have uncipher but no uncipherfile
     if args.uncipher is not None:
