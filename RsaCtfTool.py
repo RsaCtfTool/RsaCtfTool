@@ -662,10 +662,12 @@ if __name__ == "__main__":
             sys.exit(1)
         args.n = priv_key.n
         args.e = priv_key.e
-        if priv_key.has_private():
-            args.d = priv_key.d
-            args.p = priv_key.p
-            args.q = priv_key.q
+        if not priv_key.has_private():
+            print("[!] The given private key file is not actually a private key file")
+            sys.exit(1)
+        args.d = priv_key.d
+        args.p = priv_key.p
+        args.q = priv_key.q
 
     # if we have uncipher but no uncipherfile
     if args.uncipher is not None:
