@@ -26,6 +26,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
                      [-p P] [-q Q] [-e E] [--key KEY]
+                     [--privatekey PRIVATEKEY]
                      [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,all}]
 ```
 
