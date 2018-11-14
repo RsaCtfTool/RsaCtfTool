@@ -603,6 +603,7 @@ if __name__ == "__main__":
     parser.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
     parser.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
     parser.add_argument('--dumpkey', help='Just dump the RSA variables from a key - n,e,d,p,q', action='store_true')
+    parser.add_argument('--ext', help='Extended dump of RSA private variables in --dumpkey mode - dp,dq,pinv,qinv).', action='store_true')
     parser.add_argument('--uncipherfile', help='uncipher a file', default=None)
     parser.add_argument('--uncipher', help='uncipher a cipher', default=None)
     parser.add_argument('--verbose', help='verbose mode (display n, e, p and q)', action='store_true')
@@ -708,6 +709,16 @@ if __name__ == "__main__":
             print("[*] d: " + str(key.d))
             print("[*] p: " + str(key.p))
             print("[*] q: " + str(key.q))
+            if args.ext:
+                dp = key.d % (key.p - 1)
+                dq = key.d % (key.q - 1)
+                pinv = invmod(key.p, key.q) 
+                qinv = invmod(key.q, key.p)
+                print("[*] dp: " + str(dp))
+                print("[*] dq: " + str(dq))
+                print("[*] pinv: " + str(pinv))
+                print("[*] qinv: " + str(qinv))
+
         quit()
 
     if sageworks():
