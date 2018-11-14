@@ -25,6 +25,7 @@ import subprocess
 from glob import glob
 import tempfile
 import sys
+import itertools
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -391,29 +392,28 @@ class RSAAttack(object):
         return
 
     def commonfactors(self):
-        # Try to find the gcd between each pair of modulii and resolve the private keys if gcd > 1
-        for x in self.attackobjs:
-            for y in self.attackobjs:
-                if x.pub_key.n != y.pub_key.n:
-                    g = gcd(x.pub_key.n, y.pub_key.n)
-                    if g != 1:
-                        if self.args.verbose and not x.displayed and not y.displayed:
-                            print("[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile)
+        # Try to find the gcd between each pair of moduli and resolve the private keys if gcd > 1
+        for x, y in itertools.combinations(self.attackobjs, r=2):
+            if x.pub_key.n != y.pub_key.n:
+                g = gcd(x.pub_key.n, y.pub_key.n)
+                if g != 1:
+                    if self.args.verbose and not x.displayed and not y.displayed:
+                        print("[*] Found common factor in modulus for " + x.pubkeyfile + " and " + y.pubkeyfile)
 
-                        # update each attackobj with a private_key
-                        x.pub_key.p = g
-                        x.pub_key.q = x.pub_key.n // g
-                        y.pub_key.p = g
-                        y.pub_key.q = y.pub_key.n // g
-                        x.priv_key = PrivateKey(int(x.pub_key.p), int(x.pub_key.q),
-                                                int(x.pub_key.e), int(x.pub_key.n))
-                        y.priv_key = PrivateKey(int(y.pub_key.p), int(y.pub_key.q),
-                                                int(y.pub_key.e), int(y.pub_key.n))
+                    # update each attackobj with a private_key
+                    x.pub_key.p = g
+                    x.pub_key.q = x.pub_key.n // g
+                    y.pub_key.p = g
+                    y.pub_key.q = y.pub_key.n // g
+                    x.priv_key = PrivateKey(int(x.pub_key.p), int(x.pub_key.q),
+                                            int(x.pub_key.e), int(x.pub_key.n))
+                    y.priv_key = PrivateKey(int(y.pub_key.p), int(y.pub_key.q),
+                                            int(y.pub_key.e), int(y.pub_key.n))
 
-                    # call attack method to print the private keys at the nullattack step or attack singularly
-                    # depending on the success of the gcd operation
-                    x.attack()
-                    y.attack()
+                # call attack method to print the private keys at the nullattack step or attack singularly
+                # depending on the success of the gcd operation
+                x.attack()
+                y.attack()
 
         return
 
