@@ -410,10 +410,13 @@ class RSAAttack(object):
                     y.priv_key = PrivateKey(int(y.pub_key.p), int(y.pub_key.q),
                                             int(y.pub_key.e), int(y.pub_key.n))
 
-                # call attack method to print the private keys at the nullattack step or attack singularly
-                # depending on the success of the gcd operation
-                x.attack()
-                y.attack()
+                    # call attack method to print the private keys at the nullattack step
+                    x.attack()
+                    y.attack()
+
+        # attack singularly if gcd operation was not successful
+        for ao in self.attackobjs:
+            ao.attack()
 
         return
 
