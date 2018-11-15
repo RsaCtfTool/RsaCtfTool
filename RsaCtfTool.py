@@ -238,8 +238,7 @@ class RSAAttack(object):
         try:
             from wiener_attack import WienerAttack
         except ImportError:
-            if self.args.verbose:
-                print("[!] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?")
+            print("[!] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?")
             return
 
         # Wiener's attack
@@ -257,8 +256,7 @@ class RSAAttack(object):
         try:
             from primefac import primefac
         except ImportError:
-            if self.args.verbose:
-                print("[!] Warning: primefac attack module missing")
+            print("[!] Warning: primefac attack module missing")
             return
 
         # use primefac
@@ -346,8 +344,7 @@ class RSAAttack(object):
         try:
             from fermat import fermat
         except ImportError:
-            if self.args.verbose:
-                print("[!] Warning: Fermat factorization module missing (fermat.py)")
+            print("[!] Warning: Fermat factorization module missing (fermat.py)")
             return
 
         try:
@@ -446,8 +443,7 @@ class RSAAttack(object):
         try:
             from siqs import SiqsAttack
         except ImportError:
-            if self.args.verbose:
-                print("[!] Warning: Yafu SIQS attack module missing (siqs.py)")
+            print("[!] Warning: Yafu SIQS attack module missing (siqs.py)")
             return
 
         if self.pub_key.n.bit_length() > 1024:
