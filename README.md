@@ -29,7 +29,7 @@ Attacks :
 ## Usage:
 
 ```
-usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey]
+usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey] [--ext]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
                      [-p P] [-q Q] [-e E] [--key KEY]
@@ -45,7 +45,7 @@ Mode 2 - Create a Public Key File Given n and e (specify --createpub)
  - n - modulus
  - e - public exponent
 
-Mode 3 - Dump the public and/or private numbers from a PEM/DER format public or private key (specify --dumpkey)
+Mode 3 - Dump the public and/or private numbers (optionally including CRT parameters in extended mode) from a PEM/DER format public or private key (specify --dumpkey)
  - key - the public or private key in PEM or DER format
 
 ### Uncipher file :
