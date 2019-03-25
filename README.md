@@ -25,6 +25,7 @@ Attacks :
  - Elliptic Curve Method
  - Pollards p-1 for relatively smooth numbers
  - Mersenne primes factorization
+ - Londahl's factorisation for close p and q
 
 ## Usage:
 
@@ -33,7 +34,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey] [--e
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
                      [-p P] [-q Q] [-e E] [--key KEY]
-                     [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,all}]
+                     [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,londahl,all}]
 ```
 
 Mode 1 - Attack RSA (specify --publickey)

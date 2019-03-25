@@ -384,6 +384,23 @@ class RSAAttack(object):
 
         return
 
+    def londahl(self, londahl_b=20000000):
+        # Another attack for primes that are too close together.
+        # https://grocid.net/2017/09/16/finding-close-prime-factorizations/
+        # `b` is the size of the lookup dictionary to build.
+        try:
+            import londahl
+        except ImportError:
+            print("[!] Warning: Londahl factorization module missing (londahl.py)")
+            return
+
+        self.pub_key.p, self.pub_key.q = londahl.close_factor(self.pub_key.n, londahl_b)
+
+        if self.pub_key.q is not None:
+            self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
+                                       int(self.pub_key.e), int(self.pub_key.n))
+
+        return
     def noveltyprimes(self):
         # "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
         # not all numbers in this form are prime but some are (25 digit is prime)
@@ -593,7 +610,8 @@ class RSAAttack(object):
 
     implemented_attacks = [nullattack, hastads, factordb, pastctfprimes,
                            mersenne_primes, noveltyprimes, smallq, wiener,
-                           comfact_cn, primefac, fermat, siqs, Pollard_p_1]
+                           comfact_cn, primefac, fermat, siqs, Pollard_p_1,
+                           londahl]
 
 
 # source http://stackoverflow.com/a/22348885
