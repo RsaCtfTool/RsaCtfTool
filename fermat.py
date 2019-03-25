@@ -1,12 +1,5 @@
 # Source - http://stackoverflow.com/a/20465181
-def isqrt(n):
-    x = n
-    y = (x + n // x) // 2
-    while y < x:
-        x = y
-        y = (x + n // x) // 2
-    return x
-
+from gmpy2 import isqrt
 
 def fermat(n):
     a = isqrt(n)

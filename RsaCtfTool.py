@@ -363,7 +363,7 @@ class RSAAttack(object):
             return
         return
 
-    def fermat(self, fermat_timeout=60):
+    def fermat(self, fermat_timeout=10):
         # Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
         # this attack module can be optional
         try:
