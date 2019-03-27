@@ -7,14 +7,13 @@ import sys
 
 def factor(n):
     depth = 50
-    nn = RealField(2000)(n)
     x = PolynomialRing(Zmod(n), "x").gen()
 
     for den in IntegerRange(2, depth + 1):
         for num in IntegerRange(1, den):
             if gcd(num, den) == 1:
                 r = den / num
-                phint = isqrt(nn * r)
+                phint = isqrt(n * r)
                 f = x - phint
                 sr = f.small_roots(beta=0.5)
 
