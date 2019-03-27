@@ -4,15 +4,15 @@
 
 import sys
 
-n = int(sys.argv[1])
-depth = 50
-t = len(bin(n).replace("0b", ""))
-nn = RealField(2000)(n)
-p = 0
 
-x = PolynomialRing(Zmod(n), "x").gen()
+def factor(n):
+    depth = 50
+    t = len(bin(n).replace("0b", ""))
+    nn = RealField(2000)(n)
+    p = 0
 
-try:
+    x = PolynomialRing(Zmod(n), "x").gen()
+
     for den in xrange(2, depth + 1):
         for num in xrange(1, den):
             if gcd(num, den) == 1:
@@ -24,9 +24,15 @@ try:
                 if len(sr) > 0:
                     p = int(phint - sr[0])
                     if n % p == 0:
-                        print(p)
-                        break
-    if p == 0:
+                        return p
+
+
+try:
+    n = int(sys.argv[1])
+    p = factor(n)
+    if p is None:
+        print(0)
+    else:
         print(p)
 except:
     print(0)
