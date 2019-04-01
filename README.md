@@ -92,7 +92,10 @@ Mode 3 - Dump the public and/or private numbers (optionally including CRT parame
 ### Ubuntu 18.04 and Kali specific Instructions ###
 ```
 git clone https://github.com/Ganapati/RsaCtfTool.git
-sudo apt-get install libgmp3-dev libmpc-dev
+cd RsaCtfTool
+sudo apt-get install virtualenv libgmp3-dev libmpc-dev
+virtualenv --python==/usr/bin/python2.7 .
+source bin/activate
 pip install -r "requirements.txt"
 python2.7 RsaCtfTool.py
 ```
