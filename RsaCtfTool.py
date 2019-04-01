@@ -394,9 +394,10 @@ class RSAAttack(object):
             print("[!] Warning: Londahl factorization module missing (londahl.py)")
             return
 
-        self.pub_key.p, self.pub_key.q = londahl.close_factor(self.pub_key.n, londahl_b)
+        factors = londahl.close_factor(self.pub_key.n, londahl_b)
 
-        if self.pub_key.q is not None:
+        if factors is not None:
+            self.pub_key.p, self.pub_key.q = factors
             self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
                                        int(self.pub_key.e), int(self.pub_key.n))
 
