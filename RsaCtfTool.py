@@ -110,6 +110,26 @@ class PrivateKey(object):
         return self.key.exportKey().decode("utf-8")
 
 
+class Qone(int):
+    """Represents a value of 1 for prime q, and if you try to calculate phi(q)
+    by doing q-1 it gives the correct result of 1."""
+    def __sub__(a, b):
+        assert a == 1
+        assert b == 1
+        return 1
+
+
+class PrimeKey(PrivateKey):
+    """A private key for when n is prime."""
+    def __init__(self, n, e):
+        assert gmpy2.is_prime(n)
+        phi = n - 1
+        d = invmod(e, phi)
+        p = n
+        q = Qone(1)
+        self.key = RSA.RSAImplementation(use_fast_math=False).construct((n, e, d, p, q))
+
+
 class RSAAttack(object):
     def __init__(self, args):
         if '*' in args.publickey or '?' in args.publickey:
@@ -139,7 +159,6 @@ class RSAAttack(object):
             self.pubkeyfile = args.publickey
             self.pub_key = PublicKey(key)
             self.priv_key = None
-            self.partitial_priv_key = None
             self.displayed = False   # have we already spammed the user with this private key?
             self.args = args
             self.unciphered = None
@@ -221,25 +240,10 @@ class RSAAttack(object):
             r = s.get(url_1 % self.pub_key.n, verify=False)
             regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
             ids = regex.findall(r.text)
-            # check if only 1 factor is returned
-            if len(ids) == 2:
-                # theres a chance that the only factor returned is prime, and so we can derive the priv key from it
-                regex = re.compile("<td>P<\/td>")
-                prime = regex.findall(r.text)
-                if len(prime) == 1:
-                    # n is prime, so lets get the key from it
-                    d = invmod(self.pub_key.e, self.pub_key.n - 1)
-                    # construct key using only n and d
-                    try:
-                        # pycrypto >=2.5
-                        impl = RSA.RSAImplementation(use_fast_math=False)
-                        self.partitial_priv_key = impl.construct((self.pub_key.n, 0))
-                        self.partitial_priv_key.key.d = d
-                    except TypeError:
-                        # pycrypto <=2.4.1
-                        self.partitial_priv_key = RSA.construct((self.pub_key.n, 0, d))
 
-                    return
+            if len(ids) < 3:
+                # Factordb does not have at least two factors
+                return
 
             p_id = ids[1]
             q_id = ids[2]
@@ -258,6 +262,12 @@ class RSAAttack(object):
             return
         except Exception as e:
             return
+
+
+    def prime_n(self):
+        if gmpy2.is_prime(self.pub_key.n):
+            self.priv_key = PrimeKey(self.pub_key.n, self.pub_key.e)
+
 
     def wiener(self):
         # this attack module can be optional based on sympy and wiener_attack.py existing
@@ -592,14 +602,9 @@ class RSAAttack(object):
                     getattr(self, attack.__name__)()
 
                 # check and print resulting private key
-                if self.priv_key is not None or self.partitial_priv_key is not None:
+                if self.priv_key is not None:
                     if self.args.private and not self.displayed:
-                        if self.priv_key is not None:
-                            print(self.priv_key)
-                        else:
-                            print("d: %i" % self.partitial_priv_key.key.d)
-                            print("e: %i" % self.partitial_priv_key.key.e)
-                            print("n: %i" % self.partitial_priv_key.key.n)
+                        print(self.priv_key)
                         self.displayed = True
 
                     break
@@ -611,22 +616,16 @@ class RSAAttack(object):
             if self.cipher and self.priv_key is not None:
                     self.unciphered = self.priv_key.decrypt(self.cipher)
                     print("[+] Clear text : %s" % str(self.unciphered))
-            elif self.cipher and self.partitial_priv_key is not None:
-                    # needed, if n is prime and so we cant calc p and q
-                    enc_msg = bytes_to_long(self.cipher)
-                    dec_msg = self.partitial_priv_key.key._decrypt(enc_msg)
-                    self.unciphered = long_to_bytes(dec_msg)
-                    print("[+] Clear text : %s" % str(self.unciphered))
             elif self.unciphered is not None:
                     print("[+] Clear text : %s" % str(self.unciphered))
             else:
                 if self.cipher is not None and self.args.attack is None:
                     print("[-] Sorry, cracking failed")
 
-            if self.priv_key is None and self.partitial_priv_key is None and self.args.private:
+            if self.priv_key is None and self.args.private:
                 print("[-] Sorry, cracking failed")
 
-    implemented_attacks = [nullattack, hastads, factordb, pastctfprimes,
+    implemented_attacks = [nullattack, hastads, prime_n, factordb, pastctfprimes,
                            mersenne_primes, noveltyprimes, smallq, wiener,
                            comfact_cn, primefac, fermat, siqs, Pollard_p_1,
                            londahl]
