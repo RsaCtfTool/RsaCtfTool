@@ -10,6 +10,7 @@ RSA tool for ctf - uncipher data from weak public key and try to recover private
 Automatic selection of best attack for the given public key
 
 Attacks :
+ - Prime N detection
  - Weak public key factorization
  - Wiener's attack
  - Hastad's attack (Small public exponent attack)
@@ -34,7 +35,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey] [--e
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
                      [-p P] [-q Q] [-e E] [--key KEY]
-                     [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,londahl,all}]
+                     [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,londahl,prime_n,all}]
 ```
 
 Mode 1 - Attack RSA (specify --publickey)
