@@ -157,6 +157,7 @@ class RSAAttack(object):
             if args.sageworks:
                 self.implemented_attacks.append(self.smallfraction)
                 self.implemented_attacks.append(self.boneh_durfee)
+                self.implemented_attacks.append(self.qicheng)
                 self.implemented_attacks.append(self.ecm)           # make sure ECM always comes last!
 
             # Load ciphertext
@@ -338,6 +339,22 @@ class RSAAttack(object):
                                        int(self.pub_key.e), int(self.pub_key.n))
 
         return
+
+    def qicheng(self):
+        # Qi Cheng - A New Class of Unsafe Primes
+        try:
+            sageresult = int(subprocess.check_output(['sage', 'qicheng.sage', str(self.pub_key.n)]))
+        except subprocess.CalledProcessError:
+            return
+
+        if sageresult > 0:
+            self.pub_key.p = sageresult
+            self.pub_key.q = self.pub_key.n // sageresult
+            self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
+                                       int(self.pub_key.e), int(self.pub_key.n))
+
+        return
+
 
     def smallq(self):
         # Try an attack where q < 100,000, from BKPCTF2016 - sourcekris

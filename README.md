@@ -26,6 +26,7 @@ Attacks :
  - Pollards p-1 for relatively smooth numbers
  - Mersenne primes factorization
  - Londahl's factorisation for close p and q
+ - Qi Cheng's unsafe primes factorization
 
 ## Usage:
 
