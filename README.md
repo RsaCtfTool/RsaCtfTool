@@ -95,11 +95,11 @@ Mode 3 - Dump the public and/or private numbers (optionally including CRT parame
 ```
 git clone https://github.com/Ganapati/RsaCtfTool.git
 cd RsaCtfTool
-sudo apt-get install virtualenv libgmp3-dev libmpc-dev
-virtualenv --python=/usr/bin/python2.7 .
-source bin/activate
+sudo apt-get install libgmp3-dev libmpc-dev
+python3 -m venv .
+. bin/activate
 pip install -r "requirements.txt"
-python2.7 RsaCtfTool.py
+./RsaCtfTool.py
 ```
 
 ### MacOS-specific Instructions
