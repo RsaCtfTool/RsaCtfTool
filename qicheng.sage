@@ -34,4 +34,8 @@ def factor(n):
 
 
 if __name__ == "__main__":
-    print(factor(Integer(sys.argv[1])))
+    p = factor(Integer(sys.argv[1]))
+    if p is None:
+        print(0)
+    else:
+        print(p)
