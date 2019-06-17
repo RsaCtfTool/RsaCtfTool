@@ -70,7 +70,10 @@ class PrivateKey(object):
            :param n: n from public key
         """
 
-        t = (p-1)*(q-1)
+        if p != q:
+            t = (p-1)*(q-1)
+        else:
+            t = p*(q-1)
         d = invmod(e, t)
         self.key = RSA.construct((n, e, d, p, q))
 
