@@ -107,6 +107,8 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
 
 `` easy_install `cat requirements.txt` ``
 
+If you get the error "ImportError: No module named Crypto.PublicKey" even with pycrypto installed, then, switch to a python virtual environment and should be ok.
+
 #### Todo
  - Implement multiple ciphertext handling for more attacks (Common modulus attack)
  - Implement support for MultiPrime RSA (see 0ctf 2016)
