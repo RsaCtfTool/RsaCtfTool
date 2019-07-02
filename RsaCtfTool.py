@@ -687,7 +687,7 @@ if __name__ == "__main__":
     parser.add_argument('-q', help='Specify the second prime number. format : int or 0xhex')
     parser.add_argument('-e', help='Specify the public exponent. format : int or 0xhex')
     parser.add_argument('--key', help='Specify the input key file in --dumpkey mode.')
-    attacks_list = [_.__name__ for _ in RSAAttack.implemented_attacks if _.__name__ is not "nullattack"] + ["all"]
+    attacks_list = [_.__name__ for _ in RSAAttack.implemented_attacks if _.__name__ != "nullattack"] + ["all"]
     parser.add_argument('--attack', help='Specify the attack mode.', default="all", choices=attacks_list)
 
     args = parser.parse_args()
