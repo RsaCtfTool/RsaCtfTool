@@ -2,6 +2,7 @@
 
 from __future__ import print_function, division
 from threading import Timer
+from six.moves import xrange
 import _primefac
 
 # Note that the multiprocing incurs relatively significant overhead.
