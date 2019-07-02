@@ -3,6 +3,11 @@
 from subprocess import check_output
 import libnum
 
+try:
+    long
+except NameError:  # Python 3
+    long = int
+
 # Source:
 # https://0day.work/0ctf-2016-quals-writeups/
 
