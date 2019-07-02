@@ -2,7 +2,6 @@
 
 from __future__ import print_function, division
 from threading import Timer
-from six.moves import xrange
 import _primefac
 
 # Note that the multiprocing incurs relatively significant overhead.
@@ -15,8 +14,6 @@ def kill_procs(procs):
 def multifactor(n, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1,
                 _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb), verbose=False, timeout=59):
     from multiprocessing import Process, Queue as mpQueue
-    from six.moves import xrange, reduce
-    import six
     def factory(method, n, output):
         try:
             g = method(n)
@@ -72,9 +69,7 @@ def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
              methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs,
                       _primefac.fermat, _primefac.factordb), timeout=60):
     from _primefac import isprime, isqrt, primegen
-    from six.moves import xrange, reduce
     from random import randrange
-    import six
     timeout = timeout - 1
     if n < 2:
         return
@@ -276,7 +271,7 @@ def rpn(instr):
         elif token in ('!', '#', 'p!'):                             # unary operators
             a = stack.pop()
             if token == '!':
-                res = listprod(xrange(1, a+1))
+                res = listprod(range(1, a+1))
             elif token == '#':
                 res = listprod(primes(a+1))
             elif token == 'p!':
@@ -287,8 +282,6 @@ def rpn(instr):
     return [_primefac.mpz(i) for i in stack]
 
 def main(argv):
-    from six.moves import xrange, reduce
-    import six
     if len(argv) == 1:
         sysexit(usage)
     rpx, tr, rr, veb, su = [], 1000, 42000, False, False
