@@ -322,7 +322,7 @@ def main(argv):
             else:
                 rpx.append(arg)
         nums = rpn(' '.join(rpx))
-    except:
+    except Exception as e:
         sysexit("Error while parsing arguments" + str(e))
     if su:
         print()
