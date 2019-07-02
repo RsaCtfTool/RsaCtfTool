@@ -85,7 +85,7 @@ if __name__ == "__main__":
     # import the private key manually
     keyfile = 'examples/masked.pem'
     keycmd = ['openssl', 'asn1parse', '-in', keyfile]
-    private_key = [long(x.split(':')[3], 16) for x in check_output(keycmd).splitlines() if 'INTEGER' in x]
+    private_key = [int(x.split(':')[3], 16) for x in check_output(keycmd).splitlines() if 'INTEGER' in x]
 
     # dq from examples/masked.pem
     dp = private_key[4]
