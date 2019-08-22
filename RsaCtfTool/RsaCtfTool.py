@@ -16,9 +16,7 @@ from Crypto.PublicKey import RSA
 import signal
 import gmpy2
 
-from Crypto.Util.number import bytes_to_long, long_to_bytes
-
-from rsalibnum import *
+from RsaCtfTool.rsalibnum import *
 import requests
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import re
@@ -275,7 +273,7 @@ class RSAAttack(object):
     def wiener(self):
         # this attack module can be optional based on sympy and wiener_attack.py existing
         try:
-            from wiener_attack import WienerAttack
+            from RsaCtfTool.wiener_attack import WienerAttack
         except ImportError:
             print("[!] Warning: Wiener attack module missing (wiener_attack.py) or SymPy not installed?")
             return
@@ -293,7 +291,7 @@ class RSAAttack(object):
     def primefac(self, primefac_timeout=45):
         # this attack rely on primefac
         try:
-            from primefac import primefac
+            from RsaCtfTool.primefac import primefac
         except ImportError:
             print("[!] Warning: primefac attack module missing")
             return
@@ -397,7 +395,7 @@ class RSAAttack(object):
         # Try an attack where the primes are too close together from BKPCTF2016 - sourcekris
         # this attack module can be optional
         try:
-            from fermat import fermat
+            from RsaCtfTool.fermat import fermat
         except ImportError:
             print("[!] Warning: Fermat factorization module missing (fermat.py)")
             return
@@ -419,7 +417,7 @@ class RSAAttack(object):
         # https://grocid.net/2017/09/16/finding-close-prime-factorizations/
         # `b` is the size of the lookup dictionary to build.
         try:
-            import londahl
+            from RsaCtfTool import londahl
         except ImportError:
             print("[!] Warning: Londahl factorization module missing (londahl.py)")
             return
@@ -516,7 +514,7 @@ class RSAAttack(object):
         # attempt a Self-Initializing Quadratic Sieve
         # this attack module can be optional
         try:
-            from siqs import SiqsAttack
+            from RsaCtfTool.siqs import SiqsAttack
         except ImportError:
             print("[!] Warning: Yafu SIQS attack module missing (siqs.py)")
             return
@@ -539,7 +537,7 @@ class RSAAttack(object):
 
     def Pollard_p_1(self):
         # Pollard P minus 1 factoring, using the algorithm as described by https://math.berkeley.edu/~sagrawal/su14_math55/notes_pollard.pdf
-        from p_1 import pollard_P_1
+        from RsaCtfTool.p_1 import pollard_P_1
 
         if not hasattr(self.pub_key, "p"):
             self.pub_key.p = None
@@ -671,7 +669,8 @@ def loadkeys(keys):
     return []
 
 
-if __name__ == "__main__":
+def cli():
+    """" Main CLI function """
     parser = argparse.ArgumentParser(description='RSA CTF Tool')
     parser.add_argument('--publickey', help='public key file. You can use wildcards for multiple keys.')
     parser.add_argument('--createpub', help='Take n and e from cli and just print a public key then exit', action='store_true')
@@ -808,3 +807,7 @@ if __name__ == "__main__":
 
     attackobj = RSAAttack(args)
     attackobj.attack()
+
+
+if __name__ == "__main__":
+    cli()

@@ -1,4 +1,4 @@
-PyCrypto
-GMPY2
-SymPy
-requests
+PyCrypto>=2.6.1
+GMPY2>=2.0.8
+SymPy>=1.4
+requests>=2.22.0

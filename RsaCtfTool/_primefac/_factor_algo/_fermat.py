@@ -1,7 +1,7 @@
 from __future__ import division
 
 def fermat(n):
-    from _primefac._arith import isqrt
+    from RsaCtfTool._primefac import isqrt
     x = isqrt(n) + 1
     y = isqrt(x**2 - n)
     while True:

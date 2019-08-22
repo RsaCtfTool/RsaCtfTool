@@ -2,7 +2,8 @@
 
 from __future__ import print_function, division
 from threading import Timer
-import _primefac
+from RsaCtfTool import _primefac
+
 
 # Note that the multiprocing incurs relatively significant overhead.
 # Only call this if n is proving difficult to factor.
@@ -12,7 +13,7 @@ def kill_procs(procs):
         p.terminate()
 
 def multifactor(n, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1,
-                _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb), verbose=False, timeout=59):
+                            _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb), verbose=False, timeout=59):
     from multiprocessing import Process, Queue as mpQueue
     def factory(method, n, output):
         try:
@@ -66,9 +67,10 @@ Otherwise,
 '''
 
 def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
-             methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs,
-                      _primefac.fermat, _primefac.factordb), timeout=60):
-    from _primefac import isprime, isqrt, primegen
+             methods=(
+             _primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs,
+             _primefac.fermat, _primefac.factordb), timeout=60):
+    from RsaCtfTool._primefac import isprime, isqrt, primegen
     from random import randrange
     timeout = timeout - 1
     if n < 2:
@@ -160,7 +162,8 @@ def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
         else:
             factors.append(n)
 
-def factorint(n, trial_limit=1000, rho_rounds=42000, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)):
+def factorint(n, trial_limit=1000, rho_rounds=42000, methods=(
+_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)):
     out = {}
     for p in primefac(n, trial_limit=trial_limit, rho_rounds=rho_rounds, methods=methods):
         out[p] = out.get(p, 0) + 1
@@ -292,7 +295,8 @@ def main(argv):
           "mpqs": _primefac.mpqs,
           "fermat": _primefac.fermat,
           "factordb": _primefac.factordb}
-    methods = (_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)
+    methods = (
+    _primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)
     try:
         for arg in argv[1:]:
             if arg in ("-v", "--verbose"):

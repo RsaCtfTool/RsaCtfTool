@@ -4,8 +4,8 @@ from __future__ import division
 # http://programmingpraxis.com/2010/04/27/modern/
 # TODO: What are the best default bounds and way to increment them?
 def pollard_pm1(n, B1=100, B2=1000):
-    from _primefac._arith import ispower, gcd, ilog
-    from _primefac._prime import isprime, primegen
+    from RsaCtfTool._primefac import ispower, gcd, ilog
+    from RsaCtfTool._primefac import isprime, primegen
     import six
     if isprime(n):
         return n

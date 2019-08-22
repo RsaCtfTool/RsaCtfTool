@@ -55,8 +55,8 @@ def ecm(n, B1=10, B2=20):
           the bounds) and saving them in lists, and then iterate the inner
           while loops over those lists.
     """
-    from _primefac._arith import ispower, gcd, ilog
-    from _primefac._prime import isprime, primegen
+    from RsaCtfTool._primefac import ispower, gcd, ilog
+    from RsaCtfTool._primefac import isprime, primegen
     from six.moves import xrange
     from random import randrange
     import six

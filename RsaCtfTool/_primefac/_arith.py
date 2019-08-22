@@ -1,7 +1,6 @@
 from __future__ import print_function, division
-import six
 
-from _primefac import _util, _prime
+from RsaCtfTool._primefac import _util, _prime
 
 def _gcd(a, b):
     while b:

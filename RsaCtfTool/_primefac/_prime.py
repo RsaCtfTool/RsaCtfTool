@@ -4,7 +4,7 @@ from six.moves import xrange
 import six
 import itertools
 
-from _primefac import _util
+from RsaCtfTool._primefac import _util
 
 # Recursive sieve of Eratosthenes
 def primegen():
@@ -101,7 +101,7 @@ def chain(n, u1, v1, u2, v2, d, q, m):
     return u1, v1, k
 
 def _isprime(n, tb=(3, 5, 7, 11), eb=(2,), mrb=()):  # TODO: more streamlining
-    from _primefac import _arith
+    from RsaCtfTool._primefac import _arith
     # tb: trial division basis
     # eb: Euler's test basis
     # mrb: Miller-Rabin basis

@@ -1,8 +1,8 @@
 from __future__ import division
 
 def pollardRho_brent(n):
-    from _primefac._arith import gcd
-    from _primefac._prime import isprime
+    from RsaCtfTool._primefac import gcd
+    from RsaCtfTool._primefac import isprime
     from six.moves import xrange
     from random import randrange
     if isprime(n):

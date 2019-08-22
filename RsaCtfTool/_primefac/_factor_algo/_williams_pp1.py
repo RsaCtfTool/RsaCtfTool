@@ -11,8 +11,8 @@ def mlucas(v, a, n):
     return v1
 
 def williams_pp1(n):
-    from _primefac._arith import ispower, ilog, isqrt, gcd
-    from _primefac._prime import isprime, primegen
+    from RsaCtfTool._primefac import ispower, ilog, isqrt, gcd
+    from RsaCtfTool._primefac import isprime, primegen
     from six.moves import xrange
     import itertools
     if isprime(n):
