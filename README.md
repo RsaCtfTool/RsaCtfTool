@@ -5,6 +5,7 @@
 [![GitHub stars](https://img.shields.io/github/stars/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/stargazers)
 [![Rawsec's CyberSecurity Inventory](https://inventory.rawsec.ml/img/badges/Rawsec-inventoried-FF5050_flat.svg)](https://inventory.rawsec.ml/tools.html#RsaCtfTool)
 [![GitHub license](https://img.shields.io/github/license/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool)
+[![PyPI version](https://badge.fury.io/py/RsaCtfTool.svg)](https://badge.fury.io/py/RsaCtfTool)
 
 RSA tool for ctf - uncipher data from weak public key and try to recover private key
 Automatic selection of best attack for the given public key
@@ -108,6 +109,18 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
 `` easy_install `cat requirements.txt` ``
 
 If you get the error "ImportError: No module named Crypto.PublicKey" even with pycrypto installed, then, switch to a python virtual environment and should be ok.
+
+### Installing via PIP
+You can install this via PIP as follows:
+```
+pip3 install RsaCtfTool
+```
+To execute after PIP installation, do the following:
+```
+RsaCtfTool
+```
+
+To release to PYPI, update the version number in "setup.py" and run the "./scripts/release.sh" script.
 
 #### Todo
  - Implement multiple ciphertext handling for more attacks (Common modulus attack)
