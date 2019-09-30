@@ -2,3 +2,4 @@ PyCrypto
 GMPY2
 SymPy
 requests
+six
