@@ -103,7 +103,7 @@ pip install -r "requirements.txt"
 ```
 
 ### MacOS-specific Instructions
-If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
+If `pip3 install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
 `` easy_install `cat requirements.txt` ``
 
