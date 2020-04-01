@@ -656,12 +656,14 @@ def sageworks():
     try:
         sageversion = subprocess.check_output(['sage', '-v'])
     except OSError:
+        print("SageMath not installed, running limited attacks")
         return False
 
     if 'SageMath version' in sageversion.decode('utf-8'):
 
         return True
     else:
+        print("SageMath not installed, running limited attacks")
         return False
 
 
