@@ -3,6 +3,9 @@
 from __future__ import print_function, division
 from threading import Timer
 import _primefac
+from _primefac._arith import gcd
+from _primefac._prime import primes
+from _primefac._util import listprod
 
 # Note that the multiprocing incurs relatively significant overhead.
 # Only call this if n is proving difficult to factor.
