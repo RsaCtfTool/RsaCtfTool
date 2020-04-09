@@ -795,8 +795,10 @@ if __name__ == "__main__":
         quit()
 
     if sageworks():
+        print("SageMath installation detected, running full attacks")
         args.sageworks = True
     else:
+        print("SageMath not installed, running limited attacks")
         args.sageworks = False
 
     tmpfile = None
