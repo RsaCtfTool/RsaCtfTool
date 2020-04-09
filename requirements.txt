@@ -1,5 +1,5 @@
 PyCrypto
-GMPY2>=2.1.0b4
+GMPY2; sys_platform == 'darwin'  # Fails on Linux and Windows
 SymPy
 requests
 six
