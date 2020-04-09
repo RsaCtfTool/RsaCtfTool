@@ -1,5 +1,5 @@
 PyCrypto
-GMPY2
+GMPY2>=2.1.0b4
 SymPy
 requests
 six
