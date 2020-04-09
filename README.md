@@ -98,7 +98,7 @@ cd RsaCtfTool
 sudo apt-get install libgmp3-dev libmpc-dev
 python3 -m venv .
 . bin/activate
-pip install -r "requirements.txt"
+pip3 install -r "requirements.txt"
 ./RsaCtfTool.py
 ```
 
