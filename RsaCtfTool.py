@@ -735,6 +735,29 @@ if __name__ == "__main__":
         cipher = open(args.uncipherfile, 'rb').read()
         args.uncipher = cipher
 
+    if args.key is not None and args.uncipher is not None:
+        with open(args.key, 'rb') as key_fd:
+            key = RSA.importKey(key_fd.read())
+            if key.has_private():
+                tmp_cipher = tempfile.NamedTemporaryFile()
+                with open(tmp_cipher.name, "wb") as tmpfd:
+                    tmpfd.write(args.uncipher)
+
+                with open('/dev/null') as DN:
+                    openssl_result = subprocess.check_output(['openssl',
+                                                              'rsautl',
+                                                              '-raw',
+                                                              '-decrypt',
+                                                              '-in',
+                                                              tmp_cipher.name,
+                                                              '-inkey',
+                                                              args.key],
+                                                              stderr=DN)
+                    print(openssl_result)         
+            else:
+                print("This mode require a private key and the cipher")
+        quit()
+
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
         if args.p and not args.q:
@@ -778,27 +801,26 @@ if __name__ == "__main__":
         quit()
 
     # if dumpkey mode dump the key components then quit
-    if args.dumpkey:
-        if args.key is not None:
-            key_data = open(args.key, 'rb').read()
-            key = RSA.importKey(key_data)
-            print("[*] n: " + str(key.n))
-            print("[*] e: " + str(key.e))
-            if key.has_private():
-                print("[*] d: " + str(key.d))
-                print("[*] p: " + str(key.p))
-                print("[*] q: " + str(key.q))
-                if args.ext:
-                    dp = key.d % (key.p - 1)
-                    dq = key.d % (key.q - 1)
-                    pinv = invmod(key.p, key.q)
-                    qinv = invmod(key.q, key.p)
-                    print("[*] dp: " + str(dp))
-                    print("[*] dq: " + str(dq))
-                    print("[*] pinv: " + str(pinv))
-                    print("[*] qinv: " + str(qinv))
+    if args.dumpkey and args.key is not None:
+        key_data = open(args.key, 'rb').read()
+        key = RSA.importKey(key_data)
+        print("[*] n: " + str(key.n))
+        print("[*] e: " + str(key.e))
+        if key.has_private():
+            print("[*] d: " + str(key.d))
+            print("[*] p: " + str(key.p))
+            print("[*] q: " + str(key.q))
+            if args.ext:
+                dp = key.d % (key.p - 1)
+                dq = key.d % (key.q - 1)
+                pinv = invmod(key.p, key.q)
+                qinv = invmod(key.q, key.p)
+                print("[*] dp: " + str(dp))
+                print("[*] dq: " + str(dq))
+                print("[*] pinv: " + str(pinv))
+                print("[*] qinv: " + str(qinv))
 
-            quit()
+        quit()
 
     if sageworks():
         print("SageMath installation detected, running full attacks")
