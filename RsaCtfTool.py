@@ -69,7 +69,6 @@ class PrivateKey(object):
            :param e: exponent
            :param n: n from public key
         """
-
         if p != q:
             t = (p-1)*(q-1)
         else:
@@ -250,7 +249,6 @@ class RSAAttack(object):
 
             p_id = ids[1]
             q_id = ids[2]
-            # bugfix: See https://github.com/sourcekris/RsaCtfTool/commit/16d4bb258ebb4579aba2bfc185b3f717d2d91330#commitcomment-21878835
             regex = re.compile("value=\"([0-9\^\-]+)\"", re.IGNORECASE)
             r_1 = s.get(url_2 % p_id, verify=False)
             r_2 = s.get(url_2 % q_id, verify=False)
@@ -607,6 +605,13 @@ class RSAAttack(object):
                 # check and print resulting private key
                 if self.priv_key is not None:
                     if self.args.private and not self.displayed:
+                        if self.args.dumpkey:
+                            print("Dump private key informations")
+                            print("p: %s" % self.priv_key.key.p)
+                            print("q: %s" % self.priv_key.key.q)
+                            print("e: %s" % self.priv_key.key.e)
+                            print("n: %s" % self.priv_key.key.n)
+                            print("d: %s" % self.priv_key.key.d)
                         print(self.priv_key)
                         self.displayed = True
 
@@ -658,11 +663,7 @@ def sageworks():
     except OSError:
         return False
 
-    if 'SageMath version' in sageversion.decode('utf-8'):
-
-        return True
-    else:
-        return False
+    return 'SageMath version' in sageversion.decode('utf-8')
 
 
 def loadkeys(keys):
@@ -750,6 +751,13 @@ if __name__ == "__main__":
                 print("[!] No invmod for e and t, maybe an error in your args ?")
             sys.exit(0)
         if args.private:
+            if args.dumpkey:
+                print("Dump private key informations")
+                print("p: %s" % priv_key.key.p)
+                print("q: %s" % priv_key.key.q)
+                print("e: %s" % priv_key.key.e)
+                print("n: %s" % priv_key.key.n)
+                print("d: %s" % priv_key.key.d)
             print(priv_key)
 
         if args.createpub:
@@ -771,28 +779,26 @@ if __name__ == "__main__":
 
     # if dumpkey mode dump the key components then quit
     if args.dumpkey:
-        if args.key is None:
-            raise Exception("Specify a key file to dump with --key. See --help for info.")
+        if args.key is not None:
+            key_data = open(args.key, 'rb').read()
+            key = RSA.importKey(key_data)
+            print("[*] n: " + str(key.n))
+            print("[*] e: " + str(key.e))
+            if key.has_private():
+                print("[*] d: " + str(key.d))
+                print("[*] p: " + str(key.p))
+                print("[*] q: " + str(key.q))
+                if args.ext:
+                    dp = key.d % (key.p - 1)
+                    dq = key.d % (key.q - 1)
+                    pinv = invmod(key.p, key.q)
+                    qinv = invmod(key.q, key.p)
+                    print("[*] dp: " + str(dp))
+                    print("[*] dq: " + str(dq))
+                    print("[*] pinv: " + str(pinv))
+                    print("[*] qinv: " + str(qinv))
 
-        key_data = open(args.key, 'rb').read()
-        key = RSA.importKey(key_data)
-        print("[*] n: " + str(key.n))
-        print("[*] e: " + str(key.e))
-        if key.has_private():
-            print("[*] d: " + str(key.d))
-            print("[*] p: " + str(key.p))
-            print("[*] q: " + str(key.q))
-            if args.ext:
-                dp = key.d % (key.p - 1)
-                dq = key.d % (key.q - 1)
-                pinv = invmod(key.p, key.q)
-                qinv = invmod(key.q, key.p)
-                print("[*] dp: " + str(dp))
-                print("[*] dq: " + str(dq))
-                print("[*] pinv: " + str(pinv))
-                print("[*] qinv: " + str(qinv))
-
-        quit()
+            quit()
 
     if sageworks():
         print("SageMath installation detected, running full attacks")
