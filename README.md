@@ -25,6 +25,13 @@ Attacks :
  - Elliptic Curve Method
  - Pollards p-1 for relatively smooth numbers
  - Mersenne primes factorization
+ - Factordb
+ - Londahl
+ - Noveltyprimes
+ - Partial q
+ - Primefac
+ - Qicheng
+ - Same n, huge e
 
 ## Usage:
 
