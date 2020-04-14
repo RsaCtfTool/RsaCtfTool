@@ -1,28 +1,55 @@
-#! /usr/bin/env python
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from __future__ import print_function, division
-from threading import Timer
+import logging
 import _primefac
+from threading import Timer
+from lib.timeout import timeout
+from lib.keys_wrapper import PrivateKey
+from lib.exceptions import FactorizationError
 
 # Note that the multiprocing incurs relatively significant overhead.
 # Only call this if n is proving difficult to factor.
 
+
 def kill_procs(procs):
+    """Kill it with fire !!!
+    """
     for p in procs:
         p.terminate()
 
-def multifactor(n, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1,
-                _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb), verbose=False, timeout=59):
+
+def multifactor(
+    n,
+    methods=(
+        _primefac.pollardRho_brent,
+        _primefac.pollard_pm1,
+        _primefac.williams_pp1,
+        _primefac.ecm,
+        _primefac.mpqs,
+        _primefac.fermat,
+        _primefac.factordb,
+    ),
+    verbose=False,
+    timeout=59,
+):
+    """Multifactor implementation
+    """
     from multiprocessing import Process, Queue as mpQueue
     from six.moves import xrange, reduce
     import six
+
     def factory(method, n, output):
+        """Simple factory
+        """
         try:
             g = method(n)
         except OverflowError:
             return None
         if g is not None:
-          output.put((g, str(method).split()[1]))
+            output.put((g, str(method).split()[1]))
+
     factors = mpQueue()
 
     procs = [Process(target=factory, args=(m, n, factors)) for m in methods]
@@ -40,20 +67,10 @@ def multifactor(n, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _
                 pass
     finally:
         timer.cancel()
-
-    if verbose:
-        names = {"pollardRho_brent": "prb",
-                 "pollard_pm1": "p-1",
-                 "williams_pp1": "p+1"}
-        if g in names:
-            name = names[g]
-        else:
-            name = g
-        print("\033[1;31m" + name + "\033[;m", end=' ')
-        stdout.flush()
     return f
 
-'''
+
+"""
 Obtains a complete factorization of n, yielding the prime factors as they are
 obtained. If the user explicitly specifies a splitting method, use that method.
 Otherwise,
@@ -65,15 +82,32 @@ Otherwise,
     we want to be fairly sure that rho isn't likely to yield new factors soon.
     The default value of rho_rounds=42000 seems good for that but is probably
     overkill.
-'''
+"""
 
-def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
-             methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs,
-                      _primefac.fermat, _primefac.factordb), timeout=60):
+
+def primefac(
+    n,
+    trial_limit=1000,
+    rho_rounds=42000,
+    verbose=False,
+    methods=(
+        _primefac.pollardRho_brent,
+        _primefac.pollard_pm1,
+        _primefac.williams_pp1,
+        _primefac.ecm,
+        _primefac.mpqs,
+        _primefac.fermat,
+        _primefac.factordb,
+    ),
+    timeout=60,
+):
+    """Primefac implementation
+    """
     from _primefac import isprime, isqrt, primegen
     from six.moves import xrange, reduce
     from random import randrange
     import six
+
     timeout = timeout - 1
     if n < 2:
         return
@@ -132,10 +166,10 @@ def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
                     if rhocount >= rho_rounds:
                         raise Exception
                     rhocount += 1
-                    x = (x**2 + c) % n
-                    y = (y**2 + c) % n
-                    y = (y**2 + c) % n
-                    g = gcd(x-y, n)
+                    x = (x ** 2 + c) % n
+                    y = (y ** 2 + c) % n
+                    y = (y ** 2 + c) % n
+                    g = gcd(x - y, n)
             # We now have a nontrivial factor g of n.  If we took too long to get here, we're actually at the except statement.
             if isprime(g):
                 yield g
@@ -147,7 +181,9 @@ def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
             else:
                 factors.append(n)
         except Exception:
-            difficult.append(n)  # Factoring n took too long.  We'll have multifactor chug on it.
+            difficult.append(
+                n
+            )  # Factoring n took too long.  We'll have multifactor chug on it.
 
     factors = difficult
     while len(factors) != 0:
@@ -164,11 +200,30 @@ def primefac(n, trial_limit=1000, rho_rounds=42000, verbose=False,
         else:
             factors.append(n)
 
-def factorint(n, trial_limit=1000, rho_rounds=42000, methods=(_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)):
+
+def factorint(
+    n,
+    trial_limit=1000,
+    rho_rounds=42000,
+    methods=(
+        _primefac.pollardRho_brent,
+        _primefac.pollard_pm1,
+        _primefac.williams_pp1,
+        _primefac.ecm,
+        _primefac.mpqs,
+        _primefac.fermat,
+        _primefac.factordb,
+    ),
+):
+    """Factorize int
+    """
     out = {}
-    for p in primefac(n, trial_limit=trial_limit, rho_rounds=rho_rounds, methods=methods):
+    for p in primefac(
+        n, trial_limit=trial_limit, rho_rounds=rho_rounds, methods=methods
+    ):
         out[p] = out.get(p, 0) + 1
     return out
+
 
 usage = """
 This is primefac-fork version 1.1.
@@ -245,135 +300,73 @@ CREDITS:
        http://programmingpraxis.com/2010/04/23/
 """  # TODO performance, credits
 
+
 def rpn(instr):
+    """RPN implementation
+    """
     stack = []
     for token in instr.split():
         if set(token).issubset("1234567890L"):
-            stack.append(int(token.rstrip('L')))
-        elif len(token) > 1 and token[0] == '-' and set(token[1:]).issubset("1234567890L"):
+            stack.append(int(token.rstrip("L")))
+        elif (
+            len(token) > 1
+            and token[0] == "-"
+            and set(token[1:]).issubset("1234567890L")
+        ):
             stack.append(int(token))
-        elif token in ('+', '-', '*', '/', '%', '**', 'x', 'xx'):   # binary operators
+        elif token in ("+", "-", "*", "/", "%", "**", "x", "xx"):  # binary operators
             b = stack.pop()
             a = stack.pop()
-            if token == '+':
+            if token == "+":
                 res = a + b
-            elif token == '-':
+            elif token == "-":
                 res = a - b
-            elif token == '*':
+            elif token == "*":
                 res = a * b
-            elif token == 'x':
+            elif token == "x":
                 res = a * b
-            elif token == '/':
+            elif token == "/":
                 res = a / b
-            elif token == '%':
+            elif token == "%":
                 res = a % b
-            elif token == '**':
+            elif token == "**":
                 res = a ** b
-            elif token == 'xx':
+            elif token == "xx":
                 res = a ** b
             stack.append(res)
-        elif token in ('!', '#', 'p!'):                             # unary operators
+        elif token in ("!", "#", "p!"):  # unary operators
             a = stack.pop()
-            if token == '!':
-                res = listprod(xrange(1, a+1))
-            elif token == '#':
-                res = listprod(primes(a+1))
-            elif token == 'p!':
-                res = listprod(primes(a+1))
+            if token == "!":
+                res = listprod(xrange(1, a + 1))
+            elif token == "#":
+                res = listprod(primes(a + 1))
+            elif token == "p!":
+                res = listprod(primes(a + 1))
             stack.append(res)
         else:
-            raise Exception("Failed to evaluate RPN expression: not sure what to do with '{t}'.".format(t=token))
+            raise Exception(
+                "Failed to evaluate RPN expression: not sure what to do with '{t}'.".format(
+                    t=token
+                )
+            )
     return [_primefac.mpz(i) for i in stack]
 
-def main(argv):
-    from six.moves import xrange, reduce
-    import six
-    if len(argv) == 1:
-        sysexit(usage)
-    rpx, tr, rr, veb, su = [], 1000, 42000, False, False
-    ms = {"prb": _primefac.pollardRho_brent,
-          "p-1": _primefac.pollard_pm1,
-          "p+1": _primefac.williams_pp1,
-          "ecm": _primefac.ecm,
-          "mpqs": _primefac.mpqs,
-          "fermat": _primefac.fermat,
-          "factordb": _primefac.factordb}
-    methods = (_primefac.pollardRho_brent, _primefac.pollard_pm1, _primefac.williams_pp1, _primefac.ecm, _primefac.mpqs, _primefac.fermat, _primefac.factordb)
+
+def attack(attack_rsa_obj, publickey, cipher=[]):
+    """Use primefac
+    """
     try:
-        for arg in argv[1:]:
-            if arg in ("-v", "--verbose"):
-                veb = True
-            elif arg in ("-s", "--summary"):
-                su = True
-            elif arg in ("-vs", "-sv"):
-                veb, su = True, True
-            elif arg[:3] == "-t=":
-                tr = "inf" if arg[3:] == "inf" else int(arg[3:])    # Maximum number for trial division
-            elif arg[:3] == "-r=":
-                rr = "inf" if arg[3:] == "inf" else int(arg[3:])    # Number of rho rounds before multifactor
-            elif arg[:3] == "-m=":  # methods = tuple(ms[x] for x in arg[3:].split(',') if x in ms)
-                methods = []
-                for x in arg[3:].split(','):
-                    if x in ms:
-                        if x in ("p-1", "p+1", "mpqs") and ms[x] in methods:
-                            continue
-                        methods.append(ms[x])
-            else:
-                rpx.append(arg)
-        nums = rpn(' '.join(rpx))
-    except:
-        sysexit("Error while parsing arguments" + str(e))
-    if su:
-        print()
-    for n in nums:
-        print("%d: " % n, end='')
-        f = {}
-        for p in primefac(n, trial_limit=(n if tr == "inf" else tr),
-                            rho_rounds=rr, verbose=veb, methods=methods):
-            f[p] = f.get(p, 0) + 1
-            print(p, end=' ')
-            stdout.flush()
-            assert _primefac.isprime(p) and n % p == 0, (n, p)
-        print()
-        if su:
-            print("Z%d  = " % len(str(n)), end='')
-            outstr = ""
-            for p in sorted(f):
-                if f[p] == 1:
-                    outstr += "P%d x " % len(str(p))
-                else:
-                    outstr += "P%d^%d x " % (len(str(p)), f[p])
-            outstr = outstr[:-2] + " = "
-            for p in sorted(f):
-                if f[p] == 1:
-                    outstr += " %d x" % p
-                else:
-                    outstr += " %d^%d x" % (p, f[p])
-            print(outstr[:-2])
-            print()
+        with timeout(seconds=attack_rsa_obj.args.timeout):
+            result = list(primefac(publickey.n, timeout=attack_rsa_obj.args.timeout))
+    except FactorizationError:
+        return (None, None)
 
-'''
-main(['p', '-s',
-'1489576198567193874913874619387459183543154617315437135656']) only test
-'''
+    if len(result) == 2:
+        publickey.p = int(result[0])
+        publickey.q = int(result[1])
+        priv_key = PrivateKey(
+            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+        )
+        return (priv_key, None)
 
-# TODO timeout?
-if __name__ == "__main__":
-    from sys import argv as arguments, stdout, exit as sysexit
-    main(arguments)
-
-'''
-Fun examples:
-primefac -v 1489576198567193874913874619387459183543154617315437135656
-  On my system, the factor race is a bit unpredicatble on this number.
-  prb, ecm, p-1, and mpqs all show up reasonably often.
-primefac -v 12956921851257164598146425167654345673426523793463
-  Z50 = P14 x P17 x P20 =
-      24007127617807 x 28050585032291527 x 19240648901716863967.
-  p-1 gets the P14 and p+1 gets the rest.
-primefac -v 38 ! 1 +
-    -->  Z45 = P23 x P23 = 14029308060317546154181 x 37280713718589679646221
-  The MPQS (almost always) gets this one.
-    Depending on the system running things,
-        this can take from 10 seconds to 3 minutes.
-'''
+    return (None, None)

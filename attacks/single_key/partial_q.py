@@ -1,8 +1,11 @@
 #!/usr/bin/python3
 
-from subprocess import check_output
 import libnum
+import logging
+import sys
+from subprocess import check_output
 
+# TODO
 # Source:
 # https://0day.work/0ctf-2016-quals-writeups/
 
@@ -60,12 +63,14 @@ import libnum
 
 
 def partial_q(e, dp, dq, qi, part_q):
-    # Tunable to search longer
+    """Search for partial q.
+       Tunable to search longer.
+    """
     N = 100000
 
     for j in range(N, 1, -1):
         q = (e * dq - 1) / j + 1
-        if str(hex(q)).strip('L').endswith(part_q):
+        if str(hex(q)).strip("L").endswith(part_q):
             break
 
     for k in range(1, N, 1):
@@ -81,11 +86,23 @@ def partial_q(e, dp, dq, qi, part_q):
     print("q = " + str(q))
 
 
+def attack(attack_rsa_obj, publickey, cipher=[]):
+    """Partial q in private key.
+       Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
+       But it's here if you need :)
+    """
+    return (None, None)
+
+
 if __name__ == "__main__":
     # import the private key manually
-    keyfile = 'examples/masked.pem'
-    keycmd = ['openssl', 'asn1parse', '-in', keyfile]
-    private_key = [long(x.split(':')[3], 16) for x in check_output(keycmd).splitlines() if 'INTEGER' in x]
+    keyfile = sys.argv[1]
+    keycmd = ["openssl", "asn1parse", "-in", keyfile]
+    private_key = [
+        long(x.split(":")[3], 16)
+        for x in check_output(keycmd).splitlines()
+        if "INTEGER" in x
+    ]
 
     # dq from examples/masked.pem
     dp = private_key[4]
@@ -93,7 +110,7 @@ if __name__ == "__main__":
     qi = private_key[6]
 
     # the last part of q we recovered in examples/masked.pem
-    part_q = hex(private_key[3]).strip('L').replace('0x', '')
+    part_q = hex(private_key[3]).strip("L").replace("0x", "")
 
     # guessing exponent is standard
     e = 65537

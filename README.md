@@ -18,7 +18,7 @@ Attacks :
  - Fermat's factorisation for close p and q
  - Gimmicky Primes method
  - Past CTF Primes method
- - Self-Initializing Quadratic Sieve (SIQS) using Yafu
+ - Self-Initializing Quadratic Sieve (SIQS) using Yafu (https://github.com/DarkenCode/yafu.git)
  - Common factor attacks across multiple keys
  - Small fractions method when p/q is close to a small fraction
  - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
@@ -29,14 +29,16 @@ Attacks :
 ## Usage:
 
 ```
-usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--createpub] [--dumpkey] [--ext]
+usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
+                     [--createpub] [--dumpkey] [--ext]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
-                     [--verbose] [--private] [--ecmdigits ECMDIGITS] [-n N]
-                     [-p P] [-q Q] [-e E] [--key KEY]
-                     [--attack {hastads,factordb,pastctfprimes,mersenne_primes,noveltyprimes,smallq,wiener,comfact_cn,primefac,fermat,siqs,Pollard_p_1,all}]
+                     [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
+                     [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
+                     [-e E] [--key KEY]
+                     [--attack {mersenne_primes,pollard_p_1,smallfraction,smallq,boneh_durfee,noveltyprimes,ecm,factordb,wiener,siqs,pastctfprimes,partial_q,comfact_cn,hastads,fermat,nullattack,primefac,commonfactors,same_n_huge_e,all}]
 ```
 
-Mode 1 - Attack RSA (specify --publickey)
+Mode 1 - Attack RSA (specify --publickey or n and e)
  - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
  - uncipher : cipher message to decrypt
  - private : display private rsa key if recovered
@@ -66,27 +68,12 @@ Mode 3 - Dump the public and/or private numbers (optionally including CRT parame
 ### Factor with ECM when you know the approximate length in digits of a prime:
 `./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
 
-#### Examples :
- - weak\_public.pub, weak\_public.cipher : weak public key
- - wiener.pub, wiener.cipher : key vulnerable to Wiener's attack
- - small\_exponent.pub, small\_exponent.cipher : key with e=3, vulnerable to Hastad's attack
- - small\_q.pub, small\_q.cipher : public key with a small prime
- - close\_primes.pub, close\_primes.cipher : public key with primes suceptible to fermat factorization
- - elite\_primes.pub : public key with a gimmick prime
- - fermat.pub : public key with another vulnerability to fermat factorization
- - pastctfprimes.pub : public key with a prime from a past CTF
- - siqs.pub: 256bit public key that is factored in 30 seconds with SIQS
- - factordb_parsing.pub: a public key with a prime that is described as an expression on factordb.com
- - smallfraction.pub: a public key where p/q is close to a small fraction
- - boneh\_durfee.pub: a public key factorable using boneh\_durfee method
- - multikey-0.pub and multikey-1.pub: Public keys that share a common factor
- - ecm_method.pub: Public key with a 25 digit prime factorable with ECM method in around 2 minutes (use --ecmdigits 25 to test)
-
 #### Requirements:
  - GMPY2
  - SymPy
  - PyCrypto
  - Requests
+ - Libnum
  - SageMath - optional but advisable
 ### Ubuntu 18.04 and Kali specific Instructions ###
 ```
@@ -102,11 +89,4 @@ If `pip install -r "requirements.txt"` fails to install requirements accessible 
 `` easy_install `cat requirements.txt` ``
 
 #### Todo
- - Implement multiple ciphertext handling for more attacks (Common modulus attack)
- - Implement support for MultiPrime RSA (see 0ctf 2016)
- - Possibly implement Msieve support...
- - Some kind of polynomial search...
  - Brainstorm moar attack types!
- - Saw a CTF where the supplied N was a 2048 bit prime. Detect this and solve using phi = (n - 1) * (n - 1) which seemed to work for that CTF
- - Replicate all functionality of rsatool.py
- - Support more types of expression based primes from factordb.com?

@@ -7,16 +7,18 @@ def _ecadd(p1, p2, p0, n):
     x1, z1 = p1
     x2, z2 = p2
     x0, z0 = p0
-    t1, t2 = (x1-z1)*(x2+z2), (x1+z1)*(x2-z2)
-    return (z0*pow(t1+t2, 2, n) % n, x0*pow(t1-t2, 2, n) % n)
+    t1, t2 = (x1 - z1) * (x2 + z2), (x1 + z1) * (x2 - z2)
+    return (z0 * pow(t1 + t2, 2, n) % n, x0 * pow(t1 - t2, 2, n) % n)
+
 
 # double point p on A modulo n
 def _ecdub(p, A, n):
     x, z = p
     An, Ad = A
-    t1, t2 = pow(x+z, 2, n), pow(x-z, 2, n)
+    t1, t2 = pow(x + z, 2, n), pow(x - z, 2, n)
     t = t1 - t2
-    return (t1*t2*4*Ad % n, (4*Ad*t2 + t*An)*t % n)
+    return (t1 * t2 * 4 * Ad % n, (4 * Ad * t2 + t * An) * t % n)
+
 
 # multiply point p by m on curve A modulo n
 def _ecmul(m, p, A, n):
@@ -60,6 +62,7 @@ def ecm(n, B1=10, B2=20):
     from six.moves import xrange
     from random import randrange
     import six
+
     if isprime(n):
         return n
     m = ispower(n)
@@ -69,13 +72,16 @@ def ecm(n, B1=10, B2=20):
     while True:
         for _ in xrange(iters):
             seed = randrange(6, n)
-            u, v = (seed**2 - 5) % n, 4*seed % n
+            u, v = (seed ** 2 - 5) % n, 4 * seed % n
             p = pow(u, 3, n)
-            Q, C = (pow(v-u, 3, n)*(3*u+v) % n, 4*p*v % n), (p, pow(v, 3, n))
+            Q, C = (
+                (pow(v - u, 3, n) * (3 * u + v) % n, 4 * p * v % n),
+                (p, pow(v, 3, n)),
+            )
             pg = primegen()
             p = six.next(pg)
             while p <= B1:
-                Q, p = _ecmul(p**ilog(B1, p), Q, C, n), six.next(pg)
+                Q, p = _ecmul(p ** ilog(B1, p), Q, C, n), six.next(pg)
             g = gcd(Q[1], n)
             if 1 < g < n:
                 return g
@@ -102,5 +108,5 @@ def ecm(n, B1=10, B2=20):
         B2 *= 3
         iters *= 2
 
-__all__ = [ecm]
 
+__all__ = [ecm]
