@@ -3,3 +3,4 @@ GMPY2
 SymPy
 requests
 libnum
+six
