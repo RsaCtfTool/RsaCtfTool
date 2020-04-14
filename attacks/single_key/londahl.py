@@ -1,26 +1,8 @@
-def londahl(self, londahl_b=20000000):
-        # Another attack for primes that are too close together.
-        # https://grocid.net/2017/09/16/finding-close-prime-factorizations/
-        # `b` is the size of the lookup dictionary to build.
-        try:
-            import londahl
-        except ImportError:
-            print("[!] Warning: Londahl factorization module missing (londahl.py)")
-            return
-
-        factors = londahl.close_factor(self.pub_key.n, londahl_b)
-
-        if factors is not None:
-            self.pub_key.p, self.pub_key.q = factors
-            self.priv_key = PrivateKey(int(self.pub_key.p), int(self.pub_key.q),
-                                       int(self.pub_key.e), int(self.pub_key.n))
-
-        return
-
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import gmpy2
+from lib.keys_wrapper import PrivateKey
 
 def close_factor(n, b):
  
