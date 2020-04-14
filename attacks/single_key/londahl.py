@@ -58,7 +58,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
        private key without spending any time factoring
     """
     londahl_b=20000000
-    factors = londahl.close_factor(publickey.n, londahl_b)
+    factors = close_factor(publickey.n, londahl_b)
 
     if factors is not None:
         p, q = factors
