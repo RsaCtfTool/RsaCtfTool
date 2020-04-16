@@ -39,7 +39,8 @@ this option, but if things don't work, you should try
 disabling it
 """
 helpful_only = True
-dimension_min = 7 # stop removing if lattice reaches that dimension
+dimension_min = 7  # stop removing if lattice reaches that dimension
+
 
 ############################################
 # Functions
@@ -50,7 +51,7 @@ def helpful_vectors(BB, modulus):
     """display stats on helpful vectors"""
     nothelpful = 0
     for ii in range(BB.dimensions()[0]):
-        if BB[ii,ii] >= modulus:
+        if BB[ii, ii] >= modulus:
             nothelpful += 1
 
     # print nothelpful, "/", BB.dimensions()[0], " vectors are not helpful"
@@ -61,7 +62,7 @@ def matrix_overview(BB, bound):
     for ii in range(BB.dimensions()[0]):
         a = ('%02d ' % ii)
         for jj in range(BB.dimensions()[1]):
-            a += '0' if BB[ii,jj] == 0 else 'X'
+            a += '0' if BB[ii, jj] == 0 else 'X'
             if BB.dimensions()[0] < 60:
                 a += ' '
         if BB[ii, ii] >= bound:
@@ -99,7 +100,7 @@ def remove_unhelpful(BB, monomials, bound, current):
                 BB = BB.delete_columns([ii])
                 BB = BB.delete_rows([ii])
                 monomials.pop(ii)
-                BB = remove_unhelpful(BB, monomials, bound, ii-1)
+                BB = remove_unhelpful(BB, monomials, bound, ii - 1)
                 return BB
 
             # level:1
@@ -115,16 +116,18 @@ def remove_unhelpful(BB, monomials, bound, current):
                 # remove both it if no other vector was affected and
                 # this helpful vector is not helpful enough
                 # compared to our unhelpful one
-                if affected_deeper and abs(bound - BB[affected_vector_index, affected_vector_index]) < abs(bound - BB[ii, ii]):
+                if affected_deeper and abs(bound - BB[affected_vector_index, affected_vector_index]) < abs(
+                        bound - BB[ii, ii]):
                     # print "* removing unhelpful vectors", ii, "and", affected_vector_index
                     BB = BB.delete_columns([affected_vector_index, ii])
                     BB = BB.delete_rows([affected_vector_index, ii])
                     monomials.pop(affected_vector_index)
                     monomials.pop(ii)
-                    BB = remove_unhelpful(BB, monomials, bound, ii-1)
+                    BB = remove_unhelpful(BB, monomials, bound, ii - 1)
                     return BB
     # nothing happened
     return BB
+
 
 def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     """
@@ -146,16 +149,16 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     # substitution (Herrman and May)
     PR = PolynomialRing(ZZ, ['u', 'x', 'y'])
     u, x, y = PR.gens()
-    Q = PR.quotient(x*y + 1 - u) # u = xy + 1
+    Q = PR.quotient(x * y + 1 - u)  # u = xy + 1
     polZ = Q(pol).lift()
 
-    UU = XX*YY + 1
+    UU = XX * YY + 1
 
     # x-shifts
     gg = []
     for kk in range(mm + 1):
         for ii in range(mm - kk + 1):
-            xshift = x**ii * modulus**(mm - kk) * polZ(u, x, y)**kk
+            xshift = x ** ii * modulus ** (mm - kk) * polZ(u, x, y) ** kk
             gg.append(xshift)
     gg.sort()
 
@@ -169,15 +172,15 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     # y-shifts (selected by Herrman and May)
     for jj in range(1, tt + 1):
-        for kk in range(floor(mm/tt) * jj, mm + 1):
-            yshift = y**jj * polZ(u, x, y)**kk * modulus**(mm - kk)
+        for kk in range(floor(mm / tt) * jj, mm + 1):
+            yshift = y ** jj * polZ(u, x, y) ** kk * modulus ** (mm - kk)
             yshift = Q(yshift).lift()
-            gg.append(yshift) # substitution
+            gg.append(yshift)  # substitution
 
     # y-shifts list of monomials
     for jj in range(1, tt + 1):
-        for kk in range(floor(mm/tt) * jj, mm + 1):
-            monomials.append(u**kk * y**jj)
+        for kk in range(floor(mm / tt) * jj, mm + 1):
+            monomials.append(u ** kk * y ** jj)
 
     # construct lattice B
     nn = len(monomials)
@@ -186,25 +189,25 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         BB[ii, 0] = gg[ii](0, 0, 0)
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
-                BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU,XX,YY)
+                BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU, XX, YY)
 
     # Prototype to reduce the lattice
     if helpful_only:
         # automatically remove
-        BB = remove_unhelpful(BB, monomials, modulus**mm, nn-1)
+        BB = remove_unhelpful(BB, monomials, modulus ** mm, nn - 1)
         # reset dimension
         nn = BB.dimensions()[0]
         if nn == 0:
             # print "failure"
-            return 0,0
+            return 0, 0
 
     # check if vectors are helpful
     if debug:
-        helpful_vectors(BB, modulus**mm)
+        helpful_vectors(BB, modulus ** mm)
 
     # check if determinant is correctly bounded
     det = BB.det()
-    bound = modulus**(mm*nn)
+    bound = modulus ** (mm * nn)
     if det >= bound:
         # print "We do not have det < bound. Solutions might not be found."
         # print "Try with highers m and t."
@@ -214,11 +217,11 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         if strict:
             return -1, -1
     # else:
-        # print "det(L) < e**(m*n) (good! If a solution exists < N**delta, it will be found)"
+    # print "det(L) < e**(m*n) (good! If a solution exists < N**delta, it will be found)"
 
     # display the lattice basis
     if debug:
-        matrix_overview(BB, modulus**mm)
+        matrix_overview(BB, modulus ** mm)
 
     # LLL
     BB = BB.LLL()
@@ -227,8 +230,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     w, z = PolynomialRing(ZZ, ['w', 'z']).gens()
     pol1 = pol2 = 0
     for jj in range(nn):
-        pol1 += monomials[jj](w*z+1,w,z) * BB[0, jj] / monomials[jj](UU,XX,YY)
-        pol2 += monomials[jj](w*z+1,w,z) * BB[1, jj] / monomials[jj](UU,XX,YY)
+        pol1 += monomials[jj](w * z + 1, w, z) * BB[0, jj] / monomials[jj](UU, XX, YY)
+        pol2 += monomials[jj](w * z + 1, w, z) * BB[1, jj] / monomials[jj](UU, XX, YY)
 
     # resultant
     q = PolynomialRing(ZZ, 'q').gen()
@@ -253,7 +256,8 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
 
     return solx, soly
 
-def factor(N,e):
+
+def factor(N, e):
     from sage.all import ZZ, log, floor, PolynomialRing
 
     ############################################
@@ -261,19 +265,19 @@ def factor(N,e):
     ##########################################
 
     # the hypothesis on the private exponent (max 0.292)
-    delta = .26 # d < N**delta
+    delta = .26  # d < N**delta
 
     #
     # Lattice (tweak those values)
     #
 
     # you should tweak this (after a first run)
-    m = 4 # size of the lattice (bigger the better/slower)
+    m = 4  # size of the lattice (bigger the better/slower)
 
     # might not be a good idea to tweak these
-    t = int((1-2*delta) * m)  # optimization from Herrmann and May
-    X = 2*floor(N**delta)  # this _might_ be too much
-    Y = floor(N**(1/2))    # correct if p, q are ~ same size
+    t = int((1 - 2 * delta) * m)  # optimization from Herrmann and May
+    X = 2 * floor(N ** delta)  # this _might_ be too much
+    Y = floor(N ** (1 / 2))  # correct if p, q are ~ same size
 
     #
     # Don't touch anything below
@@ -281,7 +285,7 @@ def factor(N,e):
 
     # Problem put in equation
     x, y = PolynomialRing(ZZ, ['x', 'y']).gens()
-    A = int((N+1)/2)
+    A = int((N + 1) / 2)
     pol = 1 + x * (A + y)
 
     #
@@ -293,8 +297,8 @@ def factor(N,e):
         print("=== checking values ===")
         print("* delta:", delta)
         print("* delta < 0.292", delta < 0.292)
-        print("* size of e:", int(log(e)/log(2)))
-        print("* size of N:", int(log(N)/log(2)))
+        print("* size of e:", int(log(e) / log(2)))
+        print("* size of N:", int(log(N) / log(2)))
         print("* m:", m, ", t:", t)
 
     # boneh_durfee

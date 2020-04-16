@@ -20,12 +20,19 @@ def factor(n):
         74611921979343086722526424506387128972933
     """
     import sys
+
     sys.setrecursionlimit(int(1e5))
     from sage.all import Integers, EllipticCurve, gcd
 
     R = Integers(n)
     attempts = 20
-    js = [0, (-2**5)**3, (-2**5*3)**3, (-2**5*3*5*11)**3, (-2**6*3*5*23*29)**3]
+    js = [
+        0,
+        (-2 ** 5) ** 3,
+        (-2 ** 5 * 3) ** 3,
+        (-2 ** 5 * 3 * 5 * 11) ** 3,
+        (-2 ** 6 * 3 * 5 * 23 * 29) ** 3,
+    ]
 
     for _ in range(attempts):
         for j in js:
@@ -34,9 +41,9 @@ def factor(n):
                 E = EllipticCurve([0, a])
 
             else:
-                a = R(j)/(R(1728)-R(j))
+                a = R(j) / (R(1728) - R(j))
                 c = R.random_element()
-                E = EllipticCurve([3*a*c**2, 2*a*c**3])
+                E = EllipticCurve([3 * a * c ** 2, 2 * a * c ** 3])
 
             x = R.random_element()
             z = E.division_polynomial(n, x)
@@ -48,13 +55,12 @@ def factor(n):
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Qi Cheng - A New Class of Unsafe Primes
-        """
-        sageresult = factor(publickey.n)
+    """
+    sageresult = factor(publickey.n)
 
-        if sageresult is not None:
-            p = sageresult
-            q = publickey.n // sageresult
-            priv_key = PrivateKey(int(p), int(q),
-                                  int(publickey.e), int(publickey.n))
-            return (priv_key, None)
-        return (None, None)
+    if sageresult is not None:
+        p = sageresult
+        q = publickey.n // sageresult
+        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+        return (priv_key, None)
+    return (None, None)
