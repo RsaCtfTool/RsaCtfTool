@@ -47,7 +47,7 @@ def factor(n):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-        """Qi Cheng - A New Class of Unsafe Primes
+    """Qi Cheng - A New Class of Unsafe Primes
         """
         sageresult = factor(publickey.n)
 
