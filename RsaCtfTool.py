@@ -8,10 +8,7 @@ ganapati (@G4N4P4T1) wrote this file. As long as you retain this notice you
 can do whatever you want with this stuff. If we meet some day, and you think
 this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
-Additionnal contributors :
-@CTFKris (sourcekris)
 
-from Crypto.Util.number import bytes_to_long, long_to_bytes
 """
 
 import sys
@@ -23,7 +20,7 @@ from glob import glob
 from Crypto.PublicKey import RSA
 from lib.rsa_attack import RSAAttack
 from lib.rsalibnum import n2s, invmod
-from lib.utils import get_numeric_value
+from lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 from lib.keys_wrapper import generate_pq_from_n_and_p_or_q, generate_keys_from_p_q_e_n
@@ -157,24 +154,6 @@ if __name__ == "__main__":
     if args.n and (args.p or args.q):
         args.p, args.q = generate_pq_from_n_and_p_or_q(args.n, args.p, args.q)
 
-    # If we already have all informations
-    if (
-        args.p is not None
-        and args.q is not None
-        and args.e is not None
-        and args.n is not None
-    ):
-        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
-
-        if args.createpub:
-            print(pub_key)
-
-        if args.uncipher is not None:
-            uncipher = priv_key.decrypt(args.uncipher)
-
-        print_results(pub_key, priv_key, uncipher)
-        exit(0)
-
     # Create pubkey if requested
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
@@ -196,6 +175,25 @@ if __name__ == "__main__":
         args.publickey = args.publickey.split(",")
     else:
         args.publickey = [args.publickey]
+
+    # If we already have all informations
+    if (
+        args.p is not None
+        and args.q is not None
+        and args.e is not None
+        and args.n is not None
+    ):
+        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+
+        if args.createpub:
+            print(pub_key)
+
+        uncipher = None
+        if args.uncipher is not None:
+            uncipher = priv_key.decrypt(args.uncipher)
+
+        print_results(args, args.publickey[0], priv_key, uncipher)
+        exit(0)
 
     # Dump public key informations
     if (

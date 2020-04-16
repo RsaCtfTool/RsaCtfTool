@@ -49,17 +49,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 # n is prime, so lets get the key from it
                 d = invmod(publickey.e, publickey.n - 1)
                 # construct key using only n and d
-                try:
-                    # pycrypto >=2.5
-                    impl = RSA.RSAImplementation(use_fast_math=False)
-                    rsa_attack_obj.partitial_priv_key = impl.construct((publickey.n, 0))
-                    rsa_attack_obj.partitial_priv_key.key.d = d
-                except TypeError:
-                    # pycrypto <=2.4.1
-                    rsa_attack_obj.partitial_priv_key = RSA.construct(
-                        (publickey.n, 0, d)
-                    )
-                return (None, None)
+                priv_key = PrivateKey(
+                    e=int(publickey.e), n=int(publickey.n), d=d
+                )
+                return (priv_key, None)
 
         p_id = ids[1]
         q_id = ids[2]
@@ -73,8 +66,9 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         if publickey.p == publickey.q == publickey.n:
             return (None, None)
         priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+            p=int(publickey.p), q=int(publickey.q), e=int(publickey.e), n=int(publickey.n)
         )
+
         return (priv_key, None)
     except NotImplementedError as e:
         return (None, None)

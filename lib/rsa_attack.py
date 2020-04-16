@@ -112,7 +112,7 @@ class RSAAttack(object):
                                     % attack
                                 )
                                 continue
-                    except:
+                    except Exception as e:
                         pass
                     self.implemented_attacks.append(attack_module)
                 except ModuleNotFoundError:
@@ -131,29 +131,26 @@ class RSAAttack(object):
                 publickeys_obj.append(PublicKey(pubkey_fd.read(), publickey))
         self.publickey = publickeys_obj
         # Loop through implemented attack methods and conduct attacks
-        try:
-            for attack_module in self.implemented_attacks:
-                if isinstance(self.publickey, list):
-                    self.logger.info(
-                        "[*] Performing %s attack."
-                        % attack_module.__name__.split(".")[-1]
+        for attack_module in self.implemented_attacks:
+            if isinstance(self.publickey, list):
+                self.logger.info(
+                    "[*] Performing %s attack."
+                    % attack_module.__name__.split(".")[-1]
+                )
+                try:
+                    self.priv_key, unciphered = attack_module.attack(
+                        self, self.publickey, self.cipher
                     )
-                    try:
-                        self.priv_key, unciphered = attack_module.attack(
-                            self, self.publickey, self.cipher
-                        )
-                        if unciphered is not None and unciphered is not []:
-                            if isinstance(unciphered, list):
-                                self.unciphered = self.unciphered + unciphered
-                            else:
-                                self.unciphered.append(unciphered)
-                        if self.can_stop_tests():
-                            break
-                    except FactorizationError:
-                        self.logger.warning("Timeout")
+                    if unciphered is not None and unciphered is not []:
+                        if isinstance(unciphered, list):
+                            self.unciphered = self.unciphered + unciphered
+                        else:
+                            self.unciphered.append(unciphered)
+                    if self.can_stop_tests():
+                        break
+                except FactorizationError:
+                    self.logger.warning("Timeout")
 
-        except ModuleNotFoundError:
-            pass
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
         return self.get_boolean_results()
@@ -173,27 +170,24 @@ class RSAAttack(object):
             self.args.e = self.publickey.e
 
         # Loop through implemented attack methods and conduct attacks
-        try:
-            for attack_module in self.implemented_attacks:
-                self.logger.info(
-                    "[*] Performing %s attack on %s."
-                    % (attack_module.__name__.split(".")[-1], self.publickey.filename)
+        for attack_module in self.implemented_attacks:
+            self.logger.info(
+                "[*] Performing %s attack on %s."
+                % (attack_module.__name__.split(".")[-1], self.publickey.filename)
+            )
+            try:
+                self.priv_key, unciphered = attack_module.attack(
+                    self, self.publickey, self.cipher
                 )
-                try:
-                    self.priv_key, unciphered = attack_module.attack(
-                        self, self.publickey, self.cipher
-                    )
-                    if unciphered is not None and unciphered is not []:
-                        if isinstance(unciphered, list):
-                            self.unciphered = self.unciphered + unciphered
-                        else:
-                            self.unciphered.append(unciphered)
-                    if self.can_stop_tests():
-                        break
-                except FactorizationError:
-                    self.logger.warning("Timeout")
-        except ModuleNotFoundError:
-            pass
+                if unciphered is not None and unciphered is not []:
+                    if isinstance(unciphered, list):
+                        self.unciphered = self.unciphered + unciphered
+                    else:
+                        self.unciphered.append(unciphered)
+                if self.can_stop_tests():
+                    break
+            except FactorizationError:
+                self.logger.warning("Timeout")
 
         self.print_results_details(publickey)
         return self.get_boolean_results()
