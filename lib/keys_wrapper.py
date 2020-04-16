@@ -60,7 +60,9 @@ class PublicKey(object):
 
 
 class PrivateKey(object):
-    def __init__(self, p=None, q=None, e=None, n=None, d=None, filename=None, password=None):
+    def __init__(
+        self, p=None, q=None, e=None, n=None, d=None, filename=None, password=None
+    ):
         """Create private key from base components
            :param p: extracted from n
            :param q: extracted from n
@@ -83,7 +85,12 @@ class PrivateKey(object):
         if n is not None:
             self.n = n
 
-        if d is None and self.p is not None and self.q is not None and self.e is not None:
+        if (
+            d is None
+            and self.p is not None
+            and self.q is not None
+            and self.e is not None
+        ):
             t = (p - 1) * (q - 1)
             self.d = invmod(e, t)
         elif d is not None:
@@ -94,16 +101,14 @@ class PrivateKey(object):
             self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
         elif n is not None and e is not None and d is not None:
             try:
-                self.key = RSA.construct((self.n, self.e, self.d))       
+                self.key = RSA.construct((self.n, self.e, self.d))
             except ValueError:
                 pass
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
                 self.key = serialization.load_pem_private_key(
-                     key_data_fd.read(),
-                     password=password,
-                     backend=default_backend()
-                 )
+                    key_data_fd.read(), password=password, backend=default_backend()
+                )
 
                 private_numbers = self.key.private_numbers()
 
@@ -114,8 +119,8 @@ class PrivateKey(object):
                 if d is None:
                     self.d = private_numbers.d
                 if self.p and self.q:
-                    self.n = self.p*self.q
-             
+                    self.n = self.p * self.q
+
     def decrypt(self, cipher):
         """Uncipher data with private key
            :param cipher: input cipher

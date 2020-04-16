@@ -23,7 +23,11 @@ from lib.rsalibnum import n2s, invmod
 from lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from lib.keys_wrapper import generate_pq_from_n_and_p_or_q, generate_keys_from_p_q_e_n, PrivateKey
+from lib.keys_wrapper import (
+    generate_pq_from_n_and_p_or_q,
+    generate_keys_from_p_q_e_n,
+    PrivateKey,
+)
 
 # Remove insecure warning for factordb.com
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

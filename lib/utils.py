@@ -39,7 +39,8 @@ def print_results(args, publickey, private_key, uncipher):
         or (args.dumpkey)
         or (args.uncipher and uncipher not in [None, []])
     ):
-        logger.info("\nResults for %s:" % publickey)
+        if publickey is not None:
+            logger.info("\nResults for %s:" % publickey)
     if private_key is not None:
         if not isinstance(private_key, list):
             private_keys = [private_key]

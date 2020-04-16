@@ -134,8 +134,7 @@ class RSAAttack(object):
         for attack_module in self.implemented_attacks:
             if isinstance(self.publickey, list):
                 self.logger.info(
-                    "[*] Performing %s attack."
-                    % attack_module.__name__.split(".")[-1]
+                    "[*] Performing %s attack." % attack_module.__name__.split(".")[-1]
                 )
                 try:
                     self.priv_key, unciphered = attack_module.attack(

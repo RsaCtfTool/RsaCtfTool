@@ -12,18 +12,19 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-        """Qi Cheng - A New Class of Unsafe Primes
+    """Qi Cheng - A New Class of Unsafe Primes
         """
-        try:
-            sageresult = int(subprocess.check_output(['sage', './sage/qicheng.sage', str(publickey.n)]))
-        except subprocess.CalledProcessError:
-            return
+    try:
+        sageresult = int(
+            subprocess.check_output(["sage", "./sage/qicheng.sage", str(publickey.n)])
+        )
+    except subprocess.CalledProcessError:
+        return
 
-        if sageresult > 0:
-            p = sageresult
-            q = publickey.n // sageresult
-            priv_key = PrivateKey(int(p), int(q),
-                                  int(publickey.e), int(publickey.n))
-            return (priv_key, None)
-        else:
-            return (None, None)
+    if sageresult > 0:
+        p = sageresult
+        q = publickey.n // sageresult
+        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+        return (priv_key, None)
+    else:
+        return (None, None)
