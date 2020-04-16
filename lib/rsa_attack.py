@@ -106,7 +106,7 @@ class RSAAttack(object):
                         )
                     try:
                         if attack_module.__SAGE__:
-                            if not sageworks:
+                            if not sageworks():
                                 self.logger.warning(
                                     "Can't load %s because sage is not installed"
                                     % attack

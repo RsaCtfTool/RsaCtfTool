@@ -20,13 +20,9 @@ def sageworks():
     """Check if sage is installed and working
     """
     try:
-        sageversion = subprocess.check_output(["sage", "-v"])
-    except OSError:
-        return False
-
-    if "SageMath version" in sageversion.decode("utf-8"):
+        import sage
         return True
-    else:
+    except ImportError:
         return False
 
 
