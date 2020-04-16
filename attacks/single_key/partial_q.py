@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-import libnum
+from lib.rsalibnum import invmod
 import logging
 import sys
 from subprocess import check_output
