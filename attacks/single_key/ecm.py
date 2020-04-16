@@ -24,7 +24,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     with timeout(seconds=attack_rsa_obj.args.timeout):
         try:
             ecmdigits = attack_rsa_obj.args.ecmdigits
-            sageresult = ecm.find_factor(publickey.n, ecmdigits)
+            try:
+                sageresult = ecm.find_factor(publickey.n, ecmdigits)
+            except AssertionError:
+                return (None, None)
             if sageresult:
                 publickey.p = sageresult[0]
                 publickey.q = publickey.n // publickey.p
