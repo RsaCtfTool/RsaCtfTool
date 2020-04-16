@@ -86,8 +86,8 @@ Mode 3 - Dump the public and/or private numbers (optionally including CRT parame
 ```
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
-pip install -r "requirements.txt"
-python2.7 RsaCtfTool.py
+pip3 install -r "requirements.txt"
+python3 RsaCtfTool.py
 ```
 
 ### MacOS-specific Instructions
