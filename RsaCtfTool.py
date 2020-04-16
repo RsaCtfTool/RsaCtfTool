@@ -23,7 +23,7 @@ from lib.rsalibnum import n2s, invmod
 from lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
-from lib.keys_wrapper import generate_pq_from_n_and_p_or_q, generate_keys_from_p_q_e_n
+from lib.keys_wrapper import generate_pq_from_n_and_p_or_q, generate_keys_from_p_q_e_n, PrivateKey
 
 # Remove insecure warning for factordb.com
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -91,7 +91,8 @@ if __name__ == "__main__":
         "-q", help="Specify the second prime number. format : int or 0xhex"
     )
     parser.add_argument("-e", help="Specify the public exponent. format : int or 0xhex")
-    parser.add_argument("--key", help="Specify the input key file in --dumpkey mode.")
+    parser.add_argument("--key", help="Specify the private key file.")
+    parser.add_argument("--password", help="Private key password if needed.")
 
     # Dynamic load all attacks for choices in argparse
     attacks = glob(join(dirname(__file__), "attacks", "single_key", "*.py"))
@@ -149,6 +150,12 @@ if __name__ == "__main__":
                 print("--uncipherfile : file not found or not readable.")
                 exit(1)
         args.uncipher = uncipher_array
+
+    # If we have a private key in input and uncipher in args (or uncipherfile)
+    if args.key and args.uncipher:
+        priv_key = PrivateKey(filename=args.key, password=args.password)
+        print_results(args, None, priv_key, args.uncipher)
+        exit(0)
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
