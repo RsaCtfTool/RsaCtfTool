@@ -52,15 +52,20 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 priv_key = PrivateKey(e=int(publickey.e), n=int(publickey.n), d=d)
                 return (priv_key, None)
 
-        p_id = ids[1]
-        q_id = ids[2]
-        regex = re.compile('value="([0-9\^\-]+)"', re.IGNORECASE)
-        r_1 = s.get(url_2 % p_id, verify=False)
-        r_2 = s.get(url_2 % q_id, verify=False)
-        key_p = regex.findall(r_1.text)[0]
-        key_q = regex.findall(r_2.text)[0]
-        publickey.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
-        publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+        try:
+            regex = re.compile('value="([0-9\^\-]+)"', re.IGNORECASE)
+            p_id = ids[1]
+            r_1 = s.get(url_2 % p_id, verify=False)
+            key_p = regex.findall(r_1.text)[0]
+            publickey.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
+
+            q_id = ids[2]
+            r_2 = s.get(url_2 % q_id, verify=False)
+            key_q = regex.findall(r_2.text)[0]
+            publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+        except IndexError:
+            return (None, None)
+
         if publickey.p == publickey.q == publickey.n:
             return (None, None)
         priv_key = PrivateKey(
