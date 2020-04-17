@@ -20,7 +20,7 @@ def sageworks():
     """Check if sage is installed and working
     """
     try:
-        sageversion = subprocess.check_output(["sage", "-v"])
+        sageversion = subprocess.check_output(["sage", "-v"], timeout=10)
     except OSError:
         return False
 
@@ -49,9 +49,14 @@ def print_results(args, publickey, private_key, uncipher):
 
         if args.private:
             logger.info("\nPrivate key :")
-
             for priv_key in private_keys:
                 if priv_key is not None:
+                    if args.output:
+                        try:
+                            with open(args.output, "a") as output_fd:
+                                output_fd.write("%s\n" % str(priv_key))
+                        except:
+                            logger.error("Can't write output file : %s" % args.output)
                     logger.info(priv_key)
 
         if args.dumpkey:
@@ -81,7 +86,7 @@ def print_results(args, publickey, private_key, uncipher):
     if args.dumpkey:
         if args.publickey is not None:
             for public_key in args.publickey:
-                with open(publickey, "rb") as pubkey_fd:
+                with open(public_key, "rb") as pubkey_fd:
                     publickey_obj = PublicKey(pubkey_fd.read(), publickey)
                     logger.info("\nPublic key details for %s" % publickey_obj.filename)
                     logger.info("n: " + str(publickey_obj.n))
@@ -94,6 +99,12 @@ def print_results(args, publickey, private_key, uncipher):
             if len(uncipher) > 0:
                 logger.info("\nUnciphered data :")
                 for uncipher_ in uncipher:
+                    if args.output:
+                        try:
+                            with open(args.output, "ab") as output_fd:
+                                output_fd.write(uncipher_)
+                        except:
+                            logger.error("Can't write output file : %s" % args.output)
                     logger.info(uncipher_)
         else:
             logger.critical("Sorry, unciphering failed.")

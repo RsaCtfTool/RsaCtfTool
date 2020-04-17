@@ -44,10 +44,12 @@ class PublicKey(object):
         """
         try:
             pub = RSA.importKey(key)
-        except ValueError as e:
-            logger = logging.getLogger("global_logger")
-            logger.critical("Key format not supported.")
-            exit(1)
+        except:
+            if filename:
+                raise Exception("Key format not supported : %s." % filename)
+            else:
+                raise Exception("Key format not supported.")
+
         self.filename = filename
         self.n = pub.n
         self.e = pub.e
@@ -156,6 +158,7 @@ class PrivateKey(object):
                             tmp_priv_key_name,
                         ],
                         stderr=DN,
+                        timeout=30,
                     )
                     return openssl_result
             except:

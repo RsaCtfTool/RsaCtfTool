@@ -18,7 +18,7 @@ def invmod(a, n):
     if n < 2:
         raise ValueError("modulus must be greater than 1")
 
-    x, y, g = xgcd(a, n)
+    x, g = xgcd(a, n)
 
     if g != 1:
         raise ValueError("no invmod for given @a and @n")
@@ -47,7 +47,7 @@ def xgcd(a, b):
         ppx, px = px, x
         ppy, py = py, y
 
-    return ppx, ppy, a
+    return ppx, a
 
 
 def gcd(*lst):
@@ -88,30 +88,3 @@ def n2s(n):
         s = "0" + s
 
     return binascii.unhexlify(s)
-
-
-def primes(until):
-    """
-    Return list of primes not greater than @until. Rather slow.
-    """
-    global _primes, _primes_mask
-
-    if until < 2:
-        return []
-
-    if until <= _primes[-1]:
-        for index, prime in enumerate(_primes):
-            if prime > until:
-                return _primes[:index]
-
-    i = _primes[-1]
-    while i < until + 1:
-        i += 2
-        sqrt = math.sqrt(i) + 1
-        for j in _primes:
-            if i % j == 0:
-                break
-            if j > sqrt:
-                _primes.append(i)
-                break
-    return _primes

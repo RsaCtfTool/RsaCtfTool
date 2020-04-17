@@ -17,10 +17,16 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = int(
             subprocess.check_output(
-                ["sage", "./sage/boneh_durfee.sage", str(publickey.n), str(publickey.e)]
+                [
+                    "sage",
+                    "./sage/boneh_durfee.sage",
+                    str(publickey.n),
+                    str(publickey.e),
+                ],
+                timeout=attack_rsa_obj.args.timeout,
             )
         )
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return (None, None)
     if sageresult > 0:
         tmp_priv = RSA.construct((int(publickey.n), int(publickey.e), int(sageresult)))

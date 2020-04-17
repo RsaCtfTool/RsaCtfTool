@@ -19,39 +19,35 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         "[*] ECM Method can run forever and may never succeed, timeout set to %ssec. Hit Ctrl-C to bail out."
         % attack_rsa_obj.args.timeout
     )
-    with timeout(seconds=attack_rsa_obj.args.timeout):
+
+    try:
         try:
-            try:
-                ecmdigits = attack_rsa_obj.args.ecmdigits
-                if ecmdigits:
-                    sageresult = int(
-                        subprocess.check_output(
-                            [
-                                "sage",
-                                "./sage/ecm.sage",
-                                str(publickey.n),
-                                str(ecmdigits),
-                            ]
-                        )
+            ecmdigits = attack_rsa_obj.args.ecmdigits
+            if ecmdigits:
+                sageresult = int(
+                    subprocess.check_output(
+                        ["sage", "./sage/ecm.sage", str(publickey.n), str(ecmdigits)],
+                        timeout=attack_rsa_obj.args.timeout,
                     )
-                else:
-                    sageresult = int(
-                        subprocess.check_output(
-                            ["sage", "./sage/ecm.sage", str(publickey.n)]
-                        )
-                    )
-            except subprocess.CalledProcessError:
-                return (None, None)
-            if sageresult > 0:
-                publickey.p = sageresult
-                publickey.q = publickey.n // publickey.p
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
                 )
-                return (priv_key, None)
+            else:
+                sageresult = int(
+                    subprocess.check_output(
+                        ["sage", "./sage/ecm.sage", str(publickey.n)],
+                        timeout=attack_rsa_obj.args.timeout,
+                    )
+                )
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return (None, None)
-        except KeyboardInterrupt:
-            return (None, None)
+
+        if sageresult > 0:
+            publickey.p = sageresult
+            publickey.q = publickey.n // publickey.p
+            priv_key = PrivateKey(
+                int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+            )
+            return (priv_key, None)
+        return (None, None)
+    except KeyboardInterrupt:
+        pass
+    return (None, None)

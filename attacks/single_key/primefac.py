@@ -5,8 +5,11 @@ from __future__ import print_function, division
 import logging
 import _primefac
 from threading import Timer
+from _primefac._prime import primes
 from lib.timeout import timeout
+from lib.rsalibnum import gcd
 from lib.keys_wrapper import PrivateKey
+from _primefac._util import listprod
 from lib.exceptions import FactorizationError
 
 # Note that the multiprocing incurs relatively significant overhead.
@@ -337,7 +340,7 @@ def rpn(instr):
         elif token in ("!", "#", "p!"):  # unary operators
             a = stack.pop()
             if token == "!":
-                res = listprod(xrange(1, a + 1))
+                res = listprod(range(1, a + 1))
             elif token == "#":
                 res = listprod(primes(a + 1))
             elif token == "p!":

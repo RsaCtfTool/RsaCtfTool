@@ -3,7 +3,7 @@
 from lib.rsalibnum import invmod
 import logging
 import sys
-from subprocess import check_output
+
 
 # TODO
 # Source:
@@ -96,10 +96,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
 
 if __name__ == "__main__":
     # import the private key manually
+    from subprocess import check_output
+
     keyfile = sys.argv[1]
     keycmd = ["openssl", "asn1parse", "-in", keyfile]
     private_key = [
-        long(x.split(":")[3], 16)
+        int(x.split(":")[3], 16)
         for x in check_output(keycmd).splitlines()
         if "INTEGER" in x
     ]

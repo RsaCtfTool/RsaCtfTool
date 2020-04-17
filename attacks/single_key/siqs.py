@@ -15,12 +15,13 @@ import os
 import re
 import logging
 import subprocess
+from lib.keys_wrapper import PrivateKey
 
 logger = logging.getLogger("global_logger")
 
 
 class SiqsAttack(object):
-    def __init__(self, n):
+    def __init__(self, attack_rsa_obj, n):
         """Configuration
         """
         self.logger = logging.getLogger("global_logger")
@@ -28,6 +29,7 @@ class SiqsAttack(object):
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
+        self.attack_rsa_obj = attack_rsa_obj
         self.n = n
         self.p = None
         self.q = None
@@ -38,7 +40,9 @@ class SiqsAttack(object):
         with open("/dev/null") as DN:
             try:
                 yafutest = subprocess.check_output(
-                    [self.yafubin, "siqs(1549388302999519)"], stderr=DN
+                    [self.yafubin, "siqs(1549388302999519)"],
+                    stderr=DN,
+                    timeout=self.attack_rsa_obj.args.timeout,
                 )
             except:
                 yafutest = b""
@@ -77,6 +81,7 @@ class SiqsAttack(object):
                     str(self.threads),
                 ],
                 stderr=DN,
+                timeout=self.attack_rsa_obj.args.timeout,
             )
 
             primesfound = []
@@ -86,7 +91,7 @@ class SiqsAttack(object):
                 return
 
             for line in yafurun.splitlines():
-                if re.search(b"^P[0-9]+\ =\ [0-9]+$", line):
+                if re.search(b"^P[0-9]+ = [0-9]+$", line):
                     primesfound.append(int(line.split(b"=")[1]))
 
             if len(primesfound) == 2:
@@ -109,7 +114,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         logger.error("[!] Warning: Modulus too large for SIQS attack module")
         return (None, None)
 
-    siqsobj = SiqsAttack(publickey.n)
+    siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
 
     siqsobj.checkyafu()
     siqsobj.testyafu()

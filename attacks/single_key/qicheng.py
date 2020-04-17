@@ -16,9 +16,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         """
     try:
         sageresult = int(
-            subprocess.check_output(["sage", "./sage/qicheng.sage", str(publickey.n)])
+            subprocess.check_output(
+                ["sage", "./sage/qicheng.sage", str(publickey.n)],
+                timeout=attack_rsa_obj.args.timeout,
+            )
         )
-    except subprocess.CalledProcessError:
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return
 
     if sageresult > 0:
