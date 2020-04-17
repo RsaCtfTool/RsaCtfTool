@@ -76,7 +76,7 @@ def partial_q(e, dp, dq, qi, part_q):
     for k in range(1, N, 1):
         p = (e * dp - 1) / k + 1
         try:
-            m = libnum.invmod(q, p)
+            m = invmod(q, p)
             if m == qi:
                 break
         except:

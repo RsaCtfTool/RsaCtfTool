@@ -103,7 +103,7 @@ if __name__ == "__main__":
     attacks_filtered = [
         basename(f)[:-3] for f in attacks if isfile(f) and not f.endswith("__init__.py")
     ]
-    attacks_list = [_ for _ in attacks_filtered if _ is not "nullattack"] + ["all"]
+    attacks_list = [_ for _ in attacks_filtered if _ != "nullattack"] + ["all"]
     parser.add_argument(
         "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
     )
