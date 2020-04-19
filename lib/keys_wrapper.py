@@ -128,41 +128,47 @@ class PrivateKey(object):
            :param cipher: input cipher
            :type cipher: string
         """
-        if self.n is not None and self.d is not None and self.key is None:
-            cipher_int = int.from_bytes(cipher, "big")
-            m_int = pow(cipher_int, self.d, self.n)
-            m = binascii.unhexlify(hex(m_int)[2:]).decode()
-            return m
-        else:
-            try:
-                tmp_priv_key = tempfile.NamedTemporaryFile()
-                with open(tmp_priv_key.name, "wb") as tmpfd:
-                    tmpfd.write(str(self).encode("utf8"))
-                tmp_priv_key_name = tmp_priv_key.name
+        if not isinstance(cipher, list):
+            cipher = [cipher]
 
-                tmp_cipher = tempfile.NamedTemporaryFile()
-                with open(tmp_cipher.name, "wb") as tmpfd:
-                    tmpfd.write(cipher)
-                tmp_cipher_name = tmp_cipher.name
+        plain = []
+        for c in cipher:
+            if self.n is not None and self.d is not None and self.key is None:
+                cipher_int = int.from_bytes(c, "big")
+                m_int = pow(cipher_int, self.d, self.n)
+                m = binascii.unhexlify(hex(m_int)[2:]).decode()
+                plain.append(m)
+            else:
+                try:
+                    tmp_priv_key = tempfile.NamedTemporaryFile()
+                    with open(tmp_priv_key.name, "wb") as tmpfd:
+                        tmpfd.write(str(self).encode("utf8"))
+                    tmp_priv_key_name = tmp_priv_key.name
 
-                with open("/dev/null") as DN:
-                    openssl_result = subprocess.check_output(
-                        [
-                            "openssl",
-                            "rsautl",
-                            "-raw",
-                            "-decrypt",
-                            "-in",
-                            tmp_cipher_name,
-                            "-inkey",
-                            tmp_priv_key_name,
-                        ],
-                        stderr=DN,
-                        timeout=30,
-                    )
-                    return openssl_result
-            except:
-                return self.key.decrypt(cipher)
+                    tmp_cipher = tempfile.NamedTemporaryFile()
+                    with open(tmp_cipher.name, "wb") as tmpfd:
+                        tmpfd.write(c)
+                    tmp_cipher_name = tmp_cipher.name
+
+                    with open("/dev/null") as DN:
+                        openssl_result = subprocess.check_output(
+                            [
+                                "openssl",
+                                "rsautl",
+                                "-raw",
+                                "-decrypt",
+                                "-in",
+                                tmp_cipher_name,
+                                "-inkey",
+                                tmp_priv_key_name,
+                            ],
+                            stderr=DN,
+                            timeout=30,
+                        )
+                        plain.append(openssl_result)
+                except:
+                    plain.append(cipher)
+        return plain
 
     def __str__(self):
         """Print armored private key

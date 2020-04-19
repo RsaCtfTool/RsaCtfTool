@@ -1,0 +1,28 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+
+import logging
+from _primefac._prime import primes
+from lib.keys_wrapper import PrivateKey
+
+
+def attack(attack_rsa_obj, publickey, cipher=[]):
+    """Try to uncipher c if m < n/e and small e
+    """
+    if publickey.e == 3 or publickey.e == 5:
+        plain = []
+        for c in cipher:
+            cipher_int = int.from_bytes(c, "big")
+            low = 0
+            high = cipher_int
+            while low < high:
+                mid = (low + high) // 2
+                if pow(mid, publickey.e) < cipher_int:
+                    low = mid + 1
+                else:
+                    high = mid
+
+            m = str(hex(low))[2::]
+            plain.append(bytes.fromhex(m))
+        return (None, plain)
+    return (None, None)
