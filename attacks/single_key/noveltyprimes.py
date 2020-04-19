@@ -2,6 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from lib.rsalibnum import invmod
+import binascii
 from lib.keys_wrapper import PrivateKey
 
 
@@ -13,10 +15,14 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     for i in range(maxlen - 4):
         prime = int("3133" + ("3" * i) + "7")
         if publickey.n % prime == 0:
-            publickey.q = prime
-            publickey.p = publickey.n // publickey.q
+            publickey.p = prime
+            publickey.q = publickey.n // publickey.p
             priv_key = PrivateKey(
-                int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                p=int(publickey.p),
+                q=int(publickey.q),
+                e=int(publickey.e),
+                n=int(publickey.n),
             )
+
             return (priv_key, None)
     return (None, None)

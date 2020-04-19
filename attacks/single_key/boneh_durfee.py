@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 import subprocess
 from Crypto.PublicKey import RSA
@@ -15,14 +16,11 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
        many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
     """
     try:
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        sagepath = os.path.join(dir_path, "../../sage/boneh_durfee.sage")
         sageresult = int(
             subprocess.check_output(
-                [
-                    "sage",
-                    "./sage/boneh_durfee.sage",
-                    str(publickey.n),
-                    str(publickey.e),
-                ],
+                ["sage", sagepath, str(publickey.n), str(publickey.e)],
                 timeout=attack_rsa_obj.args.timeout,
             )
         )
@@ -33,7 +31,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         publickey.p = tmp_priv.p
         publickey.q = tmp_priv.q
         privatekey = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+            p=int(publickey.p),
+            q=int(publickey.q),
+            e=int(publickey.e),
+            n=int(publickey.n),
         )
         return (privatekey, None)
     return (None, None)

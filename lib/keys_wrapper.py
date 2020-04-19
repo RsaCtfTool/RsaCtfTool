@@ -6,7 +6,8 @@ import tempfile
 import binascii
 import subprocess
 from Crypto.PublicKey import RSA
-from lib.rsalibnum import invmod
+from Crypto.Cipher import PKCS1_OAEP
+from lib.rsalibnum import invmod, modInv
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 
@@ -87,25 +88,28 @@ class PrivateKey(object):
         if n is not None:
             self.n = n
 
-        if (
-            d is None
-            and self.p is not None
-            and self.q is not None
-            and self.e is not None
-        ):
-            t = (p - 1) * (q - 1)
-            self.d = invmod(e, t)
-        elif d is not None:
-            self.d = d
+        self.phi = None
+
+        if self.p is not None and self.q is not None:
+            if self.p != self.q:
+                self.phi = (self.p - 1) * (self.q - 1)
+            else:
+                self.phi = (self.p ** 2) - self.p
+
+        self.d = None
+        if self.phi is not None and self.e is not None:
+            self.d = invmod(e, self.phi)
 
         self.key = None
-        if p is not None and q is not None:
+        if self.p is not None and self.q is not None and self.d is not None:
+
             self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
         elif n is not None and e is not None and d is not None:
             try:
                 self.key = RSA.construct((self.n, self.e, self.d))
             except ValueError:
                 pass
+
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
                 self.key = serialization.load_pem_private_key(
@@ -122,6 +126,11 @@ class PrivateKey(object):
                     self.d = private_numbers.d
                 if self.p and self.q:
                     self.n = self.p * self.q
+                if self.phi is None:
+                    if self.p != self.q:
+                        self.phi = (self.p - 1) * (self.q - 1)
+                    else:
+                        self.phi = (self.p ** 2) - self.p
 
     def decrypt(self, cipher):
         """Uncipher data with private key
@@ -134,23 +143,54 @@ class PrivateKey(object):
         plain = []
         for c in cipher:
             if self.n is not None and self.d is not None and self.key is None:
-                cipher_int = int.from_bytes(c, "big")
-                m_int = pow(cipher_int, self.d, self.n)
-                m = binascii.unhexlify(hex(m_int)[2:]).decode()
-                plain.append(m)
-            else:
                 try:
-                    tmp_priv_key = tempfile.NamedTemporaryFile()
-                    with open(tmp_priv_key.name, "wb") as tmpfd:
-                        tmpfd.write(str(self).encode("utf8"))
-                    tmp_priv_key_name = tmp_priv_key.name
+                    cipher_int = int.from_bytes(c, "big")
+                    m_int = pow(cipher_int, self.d, self.n)
+                    m = binascii.unhexlify(hex(m_int)[2:]).decode()
+                    plain.append(m)
+                except:
+                    pass
 
-                    tmp_cipher = tempfile.NamedTemporaryFile()
-                    with open(tmp_cipher.name, "wb") as tmpfd:
-                        tmpfd.write(c)
-                    tmp_cipher_name = tmp_cipher.name
+            try:
+                rsakey = RSA.importKey(str(self))
+                rsakey = PKCS1_OAEP.new(rsakey)
+                plain.append(rsakey.decrypt(c))
+            except:
+                pass
 
-                    with open("/dev/null") as DN:
+            try:
+                tmp_priv_key = tempfile.NamedTemporaryFile()
+                with open(tmp_priv_key.name, "wb") as tmpfd:
+                    tmpfd.write(str(self).encode("utf8"))
+                tmp_priv_key_name = tmp_priv_key.name
+
+                tmp_cipher = tempfile.NamedTemporaryFile()
+                with open(tmp_cipher.name, "wb") as tmpfd:
+                    tmpfd.write(c)
+                tmp_cipher_name = tmp_cipher.name
+
+                with open("/dev/null") as DN:
+                    try:
+                        openssl_result = subprocess.check_output(
+                            [
+                                "openssl",
+                                "rsautl",
+                                "-raw",
+                                "-decrypt",
+                                "-in",
+                                "-oaep",
+                                tmp_cipher_name,
+                                "-inkey",
+                                tmp_priv_key_name,
+                            ],
+                            stderr=DN,
+                            timeout=30,
+                        )
+                        plain.append(openssl_result)
+                    except:
+                        pass
+
+                    try:
                         openssl_result = subprocess.check_output(
                             [
                                 "openssl",
@@ -166,8 +206,10 @@ class PrivateKey(object):
                             timeout=30,
                         )
                         plain.append(openssl_result)
-                except:
-                    plain.append(cipher)
+                    except:
+                        pass
+            except:
+                plain.append(cipher)
         return plain
 
     def __str__(self):

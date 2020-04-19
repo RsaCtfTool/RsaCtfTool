@@ -72,7 +72,11 @@ class RSAAttack(object):
         # If we wanted to decrypt, do it now
         if self.cipher and self.priv_key is not None:
             for cipher in self.cipher:
-                self.unciphered.append(self.priv_key.decrypt(cipher))
+                unciphered = self.priv_key.decrypt(cipher)
+                if not isinstance(unciphered, list):
+                    unciphered = [unciphered]
+
+                self.unciphered = self.unciphered + unciphered
         elif self.cipher and self.partitial_priv_key is not None:
             # needed, if n is prime and so we cant calc p and q
             enc_msg = bytes_to_long(self.cipher)

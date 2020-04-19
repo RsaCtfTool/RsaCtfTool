@@ -78,11 +78,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 r_2 = s.get(url_2 % q_id, verify=False)
                 key_q = regex.findall(r_2.text)[0]
                 publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+
             except IndexError:
                 return (None, None)
 
-            if publickey.p == publickey.q == publickey.n:
-                return (None, None)
             priv_key = PrivateKey(
                 p=int(publickey.p),
                 q=int(publickey.q),

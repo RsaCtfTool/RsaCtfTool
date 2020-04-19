@@ -157,7 +157,10 @@ if __name__ == "__main__":
     # If we have a private key in input and uncipher in args (or uncipherfile)
     if args.key and args.uncipher:
         priv_key = PrivateKey(filename=args.key, password=args.password)
-        print_results(args, None, priv_key, args.uncipher)
+        unciphers = []
+        for u in args.uncipher:
+            unciphers.append(priv_key.decrypt(args.u))
+        print_results(args, None, priv_key, unciphers)
         exit(0)
 
     # If we have n and one of p and q, calculated the other
@@ -198,11 +201,10 @@ if __name__ == "__main__":
         if args.createpub:
             print(pub_key)
 
-        uncipher = None
-        if args.uncipher is not None:
-            uncipher = priv_key.decrypt(args.uncipher)
+        for u in args.uncipher:
+            unciphers.append(priv_key.decrypt(args.u))
 
-        print_results(args, args.publickey[0], priv_key, uncipher)
+        print_results(args, args.publickey[0], priv_key, unciphers)
         exit(0)
 
     # Dump public key informations

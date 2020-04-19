@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 import subprocess
 from lib.timeout import timeout
@@ -23,17 +24,19 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         try:
             ecmdigits = attack_rsa_obj.args.ecmdigits
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            sagepath = os.path.join(dir_path, "../../sage/ecm.sage")
             if ecmdigits:
                 sageresult = int(
                     subprocess.check_output(
-                        ["sage", "./sage/ecm.sage", str(publickey.n), str(ecmdigits)],
+                        ["sage", sagepath, str(publickey.n), str(ecmdigits)],
                         timeout=attack_rsa_obj.args.timeout,
                     )
                 )
             else:
                 sageresult = int(
                     subprocess.check_output(
-                        ["sage", "./sage/ecm.sage", str(publickey.n)],
+                        ["sage", sagepath, str(publickey.n)],
                         timeout=attack_rsa_obj.args.timeout,
                     )
                 )

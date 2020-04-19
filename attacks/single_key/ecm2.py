@@ -1,27 +1,16 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import os
 import logging
 import subprocess
+from lib.rsalibnum import modInv
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 
 __SAGE__ = True
 
 logger = logging.getLogger("global_logger")
-
-
-def egcd(a, b):
-    if a == 0:
-        return [b, 0, 1]
-    else:
-        g, y, x = egcd(b % a, a)
-        return [g, x - (b // a) * y, y]
-
-
-def modInv(a, m):
-    g, x, y = egcd(a, m)
-    return x % m
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
@@ -36,8 +25,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = []
         try:
+            dir_path = os.path.dirname(os.path.realpath(__file__))
+            sagepath = os.path.join(dir_path, "../../sage/ecm2.sage")
             sageresult = subprocess.check_output(
-                ["sage", "./sage/ecm2.sage", str(publickey.n)],
+                ["sage", sagepath, str(publickey.n)],
                 timeout=attack_rsa_obj.args.timeout,
             )
             sageresult = sageresult[1:-2].split(b", ")

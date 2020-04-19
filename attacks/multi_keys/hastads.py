@@ -55,6 +55,9 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
     if not isinstance(publickeys, list):
         return (None, None)
 
+    if cipher is None or len(cipher) == 0:
+        return (None, None)
+
     c = []
     for _ in cipher:
         c.append(int.from_bytes(_, byteorder="big"))
@@ -72,6 +75,11 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
     e = e.pop()
 
     result = chinese_remainder(n, c)
-    unciphered = hex(find_invpow(result, e))[2:]
-    unciphered = bytes.fromhex(unciphered)
+    try:
+        unciphered = str(hex(find_invpow(result, e)))[2:]
+        unciphered = bytes.fromhex(unciphered)
+    except ValueError:
+        unciphered = str(hex(find_invpow(result, e)))[2:-1]
+        unciphered = bytes.fromhex(unciphered)
+
     return (None, unciphered)
