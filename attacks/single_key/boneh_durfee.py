@@ -12,6 +12,7 @@ import time
 ############################################
 # Config
 ##########################################
+from lib.timeout import timeout
 
 """
 Setting debug to true will display more informations
@@ -59,13 +60,13 @@ def helpful_vectors(BB, modulus):
 def matrix_overview(BB, bound):
     """display matrix picture with 0 and X"""
     for ii in range(BB.dimensions()[0]):
-        a = ('%02d ' % ii)
+        a = "%02d " % ii
         for jj in range(BB.dimensions()[1]):
-            a += '0' if BB[ii, jj] == 0 else 'X'
+            a += "0" if BB[ii, jj] == 0 else "X"
             if BB.dimensions()[0] < 60:
-                a += ' '
+                a += " "
         if BB[ii, ii] >= bound:
-            a += '~'
+            a += "~"
         # print a
 
 
@@ -115,8 +116,9 @@ def remove_unhelpful(BB, monomials, bound, current):
                 # remove both it if no other vector was affected and
                 # this helpful vector is not helpful enough
                 # compared to our unhelpful one
-                if affected_deeper and abs(bound - BB[affected_vector_index, affected_vector_index]) < abs(
-                        bound - BB[ii, ii]):
+                if affected_deeper and abs(
+                    bound - BB[affected_vector_index, affected_vector_index]
+                ) < abs(bound - BB[ii, ii]):
                     # print "* removing unhelpful vectors", ii, "and", affected_vector_index
                     BB = BB.delete_columns([affected_vector_index, ii])
                     BB = BB.delete_rows([affected_vector_index, ii])
@@ -146,7 +148,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     from sage.all import ZZ, floor, Matrix, log, PolynomialRing
 
     # substitution (Herrman and May)
-    PR = PolynomialRing(ZZ, ['u', 'x', 'y'])
+    PR = PolynomialRing(ZZ, ["u", "x", "y"])
     u, x, y = PR.gens()
     Q = PR.quotient(x * y + 1 - u)  # u = xy + 1
     polZ = Q(pol).lift()
@@ -188,7 +190,9 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
         BB[ii, 0] = gg[ii](0, 0, 0)
         for jj in range(1, ii + 1):
             if monomials[jj] in gg[ii].monomials():
-                BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](UU, XX, YY)
+                BB[ii, jj] = gg[ii].monomial_coefficient(monomials[jj]) * monomials[jj](
+                    UU, XX, YY
+                )
 
     # Prototype to reduce the lattice
     if helpful_only:
@@ -226,14 +230,14 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     BB = BB.LLL()
 
     # transform vector 1 & 2 -> polynomials 1 & 2
-    w, z = PolynomialRing(ZZ, ['w', 'z']).gens()
+    w, z = PolynomialRing(ZZ, ["w", "z"]).gens()
     pol1 = pol2 = 0
     for jj in range(nn):
         pol1 += monomials[jj](w * z + 1, w, z) * BB[0, jj] / monomials[jj](UU, XX, YY)
         pol2 += monomials[jj](w * z + 1, w, z) * BB[1, jj] / monomials[jj](UU, XX, YY)
 
     # resultant
-    q = PolynomialRing(ZZ, 'q').gen()
+    q = PolynomialRing(ZZ, "q").gen()
     rr = pol1.resultant(pol2)
 
     if rr.is_zero() or rr.monomials() == [1]:
@@ -264,7 +268,7 @@ def factor(N, e):
     ##########################################
 
     # the hypothesis on the private exponent (max 0.292)
-    delta = .26  # d < N**delta
+    delta = 0.26  # d < N**delta
 
     #
     # Lattice (tweak those values)
@@ -283,7 +287,7 @@ def factor(N, e):
     #
 
     # Problem put in equation
-    x, y = PolynomialRing(ZZ, ['x', 'y']).gens()
+    x, y = PolynomialRing(ZZ, ["x", "y"]).gens()
     A = int((N + 1) / 2)
     pol = 1 + x * (A + y)
 
@@ -326,16 +330,19 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
        only works if the sageworks() function returned True
        many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
     """
-    try:
-        sageresult = factor(publickey.n, publickey.e)
-    except OverflowError:
-        return (None, None)
-    if sageresult is not None:
-        tmp_priv = RSA.construct((int(publickey.n), int(publickey.e), int(sageresult)))
-        publickey.p = tmp_priv.p
-        publickey.q = tmp_priv.q
-        privatekey = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (privatekey, None)
+    with timeout(seconds=attack_rsa_obj.args.timeout):
+        try:
+            sageresult = factor(publickey.n, publickey.e)
+        except OverflowError:
+            return (None, None)
+        if sageresult is not None:
+            tmp_priv = RSA.construct(
+                (int(publickey.n), int(publickey.e), int(sageresult))
+            )
+            publickey.p = tmp_priv.p
+            publickey.q = tmp_priv.q
+            privatekey = PrivateKey(
+                int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+            )
+            return (privatekey, None)
     return (None, None)

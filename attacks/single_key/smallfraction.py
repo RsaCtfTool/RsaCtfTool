@@ -5,6 +5,8 @@ from lib.keys_wrapper import PrivateKey
 
 __SAGE__ = True
 
+from lib.timeout import timeout
+
 
 def factor(n):
     """reference

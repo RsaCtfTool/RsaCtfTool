@@ -6,6 +6,8 @@ from lib.keys_wrapper import PrivateKey
 
 __SAGE__ = True
 
+from lib.timeout import timeout
+
 logger = logging.getLogger("global_logger")
 
 
@@ -56,11 +58,12 @@ def factor(n):
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Qi Cheng - A New Class of Unsafe Primes
     """
-    sageresult = factor(publickey.n)
+    with timeout(seconds=attack_rsa_obj.args.timeout):
+        sageresult = factor(publickey.n)
 
-    if sageresult is not None:
-        p = sageresult
-        q = publickey.n // sageresult
-        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-        return (priv_key, None)
+        if sageresult is not None:
+            p = sageresult
+            q = publickey.n // sageresult
+            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+            return (priv_key, None)
     return (None, None)
