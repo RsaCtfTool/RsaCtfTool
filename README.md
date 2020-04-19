@@ -108,7 +108,7 @@ python3 RsaCtfTool.py
 
 ### MacOS-specific Instructions
 
-If `pip install-r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
+If `pip install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
 ``easy_install `cat requirements.txt` ``
 
