@@ -50,7 +50,7 @@ def find_invpow(x, n):
 
 def attack(attack_rsa_obj, publickeys, cipher=[]):
     """Hastad attack for low public exponent
-       this has found success for e = 3, and e = 5 previously
+       this has found success for e = 3
     """
     if not isinstance(publickeys, list):
         return (None, None)
@@ -73,13 +73,20 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
     if len(e) != 1:
         return (None, None)
     e = e.pop()
+    if e != 3:
+        return (None, None)
 
     result = chinese_remainder(n, c)
+    nth = find_invpow(result, 3)
+
     try:
-        unciphered = str(hex(find_invpow(result, e)))[2:]
+        unciphered = str(hex(nth)[2:])
         unciphered = bytes.fromhex(unciphered)
     except ValueError:
-        unciphered = str(hex(find_invpow(result, e)))[2:-1]
-        unciphered = bytes.fromhex(unciphered)
+        unciphered = b""
+        for i in range(0, len(str(nth)), 3):
+            _ = str(nth)[i : i + 3]
+            unciphered += bytes([int(_)])
+    print(unciphered)
 
     return (None, unciphered)
