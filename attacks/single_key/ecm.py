@@ -43,10 +43,16 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         if sageresult > 0:
             publickey.p = sageresult
             publickey.q = publickey.n // publickey.p
-            priv_key = PrivateKey(
-                int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-            )
-            return (priv_key, None)
+            try:
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return (priv_key, None)
+            except:
+                return (None, None)
         return (None, None)
     except KeyboardInterrupt:
         pass
