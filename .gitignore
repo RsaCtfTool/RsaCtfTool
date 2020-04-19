@@ -61,5 +61,8 @@ target/
 # PyCharm
 .idea/
 
+# Vscode
+.vscode/
+
 # Sage stuff
 *.sage.py

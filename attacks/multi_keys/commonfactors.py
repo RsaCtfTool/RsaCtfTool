@@ -16,6 +16,7 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
         return (None, None)
 
     # Try to find the gcd between each pair of moduli and resolve the private keys if gcd > 1
+    priv_keys = []
     for x, y in itertools.combinations(publickeys, r=2):
         if x.n != y.n:
             g = gcd(x.n, y.n)
@@ -34,6 +35,11 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
                 y.q = y.n // g
                 priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
                 priv_key_2 = PrivateKey(int(y.p), int(y.q), int(y.e), int(y.n))
+                priv_keys.append(priv_key_1)
+                priv_keys.append(priv_key_2)
 
-                return ([priv_key_1, priv_key_2], None)
-    return (None, None)
+    priv_keys = list(set(priv_keys))
+    if len(priv_keys) == 0:
+        priv_keys = None
+
+    return (priv_keys, None)

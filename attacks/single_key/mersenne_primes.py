@@ -60,6 +60,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         57885161,
         74207281,
         77232917,
+        82589933,
     ]
     for mersenne_prime in mersenne_tab:
         if publickey.n % ((2 ** mersenne_prime) - 1) == 0:

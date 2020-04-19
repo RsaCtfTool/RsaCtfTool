@@ -1,7 +1,7 @@
 #!/bin/bash
 
 cd "$(dirname "$0")"
-
+clear
 echo -e "\033[1mTest factordb expression parsing\033[0m"
 ./RsaCtfTool.py --publickey "examples/factordb_parse.pub" --private --attack factordb
 echo -e "\033[1m\nTest noveltyprimes\033[0m"
@@ -27,7 +27,7 @@ echo -e "\033[1m\nTest pastctfprimes\033[0m"
 echo -e "\033[1m\nTest SIQS\033[0m"
 ./RsaCtfTool.py --publickey examples/siqs.pub --private --attack siqs
 echo -e "\033[1m\nTest ECM\033[0m"
-./RsaCtfTool.py --publickey examples/ecm_method.pub --private --ecmdigits 25 --attack ecm --timeout 200
+./RsaCtfTool.py --publickey examples/ecm_method.pub --private --ecmdigits 25 --attack ecm --timeout 60
 echo -e "\033[1m\nTest createpub\033[0m"
 ./RsaCtfTool.py --createpub -n 8616460799 -e 65537
 echo -e "\033[1m\nCreatepub into Crack feedback\033[0m"

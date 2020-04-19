@@ -38,12 +38,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         url_2 = "http://factordb.com/index.php?id=%s"
         s = requests.Session()
         r = s.get(url_1 % publickey.n, verify=False)
-        regex = re.compile("index\.php\?id\=([0-9]+)", re.IGNORECASE)
+        regex = re.compile(r"index\.php\?id\=([0-9]+)", re.IGNORECASE)
         ids = regex.findall(r.text)
         # check if only 1 factor is returned
         if len(ids) == 2:
             # theres a chance that the only factor returned is prime, and so we can derive the priv key from it
-            regex = re.compile("<td>P<\/td>")
+            regex = re.compile(r"<td>P<\/td>")
             prime = regex.findall(r.text)
             if len(prime) == 1:
                 # n is prime, so lets get the key from it
@@ -52,15 +52,20 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 priv_key = PrivateKey(e=int(publickey.e), n=int(publickey.n), d=d)
                 return (priv_key, None)
 
-        p_id = ids[1]
-        q_id = ids[2]
-        regex = re.compile('value="([0-9\^\-]+)"', re.IGNORECASE)
-        r_1 = s.get(url_2 % p_id, verify=False)
-        r_2 = s.get(url_2 % q_id, verify=False)
-        key_p = regex.findall(r_1.text)[0]
-        key_q = regex.findall(r_2.text)[0]
-        publickey.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
-        publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+        try:
+            regex = re.compile(r'value="([0-9\^\-]+)"', re.IGNORECASE)
+            p_id = ids[1]
+            r_1 = s.get(url_2 % p_id, verify=False)
+            key_p = regex.findall(r_1.text)[0]
+            publickey.p = int(key_p) if key_p.isdigit() else solveforp(key_p)
+
+            q_id = ids[2]
+            r_2 = s.get(url_2 % q_id, verify=False)
+            key_q = regex.findall(r_2.text)[0]
+            publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+        except IndexError:
+            return (None, None)
+
         if publickey.p == publickey.q == publickey.n:
             return (None, None)
         priv_key = PrivateKey(
@@ -71,5 +76,5 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         )
 
         return (priv_key, None)
-    except NotImplementedError as e:
+    except:
         return (None, None)

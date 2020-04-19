@@ -7,6 +7,7 @@ from glob import glob
 from lib.keys_wrapper import PublicKey
 from lib.exceptions import FactorizationError
 from lib.utils import sageworks, print_results
+from Crypto.Util.number import bytes_to_long, long_to_bytes
 from attacks.multi_keys import same_n_huge_e, commonfactors
 
 
@@ -112,7 +113,7 @@ class RSAAttack(object):
                                     % attack
                                 )
                                 continue
-                    except Exception as e:
+                    except:
                         pass
                     self.implemented_attacks.append(attack_module)
                 except ModuleNotFoundError:
@@ -127,8 +128,17 @@ class RSAAttack(object):
         # Read keyfiles
         publickeys_obj = []
         for publickey in publickeys:
-            with open(publickey, "rb") as pubkey_fd:
-                publickeys_obj.append(PublicKey(pubkey_fd.read(), publickey))
+            try:
+                with open(publickey, "rb") as pubkey_fd:
+                    publickeys_obj.append(PublicKey(pubkey_fd.read(), publickey))
+            except Exception:
+                print("Key format not supported : %s." % publickey)
+                pass
+
+        if len(publickeys_obj) == 0:
+            self.logger.error("No key loaded.")
+            exit(1)
+
         self.publickey = publickeys_obj
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:

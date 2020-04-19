@@ -8,13 +8,13 @@ ganapati (@G4N4P4T1) wrote this file. As long as you retain this notice you
 can do whatever you want with this stuff. If we meet some day, and you think
 this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
-
 """
 
 import sys
 import logging
 import argparse
 import requests
+import urllib3
 import tempfile
 from glob import glob
 from Crypto.PublicKey import RSA
@@ -22,7 +22,7 @@ from lib.rsa_attack import RSAAttack
 from lib.rsalibnum import n2s, invmod
 from lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning
 from lib.keys_wrapper import (
     generate_pq_from_n_and_p_or_q,
     generate_keys_from_p_q_e_n,
@@ -30,14 +30,10 @@ from lib.keys_wrapper import (
 )
 
 # Remove insecure warning for factordb.com
-requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+urllib3.disable_warnings(InsecureRequestWarning)
 
 # Change recursion limit for... you know, factorizing stuff...
 sys.setrecursionlimit(5000)
-
-# Python2 compatibility (maybe time to remove this?)
-if sys.version_info < (3, 0):
-    int = long
 
 # Set logger levels for argparse
 logger_levels = {
@@ -54,6 +50,9 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="RSA CTF Tool")
     parser.add_argument(
         "--publickey", help="public key file. You can use wildcards for multiple keys."
+    )
+    parser.add_argument(
+        "--output", help="output file for results (privates keys, plaintext data)."
     )
     parser.add_argument(
         "--timeout", help="Timeout for long attacks.", default=30, type=int
@@ -104,7 +103,7 @@ if __name__ == "__main__":
     attacks_filtered = [
         basename(f)[:-3] for f in attacks if isfile(f) and not f.endswith("__init__.py")
     ]
-    attacks_list = [_ for _ in attacks_filtered if _ is not "nullattack"] + ["all"]
+    attacks_list = [_ for _ in attacks_filtered if _ != "nullattack"] + ["all"]
     parser.add_argument(
         "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
     )
@@ -246,6 +245,7 @@ if __name__ == "__main__":
     # Run attacks
     found = False
     attackobj = RSAAttack(args)
+
     if len(args.publickey) > 1:
         found = attackobj.attack_multiple_keys(args.publickey, attacks_list)
 

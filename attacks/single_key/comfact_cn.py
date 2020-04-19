@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lib.rsalibnum import s2n
+from lib.rsalibnum import s2n, gcd
 from lib.keys_wrapper import PrivateKey
 
 

@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-import libnum
+from lib.rsalibnum import invmod
 import logging
 import sys
-from subprocess import check_output
+
 
 # TODO
 # Source:
@@ -76,7 +76,7 @@ def partial_q(e, dp, dq, qi, part_q):
     for k in range(1, N, 1):
         p = (e * dp - 1) / k + 1
         try:
-            m = libnum.invmod(q, p)
+            m = invmod(q, p)
             if m == qi:
                 break
         except:
@@ -96,10 +96,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
 
 if __name__ == "__main__":
     # import the private key manually
+    from subprocess import check_output
+
     keyfile = sys.argv[1]
     keycmd = ["openssl", "asn1parse", "-in", keyfile]
     private_key = [
-        long(x.split(":")[3], 16)
+        int(x.split(":")[3], 16)
         for x in check_output(keycmd).splitlines()
         if "INTEGER" in x
     ]

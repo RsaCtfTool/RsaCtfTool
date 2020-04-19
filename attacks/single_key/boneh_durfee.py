@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from Crypto.PublicKey import RSA
-
 from lib.keys_wrapper import PrivateKey
 
 __SAGE__ = True
