@@ -81,7 +81,8 @@ def print_results(args, publickey, private_key, uncipher):
                     logger.info("pinv: " + str(pinv))
                     logger.info("qinv: " + str(qinv))
     else:
-        logger.critical("Sorry, cracking failed.")
+        if args.private:
+            logger.critical("Sorry, cracking failed.")
 
     if args.dumpkey:
         if args.publickey is not None:
