@@ -21,8 +21,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     low = mid + 1
                 else:
                     high = mid
-
-            m = str(hex(low))[2::]
-            plain.append(bytes.fromhex(m))
+            plain.append(low.to_bytes((low.bit_length() + 7) // 8, byteorder="big"))
         return (None, plain)
     return (None, None)

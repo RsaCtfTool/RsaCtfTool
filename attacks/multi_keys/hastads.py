@@ -79,14 +79,16 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
     result = chinese_remainder(n, c)
     nth = find_invpow(result, 3)
 
+    unciphered = []
+    unciphered.append(nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big"))
+
     try:
-        unciphered = str(hex(nth)[2:])
-        unciphered = bytes.fromhex(unciphered)
-    except ValueError:
-        unciphered = b""
+        unciphered_ = b""
         for i in range(0, len(str(nth)), 3):
             _ = str(nth)[i : i + 3]
-            unciphered += bytes([int(_)])
-    print(unciphered)
+            unciphered_ += bytes([int(_)])
+        unciphered.append(unciphered_)
+    except:
+        pass
 
     return (None, unciphered)
