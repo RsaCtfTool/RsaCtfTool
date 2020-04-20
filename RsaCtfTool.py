@@ -181,13 +181,14 @@ if __name__ == "__main__":
             tmpfd.write(RSA.construct((args.n, args.e)).publickey().exportKey())
         args.publickey = [tmpfile.name]
 
-    elif args.publickey is not None and "*" in args.publickey or "?" in args.publickey:
-        pubkeyfilelist = glob(args.publickey)
-        args.publickey = pubkeyfilelist
-    elif "," in args.publickey:
-        args.publickey = args.publickey.split(",")
-    else:
-        args.publickey = [args.publickey]
+    elif args.publickey is not None:
+        if "*" in args.publickey or "?" in args.publickey:
+            pubkeyfilelist = glob(args.publickey)
+            args.publickey = pubkeyfilelist
+        elif "," in args.publickey:
+            args.publickey = args.publickey.split(",")
+        else:
+            args.publickey = [args.publickey]
 
     # If we already have all informations
     if (
@@ -213,6 +214,7 @@ if __name__ == "__main__":
         and not args.private
         and args.uncipher is None
         and args.uncipherfile is None
+        and args.publickey is not None
     ):
         for publickey in args.publickey:
             logger.info("Details for %s:" % publickey)
