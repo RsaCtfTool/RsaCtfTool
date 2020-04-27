@@ -110,6 +110,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
+    unciphers = []
+
     # Set logger level
     logging.basicConfig(level=logger_levels[args.verbosity], format="%(message)s")
 
@@ -157,7 +159,6 @@ if __name__ == "__main__":
     # If we have a private key in input and uncipher in args (or uncipherfile)
     if args.key and args.uncipher:
         priv_key = PrivateKey(filename=args.key, password=args.password)
-        unciphers = []
         for u in args.uncipher:
             unciphers.append(priv_key.decrypt(args.u))
         print_results(args, None, priv_key, unciphers)
@@ -203,7 +204,7 @@ if __name__ == "__main__":
             print(pub_key)
 
         for u in args.uncipher:
-            unciphers.append(priv_key.decrypt(args.u))
+            unciphers.append(priv_key.decrypt(args.uncipher))
 
         print_results(args, args.publickey[0], priv_key, unciphers)
         exit(0)
