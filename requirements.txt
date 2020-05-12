@@ -1,6 +1,7 @@
-pycryptodome
+six
 GMPY2
 SymPy
+pycrypto
 requests
-six
 cryptography
+pycryptodomex
