@@ -20,7 +20,7 @@ Attacks :
 - Fermat's factorisation for close p and q
 - Gimmicky Primes method
 - Past CTF Primes method
-- Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/DarkenCode/yafu.git)>
+- Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/DarkenCode/yafu.git>)
 - Common factor attacks across multiple keys
 - Small fractions method when p/q is close to a small fraction
 - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
