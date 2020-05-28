@@ -23,6 +23,7 @@ from lib.rsalibnum import n2s, invmod
 from lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
+from lib.customlogger import CustomFormatter, logger_levels
 from lib.keys_wrapper import (
     generate_pq_from_n_and_p_or_q,
     generate_keys_from_p_q_e_n,
@@ -34,15 +35,6 @@ urllib3.disable_warnings(InsecureRequestWarning)
 
 # Change recursion limit for... you know, factorizing stuff...
 sys.setrecursionlimit(5000)
-
-# Set logger levels for argparse
-logger_levels = {
-    "CRITICAL": logging.CRITICAL,
-    "ERROR": logging.ERROR,
-    "WARNING": logging.WARNING,
-    "DEBUG": logging.DEBUG,
-    "INFO": logging.INFO,
-}
 
 if __name__ == "__main__":
 
@@ -113,12 +105,21 @@ if __name__ == "__main__":
     unciphers = []
 
     # Set logger level
-    logging.basicConfig(level=logger_levels[args.verbosity], format="%(message)s")
+    logging.basicConfig(level=logger_levels[args.verbosity], )
+    ch = logging.StreamHandler()
+    ch.setFormatter(CustomFormatter())
+    logger = logging.getLogger("global_logger")
+    logger.propagate = False
+    logger.addHandler(ch)
 
     # If no arguments, diplay help and exit
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
+
+    # Add information
+    if not args.private:
+        logger.warning("private argument is not set, the private key will not be displayed, even if recovered.")
 
     # Parse longs if exists
     if args.p is not None:
@@ -152,7 +153,7 @@ if __name__ == "__main__":
                 with open(uncipher, "rb") as cipherfile_fd:
                     uncipher_array.append(cipherfile_fd.read())
             except OSError as e:
-                print("--uncipherfile : file not found or not readable.")
+                logger.info("--uncipherfile : file not found or not readable.")
                 exit(1)
         args.uncipher = uncipher_array
 
