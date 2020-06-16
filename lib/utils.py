@@ -115,7 +115,7 @@ def print_results(args, publickey, private_key, uncipher):
 
                         logger.info(f"HEX : 0x{c.hex()}")
 
-                        int_big = int.from_bytes(c, "big")  # 1
+                        int_big = int.from_bytes(c, "big")
                         int_little = int.from_bytes(c, "little")
 
                         logger.info(f"INT (big endian) : {int_big}")

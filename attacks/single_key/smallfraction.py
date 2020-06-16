@@ -11,17 +11,15 @@ __SAGE__ = True
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
-       only works if the sageworks() function returned True
+        only works if the sageworks() function returned True
     """
     try:
         dir_path = os.path.dirname(os.path.realpath(__file__))
         sagepath = os.path.join(dir_path, "../../sage/smallfraction.sage")
-        sageresult = int(
-            subprocess.check_output(
-                ["sage", sagepath, str(publickey.n)],
-                timeout=attack_rsa_obj.args.timeout,
-            )
+        r = subprocess.check_output(
+            ["sage", sagepath, str(publickey.n)], timeout=attack_rsa_obj.args.timeout,
         )
+        sageresult = int(r)
         if sageresult > 0:
             publickey.p = sageresult
             publickey.q = publickey.n // publickey.p

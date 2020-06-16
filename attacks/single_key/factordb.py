@@ -8,6 +8,7 @@ from lib.rsalibnum import invmod
 from Crypto.PublicKey import RSA
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
+from Crypto.Util.number import long_to_bytes
 
 logger = logging.getLogger("global_logger")
 
@@ -78,7 +79,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 r_2 = s.get(url_2 % q_id, verify=False)
                 key_q = regex.findall(r_2.text)[0]
                 publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
-
             except IndexError:
                 return (None, None)
 
@@ -90,6 +90,20 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             )
 
             return (priv_key, None)
+        elif len(ids) > 3:
+            phi = 1
+            for p in ids[1:]:
+                phi *= int(p) - 1
+            d = invmod(publickey.e, phi)
+            plains = []
+            for c in cipher:
+                int_big = int.from_bytes(c, "big")
+                int_little = int.from_bytes(c, "little")
+                plain1 = pow(int_big, d, publickey.n)
+                plain2 = pow(int_little, d, publickey.n)
+                plains.append(long_to_bytes(plain1))
+                plains.append(long_to_bytes(plain2))
+            return (None, plains)
         return (None, None)
-    except:
+    except NotImplementedError:
         return (None, None)
