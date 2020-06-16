@@ -100,12 +100,26 @@ def print_results(args, publickey, private_key, uncipher):
             if len(uncipher) > 0:
                 logger.info("\nUnciphered data :")
                 for uncipher_ in uncipher:
-                    if args.output:
-                        try:
-                            with open(args.output, "ab") as output_fd:
-                                output_fd.write(uncipher_)
-                        except:
-                            logger.error("Can't write output file : %s" % args.output)
-                    logger.info(uncipher_)
+                    if not isinstance(uncipher_, list):
+                        uncipher_ = [uncipher_]
+
+                    for c in uncipher_:
+                        if args.output:
+                            try:
+                                with open(args.output, "ab") as output_fd:
+                                    output_fd.write(c)
+                            except:
+                                logger.error(
+                                    "Can't write output file : %s" % args.output
+                                )
+
+                        logger.info(f"HEX : 0x{c.hex()}")
+
+                        int_big = int.from_bytes(c, "big")  # 1
+                        int_little = int.from_bytes(c, "little")
+
+                        logger.info(f"INT (big endian) : {int_big}")
+                        logger.info(f"INT (little endian) : {int_little}")
+                        logger.info(f"STR : {repr(c)}")
         else:
             logger.critical("Sorry, unciphering failed.")

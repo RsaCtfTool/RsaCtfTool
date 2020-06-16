@@ -40,8 +40,8 @@ def generate_keys_from_p_q_e_n(p, q, e, n):
 class PublicKey(object):
     def __init__(self, key, filename=None):
         """Create RSA key from input content
-           :param key: public key file content
-           :type key: string
+            :param key: public key file content
+            :type key: string
         """
         try:
             pub = RSA.importKey(key)
@@ -67,10 +67,10 @@ class PrivateKey(object):
         self, p=None, q=None, e=None, n=None, d=None, filename=None, password=None
     ):
         """Create private key from base components
-           :param p: extracted from n
-           :param q: extracted from n
-           :param e: exponent
-           :param n: n from public key
+            :param p: extracted from n
+            :param q: extracted from n
+            :param e: exponent
+            :param n: n from public key
         """
         self.p = None
         if p is not None:
@@ -134,8 +134,8 @@ class PrivateKey(object):
 
     def decrypt(self, cipher):
         """Uncipher data with private key
-           :param cipher: input cipher
-           :type cipher: string
+            :param cipher: input cipher
+            :type cipher: string
         """
         if not isinstance(cipher, list):
             cipher = [cipher]
