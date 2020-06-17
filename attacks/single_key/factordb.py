@@ -98,7 +98,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             plains = []
             for c in cipher:
                 int_big = int.from_bytes(c, "big")
-                int_little = int.from_bytes(c, "little")
                 plain1 = pow(int_big, d, publickey.n)
                 plains.append(long_to_bytes(plain1))
             return (None, plains)
