@@ -100,9 +100,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 int_big = int.from_bytes(c, "big")
                 int_little = int.from_bytes(c, "little")
                 plain1 = pow(int_big, d, publickey.n)
-                plain2 = pow(int_little, d, publickey.n)
                 plains.append(long_to_bytes(plain1))
-                plains.append(long_to_bytes(plain2))
             return (None, plains)
         return (None, None)
     except NotImplementedError:
