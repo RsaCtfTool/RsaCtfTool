@@ -6,6 +6,7 @@ import logging
 import subprocess
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -24,19 +25,17 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         try:
             ecmdigits = attack_rsa_obj.args.ecmdigits
-            dir_path = os.path.dirname(os.path.realpath(__file__))
-            sagepath = os.path.join(dir_path, "../../sage/ecm.sage")
             if ecmdigits:
                 sageresult = int(
                     subprocess.check_output(
-                        ["sage", sagepath, str(publickey.n), str(ecmdigits)],
+                        ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n), str(ecmdigits)],
                         timeout=attack_rsa_obj.args.timeout,
                     )
                 )
             else:
                 sageresult = int(
                     subprocess.check_output(
-                        ["sage", sagepath, str(publickey.n)],
+                        ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n)],
                         timeout=attack_rsa_obj.args.timeout,
                     )
                 )

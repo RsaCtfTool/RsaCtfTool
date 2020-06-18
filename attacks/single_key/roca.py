@@ -6,6 +6,7 @@ import logging
 import subprocess
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -15,7 +16,7 @@ logger = logging.getLogger("global_logger")
 def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = subprocess.check_output(
-            ["sage", "./sage/roca_attack.py", str(publickey.n)],
+            ["sage", "%s/sage/roca_attack.py" %rootpath, str(publickey.n)],
             timeout=attack_rsa_obj.args.timeout,
         )
 

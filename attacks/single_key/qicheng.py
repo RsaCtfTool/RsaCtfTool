@@ -6,6 +6,7 @@ import logging
 import subprocess
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -18,7 +19,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = int(
             subprocess.check_output(
-                ["sage", "./sage/qicheng.sage", str(publickey.n)],
+                ["sage", "%s/sage/qicheng.sage" % rootpath, str(publickey.n)],
                 timeout=attack_rsa_obj.args.timeout,
             )
         )

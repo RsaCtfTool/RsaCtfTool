@@ -5,6 +5,7 @@ import os
 import logging
 import subprocess
 from lib.keys_wrapper import PrivateKey
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -14,10 +15,8 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         only works if the sageworks() function returned True
     """
     try:
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        sagepath = os.path.join(dir_path, "../../sage/smallfraction.sage")
         r = subprocess.check_output(
-            ["sage", sagepath, str(publickey.n)], timeout=attack_rsa_obj.args.timeout,
+            ["sage", "%s/sage/smallfraction.sage" % rootpath, str(publickey.n)], timeout=attack_rsa_obj.args.timeout,
         )
         sageresult = int(r)
         if sageresult > 0:

@@ -6,6 +6,7 @@ import logging
 import subprocess
 from Crypto.PublicKey import RSA
 from lib.keys_wrapper import PrivateKey
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -16,11 +17,9 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
        many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
     """
     try:
-        dir_path = os.path.dirname(os.path.realpath(__file__))
-        sagepath = os.path.join(dir_path, "../../sage/boneh_durfee.sage")
         sageresult = int(
             subprocess.check_output(
-                ["sage", sagepath, str(publickey.n), str(publickey.e)],
+                ["sage", "%s/sage/boneh_durfee.sage" % rootpath, str(publickey.n), str(publickey.e)],
                 timeout=attack_rsa_obj.args.timeout,
             )
         )
