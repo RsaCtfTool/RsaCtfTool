@@ -5,7 +5,7 @@ import os
 import logging
 import subprocess
 from lib.keys_wrapper import PrivateKey
-from lib.utils import root
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -16,7 +16,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     """
     try:
         r = subprocess.check_output(
-            ["sage", "%s/sage/smallfraction.sage" % root, str(publickey.n)], timeout=attack_rsa_obj.args.timeout,
+            ["sage", "%s/sage/smallfraction.sage" % rootpath, str(publickey.n)], timeout=attack_rsa_obj.args.timeout,
         )
         sageresult = int(r)
         if sageresult > 0:

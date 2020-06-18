@@ -10,8 +10,8 @@ from lib.keys_wrapper import PublicKey
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
 _libutil_ = os.path.realpath(__file__)
-root, _libutil_ = os.path.split(_libutil_)
-root = "%s/.." % root #up one dir
+rootpath, _libutil_ = os.path.split(_libutil_)
+rootpath = "%s/.." % rootpath #up one dir
 
 def get_numeric_value(value):
     """Parse input (hex or numerical)

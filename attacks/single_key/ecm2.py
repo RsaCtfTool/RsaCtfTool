@@ -7,7 +7,7 @@ import subprocess
 from lib.rsalibnum import modInv
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
-from lib.utils import root
+from lib.utils import rootpath
 
 __SAGE__ = True
 
@@ -27,7 +27,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         sageresult = []
         try:
             sageresult = subprocess.check_output(
-                ["sage", "%s/sage/ecm2.sage" % root, str(publickey.n)],
+                ["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)],
                 timeout=attack_rsa_obj.args.timeout,
             )
             sageresult = sageresult[1:-2].split(b", ")
