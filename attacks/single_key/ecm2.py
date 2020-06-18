@@ -7,7 +7,7 @@ import subprocess
 from lib.rsalibnum import modInv
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
-from path import root
+from lib.utils import root
 
 __SAGE__ = True
 

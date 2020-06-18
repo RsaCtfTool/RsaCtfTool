@@ -6,7 +6,7 @@ import logging
 import subprocess
 from Crypto.PublicKey import RSA
 from lib.keys_wrapper import PrivateKey
-from path import root
+from lib.utils import root
 
 __SAGE__ = True
 
