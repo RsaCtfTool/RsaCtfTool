@@ -102,6 +102,7 @@ For more examples, look at test.sh file
 ```bash
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
+sudo apt-get install sagemath # Optional
 pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
 ```
@@ -111,6 +112,12 @@ python3 RsaCtfTool.py
 If `pip3 install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
 ``easy_install `cat requirements.txt` ``
+
+```
+# Optional:
+ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)" < /dev/null 2> /dev/null ; brew install caskroom/cask/brew-cask 2> /dev/null
+brew cask install sage
+```
 
 ## Todo
 
