@@ -50,7 +50,7 @@ def factor(n,attempts=50):
         A = attempts
     B = int(attempts/cpus)
     
-    for i in range(0,B):
+    for i in range(0,B+1):
         inputs = [((n,js,Consts,),{})] * A
         for k, val in parallel_iter(A, corefunc,inputs):
             if val != None:
