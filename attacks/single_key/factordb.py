@@ -79,6 +79,11 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 r_2 = s.get(url_2 % q_id, verify=False)
                 key_q = regex.findall(r_2.text)[0]
                 publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
+
+                # https://github.com/Ganapati/RsaCtfTool/issues/129
+                if publickey.n != int(key_p) * int(key_q):
+                    return (None, None)
+
             except IndexError:
                 return (None, None)
 
