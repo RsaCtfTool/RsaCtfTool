@@ -81,7 +81,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
 
                 # https://github.com/Ganapati/RsaCtfTool/issues/129
-                if not publickey.n == int(key_p) * int(key_q):
+                if publickey.n != int(key_p) * int(key_q):
                     return (None, None)
 
             except IndexError:
