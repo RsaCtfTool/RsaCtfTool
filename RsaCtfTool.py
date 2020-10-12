@@ -105,7 +105,7 @@ if __name__ == "__main__":
     unciphers = []
 
     # Set logger level
-    logging.basicConfig(level=logger_levels[args.verbosity], )
+    logging.basicConfig(level=logger_levels[args.verbosity],)
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
@@ -119,7 +119,9 @@ if __name__ == "__main__":
 
     # Add information
     if not args.private:
-        logger.warning("private argument is not set, the private key will not be displayed, even if recovered.")
+        logger.warning(
+            "private argument is not set, the private key will not be displayed, even if recovered."
+        )
 
     # Parse longs if exists
     if args.p is not None:
@@ -204,14 +206,15 @@ if __name__ == "__main__":
         if args.createpub:
             print(pub_key)
 
-        for u in args.uncipher:
-            unciphers.append(priv_key.decrypt(args.uncipher))
+        if args.uncipher is not None:
+            for u in args.uncipher:
+                unciphers.append(priv_key.decrypt(args.uncipher))
 
         print_results(args, args.publickey[0], priv_key, unciphers)
         exit(0)
 
     # Dump public key informations
-    if (
+    if (git
         args.dumpkey
         and not args.private
         and args.uncipher is None
