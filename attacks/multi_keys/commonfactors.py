@@ -22,7 +22,7 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
         tmp *= x.n
     for x in publickeys:
         g = gcd(x.n, tmp)
-        if 1<g<n:
+        if 1 < g < x.n:
             logger.info(
                 "[*] Found common factor in modulus for "
                 + x.filename
