@@ -8,7 +8,7 @@ from lib.keys_wrapper import PublicKey
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """ Same e huge N attack
+    """ Same n huge e attack
     """
     if not isinstance(publickey, list):
         return (None, None)
@@ -22,5 +22,5 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             tmpfd.write(RSA.construct((publickey[0].n, new_e)).publickey().exportKey())
             result = attack_rsa_obj.attack_single_key(tmpfile.name)
             if result:
-                return (attack_rsa_obj.priv_key, attack_rsa_obj.unciphered)
+                return (attack_rsa_obj.priv_key, None)
     return (None, None)

@@ -11,7 +11,8 @@ from lib.keys_wrapper import PublicKey
 # allows sage scripts to be launched anywhere in the fs
 _libutil_ = os.path.realpath(__file__)
 rootpath, _libutil_ = os.path.split(_libutil_)
-rootpath = "%s/.." % rootpath #up one dir
+rootpath = "%s/.." % rootpath  # up one dir
+
 
 def get_numeric_value(value):
     """Parse input (hex or numerical)
@@ -129,3 +130,45 @@ def print_results(args, publickey, private_key, uncipher):
                         logger.info(f"STR : {repr(c)}")
         else:
             logger.critical("Sorry, unciphering failed.")
+
+
+def isqrt(n):
+    if n == 0:
+        return 0
+    x, y = n, (n + 1) // 2
+    while y < x:
+        x, y = y, (y + n // y) // 2
+    return x
+
+
+def gcd(a, b):
+    while b:
+        a, b = b, a % b
+    return abs(a)
+
+
+def introot(n, r=2):
+    if n < 0:
+        return None if r % 2 == 0 else -introot(-n, r)
+    if n < 2:
+        return n
+    if r == 2:
+        return isqrt(n)
+    lower, upper = 0, n
+    while lower != upper - 1:
+        mid = (lower + upper) // 2
+        m = mid ** r
+        if m == n:
+            return mid
+        elif m < n:
+            lower = mid
+        elif m > n:
+            upper = mid
+    return lower
+
+
+def modinv(a, m):
+    a, x, u = a % m, 0, 1
+    while a:
+        x, u, m, a = u, x - (m // a) * u, a, m % a
+    return x

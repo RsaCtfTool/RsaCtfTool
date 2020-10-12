@@ -1,7 +1,10 @@
 import sys
 sys.setrecursionlimit(1e5)
 
-def factor(n):
+from sage.parallel.multiprocessing_sage import parallel_iter
+from multiprocessing import cpu_count
+
+def factor(n,attempts=50):
     r""" Try to factor n using Qi Cheng's elliptic curve algorithm and return the result.
 
     TESTS::
@@ -11,31 +14,47 @@ def factor(n):
         sage: factor(1444329727510154393553799612747635457542181563961160832013134005088873165794135221)
         74611921979343086722526424506387128972933
     """
-    R = Integers(n)
-    attempts = 20
-    js = [0, (-2^5)^3, (-2^5*3)^3, (-2^5*3*5*11)^3, (-2^6*3*5*23*29)^3]
-
-    for _ in range(attempts):
+    
+    Consts = {}
+    Consts['0'] = 0
+    Consts['1'] = 1
+    Consts['2'] = 2
+    Consts['3'] = 3
+    Consts['1728'] = 1728
+    
+    js = [0, (-2^5)^3, (-2^5*3)^3 ,(-2^5*3*5*11)^3, (-2^6*3*5*23*29)^3]
+    
+    def corefunc(n,js,Consts):
+        R = Integers(n)
+        
         for j in js:
-            if j == 0:
+            if j == Consts['0']:
                 a = R.random_element()
-                E = EllipticCurve([0, a])
+                E = EllipticCurve([Consts['0'], a])
 
             else:
-                a = R(j)/(R(1728)-R(j))
+                a = R(j)/(R(Consts['1728'])-R(j))
                 c = R.random_element()
-                E = EllipticCurve([3*a*c^2, 2*a*c^3])
+                E = EllipticCurve([Consts['3']*a*c^Consts['2'], Consts['2']*a*c^Consts['3']])
 
             x = R.random_element()
             z = E.division_polynomial(n, x)
             g = gcd(z, n)
-            if g > 1:
+            if g > Consts['1']:
                 return g
-
+    
+    cpus = cpu_count()
+    if attempts > cpus:
+        A = cpus
+    else:
+        A = attempts
+    B = int(attempts/cpus)
+    
+    for i in range(0,B+1):
+        inputs = [((n,js,Consts,),{})] * A
+        for k, val in parallel_iter(A, corefunc,inputs):
+            if val != None:
+                return val
 
 if __name__ == "__main__":
-    p = factor(Integer(sys.argv[1]))
-    if p is None:
-        print(0)
-    else:
-        print(p)
+    print(factor(Integer(sys.argv[1])))

@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from gmpy2 import isqrt, invert
+# from gmpy2 import isqrt, invert
+from lib.utils import isqrt, invmod
 from lib.keys_wrapper import PrivateKey
 
 
@@ -18,7 +19,7 @@ def close_factor(n, b):
         z = (z * 2) % n
 
     # check the table
-    mu = invert(pow(2, phi_approx, n), n)
+    mu = invmod(pow(2, phi_approx, n), n)
     fac = pow(2, b, n)
 
     for i in range(0, b + 1):
@@ -38,7 +39,7 @@ def close_factor(n, b):
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Do nothing, used for multi-key attacks that succeeded so we just print the
-       private key without spending any time factoring
+        private key without spending any time factoring
     """
     londahl_b = 20000000
     factors = close_factor(publickey.n, londahl_b)

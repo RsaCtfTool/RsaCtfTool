@@ -9,7 +9,7 @@ from lib.keys_wrapper import PrivateKey
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """ "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
-       not all numbers in this form are prime but some are (25 digit is prime)
+        not all numbers in this form are prime but some are (25 digit is prime)
     """
     maxlen = 25  # max number of digits in the final integer
     for i in range(maxlen - 4):

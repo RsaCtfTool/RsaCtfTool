@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from _primefac._prime import primes
 from lib.keys_wrapper import PrivateKey
 
 
