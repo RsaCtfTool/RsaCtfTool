@@ -26,8 +26,6 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
             logger.info(
                 "[*] Found common factor in modulus for "
                 + x.filename
-                + " and "
-                + y.filename
             )
 
             # update each attackobj with a private_key
