@@ -1,0 +1,30 @@
+[tool.poetry]
+name = "rsactftool"
+version = "0.1.0"
+description = ""
+authors = ["borari <borari@fubared.net>"]
+packages = [
+    { include = "rsactftool", from = "src" },
+    { include = "lib", from = "src/rsactftool" },
+    { include = "_primefac", from = "src/rsactftool" },
+    { include = "attacks", from = "src/rsactftool" },
+]
+
+[tool.poetry.dependencies]
+python = "==3.8"
+six = "1.11.0"
+sympy = "1.3"
+cryptography = "2.8"
+urllib3 = "1.24.2"
+requests = "2.20.0"
+gmpy = "1.17"
+gmpy2 = "2.0.8"
+pycryptodome = "3.9.7"
+
+[tool.poetry.dev-dependencies]
+
+[tool.poetry.scripts]
+rsactftool = "rsactftool.RsaCtfTool:main"
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
