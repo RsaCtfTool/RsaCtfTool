@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import itertools
 from lib.rsalibnum import gcd
 from lib.keys_wrapper import PrivateKey
 
