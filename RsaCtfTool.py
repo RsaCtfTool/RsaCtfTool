@@ -214,7 +214,7 @@ if __name__ == "__main__":
         exit(0)
 
     # Dump public key informations
-    if (git
+    if (
         args.dumpkey
         and not args.private
         and args.uncipher is None
