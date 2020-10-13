@@ -18,25 +18,26 @@ import urllib3
 import tempfile
 from glob import glob
 from Crypto.PublicKey import RSA
-from lib.rsa_attack import RSAAttack
-from lib.rsalibnum import n2s, invmod
-from lib.utils import get_numeric_value, print_results
+from rsactftool.lib.rsa_attack import RSAAttack
+from rsactftool.lib.rsalibnum import n2s, invmod
+from rsactftool.lib.utils import get_numeric_value, print_results
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
-from lib.customlogger import CustomFormatter, logger_levels
-from lib.keys_wrapper import (
+from rsactftool.lib.customlogger import CustomFormatter, logger_levels
+from rsactftool.lib.keys_wrapper import (
     generate_pq_from_n_and_p_or_q,
     generate_keys_from_p_q_e_n,
     PrivateKey,
 )
 
-# Remove insecure warning for factordb.com
-urllib3.disable_warnings(InsecureRequestWarning)
 
-# Change recursion limit for... you know, factorizing stuff...
-sys.setrecursionlimit(5000)
+def main():
 
-if __name__ == "__main__":
+    # Remove insecure warning for factordb.com
+    urllib3.disable_warnings(InsecureRequestWarning)
+
+    # Change recursion limit for... you know, factorizing stuff...
+    sys.setrecursionlimit(5000)
 
     logger = logging.getLogger("global_logger")
     parser = argparse.ArgumentParser(description="RSA CTF Tool")

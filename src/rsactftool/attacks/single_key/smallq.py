@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 
 def primes(n):

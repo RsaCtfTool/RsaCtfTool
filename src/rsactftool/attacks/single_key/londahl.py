@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # from gmpy2 import isqrt, invert
-from lib.utils import isqrt, invmod
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.utils import isqrt, invmod
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 
 def close_factor(n, b):

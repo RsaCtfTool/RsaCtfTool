@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lib.rsalibnum import s2n, gcd
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.rsalibnum import s2n, gcd
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):

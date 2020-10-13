@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lib.rsalibnum import gcd
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.rsalibnum import gcd
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 logger = logging.getLogger("global_logger")
 

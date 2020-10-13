@@ -1,12 +1,24 @@
 [tool.poetry]
 name = "rsactftool"
-version = "0.1.0"
-description = ""
-authors = ["borari <borari@fubared.net>"]
+version = "1.0"
+description = "RSA attack tool (mainly for ctf) - retreive private key from weak public key and/or uncipher data"
+license = "Beerware"
+authors = ["Ganapati <@G4N4P4T1>"]
+maintainers = ["borari <@borari>"]
+readme = "README.md"
+repository = "https://github.com/borari/RsaCtfTool"
+keywords = [
+    "rsa-attack",
+    "rsa",
+    "cryptography",
+]
+classifiers = [
+    "Topic :: Security :: Cryptography",
+    "Topic :: Scientific/Engineering :: Mathematics",
+]
 packages = [
     { include = "rsactftool", from = "src" },
     { include = "lib", from = "src/rsactftool" },
-    { include = "_primefac", from = "src/rsactftool" },
     { include = "attacks", from = "src/rsactftool" },
 ]
 
@@ -25,6 +37,10 @@ pycryptodome = "3.9.7"
 
 [tool.poetry.scripts]
 rsactftool = "rsactftool.RsaCtfTool:main"
+
+[tool.poetry.extras]
+sagemath = ["sagemath"]
+
 [build-system]
 requires = ["poetry-core>=1.0.0"]
 build-backend = "poetry.core.masonry.api"

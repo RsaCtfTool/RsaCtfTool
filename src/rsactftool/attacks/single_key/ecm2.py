@@ -4,10 +4,10 @@
 import os
 import logging
 import subprocess
-from lib.rsalibnum import modInv
-from lib.timeout import timeout
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath
+from rsactftool.lib.rsalibnum import modInv
+from rsactftool.lib.timeout import timeout
+from rsactftool.lib.keys_wrapper import PrivateKey
+from rsactftool.lib.utils import rootpath
 
 __SAGE__ = True
 
