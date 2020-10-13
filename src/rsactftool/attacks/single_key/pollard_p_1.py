@@ -3,7 +3,7 @@
 
 import math
 import logging
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 
 def pollard_P_1(n):

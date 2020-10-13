@@ -3,7 +3,7 @@
 
 import logging
 from functools import reduce
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 logger = logging.getLogger("global_logger")
 

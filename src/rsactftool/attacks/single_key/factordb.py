@@ -4,10 +4,10 @@
 import re
 import logging
 import requests
-from lib.rsalibnum import invmod
+from rsactftool.lib.rsalibnum import invmod
 from Crypto.PublicKey import RSA
-from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
+from rsactftool.lib.keys_wrapper import PrivateKey
+from rsactftool.lib.exceptions import FactorizationError
 from Crypto.Util.number import long_to_bytes
 
 logger = logging.getLogger("global_logger")

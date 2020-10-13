@@ -4,8 +4,8 @@
 import os
 import logging
 import subprocess
-from lib.rsalibnum import invmod
-from lib.keys_wrapper import PublicKey
+from rsactftool.lib.rsalibnum import invmod
+from rsactftool.lib.keys_wrapper import PublicKey
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
