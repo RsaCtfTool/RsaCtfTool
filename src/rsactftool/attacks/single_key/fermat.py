@@ -2,9 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from lib.timeout import timeout
-from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
+from rsactftool.lib.timeout import timeout
+from rsactftool.lib.keys_wrapper import PrivateKey
+from rsactftool.lib.exceptions import FactorizationError
+
 
 # Source - http://stackoverflow.com/a/20465181
 def isqrt(n):

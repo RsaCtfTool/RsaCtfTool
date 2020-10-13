@@ -4,11 +4,11 @@
 import logging
 import importlib
 from glob import glob
-from lib.keys_wrapper import PublicKey
-from lib.exceptions import FactorizationError
-from lib.utils import sageworks, print_results
+from rsactftool.lib.keys_wrapper import PublicKey
+from rsactftool.lib.exceptions import FactorizationError
+from rsactftool.lib.utils import sageworks, print_results
 from Crypto.Util.number import bytes_to_long, long_to_bytes
-from attacks.multi_keys import same_n_huge_e, commonfactors
+from rsactftool.attacks.multi_keys import same_n_huge_e, commonfactors
 
 
 class RSAAttack(object):
@@ -103,11 +103,11 @@ class RSAAttack(object):
                 try:
                     if multikeys:
                         attack_module = importlib.import_module(
-                            "attacks.multi_keys.%s" % attack
+                            "rsactftool.attacks.multi_keys.%s" % attack
                         )
                     else:
                         attack_module = importlib.import_module(
-                            "attacks.single_key.%s" % attack
+                            "rsactftool.attacks.single_key.%s" % attack
                         )
                     try:
                         if attack_module.__SAGE__:

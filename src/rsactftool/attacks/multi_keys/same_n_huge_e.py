@@ -4,7 +4,7 @@
 import logging
 import tempfile
 from Crypto.PublicKey import RSA
-from lib.keys_wrapper import PublicKey
+from rsactftool.lib.keys_wrapper import PublicKey
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):

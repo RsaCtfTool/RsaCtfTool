@@ -5,7 +5,7 @@ import sys
 import logging
 from sympy import Symbol
 from sympy.solvers import solve
-from lib.keys_wrapper import PrivateKey
+from rsactftool.lib.keys_wrapper import PrivateKey
 
 
 class WienerAttack(object):

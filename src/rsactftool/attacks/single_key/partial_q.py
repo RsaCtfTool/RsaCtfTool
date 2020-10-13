@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from lib.rsalibnum import invmod
+from rsactftool.lib.rsalibnum import invmod
 import logging
 import sys
 
