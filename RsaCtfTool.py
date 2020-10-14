@@ -88,7 +88,36 @@ if __name__ == "__main__":
     parser.add_argument("-e", help="Specify the public exponent. format : int or 0xhex")
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
+    
+    #NSIF
+    parser.add_argument(
+        "--nsif",
+        type=int,
+        help="Nos Santos Izquierdo Field, Integer valuer to start the crack, the loop is +1",
+        default=None,
+    )   
+    parser.add_argument(
+        "--nsif-limit",
+        type=int,
+        help="The field to stop the crack",
+        default=None,
+    )    
+    
+    parser.add_argument(
+        "--dev_carmichael",
+        type=int,
+        help="Show carmichael derivation",
+        default=None,
+    )
 
+    parser.add_argument(
+        "--falzorize",
+        type=int,
+        help="Show P Q, the factors  of N",
+        default=None,
+    )    
+    
+    
     # Dynamic load all attacks for choices in argparse
     attacks = glob(join(dirname(__file__), "attacks", "single_key", "*.py"))
     attacks += glob(join(dirname(__file__), "attacks", "multi_keys", "*.py"))
