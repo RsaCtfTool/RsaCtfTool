@@ -45,7 +45,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] 
-                     [--nsif FIELD] [--nsif-limit FIELD] [--factorize] [--carmichael]
+                     [--nsif FIELD] [--nsif-limit FIELD] [--factorize] [--carmichael] [--decimal-expansion-length] [--generate]
                      [--attack {mersenne_primes,pollard_p_1,smallfraction,smallq,boneh_durfee,noveltyprimes,ecm,factordb,wiener,siqs,pastctfprimes,partial_q,comfact_cn,hastads,fermat,nullattack,commonfactors,same_n_huge_e,small_nsif,all}]
 ```
 
