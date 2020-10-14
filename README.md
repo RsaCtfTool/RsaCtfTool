@@ -44,7 +44,8 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
-                     [-e E] [--key KEY] [--nsif FIELD]
+                     [-e E] [--key KEY] 
+                     [--nsif FIELD] [--nsif-limit FIELD] [--factorize] [--carmichael]
                      [--attack {mersenne_primes,pollard_p_1,smallfraction,smallq,boneh_durfee,noveltyprimes,ecm,factordb,wiener,siqs,pastctfprimes,partial_q,comfact_cn,hastads,fermat,nullattack,commonfactors,same_n_huge_e,small_nsif,all}]
 ```
 
@@ -92,12 +93,12 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --publickey key.pub --nsif 5 --dev_carmichael`
 
-### Factorize with NSIF when de FIELD is small
+### Factorize with NSIF when the FIELD is small
 
 `./RsaCtfTool.py --publickey key.pub --nsif 5 --factorize`
 
 
-### Decrypt with NSIF when de FIELD is small
+### Decrypt with NSIF when the FIELD is small
 
 `./RsaCtfTool.py --publickey key.pub --nsif 5 --uncipher 182376812638176238.... `
 
