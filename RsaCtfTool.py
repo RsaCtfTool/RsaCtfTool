@@ -105,7 +105,6 @@ if __name__ == "__main__":
     
     parser.add_argument(
         "--dev_carmichael",
-        type=int,
         help="Show carmichael derivation",
         default=None,
     )
