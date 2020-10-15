@@ -1,0 +1,5 @@
+Immediate
+	- Put lookup table in nt_utils and link legendre with it
+Long term
+	- Consider memory constraints for factor()
+	- Implement the special number field sieve and have the factor function orchestrate when to use it  

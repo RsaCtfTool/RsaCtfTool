@@ -129,7 +129,7 @@ prs = nub $ sort ( concat (map (\x-> map (\y -> x*y) pr) pr ) )
 field_crack2 n s
 	-- | mod n 3 == 0 = (0,0)
 	-- | mod n 2 == 0 = (0,0)
-	| s > 1000000= (0,0) 
+	| s > 100000= (0,0) 
 	| t == 0 = out
 	| otherwise = field_crack2 n (s+1)
 	where
@@ -137,7 +137,7 @@ field_crack2 n s
 	out = (n, s)
 
 field_crack n s
-	| s > 1000000 = (0,0,0) 
+	| s > 100000= (0,0,0) 
 	| t == 0 = out
 	| otherwise = field_crack n (s+1)
 	where
@@ -204,6 +204,10 @@ main = do
 
     print $ "E :"++(show ex)
 
+    print $ "Testing message : The Flag"
+
+
+
     putStrLn "Field"
 
     print field
@@ -216,6 +220,22 @@ main = do
     putStrLn $ "Derivate Private Key of N"
 
     print $ modular_inverse ex devcarmichael
+
+
+    putStrLn $ "Original Private Key"
+
+    print $ ""
+
+
+    putStrLn $ "Factors"
+
+    print $ "Q :"
+
+    print $ "P :"
+ 
+    putStrLn $ "Period , decimal expansion length"
+
+    print $ " "
     --putStrLn "Carmichael of N Factors"
 
     --print $ factof devcarmichael
