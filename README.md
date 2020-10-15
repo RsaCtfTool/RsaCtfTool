@@ -91,16 +91,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### Extract a carmichael derivation with NSIF
 
-`./RsaCtfTool.py --publickey key.pub --nsif 5 --dev_carmichael`
-
-### Factorize with NSIF when the FIELD is small
-
-`./RsaCtfTool.py --publickey key.pub --nsif 5 --factorize`
-
-
-### Decrypt with NSIF when the FIELD is small
-
-`./RsaCtfTool.py --publickey key.pub --nsif 5 --uncipher 182376812638176238.... `
+`./RsaCtfTool.py --nsif 5 --attack nsif -n 28914087111802359237444159165006361036186102224284916898536608461776485325040080462350193787404457885567798343410305055632222679169605398533 -e 65537`
 
 For more examples, look at test.sh file
 
