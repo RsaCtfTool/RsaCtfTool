@@ -186,3 +186,15 @@ alldec2 n = take 1000 $ filter (\(z,y) -> y == 0 ) (map (\x-> (x , tryperiod n (
 
 
 alldec n = filter (\(z,y) -> y == 0) (map (\x->(x,tryperiod n x)) [1..n])
+
+
+
+
+main = do  
+    args <- getArgs                  -- IO [String]
+    progName <- getProgName          -- IO String
+    putStrLn "The arguments are:"  
+    mapM putStrLn args  
+    putStrLn "The program name is:"  
+    putStrLn progName
+
