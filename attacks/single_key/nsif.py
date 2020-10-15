@@ -14,7 +14,7 @@ logger = logging.getLogger("global_logger")
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
-        result = subprocess.run(["lib/bin/nsif", publickey.n, "/dev/null"], capture_output=True)
+        result = subprocess.run(["lib/bin/nsif", str(publickey.n), "/dev/null"], capture_output=True)
 
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return (None, None)
