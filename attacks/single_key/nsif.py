@@ -13,14 +13,7 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    try:
-        result = subprocess.run(["lib/bin/nsif", str(publickey.n), "/dev/null"], capture_output=True)
+    result = os.system("lib/nsif/nsif "+str(publickey.n)+" 0")
 
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-        return (None, None)
 
-    if b"FAIL" not in result and b":" in result:
-        rresult = result.decode("utf-8").strip()
-        return ("carmichael derivate : "+rresult, None)
-    else:
-        return (None, None)
+    return ("carmichael derivate : "+str(result), None)
