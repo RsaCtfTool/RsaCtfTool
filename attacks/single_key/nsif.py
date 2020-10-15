@@ -17,13 +17,17 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     if hasattr(attack_rsa_obj, 'uncipher'):
         m = attack_rsa_obj.args.uncipher
     else:
-        m = 2**32 
+        m = (2**32) * 3
 
     e = attack_rsa_obj.args.e
 
-    f = attack_rsa_obj.args.nsif
-   
-    print(f,e,m)
+    if hasattr(attack_rsa_obj,"args.nsif"):
+        f = attack_rsa_obj.args.nsif
+    else:
+        f = 0
+    
+    #debug
+    #print(f,e,m)
 
     result = os.system("lib/nsif/nsif "+str(publickey.n)+" "+str(f)+" "+str(e)+" "+str(m))
 

@@ -48,21 +48,27 @@ nss_privatekey e n s= modular_inverse e (nsf n s)
 
 -- EXTRACT FACTORS in NSF numbers
 
-nsf_factorise_ecm n = (sg2-qrest, sg2+qrest) 
+nsif_factorise_ecm n = (sg2-qrest, sg2+qrest) 
 	where
 	sigma = (n+1)-(totient n)
 	sg2 = div sigma 2   
 	qrest = integerSquareRoot ((sg2^2)-n)
 
 
-nsf_factorise n t= (sg2-qrest, sg2+qrest) 
+nsif_factorise n t= (sg2-qrest, sg2+qrest) 
 	where
 	sigma = ((n+1))-(t)
 	sg2 = div sigma 2   
 	qrest = integerSquareRoot ((sg2^2)-n)
 
 
-
+div_until_factor n t
+	| t < 2 = (0,0)
+	| gcdp /=1 && gcdp /= n = (gcd n p,gcd n q) 
+	| otherwise = div_until_factor n (div t 2)
+	where
+	(p,q) = nsif_factorise n t
+	gcdp = gcd n p
 
 -- MAP NSF PRODUCT OF PRIMES
 
@@ -194,8 +200,11 @@ alldec n = filter (\(z,y) -> y == 0) (map (\x->(x,tryperiod n x)) [1..n])
 main = do  
     args <- getArgs                  -- IO [String]
     progName <- getProgName          -- IO String
+    print args
     let n = args !! 0
     let st = args !! 1
+    let e = args !! 2
+    let m = args !! 3
 
     let (publickey,field,devcarmichael) = field_crack (read n::Integer) (read st::Integer)
     putStrLn "Public Key" 
@@ -204,14 +213,11 @@ main = do
 
     print $ "E :"++(show ex)
 
-    print $ "Testing message : The Flag"
-
-
+    print $ "Testing message : "++m
 
     putStrLn "Field"
 
     print field
-
 
     putStrLn $ "Derivate Carmichael of N"
 
@@ -221,11 +227,9 @@ main = do
 
     print $ modular_inverse ex devcarmichael
 
-
     putStrLn $ "Original Private Key"
 
     print $ ""
-
 
     putStrLn $ "Factors"
 
