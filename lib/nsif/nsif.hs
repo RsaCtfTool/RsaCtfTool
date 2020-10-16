@@ -56,7 +56,7 @@ nsif_factorise_ecm n = (sg2-qrest, sg2+qrest)
 
 
 
-nsif_factors n = head $ filter (\(x,c)-> c /= 0 && x /= 0) $  map ( \x-> nsif_factorise n (n-(x-1))) (factdev n)
+nsif_factors n = take 1 $ filter (\(x,c)-> c*x==n && c>0 && c/=1 && c/=n ) $  map ( \x-> nsif_factorise n (n- (mod n x))) (nub $ sort (factdev n))
 
 
 nsif_factorise n t 
@@ -177,8 +177,12 @@ field_crack n s
 	out = (n, s, car)
 
 
+rep n x =
+  if n == 1
+    then [x]
+    else x : rep (n-1) x
 
-factof n = (map (\x-> read ((splitOn " " ( show (fst x))) !! 1)::Integer) (P.factorise n))
+factof n =concat $  (map (\x-> rep ((read (show (snd x)))::Integer) (read ((splitOn " " ( show (fst x))) !! 1)::Integer)) (P.factorise n))
 
 factdev n = out
 	where
