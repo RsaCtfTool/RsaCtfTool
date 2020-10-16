@@ -55,12 +55,18 @@ nsif_factorise_ecm n = (sg2-qrest, sg2+qrest)
 	qrest = integerSquareRoot ((sg2^2)-n)
 
 
-nsif_factorise n t= (sg2-qrest, sg2+qrest) 
+
+nsif_factors n = head $ filter (\(x,c)-> c /= 0 && x /= 0) $  map ( \x-> nsif_factorise n (n-(x-1))) (factdev n)
+
+
+nsif_factorise n t 
+	| sg3 < 1 = (0,0)
+	| otherwise = (sg2-qrest, sg2+qrest)
 	where
 	sigma = ((n+1))-(t)
 	sg2 = div sigma 2   
-	qrest = integerSquareRoot ((sg2^2)-n)
-
+	sg3 = sg2^2-n
+	qrest = integerSquareRoot sg3
 
 div_until_factor n t
 	| t < 2 = (0,0)
@@ -69,6 +75,24 @@ div_until_factor n t
 	where
 	(p,q) = nsif_factorise n t
 	gcdp = gcd n p
+
+
+	
+
+
+combinationsOf :: Int -> [a] -> [[a]]
+combinationsOf 1 as        = map pure as
+combinationsOf k as@(x:xs) = run (l-1) (k-1) as $ combinationsOf (k-1) xs
+                             where
+                             l = length as
+
+                             run :: Int -> Int -> [a] -> [[a]] -> [[a]]
+                             run n k ys cs | n == k    = map (ys ++) cs
+                                           | otherwise = map (q:) cs ++ run (n-1) k qs (drop dc cs)
+                                           where
+                                           (q:qs) = take (n-k+1) ys
+                                           dc     = product [(n-k+1)..(n-1)] `div` product [1..(k-1)]
+
 
 -- MAP NSF PRODUCT OF PRIMES
 
@@ -155,6 +179,12 @@ field_crack n s
 
 
 factof n = (map (\x-> read ((splitOn " " ( show (fst x))) !! 1)::Integer) (P.factorise n))
+
+factdev n = out
+	where
+	(a,c,v)= field_crack n 0
+	e = factof v	
+	out = map product $ tail $ A.subsequences e
 
 
 cypher m n = powMod m ex n
