@@ -14,21 +14,22 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Qi Cheng - A New Class of Unsafe Primes
+    """binary polinomial factoring
         """
     try:
-        sageresult = int(
+        sageresult = str(
             subprocess.check_output(
                 ["sage", "%s/sage/binary_polinomial_factoring.sage" % rootpath, str(publickey.n)],
                 timeout=attack_rsa_obj.args.timeout,
             )
-        )
+        ).split(" ")
+        
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return (None, None)
 
-    if sageresult > 0:
-        p = sageresult
-        q = publickey.n // sageresult
+    p = int(sageresult[0])
+    if p > 0:
+        q = publickey.n // p
         priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
         return (priv_key, None)
     else:
