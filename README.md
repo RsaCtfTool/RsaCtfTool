@@ -34,6 +34,7 @@ Attacks :
 - Primefac
 - Qicheng
 - Same n, huge e
+- binary polynomial factoring
 
 ## Usage
 
