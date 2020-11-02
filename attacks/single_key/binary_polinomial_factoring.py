@@ -19,15 +19,23 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = str(
             subprocess.check_output(
-                ["sage", "%s/sage/binary_polinomial_factoring.sage" % rootpath, str(publickey.n)],
+                [
+                    "sage",
+                    "%s/sage/binary_polinomial_factoring.sage" % rootpath,
+                    str(publickey.n),
+                ],
                 timeout=attack_rsa_obj.args.timeout,
             )
         ).split(" ")
-        
+
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
         return (None, None)
 
-    p = int(sageresult[0])
+    try:
+        p = int(sageresult[0])
+    except ValueError:
+        return (None, None)
+
     if p > 0:
         q = publickey.n // p
         priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
