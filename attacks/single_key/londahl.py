@@ -33,7 +33,10 @@ def close_factor(n, b):
     m = n - phi + 1
     roots = ((m - isqrt(m ** 2 - 4 * n)) // 2, (m + isqrt(m ** 2 - 4 * n)) // 2)
 
-    assert roots[0] * roots[1] == n
+    try:
+        assert roots[0] * roots[1] == n
+    except AssertionError:
+        return None
     return roots
 
 
