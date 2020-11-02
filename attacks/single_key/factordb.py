@@ -86,12 +86,15 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             except IndexError:
                 return (None, None)
 
-            priv_key = PrivateKey(
-                p=int(publickey.p),
-                q=int(publickey.q),
-                e=int(publickey.e),
-                n=int(publickey.n),
-            )
+            try:
+                priv_key = PrivateKey(
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
+                    n=int(publickey.n),
+                )
+            except ValueError:
+                return (None, None)
 
             return (priv_key, None)
         elif len(ids) > 3:
