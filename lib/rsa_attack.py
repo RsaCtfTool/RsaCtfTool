@@ -7,6 +7,7 @@ from glob import glob
 from lib.keys_wrapper import PublicKey
 from lib.exceptions import FactorizationError
 from lib.utils import sageworks, print_results
+from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 from attacks.multi_keys import same_n_huge_e, commonfactors
 
@@ -25,6 +26,7 @@ class RSAAttack(object):
             self.cipher = None
 
         self.priv_key = None
+        self.priv_keys = []
         self.partitial_priv_key = None
         self.unciphered = []
         self.implemented_attacks = []
@@ -154,6 +156,8 @@ class RSAAttack(object):
                     self.priv_key, unciphered = attack_module.attack(
                         self, self.publickey, self.cipher
                     )
+                    if self.priv_key != None and self.priv_key not in self.priv_keys:
+                        self.priv_keys.append(self.priv_key)
                     if unciphered is not None and unciphered is not []:
                         if isinstance(unciphered, list):
                             self.unciphered = self.unciphered + unciphered
@@ -166,6 +170,10 @@ class RSAAttack(object):
 
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
+        if self.args.sendtofdb==True:
+          if len(self.priv_keys) > 0:
+            for privkey in list(set(self.priv_keys)):
+              send2fdb(privkey.n,[privkey.p,privkey.q])
         return self.get_boolean_results()
 
     def attack_single_key(self, publickey, attacks_list):
@@ -203,4 +211,7 @@ class RSAAttack(object):
                 self.logger.warning("Timeout")
 
         self.print_results_details(publickey)
+        if self.args.sendtofdb==True:
+            if self.priv_key != None:
+                send2fdb(self.priv_key.n,[self.priv_key.p,self.priv_key.q])
         return self.get_boolean_results()

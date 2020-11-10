@@ -99,6 +99,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
     )
+    parser.add_argument("--sendtofdb",help="Send results to factordb",action='store_true')
 
     args = parser.parse_args()
 
