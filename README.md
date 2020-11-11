@@ -42,7 +42,7 @@ Attacks :
 
 ```bash
 usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
-                     [--createpub] [--dumpkey] [--ext]
+                     [--createpub] [--dumpkey] [--ext] [--sendtofdb]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
@@ -76,6 +76,11 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 ### Attempt to break multiple public keys with common factor attacks or individually- use quotes around wildcards to stop bash expansion
 
 `./RsaCtfTool.py --publickey "*.pub" --private`
+
+
+### Optionaly send the results back to factordb
+
+`./RsaCtfTool.py --publickey "*.pub" --private` --sendtofdb
 
 ### Generate a public key
 
