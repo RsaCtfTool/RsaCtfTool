@@ -156,8 +156,6 @@ class RSAAttack(object):
                     self.priv_key, unciphered = attack_module.attack(
                         self, self.publickey, self.cipher
                     )
-                    if self.priv_key != None and self.priv_key not in self.priv_keys:
-                        self.priv_keys.append(self.priv_key)
                     if unciphered is not None and unciphered is not []:
                         if isinstance(unciphered, list):
                             self.unciphered = self.unciphered + unciphered
@@ -171,8 +169,8 @@ class RSAAttack(object):
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
         if self.args.sendtofdb==True:
-          if len(self.priv_keys) > 0:
-            for privkey in list(set(self.priv_keys)):
+          if len(self.priv_key) > 0:
+            for privkey in list(set(self.priv_key)):
               send2fdb(privkey.n,[privkey.p,privkey.q])
         return self.get_boolean_results()
 
