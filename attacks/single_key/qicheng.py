@@ -23,7 +23,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 timeout=attack_rsa_obj.args.timeout,
             )
         )
-    except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+    except (subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
         return (None, None)
 
     if sageresult > 0:
