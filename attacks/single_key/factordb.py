@@ -80,7 +80,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 key_q = regex.findall(r_2.text)[0]
                 publickey.q = int(key_q) if key_q.isdigit() else solveforp(key_q)
 
-                if publickey.n != int(key_p) * int(key_q):
+                if publickey.n != int(publickey.p) * int(publickey.q):
                     return (None, None)
 
             except IndexError:
