@@ -1,6 +1,7 @@
 # RsaCtfTool
 
 ![lint_python](https://github.com/Ganapati/RsaCtfTool/workflows/lint_python/badge.svg)
+![CodeQL](https://github.com/Ganapati/RsaCtfTool/workflows/CodeQL/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/issues)
 [![GitHub forks](https://img.shields.io/github/forks/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/network)
 [![GitHub stars](https://img.shields.io/github/stars/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/stargazers)
