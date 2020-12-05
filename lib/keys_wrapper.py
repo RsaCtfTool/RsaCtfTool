@@ -10,6 +10,7 @@ from Crypto.Cipher import PKCS1_OAEP
 from lib.rsalibnum import invmod, modInv
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+from lib.conspicuous_check import privatekey_check
 
 logger = logging.getLogger("global_logger")
 
@@ -130,6 +131,15 @@ class PrivateKey(object):
                         self.phi = (self.p - 1) * (self.q - 1)
                     else:
                         self.phi = (self.p ** 2) - self.p
+
+
+    def is_conspicuous(self):
+        is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
+        if is_con == True:
+            msg = "[!] The given privkey has conspicuousness:\n"
+            msg += "[!] It is not advisable to use it in production\n%s" % txt
+            logger.error("%s" % msg) 
+        return is_con
 
     def decrypt(self, cipher):
         """Uncipher data with private key
