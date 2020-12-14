@@ -44,6 +44,7 @@ class SiqsAttack(object):
                     [self.yafubin, "siqs(1549388302999519)"],
                     stderr=DN,
                     timeout=self.attack_rsa_obj.args.timeout,
+                    stderr=subprocess.DEVNULL,
                 )
             except:
                 yafutest = b""
@@ -83,6 +84,7 @@ class SiqsAttack(object):
                 ],
                 stderr=DN,
                 timeout=self.attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
             )
 
             primesfound = []

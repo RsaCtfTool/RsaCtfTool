@@ -21,6 +21,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             subprocess.check_output(
                 ["sage", "%s/sage/boneh_durfee.sage" % rootpath, str(publickey.n), str(publickey.e)],
                 timeout=attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
             )
         )
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
