@@ -3,9 +3,11 @@
 
 import sys
 import logging
+from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 class WienerAttack(object):
@@ -24,7 +26,7 @@ class WienerAttack(object):
         """Convergents_from_contfrac implementation
         """
         convs = []
-        for i in range(len(frac)):
+        for i in tqdm(range(len(frac))):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
@@ -79,7 +81,7 @@ class WienerAttack(object):
         frac = self.rational_to_contfrac(e, n)
         convergents = self.convergents_from_contfrac(frac)
 
-        for (k, d) in convergents:
+        for (k, d) in tqdm(convergents):
             if k != 0 and (e * d - 1) % k == 0:
                 phi = (e * d - 1) // k
                 s = n - phi + 1
@@ -99,13 +101,17 @@ class WienerAttack(object):
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Wiener's attack
     """
-    wiener = WienerAttack(publickey.n, publickey.e)
-    if wiener.p is not None and wiener.q is not None:
-        publickey.p = wiener.p
-        publickey.q = wiener.q
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            wiener = WienerAttack(publickey.n, publickey.e)
+            if wiener.p is not None and wiener.q is not None:
+                publickey.p = wiener.p
+                publickey.q = wiener.q
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
+            
     return (None, None)

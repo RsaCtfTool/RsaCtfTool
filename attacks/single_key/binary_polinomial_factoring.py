@@ -25,6 +25,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     str(publickey.n),
                 ],
                 timeout=attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
             )
         ).split(" ")
 

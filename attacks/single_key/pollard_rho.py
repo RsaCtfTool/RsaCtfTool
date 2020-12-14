@@ -4,7 +4,7 @@
 import math
 import logging
 from lib.keys_wrapper import PrivateKey
-
+from lib.utils import timeout, TimeoutError
 from gmpy2 import *
 
 
@@ -38,18 +38,26 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         publickey.q = None
 
     # pollard Rho attack
-    try:
-        poll_res = pollard_rho(publickey.n)
-    except RecursionError:
-        print("RecursionError")
-        return (None, None)
-    if poll_res and len(poll_res) > 1:
-        publickey.p, publickey.q = poll_res
+    
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            try:
+                poll_res = pollard_rho(publickey.n)
+            except RecursionError:
+                print("RecursionError")
+                return (None, None)
+                
+            if poll_res and len(poll_res) > 1:
+                publickey.p, publickey.q = poll_res
 
-    if publickey.q is not None:
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
+            if publickey.q is not None:
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
+        except TypeError:
+            return (None, None)
 
     return (None, None)

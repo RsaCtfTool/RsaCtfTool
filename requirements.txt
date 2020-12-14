@@ -6,3 +6,4 @@ requests==2.20.0
 gmpy==1.17
 gmpy2==2.1.0b5
 pycryptodome==3.9.7
+tqdm

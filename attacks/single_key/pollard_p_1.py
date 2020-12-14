@@ -3,7 +3,9 @@
 
 import math
 import logging
+from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 def pollard_P_1(n):
@@ -181,12 +183,7 @@ def pollard_P_1(n):
         997,
     ]
 
-    def gcd(a, b):
-        """ Search for GCD
-        """
-        if b == 0:
-            return a
-        return gcd(b, a % b)
+    def gcd(a, b):prime
 
     def e(a, b):
         """Return pow
@@ -217,19 +214,22 @@ def pollard_P_1(n):
         for i in range(1, int(math.log(B1) / math.log(prime[j])) + 1):
             z.append(prime[j])
 
-    for pp in prime:
-        i = 0
-        x = pp
-        while 1:
-            x = e(x, z[i])
-            i = i + 1
-            y = gcd(n, x - 1)
-            if y != 1:
-                p = y
-                q = n // y
-                return p, q
-            if i >= len(z):
-                return 0, None
+    try:
+        for pp in tqdm(prime):
+            i = 0
+            x = pp
+            while 1:
+                x = e(x, z[i])
+                i = i + 1
+                y = gcd(n, x - 1)
+                if y != 1:
+                    p = y
+                    q = n // y
+                    return p, q
+                if i >= len(z):
+                    return 0, None
+    except TypeError:
+        return 0, None
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
@@ -240,19 +240,22 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     if not hasattr(publickey, "q"):
         publickey.q = None
 
-    # Pollard P-1 attack
-    try:
-        poll_res = pollard_P_1(publickey.n)
-    except RecursionError:
-        print("RecursionError")
-        return (None, None)
-    if poll_res and len(poll_res) > 1:
-        publickey.p, publickey.q = poll_res
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            # Pollard P-1 attack
+            try:
+                poll_res = pollard_P_1(publickey.n)
+            except RecursionError:
+                print("RecursionError")
+                return (None, None)
+            if poll_res and len(poll_res) > 1:
+                publickey.p, publickey.q = poll_res
 
-    if publickey.q is not None:
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+            if publickey.q is not None:
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
     return (None, None)

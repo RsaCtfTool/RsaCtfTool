@@ -5,6 +5,7 @@ import logging
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
+from lib.utils import timeout, TimeoutError
 
 # Source - http://stackoverflow.com/a/20465181
 def isqrt(n):
@@ -41,7 +42,11 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     """
     try:
         with timeout(seconds=attack_rsa_obj.args.timeout):
-            publickey.p, publickey.q = fermat(publickey.n)
+            try:
+                publickey.p, publickey.q = fermat(publickey.n)
+            except TimeoutError:
+                return (None, None)
+                
     except FactorizationError:
         return (None, None)
 

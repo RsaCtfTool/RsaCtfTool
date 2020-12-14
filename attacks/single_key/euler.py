@@ -3,6 +3,7 @@
 
 import sys
 from gmpy2 import *
+from lib.utils import timeout, TimeoutError
 
 def euler(n):
   if n % 2 == 0:
@@ -47,19 +48,23 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         publickey.q = None
 
     # Euler attack
-    try:
-        euler_res = euler(publickey.n)
-    except:
-        print("Euler: Internal Error")
-        return (None, None)
-    if euler_res and len(euler_res) > 1:
-        publickey.p, publickey.q = euler_res
+    with timeout(attack_rsa_obj.args.timeout):
+      try:
+        try:
+            euler_res = euler(publickey.n)
+        except:
+            print("Euler: Internal Error")
+            return (None, None)
+        if euler_res and len(euler_res) > 1:
+            publickey.p, publickey.q = euler_res
 
-    if publickey.q is not None:
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
+        if publickey.q is not None:
+            priv_key = PrivateKey(
+                int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+            )
+            return (priv_key, None)
+      except TimeoutError:
+        return (None, None)
 
     return (None, None)
 

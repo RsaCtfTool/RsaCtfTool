@@ -8,6 +8,7 @@ from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
 
+
 __SAGE__ = True
 
 logger = logging.getLogger("global_logger")
@@ -17,10 +18,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     """use elliptic curve method, may return a prime or may never return
        only works if the sageworks() function returned True
     """
-    logger.warning(
-        "[*] ECM Method can run forever and may never succeed, timeout set to %ssec. Hit Ctrl-C to bail out."
-        % attack_rsa_obj.args.timeout
-    )
 
     try:
         try:
@@ -30,6 +27,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     subprocess.check_output(
                         ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n), str(ecmdigits)],
                         timeout=attack_rsa_obj.args.timeout,
+                        stderr=subprocess.DEVNULL,
                     )
                 )
             else:
@@ -37,6 +35,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     subprocess.check_output(
                         ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n)],
                         timeout=attack_rsa_obj.args.timeout,
+                        stderr=subprocess.DEVNULL,
                     )
                 )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):

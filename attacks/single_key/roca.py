@@ -18,6 +18,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         sageresult = subprocess.check_output(
             ["sage", "%s/sage/roca_attack.py" %rootpath, str(publickey.n)],
             timeout=attack_rsa_obj.args.timeout,
+            stderr=subprocess.DEVNULL,
         )
 
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
