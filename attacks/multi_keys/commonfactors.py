@@ -24,22 +24,26 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
                 if x.n != y.n:
                     g = gcd(x.n, y.n)
                     if g != 1:
-                        logger.info(
-                            "[*] Found common factor in modulus for "
-                            + x.filename
-                            + " and "
-                            + y.filename
-                        )
+                        
+                        try:
+                            # update each attackobj with a private_key
+                            x.p = g
+                            x.q = x.n // g
+                            y.p = g
+                            y.q = y.n // g
+                            priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
+                            priv_key_2 = PrivateKey(int(y.p), int(y.q), int(y.e), int(y.n))
+                            priv_keys.append(priv_key_1)
+                            priv_keys.append(priv_key_2)
 
-                        # update each attackobj with a private_key
-                        x.p = g
-                        x.q = x.n // g
-                        y.p = g
-                        y.q = y.n // g
-                        priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
-                        priv_key_2 = PrivateKey(int(y.p), int(y.q), int(y.e), int(y.n))
-                        priv_keys.append(priv_key_1)
-                        priv_keys.append(priv_key_2)
+                            logger.info(
+                                "[*] Found common factor in modulus for "
+                                + x.filename
+                                + " and "
+                                + y.filename
+                            )
+                        except ValueError:
+                            continue
         except TimeoutError:
             return (None, None)
             
