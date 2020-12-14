@@ -39,6 +39,7 @@ Attacks :
 - Euler method
 - Pollard Rho
 - Wolfram alpha
+- cm-factor
 
 ## Usage
 
