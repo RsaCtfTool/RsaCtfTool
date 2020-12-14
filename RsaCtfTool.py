@@ -100,6 +100,7 @@ if __name__ == "__main__":
         "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
     )
     parser.add_argument("--sendtofdb",help="Send results to factordb",action='store_true')
+    parser.add_argument("--isconspicuous",help="conspicuous key check",action='store_true')
 
     args = parser.parse_args()
 
@@ -251,6 +252,15 @@ if __name__ == "__main__":
                 print("qinv: " + str(qinv))
 
         exit(0)
+        
+    if args.key is not None and args.isconspicuous:
+        key_data = open(args.key, "rb").read()
+        key = RSA.importKey(key_data)
+        pub_key, priv_key = generate_keys_from_p_q_e_n(key.p, key.q, key.e, key.n)
+        if priv_key.is_conspicuous() == True:
+            exit(-1)
+        else:
+            exit(0)
 
     # Run attacks
     found = False
