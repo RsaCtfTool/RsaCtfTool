@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 # from gmpy2 import isqrt, invert
+from tqdm import tqdm
 from lib.utils import isqrt, invmod
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
@@ -14,7 +15,7 @@ def close_factor(n, b):
     # create a look-up table
     look_up = {}
     z = 1
-    for i in range(0, b + 1):
+    for i in tqdm(range(0, b + 1)):
         look_up[z] = i
         z = (z * 2) % n
 
@@ -22,7 +23,7 @@ def close_factor(n, b):
     mu = invmod(pow(2, phi_approx, n), n)
     fac = pow(2, b, n)
 
-    for i in range(0, b + 1):
+    for i in tqdm(range(0, b + 1)):
         if mu in look_up:
             phi = phi_approx + (look_up[mu] - i * b)
             break

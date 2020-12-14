@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
@@ -65,7 +66,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 77232917,
                 82589933,
             ]
-            for mersenne_prime in mersenne_tab:
+            for mersenne_prime in tqdm(mersenne_tab):
                 if publickey.n % ((2 ** mersenne_prime) - 1) == 0:
                     p = (2 ** mersenne_prime) - 1
                     q = publickey.n // ((2 ** mersenne_prime) - 1)

@@ -3,6 +3,7 @@
 
 import math
 import logging
+from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
@@ -182,12 +183,7 @@ def pollard_P_1(n):
         997,
     ]
 
-    def gcd(a, b):
-        """ Search for GCD
-        """
-        if b == 0:
-            return a
-        return gcd(b, a % b)
+    def gcd(a, b):prime
 
     def e(a, b):
         """Return pow
@@ -218,19 +214,22 @@ def pollard_P_1(n):
         for i in range(1, int(math.log(B1) / math.log(prime[j])) + 1):
             z.append(prime[j])
 
-    for pp in prime:
-        i = 0
-        x = pp
-        while 1:
-            x = e(x, z[i])
-            i = i + 1
-            y = gcd(n, x - 1)
-            if y != 1:
-                p = y
-                q = n // y
-                return p, q
-            if i >= len(z):
-                return 0, None
+    try:
+        for pp in tqdm(prime):
+            i = 0
+            x = pp
+            while 1:
+                x = e(x, z[i])
+                i = i + 1
+                y = gcd(n, x - 1)
+                if y != 1:
+                    p = y
+                    q = n // y
+                    return p, q
+                if i >= len(z):
+                    return 0, None
+    except TypeError:
+        return 0, None
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):

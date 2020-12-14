@@ -38,16 +38,15 @@ class SiqsAttack(object):
     def testyafu(self):
         """Test if yafu can be run
         """
-        with open("/dev/null") as DN:
-            try:
-                yafutest = subprocess.check_output(
-                    [self.yafubin, "siqs(1549388302999519)"],
-                    stderr=DN,
-                    timeout=self.attack_rsa_obj.args.timeout,
-                    stderr=subprocess.DEVNULL,
-                )
-            except:
-                yafutest = b""
+
+        try:
+            yafutest = subprocess.check_output(
+                [self.yafubin, "siqs(1549388302999519)"],
+                timeout=self.attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
+            )
+        except:
+            yafutest = b""
 
         if b"48670331" in yafutest:
             # yafu is working
@@ -72,40 +71,38 @@ class SiqsAttack(object):
     def doattack(self):
         """Perform attack
         """
-        with open("/dev/null") as DN:
-            yafurun = subprocess.check_output(
-                [
-                    self.yafubin,
-                    "siqs(" + str(self.n) + ")",
-                    "-siqsT",
-                    str(self.maxtime),
-                    "-threads",
-                    str(self.threads),
-                ],
-                stderr=DN,
-                timeout=self.attack_rsa_obj.args.timeout,
-                stderr=subprocess.DEVNULL,
-            )
+        yafurun = subprocess.check_output(
+            [
+                self.yafubin,
+                "siqs(" + str(self.n) + ")",
+                "-siqsT",
+                str(self.maxtime),
+                "-threads",
+                str(self.threads),
+            ],
+            timeout=self.attack_rsa_obj.args.timeout,
+            stderr=subprocess.DEVNULL,
+        )
 
-            primesfound = []
+        primesfound = []
 
-            if b"input too big for SIQS" in yafurun:
-                self.logger.info("[-] Modulus too big for SIQS method.")
-                return
+        if b"input too big for SIQS" in yafurun:
+            self.logger.info("[-] Modulus too big for SIQS method.")
+            return
 
-            for line in yafurun.splitlines():
-                if re.search(b"^P[0-9]+ = [0-9]+$", line):
-                    primesfound.append(int(line.split(b"=")[1]))
+        for line in yafurun.splitlines():
+            if re.search(b"^P[0-9]+ = [0-9]+$", line):
+                primesfound.append(int(line.split(b"=")[1]))
 
-            if len(primesfound) == 2:
-                self.p = primesfound[0]
-                self.q = primesfound[1]
+        if len(primesfound) == 2:
+            self.p = primesfound[0]
+            self.q = primesfound[1]
 
-            if len(primesfound) > 2:
-                self.logger.warning("[*] > 2 primes found. Is key multiprime?")
+        if len(primesfound) > 2:
+            self.logger.warning("[*] > 2 primes found. Is key multiprime?")
 
-            if len(primesfound) < 2:
-                self.logger.error("[*] SIQS did not factor modulus.")
+        if len(primesfound) < 2:
+            self.logger.error("[*] SIQS did not factor modulus.")
 
         return
 

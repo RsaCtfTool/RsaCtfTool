@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import os
+from tqdm import tqdm
 import logging
 import subprocess
 from lib.timeout import timeout
@@ -16,9 +17,9 @@ logger = logging.getLogger("global_logger")
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """ cm_factor attack
     """
-    D_candidates = [3,11,19,35,43,51,67,91,115,123,163,187,235,267,403,427]
+    D_candidates = [3,11,19,35,43,51,67,91,115,123,163,187,235,267,403,427][::-1] # inverse for quicker test case
     sageresult = 0
-    for D_candidate in D_candidates:
+    for D_candidate in tqdm(D_candidates):
         try:
             sageresult = (
                 subprocess.check_output(

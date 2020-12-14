@@ -4,6 +4,7 @@
 import logging
 from lib.rsalibnum import invmod
 import binascii
+from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
@@ -15,7 +16,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     with timeout(attack_rsa_obj.args.timeout):
         try:
             maxlen = 25  # max number of digits in the final integer
-            for i in range(maxlen - 4):
+            for i in tqdm(range(maxlen - 4)):
                 prime = int("3133" + ("3" * i) + "7")
                 if publickey.n % prime == 0:
                     publickey.p = prime

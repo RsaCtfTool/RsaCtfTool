@@ -3,6 +3,7 @@
 
 import sys
 import logging
+from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
@@ -25,7 +26,7 @@ class WienerAttack(object):
         """Convergents_from_contfrac implementation
         """
         convs = []
-        for i in range(len(frac)):
+        for i in tqdm(range(len(frac))):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
@@ -80,7 +81,7 @@ class WienerAttack(object):
         frac = self.rational_to_contfrac(e, n)
         convergents = self.convergents_from_contfrac(frac)
 
-        for (k, d) in convergents:
+        for (k, d) in tqdm(convergents):
             if k != 0 and (e * d - 1) % k == 0:
                 phi = (e * d - 1) // k
                 s = n - phi + 1

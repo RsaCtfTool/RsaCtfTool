@@ -47,7 +47,7 @@ if __name__ == "__main__":
         "--output", help="output file for results (privates keys, plaintext data)."
     )
     parser.add_argument(
-        "--timeout", help="Timeout for long attacks.", default=240, type=int
+        "--timeout", help="Timeout for long attacks.", default=60, type=int
     )
     parser.add_argument(
         "--createpub",
