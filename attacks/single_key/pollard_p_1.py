@@ -4,6 +4,7 @@
 import math
 import logging
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 def pollard_P_1(n):
@@ -240,19 +241,22 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     if not hasattr(publickey, "q"):
         publickey.q = None
 
-    # Pollard P-1 attack
-    try:
-        poll_res = pollard_P_1(publickey.n)
-    except RecursionError:
-        print("RecursionError")
-        return (None, None)
-    if poll_res and len(poll_res) > 1:
-        publickey.p, publickey.q = poll_res
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            # Pollard P-1 attack
+            try:
+                poll_res = pollard_P_1(publickey.n)
+            except RecursionError:
+                print("RecursionError")
+                return (None, None)
+            if poll_res and len(poll_res) > 1:
+                publickey.p, publickey.q = poll_res
 
-    if publickey.q is not None:
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+            if publickey.q is not None:
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
     return (None, None)

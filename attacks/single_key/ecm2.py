@@ -8,6 +8,7 @@ from lib.rsalibnum import modInv
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
+from lib.utils import timeout, TimeoutError
 
 __SAGE__ = True
 
@@ -18,10 +19,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     """use elliptic curve method
        only works if the sageworks() function returned True
     """
-    logger.warning(
-        "[*] ECM2 Method can run forever and may never succeed, timeout set to %ssec. Hit Ctrl-C to bail out."
-        % attack_rsa_obj.args.timeout
-    )
 
     try:
         sageresult = []

@@ -16,6 +16,7 @@ import re
 import logging
 import subprocess
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 logger = logging.getLogger("global_logger")
 
@@ -87,7 +88,7 @@ class SiqsAttack(object):
             primesfound = []
 
             if b"input too big for SIQS" in yafurun:
-                self.logger.error("[-] Modulus too big for SIQS method.")
+                self.logger.info("[-] Modulus too big for SIQS method.")
                 return
 
             for line in yafurun.splitlines():
@@ -110,24 +111,27 @@ class SiqsAttack(object):
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Try to factorize using yafu
     """
-    if publickey.n.bit_length() > 1024:
-        logger.error("[!] Warning: Modulus too large for SIQS attack module")
-        return (None, None)
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            if publickey.n.bit_length() > 1024:
+                logger.error("[!] Warning: Modulus too large for SIQS attack module")
+                return (None, None)
 
-    siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
+            siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
 
-    siqsobj.checkyafu()
-    siqsobj.testyafu()
+            siqsobj.checkyafu()
+            siqsobj.testyafu()
 
-    if siqsobj.checkyafu() and siqsobj.testyafu():
-        siqsobj.doattack()
+            if siqsobj.checkyafu() and siqsobj.testyafu():
+                siqsobj.doattack()
 
-    if siqsobj.p and siqsobj.q:
-        publickey.q = siqsobj.q
-        publickey.p = siqsobj.p
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+            if siqsobj.p and siqsobj.q:
+                publickey.q = siqsobj.q
+                publickey.p = siqsobj.p
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
     return (None, None)

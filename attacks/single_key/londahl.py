@@ -4,10 +4,10 @@
 # from gmpy2 import isqrt, invert
 from lib.utils import isqrt, invmod
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 def close_factor(n, b):
-
     # approximate phi
     phi_approx = n - 2 * isqrt(n) + 1
 
@@ -42,11 +42,16 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         private key without spending any time factoring
     """
     londahl_b = 20000000
-    factors = close_factor(publickey.n, londahl_b)
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            factors = close_factor(publickey.n, londahl_b)
 
-    if factors is not None:
-        p, q = factors
-        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-        return (priv_key, None)
-    else:
-        return (None, None)
+            if factors is not None:
+                p, q = factors
+                priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+                return (priv_key, None)
+            else:
+                return (None, None)
+        except TimeoutError:
+            return (None, None)
+    return (None, None)

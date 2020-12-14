@@ -6,6 +6,7 @@ import logging
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 class WienerAttack(object):
@@ -99,13 +100,17 @@ class WienerAttack(object):
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Wiener's attack
     """
-    wiener = WienerAttack(publickey.n, publickey.e)
-    if wiener.p is not None and wiener.q is not None:
-        publickey.p = wiener.p
-        publickey.q = wiener.q
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            wiener = WienerAttack(publickey.n, publickey.e)
+            if wiener.p is not None and wiener.q is not None:
+                publickey.p = wiener.p
+                publickey.q = wiener.q
+                priv_key = PrivateKey(
+                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
+            
     return (None, None)
