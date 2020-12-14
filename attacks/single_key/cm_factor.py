@@ -28,6 +28,8 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     stderr=subprocess.DEVNULL,
                 )
             )
+            if sageresult == b"Factorization failed\n":
+                continue
             X = str(sageresult).replace("'","").split("\\n")
             X = list(filter(lambda x: x.find(" * ") > 0, X))
             if len(X) == 0:
@@ -37,11 +39,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
             continue
 
-    if sageresult != b"Factorization failed\n":
-        if sageresult > 0:
-            p = sageresult
-            q = publickey.n // sageresult
-            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-            return (priv_key, None)
+    if sageresult > 0:
+        p = sageresult
+        q = publickey.n // sageresult
+        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+        return (priv_key, None)
 
     return (None, None)
