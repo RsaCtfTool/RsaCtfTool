@@ -47,8 +47,9 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 print("RecursionError")
                 return (None, None)
                 
-            if poll_res and len(poll_res) > 1:
-                publickey.p, publickey.q = poll_res
+            if poll_res != None:
+                publickey.p = poll_res
+                publickey.q = publickey.n // publickey.p
 
             if publickey.q is not None:
                 priv_key = PrivateKey(
