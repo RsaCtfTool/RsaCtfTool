@@ -254,13 +254,14 @@ if __name__ == "__main__":
         exit(0)
         
     if args.key is not None and args.isconspicuous:
-        key_data = open(args.key, "rb").read()
-        key = RSA.importKey(key_data)
-        pub_key, priv_key = generate_keys_from_p_q_e_n(key.p, key.q, key.e, key.n)
-        if priv_key.is_conspicuous() == True:
-            exit(-1)
-        else:
-            exit(0)
+        with open(args.key, "rb") as key_fp:
+            key_data = key_fp.read()
+            key = RSA.importKey(key_data)
+            pub_key, priv_key = generate_keys_from_p_q_e_n(key.p, key.q, key.e, key.n)
+            if priv_key.is_conspicuous() == True:
+                exit(-1)
+            else:
+                exit(0)
 
     # Run attacks
     found = False
