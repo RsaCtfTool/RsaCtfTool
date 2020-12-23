@@ -12,6 +12,7 @@
 #
 
 import os
+import pathlib
 import re
 import logging
 import subprocess
@@ -26,7 +27,7 @@ class SiqsAttack(object):
         """Configuration
         """
         self.logger = logging.getLogger("global_logger")
-        self.yafubin = "./yafu"  # where the binary is
+        self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
