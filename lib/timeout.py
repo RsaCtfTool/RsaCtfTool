@@ -6,8 +6,7 @@ from lib.exceptions import FactorizationError
 
 # source http://stackoverflow.com/a/22348885
 class timeout:
-    """ Manage timeout for long running attacks
-    """
+    """Manage timeout for long running attacks"""
 
     def __init__(self, seconds=30, error_message="[-] Timeout"):
         self.seconds = seconds

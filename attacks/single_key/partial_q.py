@@ -66,7 +66,7 @@ from lib.utils import timeout, TimeoutError
 
 def partial_q(e, dp, dq, qi, part_q):
     """Search for partial q.
-       Tunable to search longer.
+    Tunable to search longer.
     """
     N = 100000
 
@@ -90,8 +90,8 @@ def partial_q(e, dp, dq, qi, part_q):
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Partial q in private key.
-       Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
-       But it's here if you need :)
+    Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
+    But it's here if you need :)
     """
     return (None, None)
 

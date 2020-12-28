@@ -12,7 +12,7 @@ __SAGE__ = True
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
-        only works if the sageworks() function returned True
+    only works if the sageworks() function returned True
     """
     try:
         r = subprocess.check_output(

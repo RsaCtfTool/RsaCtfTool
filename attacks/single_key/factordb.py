@@ -28,8 +28,7 @@ def modInv(a, m):
 
 
 def solveforp(equation):
-    """Parse factordb response
-    """
+    """Parse factordb response"""
     try:
         if "^" in equation:
             k, j = equation.split("^")
@@ -46,8 +45,7 @@ def solveforp(equation):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Factors available online?
-    """
+    """Factors available online?"""
     with timeout(attack_rsa_obj.args.timeout):
         try:
             url_1 = "http://factordb.com/index.php?query=%i"

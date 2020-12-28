@@ -11,7 +11,7 @@ from lib.utils import timeout, TimeoutError
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """ "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
-        not all numbers in this form are prime but some are (25 digit is prime)
+    not all numbers in this form are prime but some are (25 digit is prime)
     """
     with timeout(attack_rsa_obj.args.timeout):
         try:

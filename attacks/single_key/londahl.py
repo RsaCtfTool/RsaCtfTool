@@ -40,7 +40,7 @@ def close_factor(n, b):
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Do nothing, used for multi-key attacks that succeeded so we just print the
-        private key without spending any time factoring
+    private key without spending any time factoring
     """
     londahl_b = 20000000
     with timeout(attack_rsa_obj.args.timeout):
@@ -49,7 +49,9 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
 
             if factors is not None:
                 p, q = factors
-                priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+                priv_key = PrivateKey(
+                    int(p), int(q), int(publickey.e), int(publickey.n)
+                )
                 return (priv_key, None)
             else:
                 return (None, None)

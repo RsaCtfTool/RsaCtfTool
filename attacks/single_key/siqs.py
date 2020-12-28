@@ -24,8 +24,7 @@ logger = logging.getLogger("global_logger")
 
 class SiqsAttack(object):
     def __init__(self, attack_rsa_obj, n):
-        """Configuration
-        """
+        """Configuration"""
         self.logger = logging.getLogger("global_logger")
         self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
@@ -37,8 +36,7 @@ class SiqsAttack(object):
         self.q = None
 
     def testyafu(self):
-        """Test if yafu can be run
-        """
+        """Test if yafu can be run"""
 
         try:
             yafutest = subprocess.check_output(
@@ -70,8 +68,7 @@ class SiqsAttack(object):
         return
 
     def doattack(self):
-        """Perform attack
-        """
+        """Perform attack"""
         yafurun = subprocess.check_output(
             [
                 self.yafubin,
@@ -109,8 +106,7 @@ class SiqsAttack(object):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try to factorize using yafu
-    """
+    """Try to factorize using yafu"""
     with timeout(attack_rsa_obj.args.timeout):
         try:
             if publickey.n.bit_length() > 1024:
@@ -129,7 +125,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 publickey.q = siqsobj.q
                 publickey.p = siqsobj.p
                 priv_key = PrivateKey(
-                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
                 )
                 return (priv_key, None)
         except TimeoutError:

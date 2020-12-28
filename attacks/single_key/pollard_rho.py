@@ -30,15 +30,14 @@ def pollard_rho(n, seed=2, p=2, mode=1):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Run attack with Pollard Rho
-    """
+    """Run attack with Pollard Rho"""
     if not hasattr(publickey, "p"):
         publickey.p = None
     if not hasattr(publickey, "q"):
         publickey.q = None
 
     # pollard Rho attack
-    
+
     with timeout(attack_rsa_obj.args.timeout):
         try:
             try:
@@ -46,14 +45,17 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             except RecursionError:
                 print("RecursionError")
                 return (None, None)
-                
+
             if poll_res != None:
                 publickey.p = poll_res
                 publickey.q = publickey.n // publickey.p
 
             if publickey.q is not None:
                 priv_key = PrivateKey(
-                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
                 )
                 return (priv_key, None)
         except TimeoutError:

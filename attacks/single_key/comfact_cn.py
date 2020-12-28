@@ -22,9 +22,9 @@ def comfact(cipher, publickey):
             )
             return (priv_key, None)
 
+
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try an attack where the public key has a common factor with the ciphertext - sourcekris
-    """
+    """Try an attack where the public key has a common factor with the ciphertext - sourcekris"""
     timeout_delay = attack_rsa_obj.args.timeout
     if cipher is not None:
         try:

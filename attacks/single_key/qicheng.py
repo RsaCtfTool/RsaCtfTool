@@ -14,8 +14,7 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Qi Cheng - A New Class of Unsafe Primes
-        """
+    """Qi Cheng - A New Class of Unsafe Primes"""
     try:
         sageresult = int(
             subprocess.check_output(

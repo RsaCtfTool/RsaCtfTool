@@ -51,7 +51,7 @@ def find_invpow(x, n):
 
 def attack(attack_rsa_obj, publickeys, cipher=[]):
     """Hastad attack for low public exponent
-       this has found success for e = 3
+    this has found success for e = 3
     """
     if not isinstance(publickeys, list):
         return (None, None)
@@ -83,7 +83,9 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
             nth = find_invpow(result, 3)
 
             unciphered = []
-            unciphered.append(nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big"))
+            unciphered.append(
+                nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big")
+            )
 
             try:
                 unciphered_ = b""
@@ -95,5 +97,5 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
                 pass
         except TimeoutError:
             return (None, None)
-            
+
     return (None, unciphered)

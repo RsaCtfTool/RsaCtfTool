@@ -8,8 +8,7 @@ from lib.utils import timeout, TimeoutError
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """ Search for previously used primes in CTFs
-    """
+    """Search for previously used primes in CTFs"""
     with timeout(attack_rsa_obj.args.timeout):
         try:
             primes = [
@@ -90,7 +89,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     publickey.q = prime
                     publickey.p = publickey.n // publickey.q
                     priv_key = PrivateKey(
-                        int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                        int(publickey.p),
+                        int(publickey.q),
+                        int(publickey.e),
+                        int(publickey.n),
                     )
                     return (priv_key, None)
         except TimeoutError:
