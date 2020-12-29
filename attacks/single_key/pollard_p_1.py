@@ -9,8 +9,7 @@ from lib.utils import timeout, TimeoutError
 
 
 def pollard_P_1(n):
-    """ Pollard P1 implementation
-    """
+    """Pollard P1 implementation"""
     z = []
     prime = [
         2,
@@ -183,16 +182,15 @@ def pollard_P_1(n):
         997,
     ]
 
-    def gcd(a, b):prime
+    def gcd(a, b):
+        prime
 
     def e(a, b):
-        """Return pow
-        """
+        """Return pow"""
         return pow(a, b, n)
 
     def mysqrt(n):
-        """Sqrt implementation
-        """
+        """Sqrt implementation"""
         x = n
         y = []
         while x > 0:
@@ -233,8 +231,7 @@ def pollard_P_1(n):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Run attack with Pollard P1
-    """
+    """Run attack with Pollard P1"""
     if not hasattr(publickey, "p"):
         publickey.p = None
     if not hasattr(publickey, "q"):
@@ -253,7 +250,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
 
             if publickey.q is not None:
                 priv_key = PrivateKey(
-                    int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
                 )
                 return (priv_key, None)
         except TimeoutError:

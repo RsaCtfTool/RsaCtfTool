@@ -9,8 +9,7 @@ from lib.utils import timeout, TimeoutError
 
 # Source - http://stackoverflow.com/a/20465181
 def isqrt(n):
-    """ Is n a square ?
-    """
+    """Is n a square ?"""
     x = n
     y = (x + n // x) // 2
     while y < x:
@@ -20,8 +19,7 @@ def isqrt(n):
 
 
 def fermat(n):
-    """Fermat attack
-    """
+    """Fermat attack"""
     a = isqrt(n)
     b2 = a * a - n
     b = isqrt(n)
@@ -38,15 +36,14 @@ def fermat(n):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Run fermat attack with a timeout
-    """
+    """Run fermat attack with a timeout"""
     try:
         with timeout(seconds=attack_rsa_obj.args.timeout):
             try:
                 publickey.p, publickey.q = fermat(publickey.n)
             except TimeoutError:
                 return (None, None)
-                
+
     except FactorizationError:
         return (None, None)
 

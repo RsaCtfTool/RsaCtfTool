@@ -7,8 +7,7 @@ from lib.utils import timeout, TimeoutError
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try to uncipher c if m < n/e and small e
-    """
+    """Try to uncipher c if m < n/e and small e"""
     with timeout(attack_rsa_obj.args.timeout):
         try:
             if publickey.e == 3 or publickey.e == 5:
@@ -23,7 +22,9 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                             low = mid + 1
                         else:
                             high = mid
-                    plain.append(low.to_bytes((low.bit_length() + 7) // 8, byteorder="big"))
+                    plain.append(
+                        low.to_bytes((low.bit_length() + 7) // 8, byteorder="big")
+                    )
                 return (None, plain)
         except TimeoutError:
             return (None, None)

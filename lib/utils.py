@@ -19,8 +19,7 @@ rootpath = "%s/.." % rootpath  # up one dir
 
 
 def get_numeric_value(value):
-    """Parse input (hex or numerical)
-    """
+    """Parse input (hex or numerical)"""
     if value.startswith("0x"):
         return int(value, 16)
     else:
@@ -28,8 +27,7 @@ def get_numeric_value(value):
 
 
 def sageworks():
-    """Check if sage is installed and working
-    """
+    """Check if sage is installed and working"""
     try:
         sageversion = subprocess.check_output(["sage", "-v"], timeout=10)
     except OSError:
@@ -42,8 +40,7 @@ def sageworks():
 
 
 def print_results(args, publickey, private_key, uncipher):
-    """ Print results to output
-    """
+    """Print results to output"""
     logger = logging.getLogger("global_logger")
     if (
         (args.private and private_key is not None)
@@ -179,17 +176,24 @@ def modinv(a, m):
 
 
 class TimeoutError(Exception):
-    def __init__(self, value = "Timed Out"):
+    def __init__(self, value="Timed Out"):
         self.value = value
+
     def __str__(self):
         return repr(self.value)
 
 
-
 DEFAULT_TIMEOUT_MESSAGE = os.strerror(errno.ETIME)
 
+
 class timeout(contextlib.ContextDecorator):
-    def __init__(self, seconds, *, timeout_message=DEFAULT_TIMEOUT_MESSAGE, suppress_timeout_errors=False):
+    def __init__(
+        self,
+        seconds,
+        *,
+        timeout_message=DEFAULT_TIMEOUT_MESSAGE,
+        suppress_timeout_errors=False,
+    ):
         self.seconds = int(seconds)
         self.timeout_message = timeout_message
         self.suppress = bool(suppress_timeout_errors)

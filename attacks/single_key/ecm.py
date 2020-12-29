@@ -16,7 +16,7 @@ logger = logging.getLogger("global_logger")
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """use elliptic curve method, may return a prime or may never return
-       only works if the sageworks() function returned True
+    only works if the sageworks() function returned True
     """
 
     try:
@@ -25,7 +25,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             if ecmdigits:
                 sageresult = int(
                     subprocess.check_output(
-                        ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n), str(ecmdigits)],
+                        [
+                            "sage",
+                            "%s/sage/ecm.sage" % rootpath,
+                            str(publickey.n),
+                            str(ecmdigits),
+                        ],
                         timeout=attack_rsa_obj.args.timeout,
                         stderr=subprocess.DEVNULL,
                     )

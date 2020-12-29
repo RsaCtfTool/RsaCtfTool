@@ -11,8 +11,7 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickeys, cipher=[]):
-    """ Common factor attack
-    """
+    """Common factor attack"""
     if not isinstance(publickeys, list):
         return (None, None)
 
@@ -24,15 +23,19 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
                 if x.n != y.n:
                     g = gcd(x.n, y.n)
                     if g != 1:
-                        
+
                         try:
                             # update each attackobj with a private_key
                             x.p = g
                             x.q = x.n // g
                             y.p = g
                             y.q = y.n // g
-                            priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
-                            priv_key_2 = PrivateKey(int(y.p), int(y.q), int(y.e), int(y.n))
+                            priv_key_1 = PrivateKey(
+                                int(x.p), int(x.q), int(x.e), int(x.n)
+                            )
+                            priv_key_2 = PrivateKey(
+                                int(y.p), int(y.q), int(y.e), int(y.n)
+                            )
                             priv_keys.append(priv_key_1)
                             priv_keys.append(priv_key_2)
 
@@ -46,7 +49,7 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
                             continue
         except TimeoutError:
             return (None, None)
-            
+
     priv_keys = list(set(priv_keys))
     if len(priv_keys) == 0:
         priv_keys = None

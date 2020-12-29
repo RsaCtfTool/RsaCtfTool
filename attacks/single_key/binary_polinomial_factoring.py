@@ -14,8 +14,7 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """binary polinomial factoring
-        """
+    """binary polinomial factoring"""
     try:
         sageresult = str(
             subprocess.check_output(

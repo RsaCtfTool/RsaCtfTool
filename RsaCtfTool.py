@@ -99,15 +99,21 @@ if __name__ == "__main__":
     parser.add_argument(
         "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
     )
-    parser.add_argument("--sendtofdb",help="Send results to factordb",action='store_true')
-    parser.add_argument("--isconspicuous",help="conspicuous key check",action='store_true')
+    parser.add_argument(
+        "--sendtofdb", help="Send results to factordb", action="store_true"
+    )
+    parser.add_argument(
+        "--isconspicuous", help="conspicuous key check", action="store_true"
+    )
 
     args = parser.parse_args()
 
     unciphers = []
 
     # Set logger level
-    logging.basicConfig(level=logger_levels[args.verbosity],)
+    logging.basicConfig(
+        level=logger_levels[args.verbosity],
+    )
     ch = logging.StreamHandler()
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
@@ -252,7 +258,7 @@ if __name__ == "__main__":
                 print("qinv: " + str(qinv))
 
         exit(0)
-        
+
     if args.key is not None and args.isconspicuous:
         with open(args.key, "rb") as key_fp:
             key_data = key_fp.read()

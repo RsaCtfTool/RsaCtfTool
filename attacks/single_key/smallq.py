@@ -16,8 +16,7 @@ def primes(n):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try an attack where q < 100,000, from BKPCTF2016 - sourcekris
-    """
+    """Try an attack where q < 100,000, from BKPCTF2016 - sourcekris"""
     with timeout(attack_rsa_obj.args.timeout):
         try:
             for prime in primes(100000):
@@ -25,7 +24,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     publickey.q = prime
                     publickey.p = publickey.n // publickey.q
                     priv_key = PrivateKey(
-                        int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
+                        int(publickey.p),
+                        int(publickey.q),
+                        int(publickey.e),
+                        int(publickey.n),
                     )
                     return (priv_key, None)
         except TimeoutError:

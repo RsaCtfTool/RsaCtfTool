@@ -17,7 +17,7 @@ logger = logging.getLogger("global_logger")
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """use elliptic curve method
-       only works if the sageworks() function returned True
+    only works if the sageworks() function returned True
     """
 
     try:
