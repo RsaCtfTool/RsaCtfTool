@@ -16,26 +16,7 @@ logger = logging.getLogger("global_logger")
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """cm_factor attack"""
-    D_candidates = [
-        3,
-        11,
-        19,
-        35,
-        43,
-        51,
-        67,
-        91,
-        115,
-        123,
-        163,
-        187,
-        235,
-        267,
-        403,
-        427,
-    ][
-        ::-1
-    ]  # inverse for quicker test case
+    D_candidates = [3,11,19,43,67,163]
     sageresult = 0
     for D_candidate in tqdm(D_candidates):
         try:
