@@ -21,6 +21,7 @@ def comfact(cipher, publickey):
                 int(publickey.n),
             )
             return (priv_key, None)
+    return (None, None)
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
