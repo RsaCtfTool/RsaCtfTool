@@ -43,10 +43,11 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
             continue
 
-    if sageresult > 0:
-        p = sageresult
-        q = publickey.n // sageresult
-        priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-        return (priv_key, None)
+    if isinstance(sageresult, int):
+        if sageresult > 0:
+            p = sageresult
+            q = publickey.n // sageresult
+            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+            return (priv_key, None)
 
     return (None, None)
