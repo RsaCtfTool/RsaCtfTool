@@ -53,12 +53,12 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         app_id = os.environ.get("WA_API_KEY")
         wa_enabled = app_id != None
     except Exception as e:
-        logger.warning("[!] Wolphram Alfa is not enabled, install the lib.")
+        logger.warning("[!] Wolfram Alpha is not enabled, install the lib.")
         wa_enabled = False
 
     if not wa_enabled:
         logger.warning(
-            "[!] Wolphram Alfa is not enabled, check if ENV WA_API_KEY is set."
+            "[!] Wolfram Alpha is not enabled, check if ENV WA_API_KEY is set."
         )
         logger.warning(
             "[!] follow: https://products.wolframalpha.com/api/documentation/"
