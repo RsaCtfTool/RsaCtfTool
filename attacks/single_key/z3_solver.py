@@ -13,11 +13,6 @@ def z3_solve(n):
   return res[p],res[q]
 
 
-
-r = solve(int(sys.argv[1]))
-print(r[0],r[1])
-
-
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Run attack with z3 method"""
     if not hasattr(publickey, "p"):
