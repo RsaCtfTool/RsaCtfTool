@@ -40,6 +40,7 @@ Attacks :
 - Pollard Rho
 - Wolfram alpha
 - cm-factor
+- z3 theorem prover
 
 ## Usage
 
@@ -50,7 +51,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,commonfactors,hastads,same_n_huge_e,all}]
+                     [--attack {binary_polinomial_factoring,boneh_durfee,cm_factor,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,z3_solver,commonfactors,hastads,same_n_huge_e,all}]
 ```
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
