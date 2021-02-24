@@ -41,6 +41,8 @@ Attacks :
 - Wolfram alpha
 - cm-factor
 - z3 theorem prover
+- Primorial pm1 gcd
+- Mersenne pm1 gcd
 
 ## Usage
 
@@ -51,7 +53,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {binary_polinomial_factoring,boneh_durfee,cm_factor,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,z3_solver,commonfactors,hastads,same_n_huge_e,all}]
+                     [--attack {primorial_pm1_gcd,mersenne_pm1_gcd,wolframalpha,wiener,smallq,smallfraction,siqs,roca,qicheng,pollard_rho,pollard_p_1,pastctfprimes,partial_q,noveltyprimes,mersenne_primes,londahl,fermat,factordb,euler,ecm2,ecm,cube_root,comfact_cn,cm_factor,boneh_durfee,binary_polinomial_factoring,same_n_huge_e,hastads,commonfactors,all}]
 ```
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
