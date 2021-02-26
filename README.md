@@ -43,7 +43,7 @@ Attacks :
 - z3 theorem prover
 - Primorial pm1 gcd
 - Mersenne pm1 gcd
-- Fermat Numbers
+- Fermat Numbers gcd
 
 ## Usage
 
