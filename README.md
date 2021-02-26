@@ -43,6 +43,7 @@ Attacks :
 - z3 theorem prover
 - Primorial pm1 gcd
 - Mersenne pm1 gcd
+- Fermat Numbers
 
 ## Usage
 
@@ -53,7 +54,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {primorial_pm1_gcd,mersenne_pm1_gcd,wolframalpha,wiener,smallq,smallfraction,siqs,roca,qicheng,pollard_rho,pollard_p_1,pastctfprimes,partial_q,noveltyprimes,mersenne_primes,londahl,fermat,factordb,euler,ecm2,ecm,cube_root,comfact_cn,cm_factor,boneh_durfee,binary_polinomial_factoring,same_n_huge_e,hastads,commonfactors,all}]
+                     [--attack {comfact_cn,wiener,factordb,smallq,pollard_rho,euler,z3_solver,cm_factor,mersenne_pm1_gcd,smallfraction,boneh_durfee,roca,fermat,londahl,mersenne_primes,partial_q,siqs,noveltyprimes,binary_polinomial_factoring,primorial_pm1_gcd,fermat_numbers,pollard_p_1,ecm2,cube_root,ecm,pastctfprimes,qicheng,wolframalpha,hastads,same_n_huge_e,commonfactors,all}]
 ```
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
