@@ -19,11 +19,13 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                 new_e = 1
                 for k in publickey:
                     new_e = new_e * k.e
+
+                new_key = RSA.construct((publickey[0].n, new_e)).publickey().exportKey()
+
                 tmpfile = tempfile.NamedTemporaryFile()
                 with open(tmpfile.name, "wb") as tmpfd:
-                    tmpfd.write(
-                        RSA.construct((publickey[0].n, new_e)).publickey().exportKey()
-                    )
+                    tmpfd.write(new_key)
+                    tmpfd.flush()
                     result = attack_rsa_obj.attack_single_key(tmpfile.name)
                     if result:
                         return (attack_rsa_obj.priv_key, None)
