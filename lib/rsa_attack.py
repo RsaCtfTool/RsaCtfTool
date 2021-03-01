@@ -171,8 +171,12 @@ class RSAAttack(object):
                     send2fdb(privkey.n, [privkey.p, privkey.q])
         return self.get_boolean_results()
 
-    def attack_single_key(self, publickey, attacks_list):
+    def attack_single_key(self, publickey, attacks_list=[]):
         """Run attacks on single keys"""
+
+        if len(attacks_list) == 0:
+            self.args.attack = "all"
+
         self.load_attacks(attacks_list)
 
         # Read keyfile
