@@ -54,4 +54,9 @@ echo -e "\033[1m\nTest cm factor\033[0m"
 python3 ./RsaCtfTool.py --publickey examples/cm_factor.pub --attack cm_factor --private
 echo -e "\033[1m\nTest pollard rho\033[0m"
 python3 ./RsaCtfTool.py --pub examples/pollard_rho.pub --attack pollard_rho --private --timeout 180
-
+echo -e "\033[1m\nTest fermat numbers gcd\033[0m"
+./RsaCtfTool.py --publickey examples/fermat_numbers_gcd.pub --attack fermat_numbers_gcd --private
+echo -e "\033[1m\nTest mersenne pm1 gcd\033[0m"
+./RsaCtfTool.py --publickey examples/mersenne_pm1_gcd.pub --attack mersenne_pm1_gcd --private
+echo -e "\033[1m\nTest primorial pm1\033[0m"
+./RsaCtfTool.py --publickey examples/primorial_pm1_gcd.pub --attack primorial_pm1_gcd --private
