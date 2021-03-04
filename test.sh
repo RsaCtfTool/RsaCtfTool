@@ -60,3 +60,5 @@ echo -e "\033[1m\nTest mersenne pm1 gcd\033[0m"
 ./RsaCtfTool.py --publickey examples/mersenne_pm1_gcd.pub --attack mersenne_pm1_gcd --private
 echo -e "\033[1m\nTest primorial pm1\033[0m"
 ./RsaCtfTool.py --publickey examples/primorial_pm1_gcd.pub --attack primorial_pm1_gcd --private
+echo -e "\033[1m\nTest fibonacci gcd\033[0m"
+./RsaCtfTool.py --publickey examples/fibonacci_gcd.pub --attack fibonacci_gcd --private
