@@ -13,7 +13,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     with timeout(attack_rsa_obj.args.timeout):
         try:
             p = q = None
-            for i in range(2,int(log2(publickey.n))):
+            for i in tqdm(range(2,int(log2(publickey.n)))):
                 i2 = 2**i
                 mersenne = [i2 - 1, i2 + 1]
                 g0,g1 = gcd(mersenne[0],publickey.n), gcd(mersenne[1],publickey.n)

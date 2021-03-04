@@ -13,11 +13,10 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     with timeout(attack_rsa_obj.args.timeout):
         try:
             limit = 10000
-            pc = 0
             prime = 1
             primorial = 1
             p = q = None
-            while True:
+            for x in tqdm(range(0,limit)):
                 prime = next_prime(prime)
                 primorial *= prime
                 primorial_p1 = [primorial - 1, primorial + 1]
@@ -30,9 +29,6 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
                     p = publickey.n // g1
                     q = g1
                     break
-                pc+=1
-                if pc == limit: 
-                  break
             if p is not None and q is not None:
                 priv_key = PrivateKey(
                     int(p), int(q), int(publickey.e), int(publickey.n)
