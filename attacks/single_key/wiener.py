@@ -3,15 +3,16 @@
 
 import sys
 import logging
+from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 
 class WienerAttack(object):
     def rational_to_contfrac(self, x, y):
-        """Rational_to_contfrac implementation
-        """
+        """Rational_to_contfrac implementation"""
         a = x // y
         if a * y == x:
             return [a]
@@ -21,16 +22,14 @@ class WienerAttack(object):
             return pquotients
 
     def convergents_from_contfrac(self, frac):
-        """Convergents_from_contfrac implementation
-        """
+        """Convergents_from_contfrac implementation"""
         convs = []
-        for i in range(len(frac)):
+        for i in tqdm(range(len(frac))):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
     def contfrac_to_rational(self, frac):
-        """Contfrac_to_rational implementation
-        """
+        """Contfrac_to_rational implementation"""
         if len(frac) == 0:
             return (0, 1)
         elif len(frac) == 1:
@@ -41,8 +40,7 @@ class WienerAttack(object):
             return (frac[0] * num + denom, num)
 
     def is_perfect_square(self, n):
-        """Is n a perfect square ?
-        """
+        """Is n a perfect square ?"""
         h = n & 0xF
         if h > 9:
             return -1
@@ -57,8 +55,7 @@ class WienerAttack(object):
         return -1
 
     def isqrt(self, n):
-        """Is n a square ?
-        """
+        """Is n a square ?"""
         if n == 0:
             return 0
         a, b = divmod(n.bit_length(), 2)
@@ -70,8 +67,7 @@ class WienerAttack(object):
             x = y
 
     def __init__(self, n, e):
-        """Constructor
-        """
+        """Constructor"""
         self.d = None
         self.p = None
         self.q = None
@@ -79,7 +75,7 @@ class WienerAttack(object):
         frac = self.rational_to_contfrac(e, n)
         convergents = self.convergents_from_contfrac(frac)
 
-        for (k, d) in convergents:
+        for (k, d) in tqdm(convergents):
             if k != 0 and (e * d - 1) % k == 0:
                 phi = (e * d - 1) // k
                 s = n - phi + 1
@@ -97,15 +93,21 @@ class WienerAttack(object):
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Wiener's attack
-    """
-    wiener = WienerAttack(publickey.n, publickey.e)
-    if wiener.p is not None and wiener.q is not None:
-        publickey.p = wiener.p
-        publickey.q = wiener.q
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
+    """Wiener's attack"""
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            wiener = WienerAttack(publickey.n, publickey.e)
+            if wiener.p is not None and wiener.q is not None:
+                publickey.p = wiener.p
+                publickey.q = wiener.q
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
 
     return (None, None)

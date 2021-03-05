@@ -16,8 +16,9 @@ logger = logging.getLogger("global_logger")
 def attack(attack_rsa_obj, publickey, cipher=[]):
     try:
         sageresult = subprocess.check_output(
-            ["sage", "%s/sage/roca_attack.py" %rootpath, str(publickey.n)],
+            ["sage", "%s/sage/roca_attack.py" % rootpath, str(publickey.n)],
             timeout=attack_rsa_obj.args.timeout,
+            stderr=subprocess.DEVNULL,
         )
 
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired):

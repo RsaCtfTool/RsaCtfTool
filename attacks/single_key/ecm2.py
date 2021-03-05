@@ -8,6 +8,7 @@ from lib.rsalibnum import modInv
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
+from lib.utils import timeout, TimeoutError
 
 __SAGE__ = True
 
@@ -16,12 +17,8 @@ logger = logging.getLogger("global_logger")
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """use elliptic curve method
-       only works if the sageworks() function returned True
+    only works if the sageworks() function returned True
     """
-    logger.warning(
-        "[*] ECM2 Method can run forever and may never succeed, timeout set to %ssec. Hit Ctrl-C to bail out."
-        % attack_rsa_obj.args.timeout
-    )
 
     try:
         sageresult = []
@@ -29,6 +26,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             sageresult = subprocess.check_output(
                 ["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)],
                 timeout=attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
             )
             sageresult = sageresult[1:-2].split(b", ")
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):

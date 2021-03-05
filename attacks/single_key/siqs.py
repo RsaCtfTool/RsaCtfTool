@@ -12,20 +12,21 @@
 #
 
 import os
+import pathlib
 import re
 import logging
 import subprocess
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 logger = logging.getLogger("global_logger")
 
 
 class SiqsAttack(object):
     def __init__(self, attack_rsa_obj, n):
-        """Configuration
-        """
+        """Configuration"""
         self.logger = logging.getLogger("global_logger")
-        self.yafubin = "./yafu"  # where the binary is
+        self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
@@ -35,17 +36,16 @@ class SiqsAttack(object):
         self.q = None
 
     def testyafu(self):
-        """Test if yafu can be run
-        """
-        with open("/dev/null") as DN:
-            try:
-                yafutest = subprocess.check_output(
-                    [self.yafubin, "siqs(1549388302999519)"],
-                    stderr=DN,
-                    timeout=self.attack_rsa_obj.args.timeout,
-                )
-            except:
-                yafutest = b""
+        """Test if yafu can be run"""
+
+        try:
+            yafutest = subprocess.check_output(
+                [self.yafubin, "siqs(1549388302999519)"],
+                timeout=self.attack_rsa_obj.args.timeout,
+                stderr=subprocess.DEVNULL,
+            )
+        except:
+            yafutest = b""
 
         if b"48670331" in yafutest:
             # yafu is working
@@ -68,66 +68,69 @@ class SiqsAttack(object):
         return
 
     def doattack(self):
-        """Perform attack
-        """
-        with open("/dev/null") as DN:
-            yafurun = subprocess.check_output(
-                [
-                    self.yafubin,
-                    "siqs(" + str(self.n) + ")",
-                    "-siqsT",
-                    str(self.maxtime),
-                    "-threads",
-                    str(self.threads),
-                ],
-                stderr=DN,
-                timeout=self.attack_rsa_obj.args.timeout,
-            )
+        """Perform attack"""
+        yafurun = subprocess.check_output(
+            [
+                self.yafubin,
+                "siqs(" + str(self.n) + ")",
+                "-siqsT",
+                str(self.maxtime),
+                "-threads",
+                str(self.threads),
+            ],
+            timeout=self.attack_rsa_obj.args.timeout,
+            stderr=subprocess.DEVNULL,
+        )
 
-            primesfound = []
+        primesfound = []
 
-            if b"input too big for SIQS" in yafurun:
-                self.logger.error("[-] Modulus too big for SIQS method.")
-                return
+        if b"input too big for SIQS" in yafurun:
+            self.logger.info("[-] Modulus too big for SIQS method.")
+            return
 
-            for line in yafurun.splitlines():
-                if re.search(b"^P[0-9]+ = [0-9]+$", line):
-                    primesfound.append(int(line.split(b"=")[1]))
+        for line in yafurun.splitlines():
+            if re.search(b"^P[0-9]+ = [0-9]+$", line):
+                primesfound.append(int(line.split(b"=")[1]))
 
-            if len(primesfound) == 2:
-                self.p = primesfound[0]
-                self.q = primesfound[1]
+        if len(primesfound) == 2:
+            self.p = primesfound[0]
+            self.q = primesfound[1]
 
-            if len(primesfound) > 2:
-                self.logger.warning("[*] > 2 primes found. Is key multiprime?")
+        if len(primesfound) > 2:
+            self.logger.warning("[*] > 2 primes found. Is key multiprime?")
 
-            if len(primesfound) < 2:
-                self.logger.error("[*] SIQS did not factor modulus.")
+        if len(primesfound) < 2:
+            self.logger.error("[*] SIQS did not factor modulus.")
 
         return
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try to factorize using yafu
-    """
-    if publickey.n.bit_length() > 1024:
-        logger.error("[!] Warning: Modulus too large for SIQS attack module")
-        return (None, None)
+    """Try to factorize using yafu"""
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            if publickey.n.bit_length() > 1024:
+                logger.error("[!] Warning: Modulus too large for SIQS attack module")
+                return (None, None)
 
-    siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
+            siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
 
-    siqsobj.checkyafu()
-    siqsobj.testyafu()
+            siqsobj.checkyafu()
+            siqsobj.testyafu()
 
-    if siqsobj.checkyafu() and siqsobj.testyafu():
-        siqsobj.doattack()
+            if siqsobj.checkyafu() and siqsobj.testyafu():
+                siqsobj.doattack()
 
-    if siqsobj.p and siqsobj.q:
-        publickey.q = siqsobj.q
-        publickey.p = siqsobj.p
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
-
+            if siqsobj.p and siqsobj.q:
+                publickey.q = siqsobj.q
+                publickey.p = siqsobj.p
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return (priv_key, None)
+        except TimeoutError:
+            return (None, None)
     return (None, None)

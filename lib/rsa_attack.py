@@ -7,14 +7,14 @@ from glob import glob
 from lib.keys_wrapper import PublicKey
 from lib.exceptions import FactorizationError
 from lib.utils import sageworks, print_results
+from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 from attacks.multi_keys import same_n_huge_e, commonfactors
 
 
 class RSAAttack(object):
     def __init__(self, args):
-        """ Main class managing the attacks
-        """
+        """Main class managing the attacks"""
         self.args = args
         self.logger = logging.getLogger("global_logger")
 
@@ -25,13 +25,14 @@ class RSAAttack(object):
             self.cipher = None
 
         self.priv_key = None
+        self.priv_keys = []
         self.partitial_priv_key = None
         self.unciphered = []
         self.implemented_attacks = []
 
     def get_boolean_results(self):
-        """ Return a boolean value according to requested
-            actions (private, uncipher) if actions are done or not
+        """Return a boolean value according to requested
+        actions (private, uncipher) if actions are done or not
         """
         if self.args.private and self.priv_key:
             return True
@@ -42,8 +43,8 @@ class RSAAttack(object):
         return False
 
     def can_stop_tests(self):
-        """ Return a boolean if requested actions are done
-            avoiding running extra attacks 
+        """Return a boolean if requested actions are done
+        avoiding running extra attacks
         """
         if self.args.private is not None and self.priv_key is not None:
             if self.args.uncipher is None:
@@ -60,8 +61,8 @@ class RSAAttack(object):
         return False
 
     def print_results_details(self, publickeyname):
-        """ Print extra output according to requested action.
-            Uncipher data if needed.
+        """Print extra output according to requested action.
+        Uncipher data if needed.
         """
         # check and print resulting private key
         if self.partitial_priv_key is not None and self.args.private:
@@ -86,8 +87,7 @@ class RSAAttack(object):
         print_results(self.args, publickeyname, self.priv_key, self.unciphered)
 
     def load_attacks(self, attacks_list, multikeys=False):
-        """ Dynamic load attacks according to context (single key or multiple keys)
-        """
+        """Dynamic load attacks according to context (single key or multiple keys)"""
         try:
             attacks_list.remove("all")
         except ValueError:
@@ -124,8 +124,7 @@ class RSAAttack(object):
                     pass
 
     def attack_multiple_keys(self, publickeys, attacks_list):
-        """ Run attacks on multiple keys
-        """
+        """Run attacks on multiple keys"""
         self.logger.info("[*] Multikey mode using keys: " + ", ".join(publickeys))
         self.load_attacks(attacks_list, multikeys=True)
 
@@ -166,11 +165,18 @@ class RSAAttack(object):
 
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
+        if self.args.sendtofdb == True:
+            if len(self.priv_key) > 0:
+                for privkey in list(set(self.priv_key)):
+                    send2fdb(privkey.n, [privkey.p, privkey.q])
         return self.get_boolean_results()
 
-    def attack_single_key(self, publickey, attacks_list):
-        """ Run attacks on single keys
-        """
+    def attack_single_key(self, publickey, attacks_list=[]):
+        """Run attacks on single keys"""
+
+        if len(attacks_list) == 0:
+            self.args.attack = "all"
+
         self.load_attacks(attacks_list)
 
         # Read keyfile
@@ -203,4 +209,7 @@ class RSAAttack(object):
                 self.logger.warning("Timeout")
 
         self.print_results_details(publickey)
+        if self.args.sendtofdb == True:
+            if self.priv_key != None:
+                send2fdb(self.priv_key.n, [self.priv_key.p, self.priv_key.q])
         return self.get_boolean_results()

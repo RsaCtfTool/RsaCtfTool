@@ -3,6 +3,8 @@
 from lib.rsalibnum import invmod
 import logging
 import sys
+from tqdm import tqdm
+from lib.utils import timeout, TimeoutError
 
 
 # TODO
@@ -64,16 +66,16 @@ import sys
 
 def partial_q(e, dp, dq, qi, part_q):
     """Search for partial q.
-       Tunable to search longer.
+    Tunable to search longer.
     """
     N = 100000
 
-    for j in range(N, 1, -1):
+    for j in tqdm(range(N, 1, -1)):
         q = (e * dq - 1) / j + 1
         if str(hex(q)).strip("L").endswith(part_q):
             break
 
-    for k in range(1, N, 1):
+    for k in tqdm(range(1, N, 1)):
         p = (e * dp - 1) / k + 1
         try:
             m = invmod(q, p)
@@ -88,8 +90,8 @@ def partial_q(e, dp, dq, qi, part_q):
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
     """Partial q in private key.
-       Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
-       But it's here if you need :)
+    Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
+    But it's here if you need :)
     """
     return (None, None)
 

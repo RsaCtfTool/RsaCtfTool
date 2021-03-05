@@ -1,6 +1,7 @@
 # RsaCtfTool
 
 ![lint_python](https://github.com/Ganapati/RsaCtfTool/workflows/lint_python/badge.svg)
+![CodeQL](https://github.com/Ganapati/RsaCtfTool/workflows/CodeQL/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/issues)
 [![GitHub forks](https://img.shields.io/github/forks/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/network)
 [![GitHub stars](https://img.shields.io/github/stars/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/stargazers)
@@ -34,20 +35,35 @@ Attacks :
 - Primefac
 - Qicheng
 - Same n, huge e
+
+- binary polynomial factoring
+- Euler method
+- Pollard Rho
+- Wolfram alpha
+- cm-factor
+- z3 theorem prover
+- Primorial pm1 gcd
+- Mersenne pm1 gcd
+- Fermat Numbers gcd
+- Fibonacci gcd
 - Small NSIF
 
 ## Usage
 
 ```bash
 usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
-                     [--createpub] [--dumpkey] [--ext]
+                     [--createpub] [--dumpkey] [--ext] [--sendtofdb]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
+
                      [-e E] [--key KEY] 
                      [--nsif FIELD]
                      [--attack {mersenne_primes,pollard_p_1,smallfraction,smallq,boneh_durfee,noveltyprimes,ecm,factordb,wiener,siqs,pastctfprimes,partial_q,comfact_cn,hastads,fermat,nullattack,commonfactors,same_n_huge_e,small_nsif,all}]
-```
+
+                     [-e E] [--key KEY] [--isconspicuous]
+                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,z3_solver,primorial_pm1_gcd,mersenne_pm1_gcd,fermat_numbers_gcd,fibonacci_gcd,commonfactors,hastads,same_n_huge_e,all]
+````
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
 
@@ -76,6 +92,11 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --publickey "*.pub" --private`
 
+
+### Optionaly send the results back to factordb
+
+`./RsaCtfTool.py --publickey "*.pub" --private` --sendtofdb
+
 ### Generate a public key
 
 `./RsaCtfTool.py --createpub -n 7828374823761928712873129873981723...12837182 -e 65537`
@@ -83,6 +104,10 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 ### Dump the parameters from a key
 
 `./RsaCtfTool.py --dumpkey --key ./key.pub`
+
+### Check a given private key for conspicuousness 
+
+`./RsaCtfTool.py --key examples/conspicuous.priv --isconspicuous`
 
 ### Factor with ECM when you know the approximate length in digits of a prime
 

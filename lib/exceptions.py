@@ -3,7 +3,6 @@
 
 
 class FactorizationError(Exception):
-    """A generic factorization error exception
-    """
+    """A generic factorization error exception"""
 
     pass

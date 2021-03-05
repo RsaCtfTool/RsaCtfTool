@@ -26,7 +26,7 @@ class CustomFormatter(logging.Formatter):
         logging.INFO: grey + f + reset,
         logging.WARNING: yellow + f + reset,
         logging.ERROR: red + f + reset,
-        logging.CRITICAL: bold_red + f + reset
+        logging.CRITICAL: bold_red + f + reset,
     }
 
     def format(self, record):

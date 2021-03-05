@@ -10,13 +10,13 @@ from Crypto.Cipher import PKCS1_OAEP
 from lib.rsalibnum import invmod, modInv
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
+from lib.conspicuous_check import privatekey_check
 
 logger = logging.getLogger("global_logger")
 
 
 def generate_pq_from_n_and_p_or_q(n, p=None, q=None):
-    """ Return p and q from (n, p) or (n, q)
-    """
+    """Return p and q from (n, p) or (n, q)"""
     if p is None:
         p = n // q
     elif q is None:
@@ -25,8 +25,7 @@ def generate_pq_from_n_and_p_or_q(n, p=None, q=None):
 
 
 def generate_keys_from_p_q_e_n(p, q, e, n):
-    """ Generate keypair from p, q, e, n
-    """
+    """Generate keypair from p, q, e, n"""
     priv_key = None
     try:
         priv_key = PrivateKey(p, q, e, n)
@@ -40,8 +39,8 @@ def generate_keys_from_p_q_e_n(p, q, e, n):
 class PublicKey(object):
     def __init__(self, key, filename=None):
         """Create RSA key from input content
-            :param key: public key file content
-            :type key: string
+        :param key: public key file content
+        :type key: string
         """
         try:
             pub = RSA.importKey(key)
@@ -57,20 +56,26 @@ class PublicKey(object):
         self.key = key
 
     def __str__(self):
-        """Print armored public key
-        """
+        """Print armored public key"""
         return self.key
 
 
 class PrivateKey(object):
     def __init__(
-        self, p=None, q=None, e=None, n=None, d=None, filename=None, password=None,
+        self,
+        p=None,
+        q=None,
+        e=None,
+        n=None,
+        d=None,
+        filename=None,
+        password=None,
     ):
         """Create private key from base components
-            :param p: extracted from n
-            :param q: extracted from n
-            :param e: exponent
-            :param n: n from public key
+        :param p: extracted from n
+        :param q: extracted from n
+        :param e: exponent
+        :param n: n from public key
         """
         self.p = None
         if p is not None:
@@ -131,10 +136,18 @@ class PrivateKey(object):
                     else:
                         self.phi = (self.p ** 2) - self.p
 
+    def is_conspicuous(self):
+        is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
+        if is_con == True:
+            msg = "[!] The given privkey has conspicuousness:\n"
+            msg += "[!] It is not advisable to use it in production\n%s" % txt
+            logger.error("%s" % msg)
+        return is_con
+
     def decrypt(self, cipher):
         """Uncipher data with private key
-            :param cipher: input cipher
-            :type cipher: string
+        :param cipher: input cipher
+        :type cipher: string
         """
         if not isinstance(cipher, list):
             cipher = [cipher]
@@ -212,6 +225,5 @@ class PrivateKey(object):
         return plain
 
     def __str__(self):
-        """Print armored private key
-        """
+        """Print armored private key"""
         return self.key.exportKey().decode("utf-8")

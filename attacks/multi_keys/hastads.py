@@ -4,6 +4,7 @@
 import logging
 from functools import reduce
 from lib.keys_wrapper import PrivateKey
+from lib.utils import timeout, TimeoutError
 
 logger = logging.getLogger("global_logger")
 
@@ -50,7 +51,7 @@ def find_invpow(x, n):
 
 def attack(attack_rsa_obj, publickeys, cipher=[]):
     """Hastad attack for low public exponent
-       this has found success for e = 3
+    this has found success for e = 3
     """
     if not isinstance(publickeys, list):
         return (None, None)
@@ -58,37 +59,43 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
     if cipher is None or len(cipher) == 0:
         return (None, None)
 
-    c = []
-    for _ in cipher:
-        c.append(int.from_bytes(_, byteorder="big"))
+    with timeout(attack_rsa_obj.args.timeout):
+        try:
+            c = []
+            for _ in cipher:
+                c.append(int.from_bytes(_, byteorder="big"))
 
-    n = []
-    e = []
-    for publickey in publickeys:
-        if publickey.e < 11:
-            n.append(publickey.n)
-            e.append(publickey.e)
+            n = []
+            e = []
+            for publickey in publickeys:
+                if publickey.e < 11:
+                    n.append(publickey.n)
+                    e.append(publickey.e)
 
-    e = set(e)
-    if len(e) != 1:
-        return (None, None)
-    e = e.pop()
-    if e != 3:
-        return (None, None)
+            e = set(e)
+            if len(e) != 1:
+                return (None, None)
+            e = e.pop()
+            if e != 3:
+                return (None, None)
 
-    result = chinese_remainder(n, c)
-    nth = find_invpow(result, 3)
+            result = chinese_remainder(n, c)
+            nth = find_invpow(result, 3)
 
-    unciphered = []
-    unciphered.append(nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big"))
+            unciphered = []
+            unciphered.append(
+                nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big")
+            )
 
-    try:
-        unciphered_ = b""
-        for i in range(0, len(str(nth)), 3):
-            _ = str(nth)[i : i + 3]
-            unciphered_ += bytes([int(_)])
-        unciphered.append(unciphered_)
-    except:
-        pass
+            try:
+                unciphered_ = b""
+                for i in range(0, len(str(nth)), 3):
+                    _ = str(nth)[i : i + 3]
+                    unciphered_ += bytes([int(_)])
+                unciphered.append(unciphered_)
+            except:
+                pass
+        except TimeoutError:
+            return (None, None)
 
     return (None, unciphered)
