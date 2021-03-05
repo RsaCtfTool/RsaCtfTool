@@ -59,6 +59,13 @@ nsif_factorise_ecm n = (sg2-qrest, sg2+qrest)
 nsif_factors n = take 1 $ filter (\(x,c)-> c*x==n && c>0 && c/=1 && c/=n ) $  map ( \x-> nsif_factorise n (n- (mod n x))) (nub $ sort (factdev n))
 
 
+nsif_factors2 n = take 1 $ filter (\(x,c)-> c*x==n && c>0 && c/=1 && c/=n ) $  map ( \x-> nsif_factorise n (n- (mod n x))) (nub $ sort (factdev2 n 2))
+
+
+nsif_dec_expansion n m= take 1 $ filter (\(x)-> powMod 10 x n==1 ) $ (nub $ sort (factdev n))++(nub $ sort $ (factdev2 n m))
+
+
+
 nsif_factorise n t 
 	| sg3 < 1 = (0,0)
 	| otherwise = (sg2-qrest, sg2+qrest)
@@ -114,7 +121,7 @@ ex = 1826379812379156297616109238798712634987623891298419
 -- CHECK PERIOD LENGTH FOR N Using RSA
 tryperiod n period = (powMod (powMod (2) ex n) (modular_inverse ex period) n) - (2) 
 
-
+tryperiod2 n period m = (powMod (powMod (m) ex n) (modular_inverse ex period) n) - (m)
 -- GET DIVISORS WITH ECM METHOD
 divs n = read $ concat (tail (splitOn " " (show (divisors n))))::[Integer]
 
@@ -156,15 +163,16 @@ pr = map (primes !!) [1..1000]
 
 prs = nub $ sort ( concat (map (\x-> map (\y -> x*y) pr) pr ) )
 
-field_crack2 n s
+field_crack2 n s m
 	-- | mod n 3 == 0 = (0,0)
 	-- | mod n 2 == 0 = (0,0)
-	| s > 100000= (0,0) 
+	| s > 133300= (0,0,0) 
 	| t == 0 = out
-	| otherwise = field_crack2 n (s+1)
+	| otherwise = field_crack2 n (s+1) m
 	where
-	t = tryperiod n ((n)-s)
-	out = (n, s)
+	t = tryperiod2 n ((n)-s) m
+	ns = n -s
+	out = (n, s,ns)
 
 field_crack n s
 	| s > 100000= (0,0,0) 
@@ -188,7 +196,18 @@ factdev n = out
 	where
 	(a,c,v)= field_crack n 0
 	e = factof v	
-	out = map product $ tail $ A.subsequences e
+	out =nub $ sort $  map product $ tail $ A.subsequences e
+	--out = e
+
+
+factdev2 n m= out
+	where
+	(a,c,v)= field_crack2 n 0 m
+	e = factof v	
+	--out =nub $ sort $  map product $ tail $ A.subsequences e
+	out = nub $ sort $ map (\x-> x*4) e 
+	--out = e
+
 
 
 cypher m n = powMod m ex n
