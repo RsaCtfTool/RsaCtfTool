@@ -16,7 +16,7 @@ import Graphics.EasyPlot
 import System.Console.CmdArgs
 import System.Random
 import System.Entropy
-import Math.ContinuedFraction.Simple
+--import Math.ContinuedFraction.Simple
 import Control.Monad
 import Data.List.GroupBy
 import qualified Data.List as A
@@ -174,14 +174,14 @@ field_crack2 n s m
 	ns = n -s
 	out = (n, s,ns)
 
-field_crack n s
+field_crack n s m
 	| s > 100000= (0,0,0) 
 	| t == 0 = out
-	| otherwise = field_crack n (s+1)
+	| otherwise = field_crack n (s+1) m
 	where
 	s2 = (s*s)
 	car = (div (n^2-s2) 2)
-	t = tryperiod n car
+	t = tryperiod2 n car m
 	out = (n, s, car)
 
 
@@ -194,7 +194,7 @@ factof n =concat $  (map (\x-> rep ((read (show (snd x)))::Integer) (read ((spli
 
 factdev n = out
 	where
-	(a,c,v)= field_crack n 0
+	(a,c,v)= field_crack n 0 2
 	e = factof v	
 	out =nub $ sort $  map product $ tail $ A.subsequences e
 	--out = e
@@ -259,7 +259,7 @@ main = do
     let e = args !! 2
     let m = args !! 3
 
-    let (publickey,field,devcarmichael) = field_crack (read n::Integer) (read st::Integer)
+    let (publickey,field,devcarmichael) = field_crack (read n::Integer) (read st::Integer) (read m::Integer)
     putStrLn "Public Key" 
     
     print $ "N :"++(show publickey)
