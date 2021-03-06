@@ -13,9 +13,9 @@ logger = logging.getLogger("global_logger")
 
 
 def attack(attack_rsa_obj, publickey, cipher=[]):
-    
-    if hasattr(attack_rsa_obj, 'uncipher'):
-        m = attack_rsa_obj.args.uncipher
+    #print (int(attack_rsa_obj.args.uncipher[0])) 
+    if hasattr(attack_rsa_obj.args, 'uncipher'):
+        m = int.from_bytes(attack_rsa_obj.args.uncipher[0], byteorder="big")
     else:
         m = (2**32) * 3
 
