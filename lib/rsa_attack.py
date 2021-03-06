@@ -64,28 +64,32 @@ class RSAAttack(object):
         """Print extra output according to requested action.
         Uncipher data if needed.
         """
+        try:
         # check and print resulting private key
-        if self.partitial_priv_key is not None and self.args.private:
-            self.logger.info("d: %i" % self.partitial_priv_key.key.d)
-            self.logger.info("e: %i" % self.partitial_priv_key.key.e)
-            self.logger.info("n: %i" % self.partitial_priv_key.key.n)
+            if self.partitial_priv_key is not None and self.args.private:
+                self.logger.info("d: %i" % self.partitial_priv_key.key.d)
+                self.logger.info("e: %i" % self.partitial_priv_key.key.e)
+                self.logger.info("n: %i" % self.partitial_priv_key.key.n)
 
         # If we wanted to decrypt, do it now
-        if self.cipher and self.priv_key is not None:
-            for cipher in self.cipher:
-                unciphered = self.priv_key.decrypt(cipher)
-                if not isinstance(unciphered, list):
-                    unciphered = [unciphered]
+            if self.cipher and self.priv_key is not None:
+            
+                for cipher in self.cipher:
+                
+                    unciphered = self.priv_key.decrypt(cipher)
+                    if not isinstance(unciphered, list):
+                            unciphered = [unciphered]
 
-                self.unciphered = self.unciphered + unciphered
-        elif self.cipher and self.partitial_priv_key is not None:
+                    self.unciphered = self.unciphered + unciphered
+            elif self.cipher and self.partitial_priv_key is not None:
             # needed, if n is prime and so we cant calc p and q
-            enc_msg = bytes_to_long(self.cipher)
-            dec_msg = self.partitial_priv_key.key._decrypt(enc_msg)
-            self.unciphered.append(long_to_bytes(dec_msg))
+                enc_msg = bytes_to_long(self.cipher)
+                dec_msg = self.partitial_priv_key.key._decrypt(enc_msg)
+                self.unciphered.append(long_to_bytes(dec_msg))
 
-        print_results(self.args, publickeyname, self.priv_key, self.unciphered)
-
+            print_results(self.args, publickeyname, self.priv_key, self.unciphered)
+        except:
+            pass
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
         try:
@@ -164,7 +168,11 @@ class RSAAttack(object):
                     self.logger.warning("Timeout")
 
         public_key_name = ",".join(publickeys)
-        self.print_results_details(public_key_name)
+        
+        try:
+            self.print_results_details(public_key_name)
+        except:
+            pass
         if self.args.sendtofdb == True:
             if len(self.priv_key) > 0:
                 for privkey in list(set(self.priv_key)):
