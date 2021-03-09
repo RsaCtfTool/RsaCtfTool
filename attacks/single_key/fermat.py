@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import math
 from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
@@ -47,10 +48,11 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
     except FactorizationError:
         return (None, None)
 
-    if publickey.q is not None:
-        priv_key = PrivateKey(
-            int(publickey.p), int(publickey.q), int(publickey.e), int(publickey.n)
-        )
-        return (priv_key, None)
+    if publickey.p is not None and publickey.q is not None:
+        try:
+            priv_key = PrivateKey(int(publickey.p), int(publickey.q), int(publickey.e))
+            return (priv_key, None)
+        except ValueError:
+            return (None, None)
 
     return (None, None)
