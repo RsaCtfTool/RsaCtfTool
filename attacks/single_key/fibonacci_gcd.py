@@ -15,7 +15,7 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
             limit = 10000
             p = q = None
             for x in tqdm(range(1,limit)):
-                f = fib(x)
+                f = gcd(fib(x),publickey.n)
                 if 1 < f < publickey.n:
                     p = publickey.n // f
                     q = f
