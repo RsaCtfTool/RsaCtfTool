@@ -39,16 +39,16 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    euler_res = self.z3_solve(publickey.n, self.timeout)
+                    z3_res = self.z3_solve(publickey.n, self.timeout)
                 except:
                     self.logger.warning("[!] z3: Internal Error.")
                     return (None, None)
 
-                if euler_res and len(euler_res) > 1:
-                    p, q = euler_res
+                if z3_res and len(z3_res) > 1:
+                    p, q = z3_res
                     try:
-                        publickey.p = p.as_string()
-                        publickey.q = q.as_string()
+                        publickey.p = p.as_long()
+                        publickey.q = q.as_long()
                     except AttributeError:
                         return (None, None)
 
