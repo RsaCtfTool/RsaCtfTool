@@ -6,7 +6,7 @@ import importlib
 from glob import glob
 from lib.keys_wrapper import PublicKey
 from lib.exceptions import FactorizationError
-from lib.utils import sageworks, print_results
+from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 from attacks.multi_keys import same_n_huge_e, commonfactors
@@ -109,19 +109,13 @@ class RSAAttack(object):
                         attack_module = importlib.import_module(
                             "attacks.single_key.%s" % attack
                         )
-                    try:
-                        if attack_module.__SAGE__:
-                            if not sageworks():
-                                self.logger.warning(
-                                    "Can't load %s because sage is not installed"
-                                    % attack
-                                )
-                                continue
-                    except:
-                        pass
-                    self.implemented_attacks.append(attack_module)
+
+                    self.implemented_attacks.append(
+                        attack_module.Attack(self, self.args.timeout)
+                    )
                 except ModuleNotFoundError:
                     pass
+        self.implemented_attacks.sort(key=lambda x: x.speed)
 
     def attack_multiple_keys(self, publickeys, attacks_list):
         """Run attacks on multiple keys"""
@@ -146,13 +140,15 @@ class RSAAttack(object):
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
             if isinstance(self.publickey, list):
-                self.logger.info(
-                    "[*] Performing %s attack." % attack_module.__name__.split(".")[-1]
-                )
+                self.logger.info("[*] Performing %s attack." % attack_module.get_name())
                 try:
+                    if not attack_module.can_run():
+                        continue
+
                     self.priv_key, unciphered = attack_module.attack(
-                        self, self.publickey, self.cipher
+                        self.publickey, self.cipher
                     )
+
                     if unciphered is not None and unciphered is not []:
                         if isinstance(unciphered, list):
                             self.unciphered = self.unciphered + unciphered
@@ -192,11 +188,14 @@ class RSAAttack(object):
         for attack_module in self.implemented_attacks:
             self.logger.info(
                 "[*] Performing %s attack on %s."
-                % (attack_module.__name__.split(".")[-1], self.publickey.filename)
+                % (attack_module.get_name(), self.publickey.filename)
             )
             try:
+                if not attack_module.can_run():
+                    continue
+
                 self.priv_key, unciphered = attack_module.attack(
-                    self, self.publickey, self.cipher
+                    self.publickey, self.cipher
                 )
                 if unciphered is not None and unciphered is not []:
                     if isinstance(unciphered, list):
