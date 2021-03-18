@@ -28,7 +28,7 @@ class Attack(AbstractAttack):
             return
         q = "factor(%s)" % n
         if self.wa_client != None:
-            res = wa_client.query(q)
+            res = self.wa_client.query(q)
             pods = list(res.pods)
             if len(pods) > 0:
                 for pod in pods:
