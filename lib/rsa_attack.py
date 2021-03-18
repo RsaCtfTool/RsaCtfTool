@@ -3,13 +3,11 @@
 
 import logging
 import importlib
-from glob import glob
 from lib.keys_wrapper import PublicKey
 from lib.exceptions import FactorizationError
 from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
-from attacks.multi_keys import same_n_huge_e, commonfactors
 
 
 class RSAAttack(object):

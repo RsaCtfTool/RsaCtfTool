@@ -30,7 +30,6 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[]):
         """Try an attack where the public key has a common factor with the ciphertext - sourcekris"""
-        timeout_delay = self.timeout
         if cipher is not None:
             try:
                 with timeout(self.timeout):

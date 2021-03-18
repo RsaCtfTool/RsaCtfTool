@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.keys_wrapper import PrivateKey

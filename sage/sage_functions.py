@@ -1,4 +1,4 @@
-from sage.all_cmdline import *
+from sage.all_cmdline import ZZ, Matrix, gcd
 
 
 def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):

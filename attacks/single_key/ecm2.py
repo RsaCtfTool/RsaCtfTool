@@ -1,14 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.rsalibnum import modInv
-from lib.timeout import timeout
-from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
-from lib.utils import timeout, TimeoutError
 
 
 class Attack(AbstractAttack):

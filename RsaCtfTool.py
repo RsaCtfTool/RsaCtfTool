@@ -13,7 +13,6 @@ this stuff is worth it, you can buy me a beer in return.
 import sys
 import logging
 import argparse
-import requests
 import urllib3
 import tempfile
 from glob import glob
@@ -162,7 +161,7 @@ if __name__ == "__main__":
             try:
                 with open(uncipher, "rb") as cipherfile_fd:
                     uncipher_array.append(cipherfile_fd.read())
-            except OSError as e:
+            except OSError:
                 logger.info("--uncipherfile : file not found or not readable.")
                 exit(1)
         args.uncipher = uncipher_array

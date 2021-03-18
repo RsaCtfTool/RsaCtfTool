@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import math
+
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from gmpy2 import *
+from gmpy2 import is_prime, gcd
 
 
 class Attack(AbstractAttack):

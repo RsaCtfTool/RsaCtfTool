@@ -1,10 +1,9 @@
 # /usr/bin/env python
 # code taken from https://maths.dk/teaching/courses/math357-spring2016/projects/factorization.pdf
 
-import sys
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from gmpy2 import *
+from gmpy2 import gcd, isqrt
 from lib.utils import timeout, TimeoutError
 
 
@@ -16,7 +15,6 @@ class Attack(AbstractAttack):
     def euler(self, n):
         if n % 2 == 0:
             return (n / 2, 2) if n > 2 else (2, 1)
-        factors = (n, 1)
         end = isqrt(n)
         a = 0
         solutionsFound = []
@@ -58,7 +56,7 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    euler_res = euler(publickey.n)
+                    euler_res = self.euler(publickey.n)
                 except:
                     print("Euler: Internal Error")
                     return (None, None)

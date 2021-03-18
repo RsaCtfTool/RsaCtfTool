@@ -3,7 +3,6 @@
 
 from attacks.abstract_attack import AbstractAttack
 from functools import reduce
-from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
 

@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 import tempfile
 from Crypto.PublicKey import RSA
-from lib.keys_wrapper import PublicKey
 from lib.utils import timeout, TimeoutError
 
 

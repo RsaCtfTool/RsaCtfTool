@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from z3 import *
+from z3 import Solver, Int
 from attacks.abstract_attack import AbstractAttack
 from gmpy2 import isqrt
 from lib.utils import timeout, TimeoutError
@@ -39,13 +39,15 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    euler_res = self.z3_solve(publickey.n, timeout_amount)
+                    euler_res = self.z3_solve(publickey.n, self.timeout)
                 except:
                     self.logger.warning("[!] z3: Internal Error.")
                     return (None, None)
 
                 if euler_res and len(euler_res) > 1:
-                    publickey.p, publickey.q = euler_res
+                    p, q = euler_res
+                    publickey.p = p.as_string()
+                    publickey.q = q.as_string()
 
                 if publickey.q is not None:
                     priv_key = PrivateKey(

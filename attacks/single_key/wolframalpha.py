@@ -2,16 +2,9 @@
 # -*- coding: utf-8 -*-
 
 import json
-import sys
 import os
-import re
 from attacks.abstract_attack import AbstractAttack
-import requests
-from lib.rsalibnum import invmod
-from Crypto.PublicKey import RSA
 from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
-from Crypto.Util.number import long_to_bytes
 from lib.utils import timeout, TimeoutError
 
 
@@ -53,7 +46,7 @@ class Attack(AbstractAttack):
 
             app_id = os.environ.get("WA_API_KEY")
             wa_enabled = app_id != None
-        except Exception as e:
+        except Exception:
             self.logger.warning("[!] Wolfram Alpha is not enabled, install the lib.")
             wa_enabled = False
 

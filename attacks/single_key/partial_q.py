@@ -2,10 +2,7 @@
 
 from lib.rsalibnum import invmod
 from attacks.abstract_attack import AbstractAttack
-import sys
 from tqdm import tqdm
-from lib.utils import timeout, TimeoutError
-
 
 # TODO
 # Source:

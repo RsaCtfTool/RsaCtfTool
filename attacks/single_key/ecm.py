@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
 
@@ -12,7 +10,7 @@ from lib.utils import rootpath
 class Attack(AbstractAttack):
     def __init__(self, attack_rsa_obj, timeout=60):
         super().__init__(attack_rsa_obj, timeout)
-        self.speed = AbstractAttack.speed_enum["medium"]
+        self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
 
     def attack(self, publickey, cipher=[]):
@@ -58,7 +56,7 @@ class Attack(AbstractAttack):
                         int(publickey.n),
                     )
                     return (priv_key, None)
-                except:
+                except NotImplementedError:
                     return (None, None)
             return (None, None)
         except KeyboardInterrupt:

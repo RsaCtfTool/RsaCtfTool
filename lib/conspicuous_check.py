@@ -1,6 +1,5 @@
 import gmpy2
 import math
-import sys
 
 
 def privatekey_check(N, p, q, d, e):

@@ -5,8 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from math import log2
-from gmpy2 import gcd, next_prime
+from gmpy2 import gcd
 
 
 class Attack(AbstractAttack):

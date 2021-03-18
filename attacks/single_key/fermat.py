@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-import math
-from lib.timeout import timeout
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
@@ -55,7 +53,10 @@ class Attack(AbstractAttack):
         if publickey.p is not None and publickey.q is not None:
             try:
                 priv_key = PrivateKey(
-                    int(publickey.p), int(publickey.q), int(publickey.e)
+                    n=publickey.p,
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
                 )
                 return (priv_key, None)
             except ValueError:

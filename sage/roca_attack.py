@@ -1,5 +1,5 @@
 import sys
-from sage.all import *
+from sage.all import inverse_mod, PolynomialRing, floor, Zmod
 
 
 def solve(M, n, a, m):
