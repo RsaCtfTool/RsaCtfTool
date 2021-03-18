@@ -1,60 +1,69 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-# from gmpy2 import isqrt, invert
+from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.utils import isqrt, invmod
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
 
-def close_factor(n, b):
-    # approximate phi
-    phi_approx = n - 2 * isqrt(n) + 1
+class Attack(AbstractAttack):
+    def __init__(self, attack_rsa_obj, timeout=60):
+        super().__init__(attack_rsa_obj, timeout)
+        self.speed = AbstractAttack.speed_enum["medium"]
 
-    # create a look-up table
-    look_up = {}
-    z = 1
-    for i in tqdm(range(0, b + 1)):
-        look_up[z] = i
-        z = (z * 2) % n
+    def close_factor(self, n, b):
+        # approximate phi
+        phi_approx = n - 2 * isqrt(n) + 1
 
-    # check the table
-    mu = invmod(pow(2, phi_approx, n), n)
-    fac = pow(2, b, n)
+        # create a look-up table
+        look_up = {}
+        z = 1
+        for i in tqdm(range(0, b + 1)):
+            look_up[z] = i
+            z = (z * 2) % n
 
-    for i in tqdm(range(0, b + 1)):
-        if mu in look_up:
-            phi = phi_approx + (look_up[mu] - i * b)
-            break
-        mu = (mu * fac) % n
-    else:
-        return None
+        # check the table
+        mu = invmod(pow(2, phi_approx, n), n)
+        fac = pow(2, b, n)
 
-    m = n - phi + 1
-    roots = ((m - isqrt(m ** 2 - 4 * n)) // 2, (m + isqrt(m ** 2 - 4 * n)) // 2)
+        for i in tqdm(range(0, b + 1)):
+            if mu in look_up:
+                phi = phi_approx + (look_up[mu] - i * b)
+                break
+            mu = (mu * fac) % n
+        else:
+            return None
 
-    if roots[0] * roots[1] == n:
-        return roots
+        m = n - phi + 1
+        roots = ((m - isqrt(m ** 2 - 4 * n)) // 2, (m + isqrt(m ** 2 - 4 * n)) // 2)
 
+        if roots[0] * roots[1] == n:
+            return roots
 
-def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Do nothing, used for multi-key attacks that succeeded so we just print the
-    private key without spending any time factoring
-    """
-    londahl_b = 20000000
-    with timeout(attack_rsa_obj.args.timeout):
-        try:
-            factors = close_factor(publickey.n, londahl_b)
+    def attack(self, publickey, cipher=[]):
+        """Do nothing, used for multi-key attacks that succeeded so we just print the
+        private key without spending any time factoring
+        """
+        londahl_b = 20000000
+        with timeout(self.timeout):
+            try:
+                factors = self.close_factor(publickey.n, londahl_b)
 
-            if factors is not None:
-                p, q = factors
-                priv_key = PrivateKey(
-                    int(p), int(q), int(publickey.e), int(publickey.n)
-                )
-                return (priv_key, None)
-            else:
+                if factors is not None:
+                    p, q = factors
+                    priv_key = PrivateKey(
+                        int(p), int(q), int(publickey.e), int(publickey.n)
+                    )
+                    return (priv_key, None)
+                else:
+                    return (None, None)
+            except TimeoutError:
                 return (None, None)
-        except TimeoutError:
-            return (None, None)
-    return (None, None)
+        return (None, None)
+
+
+if __name__ == "__main__":
+    attack = Attack()
+    attack.test()

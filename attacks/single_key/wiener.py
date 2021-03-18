@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import sys
-import logging
+from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
@@ -92,22 +92,32 @@ class WienerAttack(object):
                         break
 
 
-def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Wiener's attack"""
-    with timeout(attack_rsa_obj.args.timeout):
-        try:
-            wiener = WienerAttack(publickey.n, publickey.e)
-            if wiener.p is not None and wiener.q is not None:
-                publickey.p = wiener.p
-                publickey.q = wiener.q
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return (priv_key, None)
-        except TimeoutError:
-            return (None, None)
+class Attack(AbstractAttack):
+    def __init__(self, attack_rsa_obj, timeout=60):
+        super().__init__(attack_rsa_obj, timeout)
+        self.speed = AbstractAttack.speed_enum["medium"]
 
-    return (None, None)
+    def attack(self, publickey, cipher=[]):
+        """Wiener's attack"""
+        with timeout(self.timeout):
+            try:
+                wiener = WienerAttack(publickey.n, publickey.e)
+                if wiener.p is not None and wiener.q is not None:
+                    publickey.p = wiener.p
+                    publickey.q = wiener.q
+                    priv_key = PrivateKey(
+                        int(publickey.p),
+                        int(publickey.q),
+                        int(publickey.e),
+                        int(publickey.n),
+                    )
+                    return (priv_key, None)
+            except TimeoutError:
+                return (None, None)
+
+        return (None, None)
+
+
+if __name__ == "__main__":
+    attack = Attack()
+    attack.test()
