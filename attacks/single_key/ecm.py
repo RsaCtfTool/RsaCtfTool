@@ -22,7 +22,7 @@ class Attack(AbstractAttack):
 
         try:
             try:
-                ecmdigits = attack_rsa_obj.args.ecmdigits
+                ecmdigits = self.attack_rsa_obj.args.ecmdigits
                 if ecmdigits:
                     sageresult = int(
                         subprocess.check_output(
@@ -32,7 +32,7 @@ class Attack(AbstractAttack):
                                 str(publickey.n),
                                 str(ecmdigits),
                             ],
-                            timeout=attack_rsa_obj.args.timeout,
+                            timeout=self.timeout,
                             stderr=subprocess.DEVNULL,
                         )
                     )
@@ -40,7 +40,7 @@ class Attack(AbstractAttack):
                     sageresult = int(
                         subprocess.check_output(
                             ["sage", "%s/sage/ecm.sage" % rootpath, str(publickey.n)],
-                            timeout=attack_rsa_obj.args.timeout,
+                            timeout=self.timeout,
                             stderr=subprocess.DEVNULL,
                         )
                     )

@@ -27,7 +27,7 @@ class Attack(AbstractAttack):
             try:
                 sageresult = subprocess.check_output(
                     ["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)],
-                    timeout=attack_rsa_obj.args.timeout,
+                    timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
                 sageresult = sageresult[1:-2].split(b", ")

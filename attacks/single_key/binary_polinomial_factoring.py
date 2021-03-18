@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
                         "%s/sage/binary_polinomial_factoring.sage" % rootpath,
                         str(publickey.n),
                     ],
-                    timeout=attack_rsa_obj.args.timeout,
+                    timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
             ).split(" ")

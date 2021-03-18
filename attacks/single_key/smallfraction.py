@@ -21,7 +21,7 @@ class Attack(AbstractAttack):
         try:
             r = subprocess.check_output(
                 ["sage", "%s/sage/smallfraction.sage" % rootpath, str(publickey.n)],
-                timeout=attack_rsa_obj.args.timeout,
+                timeout=self.timeout,
                 stderr=subprocess.DEVNULL,
             )
             sageresult = int(r)

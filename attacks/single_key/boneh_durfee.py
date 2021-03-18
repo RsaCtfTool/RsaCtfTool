@@ -29,7 +29,7 @@ class Attack(AbstractAttack):
                         str(publickey.n),
                         str(publickey.e),
                     ],
-                    timeout=attack_rsa_obj.args.timeout,
+                    timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
             )

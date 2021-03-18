@@ -33,9 +33,9 @@ class Attack(AbstractAttack):
                     with open(tmpfile.name, "wb") as tmpfd:
                         tmpfd.write(new_key)
                         tmpfd.flush()
-                        result = attack_rsa_obj.attack_single_key(tmpfile.name)
+                        result = self.attack_rsa_obj.attack_single_key(tmpfile.name)
                         if result:
-                            return (attack_rsa_obj.priv_key, None)
+                            return (self.attack_rsa_obj.priv_key, None)
             except TimeoutError:
                 return (None, None)
         return (None, None)

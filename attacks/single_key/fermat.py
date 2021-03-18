@@ -43,7 +43,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[]):
         """Run fermat attack with a timeout"""
         try:
-            with timeout(seconds=attack_rsa_obj.args.timeout):
+            with timeout(seconds=self.timeout):
                 try:
                     publickey.p, publickey.q = self.fermat(publickey.n)
                 except TimeoutError:

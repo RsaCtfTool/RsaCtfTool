@@ -31,7 +31,7 @@ class Attack(AbstractAttack):
                         "-D",
                         str(D_candidate),
                     ],
-                    timeout=attack_rsa_obj.args.timeout,
+                    timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
                 if sageresult == b"Factorization failed\n":

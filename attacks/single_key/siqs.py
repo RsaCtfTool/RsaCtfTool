@@ -40,7 +40,7 @@ class SiqsAttack(object):
         try:
             yafutest = subprocess.check_output(
                 [self.yafubin, "siqs(1549388302999519)"],
-                timeout=self.attack_rsa_obj.args.timeout,
+                timeout=self.timeout,
                 stderr=subprocess.DEVNULL,
             )
         except:
@@ -77,7 +77,7 @@ class SiqsAttack(object):
                 "-threads",
                 str(self.threads),
             ],
-            timeout=self.attack_rsa_obj.args.timeout,
+            timeout=self.timeout,
             stderr=subprocess.DEVNULL,
         )
 
