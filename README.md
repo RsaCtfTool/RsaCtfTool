@@ -133,6 +133,7 @@ If `pip3 install -r "requirements.txt"` fails to install requirements accessible
 
 ``easy_install `cat requirements.txt` ``
 
-## Todo
+## Todo (aka. Help wanted !)
 
-- Brainstorm moar attack types !
+- Implement test method in each attack
+- Assign the correct speed value in each attack
