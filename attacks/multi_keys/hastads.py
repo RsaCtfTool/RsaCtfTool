@@ -99,8 +99,3 @@ class Attack(AbstractAttack):
                 return (None, None)
 
         return (None, unciphered)
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()

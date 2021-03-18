@@ -62,8 +62,3 @@ class Attack(AbstractAttack):
         except KeyboardInterrupt:
             pass
         return (None, None)
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()

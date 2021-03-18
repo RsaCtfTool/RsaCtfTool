@@ -34,8 +34,3 @@ class Attack(AbstractAttack):
                 return (None, None)
             except TimeoutError:
                 return (None, None)
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()

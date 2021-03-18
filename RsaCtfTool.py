@@ -71,6 +71,7 @@ if __name__ == "__main__":
     parser.add_argument(
         "--private", help="Display private key if recovered", action="store_true"
     )
+    parser.add_argument("--tests", help="Run tests on attacks", action="store_true")
     parser.add_argument(
         "--ecmdigits",
         type=int,
@@ -272,9 +273,18 @@ if __name__ == "__main__":
     found = False
     attackobj = RSAAttack(args)
 
+    # Run tests
+    if args.publickey is None and args.tests:
+        tmpfile = tempfile.NamedTemporaryFile()
+        with open(tmpfile.name, "wb") as tmpfd:
+            tmpfd.write(RSA.construct((15, 3)).publickey().exportKey())
+        attackobj.attack_single_key(tmpfile.name, attacks_list, test=True)
+
+    # Attack multiple keys
     if len(args.publickey) > 1:
         found = attackobj.attack_multiple_keys(args.publickey, attacks_list)
 
+    # Attack key
     if not found:
         for publickey in args.publickey:
             attackobj.implemented_attacks = []

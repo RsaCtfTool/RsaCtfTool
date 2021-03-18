@@ -32,7 +32,12 @@ class Attack(AbstractAttack):
         else:
             return (None, None)
 
+    def test(self):
+        from lib.keys_wrapper import PublicKey
 
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()
+        key_data = """-----BEGIN PUBLIC KEY-----
+MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAar8f96eVg1jBUt7IlYJk89ksQxJSdIjC
+3e7baDh166JFr7lL6jrkD+9fsqgxFj9nPRYWCkKX/JcceVd5Y81YQwIDAQAB
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)

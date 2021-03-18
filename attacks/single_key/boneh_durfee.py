@@ -48,8 +48,3 @@ class Attack(AbstractAttack):
             )
             return (privatekey, None)
         return (None, None)
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()

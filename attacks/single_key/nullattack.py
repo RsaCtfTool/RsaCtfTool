@@ -18,8 +18,3 @@ class Attack(AbstractAttack):
     def test(self):
         """Nothing to test"""
         pass
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()

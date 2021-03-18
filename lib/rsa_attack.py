@@ -165,13 +165,27 @@ class RSAAttack(object):
                     send2fdb(privkey.n, [privkey.p, privkey.q])
         return self.get_boolean_results()
 
-    def attack_single_key(self, publickey, attacks_list=[]):
+    def attack_single_key(self, publickey, attacks_list=[], test=False):
         """Run attacks on single keys"""
 
         if len(attacks_list) == 0:
             self.args.attack = "all"
 
         self.load_attacks(attacks_list)
+        if test:
+            for attack in self.implemented_attacks:
+                self.logger.info("[*] Testing %s" % attack.get_name())
+                try:
+                    try:
+                        if attack.test():
+                            self.logger.info("[*] Success")
+                        else:
+                            self.logger.error("[!] Failure")
+                    except NotImplementedError:
+                        self.logger.warning("[!] Test not implemented")
+                except Exception:
+                    self.logger.error("[!] Failure")
+            exit(0)
 
         # Read keyfile
         with open(publickey, "rb") as pubkey_fd:

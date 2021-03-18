@@ -121,8 +121,4 @@ class Attack(AbstractAttack):
         e = 65537
         self.partial_q(e, dp, dq, qi, part_q)
         """
-
-
-if __name__ == "__main__":
-    attack = Attack()
-    attack.test()
+        raise NotImplementedError
