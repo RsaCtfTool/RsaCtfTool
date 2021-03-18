@@ -73,11 +73,11 @@ class SiqsAttack(object):
                 self.yafubin,
                 "siqs(" + str(self.n) + ")",
                 "-siqsT",
-                str(self.maxtime),
+                str(self.attack_rsa_obj.args.maxtime),
                 "-threads",
-                str(self.threads),
+                str(self.attack_rsa_obj.args.threads),
             ],
-            timeout=self.timeout,
+            timeout=self.attack_rsa_obj.args.timeout,
             stderr=subprocess.DEVNULL,
         )
 
@@ -119,7 +119,7 @@ class Attack(AbstractAttack):
                     )
                     return (None, None)
 
-                siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
+                siqsobj = SiqsAttack(self.attack_rsa_obj, publickey.n)
 
                 siqsobj.checkyafu()
                 siqsobj.testyafu()

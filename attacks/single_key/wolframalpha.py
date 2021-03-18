@@ -27,7 +27,7 @@ class Attack(AbstractAttack):
             self.logger.warning("[!] wolfram alpha only works for pubkeys < 192 digits")
             return
         q = "factor(%s)" % n
-        if wa_client != None:
+        if self.wa_client != None:
             res = wa_client.query(q)
             pods = list(res.pods)
             if len(pods) > 0:
@@ -65,10 +65,10 @@ class Attack(AbstractAttack):
                 "[!] follow: https://products.wolframalpha.com/api/documentation/"
             )
             self.logger.warning("[!] export WA_API_KEY=XXXXXX-XXXXXXXXXX")
-            wa_client = None
+            self.wa_client = None
             return (None, None)
         else:
-            wa_client = wolframalpha.Client(app_id)
+            self.wa_client = wolframalpha.Client(app_id)
 
         with timeout(self.timeout):
             try:

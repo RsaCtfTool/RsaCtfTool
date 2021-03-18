@@ -27,7 +27,7 @@ class AbstractAttack(object):
         if self.sage_required:
             if not sageworks():
                 self.logger.warning(
-                    "Can't load %s because sage is not installed" % attack
+                    "Can't load %s because sage is not installed" % self.get_name()
                 )
                 return False
         return True

@@ -21,7 +21,7 @@ class Attack(AbstractAttack):
             sageresult = int(
                 subprocess.check_output(
                     ["sage", "%s/sage/qicheng.sage" % rootpath, str(publickey.n)],
-                    timeout=self.timeout,
+                    timeout=selfvirgile jarry .timeout,
                     stderr=subprocess.DEVNULL,
                 )
             )

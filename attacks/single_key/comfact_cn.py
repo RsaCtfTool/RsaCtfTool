@@ -34,7 +34,7 @@ class Attack(AbstractAttack):
         if cipher is not None:
             try:
                 with timeout(self.timeout):
-                    return comfact(cipher, publickey)
+                    return self.comfact(cipher, publickey)
             except TimeoutError:
                 return (None, None)
         return (None, None)
