@@ -126,7 +126,7 @@ if __name__ == "__main__":
         sys.exit(1)
 
     # Add information
-    if not args.private:
+    if not args.private and not args.tests:
         logger.warning(
             "private argument is not set, the private key will not be displayed, even if recovered."
         )

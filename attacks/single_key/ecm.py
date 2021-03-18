@@ -62,3 +62,17 @@ class Attack(AbstractAttack):
         except KeyboardInterrupt:
             pass
         return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgRBNZTe9G/tNqNNwNZz4JDgmOVmk
+ZheJybt5Ew4jKnUjKcfLY8rs8nGCbVdYyKUdq3WQSKCsYy2StxBSZn4qgxoA7G5n
+DGWWBFisWHeLM+lUr3jfnOTbnAZt3utu8plSMbv2irXohbDRxN/6NgzoQMVcmhIQ
+bD3qa8mMScpXZXD2qwIDAQAB
+-----END PUBLIC KEY-----"""
+        self.attack_rsa_obj.args.ecmdigits = 25
+        self.timeout = 180
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)

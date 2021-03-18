@@ -44,3 +44,14 @@ class Attack(AbstractAttack):
                 return (None, None)
             except TimeoutError:
                 return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MGIwDQYJKoZIhvcNAQEBBQADUQAwTgJHRxjQFVPVvt1fa+cUt3fS5qNiHLa/OeaX
+5USLac4dYG3GsvE97xPdzXfx6iQiM5u9608uoygqBRfr+YN4bTuvC6omcabKO30C
+AwEAAQ==
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)

@@ -37,3 +37,4 @@ class Attack(AbstractAttack):
             except TimeoutError:
                 return (None, None)
         return (None, None)
+
