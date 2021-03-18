@@ -278,7 +278,7 @@ if __name__ == "__main__":
         tmpfile = tempfile.NamedTemporaryFile()
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((15, 3)).publickey().exportKey())
-        attackobj.attack_single_key(tmpfile.name, attacks_list, test=True)
+            attackobj.attack_single_key(tmpfile.name, attacks_list, test=True)
 
     # Attack multiple keys
     if len(args.publickey) > 1:
