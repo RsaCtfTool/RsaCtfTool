@@ -46,8 +46,11 @@ class Attack(AbstractAttack):
 
                 if euler_res and len(euler_res) > 1:
                     p, q = euler_res
-                    publickey.p = p.as_string()
-                    publickey.q = q.as_string()
+                    try:
+                        publickey.p = p.as_string()
+                        publickey.q = q.as_string()
+                    except AttributeError:
+                        return (None, None)
 
                 if publickey.q is not None:
                     priv_key = PrivateKey(
