@@ -39,6 +39,6 @@ class Attack(AbstractAttack):
 MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAar8f96eVg1jBUt7IlYJk89ksQxJSdIjC
 3e7baDh166JFr7lL6jrkD+9fsqgxFj9nPRYWCkKX/JcceVd5Y81YQwIDAQAB
 -----END PUBLIC KEY-----"""
-        self.timeout = 90
+        self.timeout = 120
         result = self.attack(PublicKey(key_data))
         return result != (None, None)

@@ -14,6 +14,16 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
         self.wa_client = None
 
+    def can_run(self):
+        try:
+            import wolframalpha
+
+            app_id = os.environ.get("WA_API_KEY")
+            assert app_id != None
+            return True
+        except Exception:
+            return False
+
     def wa_query_factors(self, n, safe=True):
         tmp = []
         if safe and len(str(n)) > 192:

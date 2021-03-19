@@ -174,17 +174,18 @@ class RSAAttack(object):
         self.load_attacks(attacks_list)
         if test:
             for attack in self.implemented_attacks:
-                self.logger.info("[*] Testing %s" % attack.get_name())
-                try:
+                if attack.can_run():
+                    self.logger.info("[*] Testing %s" % attack.get_name())
                     try:
-                        if attack.test():
-                            self.logger.info("[*] Success")
-                        else:
-                            self.logger.error("[!] Failure")
-                    except NotImplementedError:
-                        self.logger.warning("[!] Test not implemented")
-                except Exception:
-                    self.logger.error("[!] Failure")
+                        try:
+                            if attack.test():
+                                self.logger.info("[*] Success")
+                            else:
+                                self.logger.error("[!] Failure")
+                        except NotImplementedError:
+                            self.logger.warning("[!] Test not implemented")
+                    except Exception:
+                        self.logger.error("[!] Failure")
             exit(0)
 
         # Read keyfile

@@ -22,7 +22,6 @@ class Attack(AbstractAttack):
         s.set("timeout", timeout_amount * 1000)
         try:
             s_check_output = s.check()
-            print(s_check_output)
             res = s.model()
             return res[p], res[q]
         except:
@@ -64,3 +63,12 @@ class Attack(AbstractAttack):
                 return (None, None)
 
         return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MBowDQYJKoZIhvcNAQEBBQADCQAwBgIBDwIBAw==
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)

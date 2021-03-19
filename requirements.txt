@@ -8,3 +8,4 @@ gmpy2==2.1.0b5
 pycryptodome==3.9.7
 tqdm
 z3-solver
+pycrypto

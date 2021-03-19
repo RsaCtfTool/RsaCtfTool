@@ -46,20 +46,11 @@ class SiqsAttack(object):
         except:
             yafutest = b""
 
-        if b"48670331" in yafutest:
-            # yafu is working
-            self.logger.info("[*] Yafu SIQS is working.")
-            return True
-        else:
-            self.logger.error("[!] Yafu SIQS is not working.")
-            return False
+        return b"48670331" in yafutest
 
     def checkyafu(self):
         # check if yafu exists and we can execute it
-        if os.path.isfile(self.yafubin) and os.access(self.yafubin, os.X_OK):
-            return True
-        else:
-            return False
+        return os.path.isfile(self.yafubin) and os.access(self.yafubin, os.X_OK)
 
     def benchmarksiqs(self):
         # NYI
@@ -108,6 +99,26 @@ class Attack(AbstractAttack):
     def __init__(self, attack_rsa_obj, timeout=60):
         super().__init__(attack_rsa_obj, timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
+
+    def can_run(self):
+        yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
+
+        if not os.path.isfile(yafubin) and os.access(yafubin, os.X_OK):
+            return False
+
+        try:
+            yafutest = subprocess.check_output(
+                [yafubin, "siqs(1549388302999519)"],
+                timeout=self.timeout,
+                stderr=subprocess.DEVNULL,
+            )
+        except:
+            yafutest = b""
+
+        if not b"48670331" in yafutest:
+            return False
+
+        return True
 
     def attack(self, publickey, cipher=[]):
         """Try to factorize using yafu"""

@@ -28,21 +28,16 @@ class Attack(AbstractAttack):
                     solutionsFound.append([int(b), a])
             a += 1
         if len(solutionsFound) < 2:
-            print(str(n) + "is of the form 4k+3")
             return -1
-        print("SolutionsFound:" + str(solutionsFound))
         a = solutionsFound[0][0]
         b = solutionsFound[0][1]
         c = solutionsFound[1][0]
         d = solutionsFound[1][1]
-        print("aˆ2+bˆ2:" + str(a ** 2 + b ** 2) + "=cˆ2+dˆ2:" + str(c ** 2 + d ** 2))
         k = gcd(a - c, d - b)
         h = gcd(a + c, d + b)
         m = gcd(a + c, d - b)
         l = gcd(a - c, d + b)
         n = (k ** 2 + h ** 2) * (l ** 2 + m ** 2)
-        print(n / 4)
-        print(k, h, m, l)
         return [int(k ** 2 + h ** 2) // 2, int(l ** 2 + m ** 2) // 2]
 
     def attack(self, publickey, cipher=[]):
@@ -58,7 +53,6 @@ class Attack(AbstractAttack):
                 try:
                     euler_res = self.euler(publickey.n)
                 except:
-                    print("Euler: Internal Error")
                     return (None, None)
                 if euler_res and len(euler_res) > 1:
                     publickey.p, publickey.q = euler_res
@@ -75,3 +69,14 @@ class Attack(AbstractAttack):
                 return (None, None)
 
         return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MGYwDQYJKoZIhvcNAQEBBQADVQAwUgJLAi7v97hPb80NkMELBLYGAGEeDOdFAiW6
+5wq4OGN1P6nmUmg5iFRQA6YWU8x1WdQMmVs6KxIUS89W0InUN3JVQ9SzLE32nKXc
+t6rrAgMBAAE=
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)

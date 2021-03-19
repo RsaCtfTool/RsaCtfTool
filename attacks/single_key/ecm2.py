@@ -51,3 +51,19 @@ class Attack(AbstractAttack):
         except KeyboardInterrupt:
             pass
         return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MIGtMA0GCSqGSIb3DQEBAQUAA4GbADCBlwKBjw+vePt+ocGhwLTa5ONmKUvyhdAX
+fU99ZyaGskpxn2DAkPett8hD/3eySSPMgd/y9oXYYsIm/0x5hfs7wLLh/Av5Qx7x
+Or5ejGechok7VVoUbw6KTBB1fWy1lC39jFyTa4oZAGCQLf9nJRMYbDGzzrWnDm7K
+ynOXWY/6keaIBeg2Xh7VkK5VOl33WjCkSARfAgMBAAE=
+-----END PUBLIC KEY-----"""
+        cipher = 7102577393434866594929140550804968099111271800384955683330956013020579564684516163830573468073604865935034522944441894535695787080676107364035121171758895218132464499398807752144702697548021940878072503062685829101838944413876346837812265739970980202827485238414586892442822429233004808821082551675699702413952211939387589361654209039260795229
+        result = self.attack(
+            PublicKey(key_data),
+            [cipher.to_bytes((cipher.bit_length() + 7) // 8, "big")],
+        )
+        return result != (None, None)

@@ -247,7 +247,6 @@ class Attack(AbstractAttack):
                 try:
                     poll_res = self.pollard_P_1(publickey.n)
                 except RecursionError:
-                    print("RecursionError")
                     return (None, None)
                 if poll_res and len(poll_res) > 1:
                     publickey.p, publickey.q = poll_res
@@ -263,3 +262,12 @@ class Attack(AbstractAttack):
             except TimeoutError:
                 return (None, None)
         return (None, None)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MBswDQYJKoZIhvcNAQEBBQADCgAwBwICCg0CAQM=
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data))
+        return result != (None, None)
