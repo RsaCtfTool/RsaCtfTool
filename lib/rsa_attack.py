@@ -113,7 +113,7 @@ class RSAAttack(object):
                     )
                 except ModuleNotFoundError:
                     pass
-        self.implemented_attacks.sort(key=lambda x: x.speed)
+        self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 
     def attack_multiple_keys(self, publickeys, attacks_list):
         """Run attacks on multiple keys"""

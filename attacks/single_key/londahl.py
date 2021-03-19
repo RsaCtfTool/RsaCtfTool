@@ -11,7 +11,7 @@ from lib.utils import timeout, TimeoutError
 class Attack(AbstractAttack):
     def __init__(self, attack_rsa_obj, timeout=60):
         super().__init__(attack_rsa_obj, timeout)
-        self.speed = AbstractAttack.speed_enum["medium"]
+        self.speed = AbstractAttack.speed_enum["slow"]
 
     def close_factor(self, n, b):
         # approximate phi
