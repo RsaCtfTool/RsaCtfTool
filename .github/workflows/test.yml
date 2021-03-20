@@ -9,7 +9,7 @@ jobs:
 
     strategy:
       matrix:
-        python-version: [ "3.6" ] # 3.9
+        python-version: [ "3.6", "3.7", "3.8", "3.9" ]
 
     steps:
     - uses: actions/checkout@v2
@@ -20,14 +20,14 @@ jobs:
         architecture: x64
     - name: Update package lists of apt
       run: |
-        apt update
-        apt upgrade -y
+        sudo apt update
+        sudo apt upgrade -y
     - name: Install GNU GMP3
       run: |
-        apt install -y libgmp3-dev
+        sudo apt install -y libgmp3-dev
     - name: Install GNU MPC
       run: |
-        apt install -y libmpc-dev
+        sudo apt install -y libmpc-dev
     - name: Install python dependencies
       run: |
         pip install wheel
