@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from z3 import Solver, Int
+from z3 import Solver, Int ,set_param
 from attacks.abstract_attack import AbstractAttack
 from gmpy2 import isqrt
 from lib.utils import timeout, TimeoutError
 from lib.keys_wrapper import PrivateKey
-
+set_param('parallel.enable', True)
 
 class Attack(AbstractAttack):
     def __init__(self, attack_rsa_obj, timeout=60):
@@ -14,12 +14,14 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
 
     def z3_solve(self, n, timeout_amount):
+        s = Solver()
+        s.set("timeout", timeout_amount * 1000)
         p = Int("x")
         q = Int("y")
-        s = Solver()
         i = int(isqrt(n))
-        s.add(p * q == n, p > 1, q > i, q > p)
-        s.set("timeout", timeout_amount * 1000)
+        if i**2 == n: # check if we are dealing with a perfect square otherwise try to SMT.
+            return i,i
+        s.add(p * q == n, p > 1, q > i, q > p) # In every composite n=pq,there exists a p>sqrt(n) and q<sqrt(n).
         try:
             s_check_output = s.check()
             res = s.model()
