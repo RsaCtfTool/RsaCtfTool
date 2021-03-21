@@ -209,13 +209,26 @@ if __name__ == "__main__":
         and args.e is not None
         and args.n is not None
     ):
-        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+        try:
+            pub_key, priv_key = generate_keys_from_p_q_e_n(
+                args.p, args.q, args.e, args.n
+            )
+        except ValueError:
+            logger.error(
+                "Looks like the values for generating key are not ok... (no invmod)"
+            )
+            exit(1)
 
         if args.createpub:
             print(pub_key)
 
         if args.uncipher is not None:
             for u in args.uncipher:
+                if priv_key is None:
+                    pub_key, priv_key = generate_keys_from_p_q_e_n(
+                        args.p, args.q, args.e, args.n
+                    )
+
                 unciphers.append(priv_key.decrypt(args.uncipher))
 
         print_results(args, args.publickey[0], priv_key, unciphers)
