@@ -224,13 +224,13 @@ if __name__ == "__main__":
 
         if args.uncipher is not None:
             for u in args.uncipher:
-                if priv_key is None:
-                    pub_key, priv_key = generate_keys_from_p_q_e_n(
-                        args.p, args.q, args.e, args.n
+                if priv_key is not None:
+                    unciphers.append(priv_key.decrypt(args.uncipher))
+                else:
+                    logger.error(
+                        "Looks like the values for generating key are not ok... (no invmod)"
                     )
-
-                unciphers.append(priv_key.decrypt(args.uncipher))
-
+                    exit(1)
         print_results(args, args.publickey[0], priv_key, unciphers)
         exit(0)
 
@@ -276,7 +276,15 @@ if __name__ == "__main__":
         with open(args.key, "rb") as key_fp:
             key_data = key_fp.read()
             key = RSA.importKey(key_data)
-            pub_key, priv_key = generate_keys_from_p_q_e_n(key.p, key.q, key.e, key.n)
+            try:
+                pub_key, priv_key = generate_keys_from_p_q_e_n(
+                    args.p, args.q, args.e, args.n
+                )
+            except ValueError:
+                logger.error(
+                    "Looks like the values for generating key are not ok... (no invmod)"
+                )
+                exit(1)
             if priv_key.is_conspicuous() == True:
                 exit(-1)
             else:
