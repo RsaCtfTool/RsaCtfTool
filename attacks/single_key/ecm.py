@@ -21,7 +21,7 @@ class Attack(AbstractAttack):
 
         try:
             try:
-                if ecmdigits:
+                if self.ecmdigits is not None:
                     sageresult = int(
                         subprocess.check_output(
                             [
