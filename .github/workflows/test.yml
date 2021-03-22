@@ -34,5 +34,4 @@ jobs:
         pip install -r "requirements.txt"
     - name: Run tests
       run: |
-        chmod +x ./test.sh
-        ./test.sh
+        ./RsaCtfTool.py --tests
