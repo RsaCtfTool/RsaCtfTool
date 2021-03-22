@@ -172,6 +172,9 @@ class RSAAttack(object):
                         else:
                             self.unciphered.append(unciphered)
                     if self.can_stop_tests():
+                        self.logger.info(
+                            f"[*] Attack success with {attack_module.get_name()} method !"
+                        )
                         break
                 except FactorizationError:
                     self.logger.warning("Timeout")
