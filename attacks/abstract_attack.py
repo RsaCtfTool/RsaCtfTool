@@ -10,12 +10,11 @@ from lib.utils import sageworks
 class AbstractAttack(object):
     speed_enum = {"slow": 0, "medium": 1, "fast": 2}
 
-    def __init__(self, attack_rsa_obj, timeout=60):
+    def __init__(self, timeout=60):
         self.logger = logging.getLogger("global_logger")
         self.speed = AbstractAttack.speed_enum["medium"]
         self.sage_required = False
         self.timeout = timeout
-        self.attack_rsa_obj = attack_rsa_obj
 
     def get_name(self):
         """Return attack name"""

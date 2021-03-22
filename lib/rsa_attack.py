@@ -8,6 +8,7 @@ from lib.exceptions import FactorizationError
 from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
+import inspect
 
 
 class RSAAttack(object):
@@ -108,8 +109,26 @@ class RSAAttack(object):
                             "attacks.single_key.%s" % attack
                         )
 
+                    # Dynamically add named-arguments to constructor if same sys.argv exists
+                    expected_args = list(
+                        inspect.getfullargspec(attack_module.Attack.__init__).args
+                    )
+                    expected_args.remove("self")
+
+                    constructor_args = {}
+                    for arg in vars(self.args):
+                        key = arg
+                        value = getattr(self.args, arg)
+                        if key in expected_args:
+                            constructor_args[key] = value
+
+                    # Retrocompatibility
+                    if "attack_rsa_obj" in expected_args:
+                        constructor_args["attack_rsa_obj"] = self
+
+                    # Add attack instance to attack list
                     self.implemented_attacks.append(
-                        attack_module.Attack(self, self.args.timeout)
+                        attack_module.Attack(**constructor_args)
                     )
                 except ModuleNotFoundError:
                     pass

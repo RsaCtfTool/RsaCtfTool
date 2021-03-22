@@ -76,7 +76,7 @@ if __name__ == "__main__":
         "--ecmdigits",
         type=int,
         help="Optionally an estimate as to how long one of the primes is for ECM method",
-        default=None,
+        default=25,
     )
     parser.add_argument("-n", help="Specify the modulus. format : int or 0xhex")
     parser.add_argument(

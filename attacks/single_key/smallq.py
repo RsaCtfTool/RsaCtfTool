@@ -7,8 +7,8 @@ from lib.utils import timeout, TimeoutError
 
 
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
-        super().__init__(attack_rsa_obj, timeout)
+    def __init__(self, timeout=60):
+        super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
     def primes(self, n):

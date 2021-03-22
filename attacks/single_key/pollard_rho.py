@@ -9,8 +9,8 @@ from gmpy2 import is_prime, gcd
 
 
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
-        super().__init__(attack_rsa_obj, timeout)
+    def __init__(self, timeout=60):
+        super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
 
     def pollard_rho(self, n, seed=2, p=2, mode=1):

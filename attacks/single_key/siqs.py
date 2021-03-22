@@ -22,14 +22,13 @@ from lib.utils import timeout, TimeoutError
 
 
 class SiqsAttack(object):
-    def __init__(self, attack_rsa_obj, n):
+    def __init__(self, n):
         """Configuration"""
         self.logger = logging.getLogger("global_logger")
         self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
-        self.attack_rsa_obj = attack_rsa_obj
         self.n = n
         self.p = None
         self.q = None
@@ -64,11 +63,11 @@ class SiqsAttack(object):
                 self.yafubin,
                 "siqs(" + str(self.n) + ")",
                 "-siqsT",
-                str(self.attack_rsa_obj.args.maxtime),
+                str(self.maxtime),
                 "-threads",
-                str(self.attack_rsa_obj.args.threads),
+                str(self.threads),
             ],
-            timeout=self.attack_rsa_obj.args.timeout,
+            timeout=self.timeout,
             stderr=subprocess.DEVNULL,
         )
 
@@ -96,8 +95,8 @@ class SiqsAttack(object):
 
 
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
-        super().__init__(attack_rsa_obj, timeout)
+    def __init__(self, timeout=60):
+        super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
     def can_run(self):
@@ -130,7 +129,7 @@ class Attack(AbstractAttack):
                     )
                     return (None, None)
 
-                siqsobj = SiqsAttack(self.attack_rsa_obj, publickey.n)
+                siqsobj = SiqsAttack(publickey.n)
 
                 siqsobj.checkyafu()
                 siqsobj.testyafu()
