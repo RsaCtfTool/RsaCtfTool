@@ -8,9 +8,10 @@ from lib.utils import timeout, TimeoutError
 from lib.system_primes import load_system_consts
 from gmpy2 import gcd
 
+
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
-        super().__init__(attack_rsa_obj, timeout)
+    def __init__(self, timeout=60):
+        super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
     def attack(self, publickey, cipher=[]):

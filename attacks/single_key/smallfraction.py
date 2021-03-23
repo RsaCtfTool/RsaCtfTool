@@ -10,7 +10,7 @@ from lib.utils import rootpath
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
-        self.speed = AbstractAttack.speed_enum["medium"]
+        self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
 
     def attack(self, publickey, cipher=[]):
