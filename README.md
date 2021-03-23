@@ -45,6 +45,7 @@ Attacks :
 - Mersenne pm1 gcd
 - Fermat Numbers gcd
 - Fibonacci gcd
+- System primes gcd
 
 ## Usage
 
