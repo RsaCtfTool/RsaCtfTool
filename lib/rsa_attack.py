@@ -97,10 +97,8 @@ class RSAAttack(object):
         except ValueError:
             pass
 
-        specified_attack_list = self.args.attack.split(",")
-
         for attack in attacks_list:
-            if attack in specified_attack_list or "all" in specified_attack_list:
+            if attack in self.args.attack or "all" in self.args.attack:
                 try:
                     if multikeys:
                         attack_module = importlib.import_module(

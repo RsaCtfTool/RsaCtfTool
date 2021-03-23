@@ -97,7 +97,7 @@ if __name__ == "__main__":
     ]
     attacks_list = [_ for _ in attacks_filtered if _ != "nullattack"] + ["all"]
     parser.add_argument(
-        "--attack", help="Specify the attack mode.", default="all"
+        "--attack", help="Specify the attack modes.", default="all", nargs="*", choices=attacks_list
     )
     parser.add_argument(
         "--sendtofdb", help="Send results to factordb", action="store_true"
@@ -124,14 +124,6 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
-    
-    # Check if the --attack choices are valid.
-    for attack in args.attack.split(","):
-        if attack not in attacks_list:
-            logger.error(
-                f"--attack: invalid choice '{attack}' (choose from {str(attacks_list)[1:-1]})"
-            )
-            exit(0)
 
     # Add information
     if not args.private and not args.tests:
