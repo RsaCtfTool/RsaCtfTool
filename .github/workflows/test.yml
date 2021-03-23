@@ -1,0 +1,48 @@
+name: Test
+
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: test (${{ matrix.python.id }},${{ matrix.sage.id }})
+    runs-on: ubuntu-latest
+    continue-on-error: true
+
+    strategy:
+      matrix:
+        python:
+          - { id: "python3.6", version: "3.6" }
+          - { id: "python3.9", version: "3.9" }
+        sage:
+          - { id: "sage", install: true }
+          - { id: "no-sage", install: false }
+      fail-fast: false
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Setup python
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python.version }}
+        architecture: x64
+    - name: Update package lists of apt
+      run: |
+        sudo apt update
+        sudo apt upgrade -y
+    - name: Install GNU GMP3
+      run: |
+        sudo apt install -y libgmp3-dev
+    - name: Install GNU MPC
+      run: |
+        sudo apt install -y libmpc-dev
+    - name: Install SageMath
+      if: matrix.sage.install
+      run: |
+        sudo apt install sagemath
+    - name: Install python dependencies
+      run: |
+        pip install wheel
+        pip install -r "requirements.txt"
+    - name: Run tests
+      run: |
+        ./RsaCtfTool.py --tests
