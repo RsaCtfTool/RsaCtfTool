@@ -98,7 +98,7 @@ class RSAAttack(object):
             pass
 
         for attack in attacks_list:
-            if attack == self.args.attack or self.args.attack == "all":
+            if attack in self.args.attack or "all" in self.args.attack:
                 try:
                     if multikeys:
                         attack_module = importlib.import_module(

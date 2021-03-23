@@ -97,7 +97,7 @@ if __name__ == "__main__":
     ]
     attacks_list = [_ for _ in attacks_filtered if _ != "nullattack"] + ["all"]
     parser.add_argument(
-        "--attack", help="Specify the attack mode.", default="all", choices=attacks_list
+        "--attack", help="Specify the attack modes.", default="all", nargs="+", choices=attacks_list
     )
     parser.add_argument(
         "--sendtofdb", help="Send results to factordb", action="store_true"
