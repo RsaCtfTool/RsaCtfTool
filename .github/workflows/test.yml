@@ -6,6 +6,7 @@ jobs:
   test:
     name: test (${{ matrix.python.id }},${{ matrix.sage.id }})
     runs-on: ubuntu-latest
+    continue-on-error: true
 
     strategy:
       matrix:
@@ -15,6 +16,7 @@ jobs:
         sage:
           - { id: "sage", install: true }
           - { id: "no-sage", install: false }
+      fail-fast: false
 
     steps:
     - uses: actions/checkout@v2
