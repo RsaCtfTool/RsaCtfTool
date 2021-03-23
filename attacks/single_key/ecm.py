@@ -8,10 +8,11 @@ from lib.utils import rootpath
 
 
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
-        super().__init__(attack_rsa_obj, timeout)
+    def __init__(self, timeout=60, ecmdigits=25):
+        super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
+        self.ecmdigits = ecmdigits
 
     def attack(self, publickey, cipher=[]):
         """use elliptic curve method, may return a prime or may never return
@@ -20,15 +21,14 @@ class Attack(AbstractAttack):
 
         try:
             try:
-                ecmdigits = self.attack_rsa_obj.args.ecmdigits
-                if ecmdigits:
+                if self.ecmdigits is not None:
                     sageresult = int(
                         subprocess.check_output(
                             [
                                 "sage",
                                 "%s/sage/ecm.sage" % rootpath,
                                 str(publickey.n),
-                                str(ecmdigits),
+                                str(self.ecmdigits),
                             ],
                             timeout=self.timeout,
                             stderr=subprocess.DEVNULL,
@@ -72,7 +72,6 @@ ZheJybt5Ew4jKnUjKcfLY8rs8nGCbVdYyKUdq3WQSKCsYy2StxBSZn4qgxoA7G5n
 DGWWBFisWHeLM+lUr3jfnOTbnAZt3utu8plSMbv2irXohbDRxN/6NgzoQMVcmhIQ
 bD3qa8mMScpXZXD2qwIDAQAB
 -----END PUBLIC KEY-----"""
-        self.attack_rsa_obj.args.ecmdigits = 25
         self.timeout = 180
         result = self.attack(PublicKey(key_data))
         return result != (None, None)

@@ -8,6 +8,7 @@ from lib.exceptions import FactorizationError
 from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
+import inspect
 
 
 class RSAAttack(object):
@@ -97,7 +98,7 @@ class RSAAttack(object):
             pass
 
         for attack in attacks_list:
-            if attack == self.args.attack or self.args.attack == "all":
+            if attack in self.args.attack or "all" in self.args.attack:
                 try:
                     if multikeys:
                         attack_module = importlib.import_module(
@@ -108,8 +109,26 @@ class RSAAttack(object):
                             "attacks.single_key.%s" % attack
                         )
 
+                    # Dynamically add named-arguments to constructor if same sys.argv exists
+                    expected_args = list(
+                        inspect.getfullargspec(attack_module.Attack.__init__).args
+                    )
+                    expected_args.remove("self")
+
+                    constructor_args = {}
+                    for arg in vars(self.args):
+                        key = arg
+                        value = getattr(self.args, arg)
+                        if key in expected_args:
+                            constructor_args[key] = value
+
+                    # Retrocompatibility
+                    if "attack_rsa_obj" in expected_args:
+                        constructor_args["attack_rsa_obj"] = self
+
+                    # Add attack instance to attack list
                     self.implemented_attacks.append(
-                        attack_module.Attack(self, self.args.timeout)
+                        attack_module.Attack(**constructor_args)
                     )
                 except ModuleNotFoundError:
                     pass
@@ -153,6 +172,9 @@ class RSAAttack(object):
                         else:
                             self.unciphered.append(unciphered)
                     if self.can_stop_tests():
+                        self.logger.info(
+                            f"[*] Attack success with {attack_module.get_name()} method !"
+                        )
                         break
                 except FactorizationError:
                     self.logger.warning("Timeout")
@@ -216,6 +238,9 @@ class RSAAttack(object):
                     else:
                         self.unciphered.append(unciphered)
                 if self.can_stop_tests():
+                    self.logger.info(
+                        f"[*] Attack success with {attack_module.get_name()} method !"
+                    )
                     break
             except FactorizationError:
                 self.logger.warning("Timeout")
