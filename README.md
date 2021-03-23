@@ -55,7 +55,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,z3_solver,primorial_pm1_gcd,mersenne_pm1_gcd,fermat_numbers_gcd,fibonacci_gcd,commonfactors,hastads,same_n_huge_e,all]
+                     [--attack {smallfraction,wiener,pastctfprimes,wolframalpha,factordb,fermat,ecm,primorial_pm1_gcd,binary_polinomial_factoring,fibonacci_gcd,londahl,smallq,mersenne_pm1_gcd,noveltyprimes,roca,pollard_p_1,boneh_durfee,ecm2,pollard_rho,z3_solver,cube_root,mersenne_primes,cm_factor,comfact_cn,fermat_numbers_gcd,qicheng,partial_q,siqs,euler,commonfactors,hastads,same_n_huge_e,all} [{smallfraction,wiener,pastctfprimes,wolframalpha,factordb,fermat,ecm,primorial_pm1_gcd,binary_polinomial_factoring,fibonacci_gcd,londahl,smallq,mersenne_pm1_gcd,noveltyprimes,roca,pollard_p_1,boneh_durfee,ecm2,pollard_rho,z3_solver,cube_root,mersenne_primes,cm_factor,comfact_cn,fermat_numbers_gcd,qicheng,partial_q,siqs,euler,commonfactors,hastads,same_n_huge_e,all} ...]]
 ```
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
