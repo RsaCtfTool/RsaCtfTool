@@ -1,22 +1,27 @@
-name: Test for RsaCtfTool
+name: Test
 
 on: [push, pull_request]
 
 jobs:
   test:
-    name: Test for RsaCtfTool
+    name: test (${{ matrix.python.id }},${{ matrix.sage.id }})
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version: [ "3.6", "3.7", "3.8", "3.9" ]
+        python:
+          - { id: "python3.6", version: 3.6" }
+          - { id: "python3.9", version: 3.9" }
+        sage:
+          - { id: "sage", install: true }
+          - { id: "no-sage", install: false }
 
     steps:
     - uses: actions/checkout@v2
     - name: Setup python
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.python.version }}
         architecture: x64
     - name: Update package lists of apt
       run: |
@@ -28,6 +33,10 @@ jobs:
     - name: Install GNU MPC
       run: |
         sudo apt install -y libmpc-dev
+    - name: Install SageMath
+      if: matrix.sage.install
+      run: |
+        sudo apt install sagemath
     - name: Install python dependencies
       run: |
         pip install wheel
