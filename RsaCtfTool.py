@@ -124,6 +124,14 @@ if __name__ == "__main__":
     if len(sys.argv) == 1:
         parser.print_help()
         sys.exit(1)
+    
+    # Check if the --attack choices are valid.
+    for attack in args.attack.split(","):
+        if attack not in attacks_list:
+            logger.error(
+                f"--attack: invalid choice '{attack}' (choose from {str(attacks_list)[1:-1]})"
+            )
+            exit(0)
 
     # Add information
     if not args.private and not args.tests:
