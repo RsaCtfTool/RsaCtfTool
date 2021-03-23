@@ -10,8 +10,8 @@ jobs:
     strategy:
       matrix:
         python:
-          - { id: "python3.6", version: 3.6" }
-          - { id: "python3.9", version: 3.9" }
+          - { id: "python3.6", version: "3.6" }
+          - { id: "python3.9", version: "3.9" }
         sage:
           - { id: "sage", install: true }
           - { id: "no-sage", install: false }
