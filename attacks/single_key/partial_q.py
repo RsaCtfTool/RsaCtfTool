@@ -72,12 +72,12 @@ class Attack(AbstractAttack):
         """
         N = 100000
 
-        for j in tqdm(range(N, 1, -1), disable=progress):
+        for j in tqdm(range(N, 1, -1), disable=(not progress)):
             q = (e * dq - 1) / j + 1
             if str(hex(q)).strip("L").endswith(part_q):
                 break
 
-        for k in tqdm(range(1, N, 1), disable=progress):
+        for k in tqdm(range(1, N, 1), disable=(not progress)):
             p = (e * dp - 1) / k + 1
             try:
                 m = invmod(q, p)

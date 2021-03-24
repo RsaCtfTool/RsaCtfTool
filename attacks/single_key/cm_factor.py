@@ -18,7 +18,7 @@ class Attack(AbstractAttack):
         """cm_factor attack"""
         D_candidates = [3, 11, 19, 43, 67, 163]
         sageresult = 0
-        for D_candidate in tqdm(D_candidates, disable=progress):
+        for D_candidate in tqdm(D_candidates, disable=(not progress)):
             try:
                 sageresult = subprocess.check_output(
                     [

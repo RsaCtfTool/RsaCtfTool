@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 p = q = None
-                for i in tqdm(range(2, int(log2(publickey.n))), disable=progress):
+                for i in tqdm(range(2, int(log2(publickey.n))), disable=(not progress)):
                     i2 = 2 ** i
                     mersenne = [i2 - 1, i2 + 1]
                     g0, g1 = gcd(mersenne[0], publickey.n), gcd(

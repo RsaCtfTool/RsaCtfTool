@@ -218,7 +218,7 @@ class Attack(AbstractAttack):
                 z.append(prime[j])
 
         try:
-            for pp in tqdm(prime, disable=progress):
+            for pp in tqdm(prime, disable=(not progress)):
                 i = 0
                 x = pp
                 while 1:

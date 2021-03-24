@@ -24,7 +24,7 @@ class WienerAttack(object):
     def convergents_from_contfrac(self, frac, progress=True):
         """Convergents_from_contfrac implementation"""
         convs = []
-        for i in tqdm(range(len(frac)), disable=progress):
+        for i in tqdm(range(len(frac)), disable=(not progress)):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
@@ -75,7 +75,7 @@ class WienerAttack(object):
         frac = self.rational_to_contfrac(e, n)
         convergents = self.convergents_from_contfrac(frac, progress)
 
-        for (k, d) in tqdm(convergents, disable=progress):
+        for (k, d) in tqdm(convergents, disable=(not progress)):
             if k != 0 and (e * d - 1) % k == 0:
                 phi = (e * d - 1) // k
                 s = n - phi + 1

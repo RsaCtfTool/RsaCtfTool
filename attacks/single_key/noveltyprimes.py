@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 maxlen = 25  # max number of digits in the final integer
-                for i in tqdm(range(maxlen - 4), disable=progress):
+                for i in tqdm(range(maxlen - 4), disable=(not progress)):
                     prime = int("3133" + ("3" * i) + "7")
                     if publickey.n % prime == 0:
                         publickey.p = prime

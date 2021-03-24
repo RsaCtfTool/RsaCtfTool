@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 primes = load_system_consts()
-                for prp in tqdm(primes, disable=progress):
+                for prp in tqdm(primes, disable=(not progress)):
                     g = gcd(publickey.n, prp)
                     if publickey.n > g > 1:
                         publickey.q = g

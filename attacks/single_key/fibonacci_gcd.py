@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
             try:
                 limit = 10000
                 p = q = None
-                for x in tqdm(range(1, limit), disable=progress):
+                for x in tqdm(range(1, limit), disable=(not progress)):
                     f = gcd(fib(x), publickey.n)
                     if 1 < f < publickey.n:
                         p = publickey.n // f

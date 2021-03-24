@@ -70,7 +70,7 @@ class Attack(AbstractAttack):
                     77232917,
                     82589933,
                 ]
-                for mersenne_prime in tqdm(mersenne_tab, disable=progress):
+                for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
                     if publickey.n % ((2 ** mersenne_prime) - 1) == 0:
                         p = (2 ** mersenne_prime) - 1
                         q = publickey.n // ((2 ** mersenne_prime) - 1)

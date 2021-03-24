@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
         # create a look-up table
         look_up = {}
         z = 1
-        for i in tqdm(range(0, b + 1), disable=progress):
+        for i in tqdm(range(0, b + 1), disable=(not progress)):
             look_up[z] = i
             z = (z * 2) % n
 
@@ -28,7 +28,7 @@ class Attack(AbstractAttack):
         mu = invmod(pow(2, phi_approx, n), n)
         fac = pow(2, b, n)
 
-        for i in tqdm(range(0, b + 1), disable=progress):
+        for i in tqdm(range(0, b + 1), disable=(not progress)):
             if mu in look_up:
                 phi = phi_approx + (look_up[mu] - i * b)
                 break
