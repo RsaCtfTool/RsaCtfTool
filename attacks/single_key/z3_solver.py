@@ -72,5 +72,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MBowDQYJKoZIhvcNAQEBBQADCQAwBgIBDwIBAw==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

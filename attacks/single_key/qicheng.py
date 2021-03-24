@@ -44,5 +44,5 @@ zSdsZXTLCf5XvPV9BUkg9FCkBjvl0YBUZ1toQCUqlI6v0tGrEGllpUF3Nq67Htd1
 YYO3FuEbderGwu9dAgMBAAE=
 -----END PUBLIC KEY-----"""
         self.timeout = 120
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

@@ -75,5 +75,5 @@ DogSs0Vjse3lbJsTiM08dwxyP+TtsMIp6AXqClWsjx2RItxGtAmUuyQgE+HG/VaO
 +f/EZcSnDcUwLs8XRpDwHVH/kx780H2NTk3LOM5RARWzLmr0HleZSU2IyWLHB9+n
 YNyR4N29HHEfixQFgwHapccCAwEAAQ==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
