@@ -33,7 +33,7 @@ class Attack(AbstractAttack):
             d = gcd((x - y) % n, n)
         return None if d == n else d
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Pollard Rho"""
         if not hasattr(publickey, "p"):
             publickey.p = None

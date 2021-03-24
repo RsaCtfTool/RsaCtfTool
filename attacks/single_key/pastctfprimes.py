@@ -12,7 +12,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Search for previously used primes in CTFs"""
         with timeout(self.timeout):
             try:
@@ -139,7 +139,7 @@ class Attack(AbstractAttack):
                     11232077261967644077277312997808249915855709514498625183789998098688209996914964867050110603375257386497746294969159136128904120786273278056895662599793297,
                 ]
                 primes = sorted(set(primes_pastctf + primes_rsa_numbers_challenge))
-                for prime in tqdm(primes):
+                for prime in tqdm(primes, disable=progress):
                     if publickey.n % prime == 0:
                         publickey.q = prime
                         publickey.p = publickey.n // publickey.q

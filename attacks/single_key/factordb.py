@@ -32,7 +32,7 @@ class Attack(AbstractAttack):
             )
             raise FactorizationError()
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
         with timeout(self.timeout):
             try:

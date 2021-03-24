@@ -119,7 +119,7 @@ class Attack(AbstractAttack):
 
         return True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Try to factorize using yafu"""
         with timeout(self.timeout):
             try:

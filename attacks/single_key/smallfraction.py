@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
         only works if the sageworks() function returned True
         """

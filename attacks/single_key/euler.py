@@ -40,7 +40,7 @@ class Attack(AbstractAttack):
         n = (k ** 2 + h ** 2) * (l ** 2 + m ** 2)
         return [int(k ** 2 + h ** 2) // 2, int(l ** 2 + m ** 2) // 2]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
         if not hasattr(publickey, "p"):
             publickey.p = None

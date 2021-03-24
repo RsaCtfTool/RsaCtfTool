@@ -12,14 +12,14 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """ "primes" of the form 31337 - 313333337 - see ekoparty 2015 "rsa 2070"
         not all numbers in this form are prime but some are (25 digit is prime)
         """
         with timeout(self.timeout):
             try:
                 maxlen = 25  # max number of digits in the final integer
-                for i in tqdm(range(maxlen - 4)):
+                for i in tqdm(range(maxlen - 4), disable=progress):
                     prime = int("3133" + ("3" * i) + "7")
                     if publickey.n % prime == 0:
                         publickey.p = prime

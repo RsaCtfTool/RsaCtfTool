@@ -31,7 +31,7 @@ class AbstractAttack(object):
                 return False
         return True
 
-    def attack(self, publickeys, cipher=[]):
+    def attack(self, publickeys, cipher=[], progress=True):
         """Attack implementation"""
         raise NotImplementedError
 

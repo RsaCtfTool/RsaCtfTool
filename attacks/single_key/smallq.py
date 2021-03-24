@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
                 sieve[i * i :: 2 * i] = [False] * ((n - i * i - 1) // (2 * i) + 1)
         return [2] + [i for i in range(3, n, 2) if sieve[i]]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where q < 100,000, from BKPCTF2016 - sourcekris"""
         with timeout(self.timeout):
             try:

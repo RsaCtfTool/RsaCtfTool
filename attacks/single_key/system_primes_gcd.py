@@ -14,12 +14,12 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """System primes in crypto constants"""
         with timeout(self.timeout):
             try:
                 primes = load_system_consts()
-                for prp in tqdm(primes):
+                for prp in tqdm(primes, disable=progress):
                     g = gcd(publickey.n, prp)
                     if publickey.n > g > 1:
                         publickey.q = g

@@ -66,18 +66,18 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def partial_q(self, e, dp, dq, qi, part_q):
+    def partial_q(self, e, dp, dq, qi, part_q, progress=True):
         """Search for partial q.
         Tunable to search longer.
         """
         N = 100000
 
-        for j in tqdm(range(N, 1, -1)):
+        for j in tqdm(range(N, 1, -1), disable=progress):
             q = (e * dq - 1) / j + 1
             if str(hex(q)).strip("L").endswith(part_q):
                 break
 
-        for k in tqdm(range(1, N, 1)):
+        for k in tqdm(range(1, N, 1), disable=progress):
             p = (e * dp - 1) / k + 1
             try:
                 m = invmod(q, p)
@@ -89,7 +89,7 @@ class Attack(AbstractAttack):
         print("p = " + str(p))
         print("q = " + str(q))
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Partial q in private key.
         Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
         But it's here if you need :)

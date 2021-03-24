@@ -21,10 +21,10 @@ class WienerAttack(object):
             pquotients.insert(0, a)
             return pquotients
 
-    def convergents_from_contfrac(self, frac):
+    def convergents_from_contfrac(self, frac, progress=True):
         """Convergents_from_contfrac implementation"""
         convs = []
-        for i in tqdm(range(len(frac))):
+        for i in tqdm(range(len(frac)), disable=progress):
             convs.append(self.contfrac_to_rational(frac[0:i]))
         return convs
 
@@ -66,16 +66,16 @@ class WienerAttack(object):
                 return x
             x = y
 
-    def __init__(self, n, e):
+    def __init__(self, n, e, progress=True):
         """Constructor"""
         self.d = None
         self.p = None
         self.q = None
         sys.setrecursionlimit(100000)
         frac = self.rational_to_contfrac(e, n)
-        convergents = self.convergents_from_contfrac(frac)
+        convergents = self.convergents_from_contfrac(frac, progress)
 
-        for (k, d) in tqdm(convergents):
+        for (k, d) in tqdm(convergents, disable=progress):
             if k != 0 and (e * d - 1) % k == 0:
                 phi = (e * d - 1) // k
                 s = n - phi + 1
@@ -97,11 +97,11 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Wiener's attack"""
         with timeout(self.timeout):
             try:
-                wiener = WienerAttack(publickey.n, publickey.e)
+                wiener = WienerAttack(publickey.n, publickey.e, progress)
                 if wiener.p is not None and wiener.q is not None:
                     publickey.p = wiener.p
                     publickey.q = wiener.q

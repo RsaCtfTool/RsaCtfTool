@@ -38,7 +38,7 @@ class Attack(AbstractAttack):
         assert n == p * q
         return p, q
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run fermat attack with a timeout"""
         try:
             with timeout(seconds=self.timeout):

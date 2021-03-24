@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         self.attack_rsa_obj = attack_rsa_obj
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Same n huge e attack"""
         if not isinstance(publickey, list):
             return (None, None)

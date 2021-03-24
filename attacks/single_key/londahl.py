@@ -13,14 +13,14 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
 
-    def close_factor(self, n, b):
+    def close_factor(self, n, b, progress=True):
         # approximate phi
         phi_approx = n - 2 * isqrt(n) + 1
 
         # create a look-up table
         look_up = {}
         z = 1
-        for i in tqdm(range(0, b + 1)):
+        for i in tqdm(range(0, b + 1), disable=progress):
             look_up[z] = i
             z = (z * 2) % n
 
@@ -28,7 +28,7 @@ class Attack(AbstractAttack):
         mu = invmod(pow(2, phi_approx, n), n)
         fac = pow(2, b, n)
 
-        for i in tqdm(range(0, b + 1)):
+        for i in tqdm(range(0, b + 1), disable=progress):
             if mu in look_up:
                 phi = phi_approx + (look_up[mu] - i * b)
                 break
@@ -42,14 +42,14 @@ class Attack(AbstractAttack):
         if roots[0] * roots[1] == n:
             return roots
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Do nothing, used for multi-key attacks that succeeded so we just print the
         private key without spending any time factoring
         """
         londahl_b = 20000000
         with timeout(self.timeout):
             try:
-                factors = self.close_factor(publickey.n, londahl_b)
+                factors = self.close_factor(publickey.n, londahl_b, progress)
 
                 if factors is not None:
                     p, q = factors

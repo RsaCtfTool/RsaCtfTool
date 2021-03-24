@@ -10,7 +10,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Try to uncipher c if m < n/e and small e"""
         with timeout(self.timeout):
             try:

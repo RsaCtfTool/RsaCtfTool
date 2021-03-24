@@ -14,7 +14,7 @@ class Attack(AbstractAttack):
         self.sage_required = True
         self.ecmdigits = ecmdigits
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """use elliptic curve method, may return a prime or may never return
         only works if the sageworks() function returned True
         """
