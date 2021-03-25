@@ -29,7 +29,7 @@ class Attack(AbstractAttack):
         except:
             return None, None
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
 
         if not hasattr(publickey, "p"):
             publickey.p = None
@@ -72,5 +72,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MBowDQYJKoZIhvcNAQEBBQADCQAwBgIBDwIBAw==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

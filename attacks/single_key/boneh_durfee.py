@@ -14,7 +14,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
         self.sage_required = True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Use boneh durfee method, should return a d value, else returns 0
         only works if the sageworks() function returned True
         many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
@@ -77,5 +77,5 @@ Aqk1HXHWiF2tXr7lxpkQyRi15tyiig9CmCgPG4e1Pk95FRd6CR8i8s1q3DmtdqHb
 FccBoenVqO5rZ5YwVEuhG+ofy1sEPNXO3ZPOO51DJgQO3mxmnceqLgF/Ktpzxyg+
 sSSqyHKL
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

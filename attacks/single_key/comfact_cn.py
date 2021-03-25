@@ -28,7 +28,7 @@ class Attack(AbstractAttack):
                 return (priv_key, None)
         return (None, None)
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where the public key has a common factor with the ciphertext - sourcekris"""
         if cipher is not None:
             try:

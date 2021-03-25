@@ -13,13 +13,13 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run tests against fermat composites"""
         with timeout(self.timeout):
             try:
                 limit = 10000
                 p = q = None
-                for x in tqdm(range(1, limit)):
+                for x in tqdm(range(1, limit), disable=(not progress)):
                     f = (2 ** 2 ** x) + 1
                     fermat = gcd(f, publickey.n)
                     if 1 < fermat < publickey.n:
@@ -42,5 +42,5 @@ class Attack(AbstractAttack):
 MF4wDQYJKoZIhvcNAQEBBQADTQAwSgJDTuJNJVnOa1qp8n91iIWs30F6xA+I/nkf
 MV7Ad/0M5seWOKImUngYig60DRfrXwXa7GWh8qmK0V5sR+ib27+bbZfwAQIDAQAB
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

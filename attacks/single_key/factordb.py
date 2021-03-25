@@ -32,7 +32,7 @@ class Attack(AbstractAttack):
             )
             raise FactorizationError()
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
         with timeout(self.timeout):
             try:
@@ -114,5 +114,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MC0wDQYJKoZIhvcNAQEBBQADHAAwGQISAwm6aZnGyIrl57QGF+4RdcjlAgMBAAE=
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

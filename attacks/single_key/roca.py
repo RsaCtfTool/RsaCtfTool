@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         try:
             sageresult = subprocess.check_output(
                 ["sage", "%s/sage/roca_attack.py" % rootpath, str(publickey.n)],
@@ -40,5 +40,5 @@ MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAar8f96eVg1jBUt7IlYJk89ksQxJSdIjC
 3e7baDh166JFr7lL6jrkD+9fsqgxFj9nPRYWCkKX/JcceVd5Y81YQwIDAQAB
 -----END PUBLIC KEY-----"""
         self.timeout = 120
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
         self.sage_required = True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """use elliptic curve method
         only works if the sageworks() function returned True
         """
@@ -65,5 +65,6 @@ ynOXWY/6keaIBeg2Xh7VkK5VOl33WjCkSARfAgMBAAE=
         result = self.attack(
             PublicKey(key_data),
             [cipher.to_bytes((cipher.bit_length() + 7) // 8, "big")],
+            progress=False
         )
         return result != (None, None)

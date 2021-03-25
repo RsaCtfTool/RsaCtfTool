@@ -47,7 +47,7 @@ class Attack(AbstractAttack):
             else:
                 self.logger.error("[!] Could not get factorization from wolfram alpha")
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
 
         try:

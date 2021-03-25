@@ -14,11 +14,11 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """cm_factor attack"""
         D_candidates = [3, 11, 19, 43, 67, 163]
         sageresult = 0
-        for D_candidate in tqdm(D_candidates):
+        for D_candidate in tqdm(D_candidates, disable=(not progress)):
             try:
                 sageresult = subprocess.check_output(
                     [
@@ -75,5 +75,5 @@ DogSs0Vjse3lbJsTiM08dwxyP+TtsMIp6AXqClWsjx2RItxGtAmUuyQgE+HG/VaO
 +f/EZcSnDcUwLs8XRpDwHVH/kx780H2NTk3LOM5RARWzLmr0HleZSU2IyWLHB9+n
 YNyR4N29HHEfixQFgwHapccCAwEAAQ==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

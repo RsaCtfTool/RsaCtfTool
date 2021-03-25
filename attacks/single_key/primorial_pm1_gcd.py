@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run tests against primorial +-1 composites"""
         with timeout(self.timeout):
             try:
@@ -21,7 +21,7 @@ class Attack(AbstractAttack):
                 prime = 1
                 primorial = 1
                 p = q = None
-                for x in tqdm(range(0, limit)):
+                for x in tqdm(range(0, limit), disable=(not progress)):
                     prime = next_prime(prime)
                     primorial *= prime
                     primorial_p1 = [primorial - 1, primorial + 1]
@@ -53,5 +53,5 @@ MGIwDQYJKoZIhvcNAQEBBQADUQAwTgJHRxjQFVPVvt1fa+cUt3fS5qNiHLa/OeaX
 5USLac4dYG3GsvE97xPdzXfx6iQiM5u9608uoygqBRfr+YN4bTuvC6omcabKO30C
 AwEAAQ==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

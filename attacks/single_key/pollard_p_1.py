@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def pollard_P_1(self, n):
+    def pollard_P_1(self, n, progress=True):
         """Pollard P1 implementation"""
         z = []
         prime = [
@@ -218,7 +218,7 @@ class Attack(AbstractAttack):
                 z.append(prime[j])
 
         try:
-            for pp in tqdm(prime):
+            for pp in tqdm(prime, disable=(not progress)):
                 i = 0
                 x = pp
                 while 1:
@@ -234,7 +234,7 @@ class Attack(AbstractAttack):
         except TypeError:
             return 0, None
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Pollard P1"""
         if not hasattr(publickey, "p"):
             publickey.p = None
@@ -245,7 +245,7 @@ class Attack(AbstractAttack):
             try:
                 # Pollard P-1 attack
                 try:
-                    poll_res = self.pollard_P_1(publickey.n)
+                    poll_res = self.pollard_P_1(publickey.n, progress)
                 except RecursionError:
                     return (None, None)
                 if poll_res and len(poll_res) > 1:
@@ -269,5 +269,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MBswDQYJKoZIhvcNAQEBBQADCgAwBwICCg0CAQM=
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

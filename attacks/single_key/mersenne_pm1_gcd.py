@@ -14,12 +14,12 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run tests against mersenne composites"""
         with timeout(self.timeout):
             try:
                 p = q = None
-                for i in tqdm(range(2, int(log2(publickey.n)))):
+                for i in tqdm(range(2, int(log2(publickey.n))), disable=(not progress)):
                     i2 = 2 ** i
                     mersenne = [i2 - 1, i2 + 1]
                     g0, g1 = gcd(mersenne[0], publickey.n), gcd(
@@ -50,5 +50,5 @@ MGIwDQYJKoZIhvcNAQEBBQADUQAwTgJHFe/Y6RPz9BY+fYsJo9d+YAsqKLtte/tI
 VyjReeB0fShmpmw8VE1pImeChPevslr2tuc7D/yu5VxYHO/GdP1xUE3nPGYaMkcC
 AwEAAQ==
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

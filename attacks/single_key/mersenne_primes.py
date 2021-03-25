@@ -12,7 +12,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Run tests against mersenne primes"""
         with timeout(self.timeout):
             try:
@@ -70,7 +70,7 @@ class Attack(AbstractAttack):
                     77232917,
                     82589933,
                 ]
-                for mersenne_prime in tqdm(mersenne_tab):
+                for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
                     if publickey.n % ((2 ** mersenne_prime) - 1) == 0:
                         p = (2 ** mersenne_prime) - 1
                         q = publickey.n // ((2 ** mersenne_prime) - 1)
@@ -101,5 +101,5 @@ AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQID
 AQAB
 -----END PUBLIC KEY-----"""
         self.timeout = 90
-        result = self.attack(PublicKey(key_data))
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

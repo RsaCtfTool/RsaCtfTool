@@ -9,7 +9,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def attack(self, publickey, cipher=[]):
+    def attack(self, publickey, cipher=[], progress=True):
         """Do nothing, used for multi-key attacks that succeeded so we just print the
         private key without spending any time factoring
         """
