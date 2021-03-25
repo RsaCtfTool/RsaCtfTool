@@ -55,7 +55,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
-                     [-e E] [--key KEY] [--isconspicuous]
+                     [-e E] [--key KEY] [--isconspicuous] [--convert_idrsa_pub]
                      [--attack {smallfraction,wiener,pastctfprimes,wolframalpha,factordb,fermat,ecm,primorial_pm1_gcd,binary_polinomial_factoring,fibonacci_gcd,londahl,smallq,mersenne_pm1_gcd,noveltyprimes,roca,pollard_p_1,boneh_durfee,ecm2,pollard_rho,z3_solver,cube_root,mersenne_primes,cm_factor,comfact_cn,fermat_numbers_gcd,qicheng,partial_q,siqs,euler,commonfactors,hastads,same_n_huge_e,all} [{smallfraction,wiener,pastctfprimes,wolframalpha,factordb,fermat,ecm,primorial_pm1_gcd,binary_polinomial_factoring,fibonacci_gcd,londahl,smallq,mersenne_pm1_gcd,noveltyprimes,roca,pollard_p_1,boneh_durfee,ecm2,pollard_rho,z3_solver,cube_root,mersenne_primes,cm_factor,comfact_cn,fermat_numbers_gcd,qicheng,partial_q,siqs,euler,commonfactors,hastads,same_n_huge_e,all} ...]]
 ```
 
@@ -108,6 +108,10 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 `./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
 
 For more examples, look at test.sh file
+
+### Convert idrsa.pub to pem format
+
+`./RsaCtfTool.py  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
 
 ## Requirements
 

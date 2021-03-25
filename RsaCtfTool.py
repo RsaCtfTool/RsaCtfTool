@@ -28,6 +28,7 @@ from lib.keys_wrapper import (
     generate_keys_from_p_q_e_n,
     PrivateKey,
 )
+from lib.idrsa_pub_disector import disect_idrsa_pub
 
 # Remove insecure warning for factordb.com
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -106,6 +107,10 @@ if __name__ == "__main__":
         "--isconspicuous", help="conspicuous key check", action="store_true"
     )
 
+    parser.add_argument(
+        "--convert_idrsa_pub", help="Convert idrsa.pub to pem", action="store_true"
+    )  
+
     args = parser.parse_args()
 
     unciphers = []
@@ -178,6 +183,17 @@ if __name__ == "__main__":
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
         args.p, args.q = generate_pq_from_n_and_p_or_q(args.n, args.p, args.q)
+
+    # convert a idrsa.pub file to a pem format
+    if args.convert_idrsa_pub:
+        #for publickey in args.publickey:
+        publickey = args.publickey
+        logger.info("Converting %s: to pem..." % publickey)
+        with open(publickey, "rb") as key_data_fd:
+           n,e = disect_idrsa_pub(key_data_fd.read().decode('utf8'))
+           pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
+           print(pub_key.decode("utf-8"))
+        exit(0)
 
     # Create pubkey if requested
     if args.createpub:
