@@ -46,6 +46,7 @@ Attacks :
 - Fermat Numbers gcd
 - Fibonacci gcd
 - System primes gcd
+- Small crt exponent
 
 ## Usage
 
