@@ -62,3 +62,5 @@ echo -e "\033[1m\nTest primorial pm1\033[0m"
 time ./RsaCtfTool.py --publickey examples/primorial_pm1_gcd.pub --attack primorial_pm1_gcd --private
 echo -e "\033[1m\nTest fibonacci gcd\033[0m"
 time ./RsaCtfTool.py --publickey examples/fibonacci_gcd.pub --attack fibonacci_gcd --private
+echo -e "\033[1m\nTest small crt exponent\033[0m"
+time ./RsaCtfTool.py --publickey examples/small_crt_exp.pub --attack small_crt_exp --private
