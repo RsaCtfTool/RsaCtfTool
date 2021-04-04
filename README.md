@@ -113,6 +113,11 @@ For more examples, look at test.sh file
 
 `./RsaCtfTool.py  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
 
+### Docker run ###
+
+`docker pull Ganapati/RsaCtfTool`
+`docker run -it --rm -v $PWD:/data Ganapati/RsaCtfTool <arguments>`
+
 ## Requirements
 
 - GMPY2
