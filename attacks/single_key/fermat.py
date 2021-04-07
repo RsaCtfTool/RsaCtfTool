@@ -53,7 +53,7 @@ class Attack(AbstractAttack):
         if publickey.p is not None and publickey.q is not None:
             try:
                 priv_key = PrivateKey(
-                    n=publickey.p,
+                    n=publickey.n,
                     p=int(publickey.p),
                     q=int(publickey.q),
                     e=int(publickey.e),
