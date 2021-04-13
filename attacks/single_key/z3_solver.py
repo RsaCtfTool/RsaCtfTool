@@ -70,7 +70,7 @@ class Attack(AbstractAttack):
         from lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
-MBowDQYJKoZIhvcNAQEBBQADCQAwBgIBDwIBAw==
+MCMwDQYJKoZIhvcNAQEBBQADEgAwDwIIMAYCAQ8CAQMCAwEAAQ==
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
