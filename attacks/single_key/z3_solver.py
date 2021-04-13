@@ -47,11 +47,8 @@ class Attack(AbstractAttack):
 
                 if z3_res and len(z3_res) > 1:
                     p, q = z3_res
-                    try:
-                        publickey.p = p
-                        publickey.q = q
-                    except AttributeError:
-                        return (None, None)
+                    publickey.p = p
+                    publickey.q = q
 
                 if publickey.q is not None:
                     priv_key = PrivateKey(
@@ -61,6 +58,8 @@ class Attack(AbstractAttack):
                         int(publickey.n),
                     )
                     return (priv_key, None)
+                else:
+                    return (None,None)
             except TimeoutError:
                 return (None, None)
 
