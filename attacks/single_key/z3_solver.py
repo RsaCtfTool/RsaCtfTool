@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
         try:
             s_check_output = s.check()
             res = s.model()
-            return res[p], res[q]
+            return res[p].as_long(), res[q].as_long()
         except:
             return None, None
 
@@ -48,8 +48,8 @@ class Attack(AbstractAttack):
                 if z3_res and len(z3_res) > 1:
                     p, q = z3_res
                     try:
-                        publickey.p = p.as_long()
-                        publickey.q = q.as_long()
+                        publickey.p = p
+                        publickey.q = q
                     except AttributeError:
                         return (None, None)
 
