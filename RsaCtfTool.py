@@ -36,6 +36,18 @@ urllib3.disable_warnings(InsecureRequestWarning)
 # Change recursion limit for... you know, factorizing stuff...
 sys.setrecursionlimit(5000)
 
+
+cRED = '\033[1;31m'
+cEND = '\033[0m'
+banner = """
+__________               R_______________________________E __                .__   
+\______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
+ |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |  
+ |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
+ |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
+        \/     \/      \/        R\/E               R\/E                             
+""".replace("R",cRED).replace("E",cEND)
+
 if __name__ == "__main__":
 
     logger = logging.getLogger("global_logger")
@@ -127,6 +139,7 @@ if __name__ == "__main__":
 
     # If no arguments, diplay help and exit
     if len(sys.argv) == 1:
+        print(banner)
         parser.print_help()
         sys.exit(1)
 
