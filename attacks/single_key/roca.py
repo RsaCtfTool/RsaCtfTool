@@ -5,32 +5,38 @@ from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
-
+from lib.is_roca_test import is_roca_vulnerable
+import logging
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
         self.sage_required = True
+        self.logger = logging.getLogger("global_logger")
 
     def attack(self, publickey, cipher=[], progress=True):
-        try:
-            sageresult = subprocess.check_output(
-                ["sage", "%s/sage/roca_attack.py" % rootpath, str(publickey.n)],
-                timeout=self.timeout,
-                stderr=subprocess.DEVNULL,
-            )
+        if is_roca_vulnerable(publickey.n):
+            try:
+                sageresult = subprocess.check_output(
+                    ["sage", "%s/sage/roca_attack.py" % rootpath, str(publickey.n)],
+                    timeout=self.timeout,
+                    stderr=subprocess.DEVNULL,
+                )
 
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-            return (None, None)
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+                return (None, None)
 
-        if b"FAIL" not in sageresult and b":" in sageresult:
-            sageresult = sageresult.decode("utf-8").strip()
-            p, q = map(int, sageresult.split(":"))
-            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-            return (priv_key, None)
+            if b"FAIL" not in sageresult and b":" in sageresult:
+                sageresult = sageresult.decode("utf-8").strip()
+                p, q = map(int, sageresult.split(":"))
+                priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+                return (priv_key, None)
+            else:
+                return (None, None)
         else:
-            return (None, None)
+           self.logger.info("[-] This key is not roca, skiping test...")  
+           return(None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey

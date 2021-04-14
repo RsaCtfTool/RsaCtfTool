@@ -2,21 +2,15 @@ import sys
 from sage.all import inverse_mod, PolynomialRing, floor, Zmod
 
 
-def solve(M, n, a, m):
+def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):
     # I need to import it in the function otherwise multiprocessing doesn't find it in its context
     from sage_functions import coppersmith_howgrave_univariate
 
     base = int(65537)
     # the known part of p: 65537^a * M^-1 (mod N)
-    known = int(pow(base, a, M) * inverse_mod(M, n))
-    # Create the polynom f(x)
-    F = PolynomialRing(Zmod(n), implementation="NTL", names=("x",))
-    (x,) = F._first_ngens(1)
+    known = int(pow(base, a, M) * invmod_Mn)
     pol = x + known
-    beta = 0.1
     t = m + 1
-    # Upper bound for the small root x0
-    XX = floor(2 * n ** 0.5 / M)
     # Find a small root (x0 = k) using Coppersmith's algorithm
     roots = coppersmith_howgrave_univariate(pol, n, beta, m, t, XX)
     # There will be no roots for an incorrect guess of a.
@@ -55,17 +49,23 @@ def roca(n):
         print("Invalid key size: {}".format(keySize))
         return None
 
+    beta = 0.1
     a3 = Zmod(M_prime)(n).log(65537)
     order = Zmod(M_prime)(65537).multiplicative_order()
     inf = a3 // 2
     sup = (a3 + order) // 2
-
+    # Upper bound for the small root x0
+    XX = floor(2 * n ** 0.5 / M_prime)
+    invmod_Mn = inverse_mod(M_prime, n)
+    # Create the polynom f(x)
+    F = PolynomialRing(Zmod(n), implementation="NTL", names=("x",))
+    (x,) = F._first_ngens(1)
     # Search 10 000 values at a time, using multiprocess
     # too big chunks is slower, too small chunks also
     chunk_size = 10000
     for inf_a in range(inf, sup, chunk_size):
         # create an array with the parameter for the solve function
-        inputs = [((M_prime, n, a, m), {}) for a in range(inf_a, inf_a + chunk_size)]
+        inputs = [((M_prime, n, a, m, XX, invmod_Mn, F, x, beta), {}) for a in range(inf_a, inf_a + chunk_size)]
         # the sage builtin multiprocessing stuff
         from sage.parallel.multiprocessing_sage import parallel_iter
         from multiprocessing import cpu_count

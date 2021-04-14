@@ -29,6 +29,7 @@ from lib.keys_wrapper import (
     PrivateKey,
 )
 from lib.idrsa_pub_disector import disect_idrsa_pub
+from lib.is_roca_test import is_roca_vulnerable
 
 # Remove insecure warning for factordb.com
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -117,6 +118,9 @@ if __name__ == "__main__":
     )
     parser.add_argument(
         "--isconspicuous", help="conspicuous key check", action="store_true"
+    )
+    parser.add_argument(
+        "--isroca", help="Check if given key is roca", action="store_true"
     )
 
     parser.add_argument(
@@ -208,6 +212,23 @@ if __name__ == "__main__":
            print(pub_key.decode("utf-8"))
         exit(0)
 
+    if args.isroca:
+        pubkeyfilelist = glob(args.publickey)
+        for publickey in pubkeyfilelist:
+            logger.info("[-] Details for %s:" % publickey)
+            with open(publickey, "rb") as key_data_fd:
+                try:
+                     key = RSA.importKey(key_data_fd.read())
+                except:
+                     key = None
+                     logger.error("[!] Error file format: %s" % publickey)
+                if key is not None:
+                    if is_roca_vulnerable(key.n):
+                        logger.warning("[!] Public key %s: is roca!!!" % publickey)
+                    else:
+                        logger.info("[-] Public key %s: is not roca, you are safe" % publickey)
+        exit(0)
+        
     # Create pubkey if requested
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
