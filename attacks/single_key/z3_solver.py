@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
         try:
             s_check_output = s.check()
             res = s.model()
-            return res[p], res[q]
+            return res[p].as_long(), res[q].as_long()
         except:
             return None, None
 
@@ -47,11 +47,8 @@ class Attack(AbstractAttack):
 
                 if z3_res and len(z3_res) > 1:
                     p, q = z3_res
-                    try:
-                        publickey.p = p.as_long()
-                        publickey.q = q.as_long()
-                    except AttributeError:
-                        return (None, None)
+                    publickey.p = p
+                    publickey.q = q
 
                 if publickey.q is not None:
                     priv_key = PrivateKey(
@@ -61,6 +58,8 @@ class Attack(AbstractAttack):
                         int(publickey.n),
                     )
                     return (priv_key, None)
+                else:
+                    return (None,None)
             except TimeoutError:
                 return (None, None)
 
@@ -70,7 +69,7 @@ class Attack(AbstractAttack):
         from lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
-MBowDQYJKoZIhvcNAQEBBQADCQAwBgIBDwIBAw==
+MCMwDQYJKoZIhvcNAQEBBQADEgAwDwIIMAYCAQ8CAQMCAwEAAQ==
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
