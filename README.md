@@ -48,6 +48,7 @@ Attacks :
 - System primes gcd
 - Small crt exponent
 - Shanks's square forms factorization (SQUFOF)
+- Return of Coppersmith's attack (ROCA) with NECA variant
 
 ## Usage
 
