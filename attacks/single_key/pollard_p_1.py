@@ -6,7 +6,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from gmpy2 import gcd
+from gmpy2 import gcd, isqrt
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -191,25 +191,7 @@ class Attack(AbstractAttack):
             """Return pow"""
             return pow(a, b, n)
 
-        def mysqrt(n):
-            """Sqrt implementation"""
-            x = n
-            y = []
-            while x > 0:
-                y.append(x % 100)
-                x = x // 100
-            y.reverse()
-            a = 0
-            x = 0
-            for p in y:
-                for b in range(9, -1, -1):
-                    if ((20 * a + b) * b) <= (x * 100 + p):
-                        x = x * 100 + p - ((20 * a + b) * b)
-                        a = a * 10 + b
-                        break
-            return a
-
-        B1 = mysqrt(n)
+        B1 = isqrt(n)
         for j in range(0, len(prime)):
             for i in range(1, int(math.log(B1) / math.log(prime[j])) + 1):
                 z.append(prime[j])
