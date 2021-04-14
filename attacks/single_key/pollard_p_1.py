@@ -187,10 +187,6 @@ class Attack(AbstractAttack):
             997,
         ]
 
-        def e(a, b):
-            """Return pow"""
-            return pow(a, b, n)
-
         B1 = isqrt(n)
         for j in range(0, len(prime)):
             for i in range(1, int(math.log(B1) / math.log(prime[j])) + 1):
@@ -201,7 +197,7 @@ class Attack(AbstractAttack):
                 i = 0
                 x = pp
                 while 1:
-                    x = e(x, z[i])
+                    x = pow(x, z[i], n)
                     i = i + 1
                     y = gcd(n, x - 1)
                     if y != 1:
