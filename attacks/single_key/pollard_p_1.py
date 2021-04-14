@@ -6,7 +6,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import gcd
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -186,9 +186,6 @@ class Attack(AbstractAttack):
             991,
             997,
         ]
-
-        def gcd(a, b):
-            prime
 
         def e(a, b):
             """Return pow"""
