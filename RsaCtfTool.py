@@ -204,12 +204,15 @@ if __name__ == "__main__":
     # convert a idrsa.pub file to a pem format
     if args.convert_idrsa_pub:
         #for publickey in args.publickey:
-        publickey = args.publickey
-        logger.info("Converting %s: to pem..." % publickey)
-        with open(publickey, "rb") as key_data_fd:
-           n,e = disect_idrsa_pub(key_data_fd.read().decode('utf8'))
-           pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
-           print(pub_key.decode("utf-8"))
+        publickeys = glob(args.publickey)
+        for publickey in publickeys:
+            logger.info("Converting %s: to pem..." % publickey)
+            with open(publickey, "r") as key_data_fd:
+                for line in key_data_fd:
+                    n,e = disect_idrsa_pub(line.rstrip())
+                    if n!= None and e != None:
+                        pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
+                        print(pub_key.decode("utf-8"))
         exit(0)
 
     if args.isroca:
