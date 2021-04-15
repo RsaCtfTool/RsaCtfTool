@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import isqrt
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -13,25 +13,17 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
 
     # Source - http://stackoverflow.com/a/20465181
-    def isqrt(self, n):
-        """Is n a square ?"""
-        x = n
-        y = (x + n // x) // 2
-        while y < x:
-            x = y
-            y = (x + n // x) // 2
-        return x
 
     def fermat(self, n):
         """Fermat attack"""
-        a = self.isqrt(n)
+        a = isqrt(n)
         b2 = a * a - n
-        b = self.isqrt(n)
+        b = isqrt(n)
         count = 0
         while b * b != b2:
             a = a + 1
             b2 = a * a - n
-            b = self.isqrt(b2)
+            b = isqrt(b2)
             count += 1
         p = a + b
         q = a - b
