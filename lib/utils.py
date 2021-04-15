@@ -9,6 +9,7 @@ import subprocess
 import contextlib
 from lib.rsalibnum import invmod
 from lib.keys_wrapper import PublicKey
+import math
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
@@ -16,6 +17,11 @@ _libutil_ = os.path.realpath(__file__)
 rootpath, _libutil_ = os.path.split(_libutil_)
 rootpath = "%s/.." % rootpath  # up one dir
 
+def getpubkeysz(n):
+    size = int(math.log(n)/math.log(2))
+    if size % 2 != 0:
+      size += 1
+    return size
 
 def get_numeric_value(value):
     """Parse input (hex or numerical)"""
