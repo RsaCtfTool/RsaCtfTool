@@ -5,6 +5,7 @@ import logging
 from pathlib import Path
 import sys
 from lib.utils import sageworks
+import shutil
 
 
 class AbstractAttack(object):
@@ -13,8 +14,8 @@ class AbstractAttack(object):
     def __init__(self, timeout=60):
         self.logger = logging.getLogger("global_logger")
         self.speed = AbstractAttack.speed_enum["medium"]
-        self.sage_required = False
         self.timeout = timeout
+        self.required_binaries = []
 
     def get_name(self):
         """Return attack name"""
@@ -23,10 +24,11 @@ class AbstractAttack(object):
 
     def can_run(self):
         """Test if everything is ok for running attack"""
-        if self.sage_required:
-            if not sageworks():
+        for required_binary in self.required_binaries:
+            if shutil.which(required_binary) is None:
                 self.logger.warning(
-                    "Can't load %s because sage is not installed" % self.get_name()
+                    "Can't load %s because %s binary is not installed"
+                    % (self.get_name(), required_binary)
                 )
                 return False
         return True

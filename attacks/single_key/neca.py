@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-import subprocess 
+import subprocess
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath, getpubkeysz
 from lib.is_roca_test import is_roca_vulnerable
@@ -10,27 +10,19 @@ import logging
 import os
 import re
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
-        self.sage_required = True
         self.logger = logging.getLogger("global_logger")
-        self.deploy()
-
-    def deploy(self):
-        self.wdir = "%s/attacks/single_key" % rootpath
-        self.fname = "%s/neca/build/neca" % self.wdir
-        if not os.path.exists(self.fname):
-           self.logger.info("[-] NECA build not found, we will try to deploy neca...")
-           cmd = "cd %s; git clone https://github.com/jix/neca; cd neca; mkdir build; cd build; cmake .. && make; cd ../.." % self.wdir
-           os.system(cmd)
+        self.required_binaries = ["neca", "sage"]
 
     def attack(self, publickey, cipher=[], progress=True):
         if is_roca_vulnerable(publickey.n):
             if getpubkeysz(publickey.n) <= 512:
                 necaresult = subprocess.check_output(
-                    [self.fname, "%s" % publickey.n],
+                    ["neca", "%s" % publickey.n],
                     timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
@@ -39,18 +31,22 @@ class Attack(AbstractAttack):
                     for line in necaresult_l:
                         r0 = line.find("N = ")
                         r1 = line.find(" * ")
-                        if r0 >-1 and r1 > -1:
-                            p,q = (list(map(int,line.split("=")[1].split("*"))))
-                            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+                        if r0 > -1 and r1 > -1:
+                            p, q = list(map(int, line.split("=")[1].split("*")))
+                            priv_key = PrivateKey(
+                                int(p), int(q), int(publickey.e), int(publickey.n)
+                            )
                             return (priv_key, None)
                 else:
                     return (None, None)
             else:
-              self.logger.info("[-] This key is roca but > 512 bits, try with roca attack...")
-              return (None, None)
+                self.logger.info(
+                    "[-] This key is roca but > 512 bits, try with roca attack..."
+                )
+                return (None, None)
         else:
-           self.logger.info("[-] This key is not roca, skiping test...")  
-           return(None, None)
+            self.logger.info("[-] This key is not roca, skiping test...")
+            return (None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey
@@ -62,4 +58,3 @@ MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIAce1LytE5hd6Kl8yUMSo9BSfvjgW9W
         self.timeout = 120
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
-

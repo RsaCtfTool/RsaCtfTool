@@ -8,11 +8,12 @@ from lib.utils import rootpath
 from lib.is_roca_test import is_roca_vulnerable
 import logging
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
-        self.sage_required = True
+        self.required_binaries = ["sage"]
         self.logger = logging.getLogger("global_logger")
 
     def attack(self, publickey, cipher=[], progress=True):
@@ -30,13 +31,15 @@ class Attack(AbstractAttack):
             if b"FAIL" not in sageresult and b":" in sageresult:
                 sageresult = sageresult.decode("utf-8").strip()
                 p, q = map(int, sageresult.split(":"))
-                priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+                priv_key = PrivateKey(
+                    int(p), int(q), int(publickey.e), int(publickey.n)
+                )
                 return (priv_key, None)
             else:
                 return (None, None)
         else:
-           self.logger.info("[-] This key is not roca, skiping test...")  
-           return(None, None)
+            self.logger.info("[-] This key is not roca, skiping test...")
+            return (None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey

@@ -211,8 +211,12 @@ class RSAAttack(object):
             exit(0)
 
         # Read keyfile
-        with open(publickey, "rb") as pubkey_fd:
-            self.publickey = PublicKey(pubkey_fd.read(), publickey)
+        try:
+            with open(publickey, "rb") as pubkey_fd:
+                self.publickey = PublicKey(pubkey_fd.read(), publickey)
+        except Exception as e:
+            self.logger.error("[*] %s." % e)
+            exit(1)
 
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
