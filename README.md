@@ -145,6 +145,20 @@ pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
 ```
 
+### Fedora (33 and above) specific Instructions
+```bash
+git clone https://github.com/Ganapati/RsaCtfTool.git
+sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
+pip3 install -r "requirements.txt"
+python3 RsaCtfTool.py
+```
+
+If you also want the optional SageMath you need to do
+```bash
+sudo dnf install sagemath
+pip3 install -r "optional-requirements.txt"
+```
+
 ### MacOS-specific Instructions
 
 If `pip3 install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
