@@ -5,52 +5,73 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
-from gmpy2 import isqrt,gcd,next_prime
+from gmpy2 import isqrt, gcd, next_prime, is_prime
+import bitarray
 
-def dixon(N,B=7):
+def dixon_factor(N,B=7,explain=False):
+
+  if is_prime(N):
+    return N,1
+
+  start = isqrt(N)
+
+  if (start ** 2) == N:
+    return start,start
+
+  lqbf = pow(B,2,N) * 2
+  QBF = bitarray.bitarray(lqbf) # This is our quasi-bloom-filter
+
   def primes(B):
     p = 2
-    tmp = [p]
-    while p < B-1:
-      p = next_prime(p)
+    tmp = []
+    #n=0
+    while p <= B:
       tmp.append(p)
+      p = next_prime(p)
+      #n += 1
     return tmp
-
   base = primes(B)
-  start = isqrt(N)
-  i = start
-
-  i2N = []
-  while i<=N:
-    i2N.append(pow(i,2,N))
-    i+=1
 
   basej2N = []
   for j in range(0,len(base)):
-    basej2N.append(pow(base[j],2,N))
+    p = pow(base[j],2,N)
+    basej2N.append(p)
+    QBF[p] = 1 # We populate our quasi-bloom-filter
 
-  for i in range(0,len(i2N)):
-    for k in range(0,len(base)):
-      if i2N[i] == basej2N[k]:
-        f=gcd(start + i - base[k],N)
-        if 1 < f < N:
-          return f,N//f
-
-  return  None,None
+  i = start
+  while i < N:
+    i2N = pow(i,2,N)
+    if i2N < lqbf and QBF[i2N] == 1:
+      for k in range(0,len(base)):
+        if QBF[basej2N[k]] == 1:
+          #if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
+          f=gcd(i - base[k],N)
+          if explain:
+            print("N = %d" % N)
+            print("%d = isqrt(N)" % start)
+            print("%d = pow(%d,2,n)" % (i2N,i))
+            print("%d = pow(%d,2,n)" % (basej2N[k],base[k]))
+            print("%d - %d = %d" % (i,base[k],f))
+            print("%d = gcd(%d - % d, N)" % (f,i,base[k]))
+            print("%d = gcd(%d + % d, N)" % (gcd(i+base[k],N),i,base[k]))
+          if 1 < f < N:
+            return f,N//f
+    i+=1
+  return None, None
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
     def attack(self, publickey, cipher=[], progress=True):
-        """Run fermat attack with a timeout"""
+        """Run dixon attack with a timeout"""
         try:
             with timeout(seconds=self.timeout):
                 try:
-                    if publickey.n <= 10**9:
-                        publickey.p, publickey.q = dixon(publickey.n)
+                    if publickey.n <= 10**10:
+                        publickey.p, publickey.q = dixon_factor(publickey.n)
                     else:
-                        logger.info("[-] Dixon is too slow for pubkeys > 10^10...")
+                        self.logger.info("[-] Dixon is too slow for pubkeys > 10^10...")
                         return(None,None)
                 except TimeoutError:
                     return (None, None)
@@ -72,11 +93,10 @@ class Attack(AbstractAttack):
 
         return (None, None)
 
-def test(self):
+    def test(self):
         from lib.keys_wrapper import PublicKey
-
         key_data = """-----BEGIN PUBLIC KEY-----
-MB8wDQYJKoZIhvcNAQEBBQADDgAwCwIEA2fQNQIDAQAB
+MCAwDQYJKoZIhvcNAQEBBQADDwAwDAIFAQAwAjcCAwEAAQ==
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
