@@ -8,15 +8,17 @@ from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from gmpy2 import mul
 
+
 def ProductTree(s):
     l = len(s)
     while l > 1:
-      if l % 2 != 0:
-        s+=[1]
-        l+=1
-      s = list(map(mul,s[0:l//2],s[l//2:]))
-      l =len(s)
+        if l % 2 != 0:
+            s += [1]
+            l += 1
+        s = list(map(mul, s[0 : l // 2], s[l // 2 :]))
+        l = len(s)
     return s[0]
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -34,15 +36,15 @@ class Attack(AbstractAttack):
                 # Try to find the gcd between each pair of moduli and resolve the private keys if gcd > 1
                 priv_keys = []
                 M = ProductTree(pubs)
-                for i in range(0,len(pubs)):
+                for i in range(0, len(pubs) - 1):
                     pub = pubs[i]
                     x = publickeys[i]
-                    R = M//pub
-                    g = gcd(pub,R)
+                    R = M // pub
+                    g = gcd(pub, R)
                     if pub > g > 1:
                         try:
                             p = g
-                            q = pub//g
+                            q = pub // g
                             x.p = p
                             x.q = q
                             # update each attackobj with a private_key
@@ -52,8 +54,7 @@ class Attack(AbstractAttack):
                             priv_keys.append(priv_key_1)
 
                             self.logger.info(
-                                "[*] Found common factor in modulus for "
-                                + x.filename
+                                "[*] Found common factor in modulus for " + x.filename
                             )
                         except ValueError:
                             continue

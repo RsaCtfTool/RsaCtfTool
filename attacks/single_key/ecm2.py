@@ -11,7 +11,7 @@ class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
-        self.sage_required = True
+        self.required_binaries = ["sage"]
 
     def attack(self, publickey, cipher=[], progress=True):
         """use elliptic curve method
@@ -65,6 +65,6 @@ ynOXWY/6keaIBeg2Xh7VkK5VOl33WjCkSARfAgMBAAE=
         result = self.attack(
             PublicKey(key_data),
             [cipher.to_bytes((cipher.bit_length() + 7) // 8, "big")],
-            progress=False
+            progress=False,
         )
         return result != (None, None)

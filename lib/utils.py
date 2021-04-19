@@ -4,6 +4,7 @@
 import os
 import errno
 import signal
+import base64
 import logging
 import subprocess
 import contextlib
@@ -17,11 +18,13 @@ _libutil_ = os.path.realpath(__file__)
 rootpath, _libutil_ = os.path.split(_libutil_)
 rootpath = "%s/.." % rootpath  # up one dir
 
+
 def getpubkeysz(n):
-    size = int(math.log(n)/math.log(2))
+    size = int(math.log(n) / math.log(2))
     if size % 2 != 0:
-      size += 1
+        size += 1
     return size
+
 
 def get_numeric_value(value):
     """Parse input (hex or numerical)"""
@@ -29,6 +32,17 @@ def get_numeric_value(value):
         return int(value, 16)
     else:
         return int(value)
+
+
+def get_base64_value(value):
+    """Parse input (hex or numerical)"""
+    try:
+        if base64.b64encode(base64.b64decode(value)) == value:
+            return base64.b64decode(value)
+        else:
+            return value
+    except:
+        return value
 
 
 def sageworks():

@@ -19,7 +19,7 @@ from glob import glob
 from Crypto.PublicKey import RSA
 from lib.rsa_attack import RSAAttack
 from lib.rsalibnum import n2s, invmod
-from lib.utils import get_numeric_value, print_results
+from lib.utils import get_numeric_value, print_results, get_base64_value
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
 from lib.customlogger import CustomFormatter, logger_levels
@@ -38,8 +38,8 @@ urllib3.disable_warnings(InsecureRequestWarning)
 sys.setrecursionlimit(5000)
 
 
-cRED = '\033[1;31m'
-cEND = '\033[0m'
+cRED = "\033[1;31m"
+cEND = "\033[0m"
 banner = """
 __________               R_______________________________E __                .__   
 \______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
@@ -47,7 +47,11 @@ __________               R_______________________________E __                .__
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E                             
-""".replace("R",cRED).replace("E",cEND)
+""".replace(
+    "R", cRED
+).replace(
+    "E", cEND
+)
 
 if __name__ == "__main__":
 
@@ -111,7 +115,11 @@ if __name__ == "__main__":
     ]
     attacks_list = [_ for _ in attacks_filtered if _ != "nullattack"] + ["all"]
     parser.add_argument(
-        "--attack", help="Specify the attack modes.", default="all", nargs="+", choices=attacks_list
+        "--attack",
+        help="Specify the attack modes.",
+        default="all",
+        nargs="+",
+        choices=attacks_list,
     )
     parser.add_argument(
         "--sendtofdb", help="Send results to factordb", action="store_true"
@@ -125,7 +133,7 @@ if __name__ == "__main__":
 
     parser.add_argument(
         "--convert_idrsa_pub", help="Convert idrsa.pub to pem", action="store_true"
-    )  
+    )
 
     args = parser.parse_args()
 
@@ -135,7 +143,7 @@ if __name__ == "__main__":
     logging.basicConfig(
         level=logger_levels[args.verbosity],
     )
-    ch = logging.StreamHandler()
+    ch = logging.StreamHandler(sys.stdout)
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
     logger.propagate = False
@@ -174,6 +182,7 @@ if __name__ == "__main__":
         uncipher_array = []
         for uncipher in args.uncipher.split(","):
             uncipher = get_numeric_value(uncipher)
+            uncipher = get_base64_value(unciphers)
             uncipher_array.append(n2s(uncipher))
         args.uncipher = uncipher_array
 
@@ -183,7 +192,8 @@ if __name__ == "__main__":
         for uncipher in args.uncipherfile.split(","):
             try:
                 with open(uncipher, "rb") as cipherfile_fd:
-                    uncipher_array.append(cipherfile_fd.read())
+                    uncipher = get_base64_value(cipherfile_fd.read())
+                    uncipher_array.append(uncipher)
             except OSError:
                 logger.info("--uncipherfile : file not found or not readable.")
                 exit(1)
@@ -203,14 +213,14 @@ if __name__ == "__main__":
 
     # convert a idrsa.pub file to a pem format
     if args.convert_idrsa_pub:
-        #for publickey in args.publickey:
+        # for publickey in args.publickey:
         publickeys = glob(args.publickey)
         for publickey in publickeys:
             logger.info("Converting %s: to pem..." % publickey)
             with open(publickey, "r") as key_data_fd:
                 for line in key_data_fd:
-                    n,e = disect_idrsa_pub(line.rstrip())
-                    if n!= None and e != None:
+                    n, e = disect_idrsa_pub(line.rstrip())
+                    if n != None and e != None:
                         pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
                         print(pub_key.decode("utf-8"))
         exit(0)
@@ -221,17 +231,19 @@ if __name__ == "__main__":
             logger.info("[-] Details for %s:" % publickey)
             with open(publickey, "rb") as key_data_fd:
                 try:
-                     key = RSA.importKey(key_data_fd.read())
+                    key = RSA.importKey(key_data_fd.read())
                 except:
-                     key = None
-                     logger.error("[!] Error file format: %s" % publickey)
+                    key = None
+                    logger.error("[!] Error file format: %s" % publickey)
                 if key is not None:
                     if is_roca_vulnerable(key.n):
                         logger.warning("[!] Public key %s: is roca!!!" % publickey)
                     else:
-                        logger.info("[-] Public key %s: is not roca, you are safe" % publickey)
+                        logger.info(
+                            "[-] Public key %s: is not roca, you are safe" % publickey
+                        )
         exit(0)
-        
+
     # Create pubkey if requested
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
@@ -359,9 +371,8 @@ if __name__ == "__main__":
         found = attackobj.attack_multiple_keys(args.publickey, attacks_list)
 
     # Attack key
-    if not found:
-        for publickey in args.publickey:
-            attackobj.implemented_attacks = []
-            logger.info("\n[*] Testing key %s." % publickey)
-            attackobj.attack_single_key(publickey, attacks_list)
-            attackobj.unciphered = []
+    for publickey in args.publickey:
+        attackobj.implemented_attacks = []
+        logger.info("\n[*] Testing key %s." % publickey)
+        attackobj.attack_single_key(publickey, attacks_list)
+        attackobj.unciphered = []

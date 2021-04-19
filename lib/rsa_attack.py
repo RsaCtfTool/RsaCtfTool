@@ -72,9 +72,15 @@ class RSAAttack(object):
         # If we wanted to decrypt, do it now
         if self.cipher and self.priv_key is not None:
             for cipher in self.cipher:
-                unciphered = self.priv_key.decrypt(cipher)
-                if not isinstance(unciphered, list):
-                    unciphered = [unciphered]
+                if not isinstance(self.priv_key, list):
+                    priv_keys = [self.priv_key]
+                else:
+                    priv_keys = self.priv_key
+
+                for priv_key in priv_keys:
+                    unciphered = priv_key.decrypt(cipher)
+                    if not isinstance(unciphered, list):
+                        unciphered = [unciphered]
 
                 self.unciphered = self.unciphered + unciphered
         elif self.cipher and self.partitial_priv_key is not None:
@@ -146,8 +152,8 @@ class RSAAttack(object):
                 with open(publickey, "rb") as pubkey_fd:
                     publickeys_obj.append(PublicKey(pubkey_fd.read(), publickey))
             except Exception:
-                print("Key format not supported : %s." % publickey)
-                pass
+                self.logger.error("[*] Key format not supported : %s." % publickey)
+                continue
 
         if len(publickeys_obj) == 0:
             self.logger.error("No key loaded.")
@@ -216,7 +222,7 @@ class RSAAttack(object):
                 self.publickey = PublicKey(pubkey_fd.read(), publickey)
         except Exception as e:
             self.logger.error("[*] %s." % e)
-            exit(1)
+            return
 
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
