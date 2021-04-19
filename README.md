@@ -141,6 +141,7 @@ For more examples, look at test.sh file
 ```bash
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
+cd RsaCtfTool
 pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
 ```
@@ -149,6 +150,7 @@ python3 RsaCtfTool.py
 ```bash
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
+cd RsaCtfTool
 pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
 ```
