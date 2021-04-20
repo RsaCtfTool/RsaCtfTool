@@ -182,7 +182,6 @@ if __name__ == "__main__":
         uncipher_array = []
         for uncipher in args.uncipher.split(","):
             uncipher = get_numeric_value(uncipher)
-            uncipher = get_base64_value(unciphers)
             uncipher_array.append(n2s(uncipher))
         args.uncipher = uncipher_array
 
