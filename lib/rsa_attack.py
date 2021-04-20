@@ -9,7 +9,7 @@ from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 import inspect
-
+from gmpy2 import is_prime, isqrt, gcd
 
 class RSAAttack(object):
     def __init__(self, args):
@@ -91,6 +91,26 @@ class RSAAttack(object):
 
         print_results(self.args, publickeyname, self.priv_key, self.unciphered)
 
+    def pre_check_attack(self, publickeys):
+        """Basic pre Attack checks implementation"""
+        if not isinstance(publickeys,list):
+            publickeys = [publickeys]
+        tmp = []
+        for publickey in publickeys:
+            if gcd(publickey.n, publickey.e) > 1:
+                self.logger.info("Public key: %s modulus is coprime with exponent" % publickey.filename)
+            if not (publickey.n > 3):
+                self.logger.error("Public key: %s modulus should not be > 3" % publickey.filename)
+            if is_prime(publickey.n):
+                self.logger.error("Public key: %s modulus should not be prime" % publickey.filename) 
+            i = isqrt(publickey.n)
+            if publickey.n == (i ** 2):
+                self.logger.info("Public key: %s modulus is a perfect square" % publickey.filename)
+                publickey.p = i
+                publickey.q = i
+                tmp.append(publickey)
+        return (tmp,None)       
+
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
         try:
@@ -160,6 +180,7 @@ class RSAAttack(object):
             exit(1)
 
         self.publickey = publickeys_obj
+        self.pre_check_attack(self.publickeys)
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
             if isinstance(self.publickey, list):
@@ -223,7 +244,7 @@ class RSAAttack(object):
         except Exception as e:
             self.logger.error("[*] %s." % e)
             return
-
+        self.pre_check_attack(self.publickey)
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
             self.args.n = self.publickey.n
