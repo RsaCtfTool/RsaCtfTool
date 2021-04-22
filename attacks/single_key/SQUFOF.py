@@ -88,7 +88,7 @@ class Attack(AbstractAttack):
 
         return (None, None)
 
-def test(self):
+    def test(self):
         from lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
