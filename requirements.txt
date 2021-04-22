@@ -9,4 +9,4 @@ pycryptodome==3.9.7
 tqdm
 z3-solver
 pycrypto
-bytearray1
+bitarray
