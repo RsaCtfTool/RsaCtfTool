@@ -1164,6 +1164,11 @@ a0e03b4dae2af5b0c8ebbb3c83539961
 172b047eba77d626e169146355210c7d"""
 ]
 
+def addpm1(n):
+    if n > 2:
+      return [n - 1, n, n + 1]
+    else:
+      return [n, n + 1]
 
 def load_system_consts():
     global primes_txt, notprimes_txt, primes_int, primes_txt_arry
@@ -1182,4 +1187,5 @@ def load_system_consts():
     primes_tmp1 = map(lambda x: int(x), primes_tmp1)
     primes_tmp1 = sorted(set(primes_tmp1))
     ALL = sorted(set(primes_tmp0 + notprimes_tmp0 + primes_int + primes_tmp1))
+    ALL = sorted(set(sum(map(addpm1,ALL),[])))
     return ALL
