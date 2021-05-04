@@ -97,6 +97,8 @@ class RSAAttack(object):
             publickeys = [publickeys]
         tmp = []
         for publickey in publickeys:
+            if publickey.n % 2 == 0:
+                self.logger.error("Public key: %s modulus should be odd" % publickey.filename)
             if gcd(publickey.n, publickey.e) > 1:
                 self.logger.info("Public key: %s modulus is coprime with exponent" % publickey.filename)
             if not (publickey.n > 3):
