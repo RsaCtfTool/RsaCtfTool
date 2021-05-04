@@ -102,7 +102,7 @@ class RSAAttack(object):
             if gcd(publickey.n, publickey.e) > 1:
                 self.logger.info("Public key: %s modulus is coprime with exponent" % publickey.filename)
             if not (publickey.n > 3):
-                self.logger.error("Public key: %s modulus should not be > 3" % publickey.filename)
+                self.logger.error("Public key: %s modulus should be > 3" % publickey.filename)
             if is_prime(publickey.n):
                 self.logger.error("Public key: %s modulus should not be prime" % publickey.filename) 
             i = isqrt(publickey.n)
