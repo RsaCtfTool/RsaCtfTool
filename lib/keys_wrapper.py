@@ -103,7 +103,11 @@ class PrivateKey(object):
 
         self.d = None
         if self.phi is not None and self.e is not None:
-            self.d = invmod(e, self.phi)
+            try:
+                self.d = invmod(e, self.phi)
+            except ValueError:
+                # invmod failure
+                pass
 
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
@@ -226,4 +230,7 @@ class PrivateKey(object):
 
     def __str__(self):
         """Print armored private key"""
-        return self.key.exportKey().decode("utf-8")
+        if self.key is not None:
+            return self.key.exportKey().decode("utf-8")
+        else:
+            return ""

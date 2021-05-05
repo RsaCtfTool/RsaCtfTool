@@ -84,7 +84,12 @@ def print_results(args, publickey, private_key, uncipher):
                                 output_fd.write("%s\n" % str(priv_key))
                         except:
                             logger.error("Can't write output file : %s" % args.output)
-                    logger.info(priv_key)
+                    if str(priv_key) != "":
+                        logger.info(priv_key)
+                    else:
+                        logger.warning(
+                            "Key format seems wrong, check input data to solve this."
+                        )
 
         if args.dumpkey:
             for priv_key in private_keys:
