@@ -3,7 +3,7 @@
 
 import logging
 import importlib
-from lib.keys_wrapper import PublicKey
+from lib.keys_wrapper import PublicKey, PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import print_results
 from lib.fdb import send2fdb
@@ -91,6 +91,7 @@ class RSAAttack(object):
 
         print_results(self.args, publickeyname, self.priv_key, self.unciphered)
 
+
     def pre_check_attack(self, publickeys):
         """Basic pre Attack checks implementation"""
         if not isinstance(publickeys,list):
@@ -104,14 +105,15 @@ class RSAAttack(object):
             if not (publickey.n > 3):
                 self.logger.error("Public key: %s modulus should be > 3" % publickey.filename)
             if is_prime(publickey.n):
-                self.logger.error("Public key: %s modulus should not be prime" % publickey.filename) 
+                self.logger.error("Public key: %s modulus should not be prime" % publickey.filename)
             i = isqrt(publickey.n)
             if publickey.n == (i ** 2):
                 self.logger.info("Public key: %s modulus is a perfect square" % publickey.filename)
                 publickey.p = i
                 publickey.q = i
                 tmp.append(publickey)
-        return (tmp,None)       
+        return (tmp,None)
+
 
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
@@ -162,6 +164,17 @@ class RSAAttack(object):
                     pass
         self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 
+    def priv_key_send2fdb(self):
+        if self.args.sendtofdb == True:
+            if self.priv_key is not None:
+                if type(self.priv_key) is PrivateKey:
+                    send2fdb(self.priv_key.n, [self.priv_key.p, self.priv_key.q])
+                else:
+                    if len(self.priv_key) > 0:
+                        for privkey in list(set(self.priv_key)):
+                            send2fdb(privkey.n, [privkey.p, privkey.q])
+
+
     def attack_multiple_keys(self, publickeys, attacks_list):
         """Run attacks on multiple keys"""
         self.logger.info("[*] Multikey mode using keys: " + ", ".join(publickeys))
@@ -210,10 +223,7 @@ class RSAAttack(object):
 
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
-        if self.args.sendtofdb == True:
-            if len(self.priv_key) > 0:
-                for privkey in list(set(self.priv_key)):
-                    send2fdb(privkey.n, [privkey.p, privkey.q])
+        self.priv_key_send2fdb()
         return self.get_boolean_results()
 
     def attack_single_key(self, publickey, attacks_list=[], test=False):
@@ -246,6 +256,7 @@ class RSAAttack(object):
         except Exception as e:
             self.logger.error("[*] %s." % e)
             return
+
         self.pre_check_attack(self.publickey)
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
@@ -279,7 +290,5 @@ class RSAAttack(object):
                 self.logger.warning("Timeout")
 
         self.print_results_details(publickey)
-        if self.args.sendtofdb == True:
-            if self.priv_key != None:
-                send2fdb(self.priv_key.n, [self.priv_key.p, self.priv_key.q])
+        self.priv_key_send2fdb()
         return self.get_boolean_results()
