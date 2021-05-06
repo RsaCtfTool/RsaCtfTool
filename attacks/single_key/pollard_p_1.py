@@ -16,7 +16,7 @@ class Attack(AbstractAttack):
     def pollard_P_1(self, n, progress=True):
         """Pollard P1 implementation"""
         z = []
-        
+
         def first_primes(n):
            p = 2
            tmp = [p]
@@ -24,13 +24,15 @@ class Attack(AbstractAttack):
              p = next_prime(p)
              tmp.append(p)
            return tmp
-        
-        prime = first_primes(997)
 
-        B1 = isqrt(n)
+        prime = first_primes(997)
+        logn=math.log(int(isqrt(n)))
+
         for j in range(0, len(prime)):
-            for i in range(1, int(math.log(B1) / math.log(prime[j])) + 1):
-                z.append(prime[j])
+             primej = prime[j]
+             logp = math.log(primej)
+             for i in range(1, int(logn / logp) + 1):
+                z.append(primej)
 
         try:
             for pp in tqdm(prime, disable=(not progress)):

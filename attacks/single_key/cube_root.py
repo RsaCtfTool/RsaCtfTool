@@ -16,6 +16,9 @@ class Attack(AbstractAttack):
             try:
                 if publickey.e == 3 or publickey.e == 5:
                     plain = []
+                    if (cipher is None) or (len(cipher) < 1):
+                        self.logger.info("[-] No ciphertexts specified, skiping the cube_root test...")
+                        return (None, None)
                     for c in cipher:
                         cipher_int = int.from_bytes(c, "big")
                         low = 0

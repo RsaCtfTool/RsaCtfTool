@@ -367,12 +367,16 @@ if __name__ == "__main__":
             attackobj.attack_single_key(tmpfile.name, attacks_list, test=True)
 
     # Attack multiple keys
-    if len(args.publickey) > 1:
+    if args.publickey is not None and len(args.publickey) > 1:
         found = attackobj.attack_multiple_keys(args.publickey, attacks_list)
 
     # Attack key
-    for publickey in args.publickey:
-        attackobj.implemented_attacks = []
-        logger.info("\n[*] Testing key %s." % publickey)
-        attackobj.attack_single_key(publickey, attacks_list)
-        attackobj.unciphered = []
+    if args.publickey is not None:
+        for publickey in args.publickey:
+            attackobj.implemented_attacks = []
+            logger.info("\n[*] Testing key %s." % publickey)
+            attackobj.attack_single_key(publickey, attacks_list)
+            attackobj.unciphered = []
+
+    if args.publickey is None:
+        logger.error("No key specified")
