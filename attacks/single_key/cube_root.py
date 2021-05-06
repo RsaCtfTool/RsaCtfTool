@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
                         high = cipher_int
                         while low < high:
                             mid = (low + high) // 2
-                            if pow(mid, publickey.e) < cipher_int:
+                            if powmod(mid, publickey.e) < cipher_int:
                                 low = mid + 1
                             else:
                                 high = mid

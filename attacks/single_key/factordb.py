@@ -9,7 +9,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from Crypto.Util.number import long_to_bytes
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -24,7 +24,7 @@ class Attack(AbstractAttack):
             if "-" in j:
                 j, sub = j.split("-")
             eq = list(map(int, [k, j, sub]))
-            return pow(eq[0], eq[1]) - eq[2]
+            return powmod(eq[0], eq[1]) - eq[2]
         except Exception as e:
             self.logger.error(
                 "[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s"

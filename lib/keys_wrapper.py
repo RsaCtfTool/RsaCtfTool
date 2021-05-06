@@ -11,6 +11,7 @@ from lib.rsalibnum import invmod
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
+from gmpy2 import powmod
 
 logger = logging.getLogger("global_logger")
 
@@ -161,7 +162,7 @@ class PrivateKey(object):
             if self.n is not None and self.d is not None and self.key is None:
                 try:
                     cipher_int = int.from_bytes(c, "big")
-                    m_int = pow(cipher_int, self.d, self.n)
+                    m_int = powmod(cipher_int, self.d, self.n)
                     m = binascii.unhexlify(hex(m_int)[2:]).decode()
                     plain.append(m)
                 except:
