@@ -64,3 +64,5 @@ echo -e "\033[1m\nTest fibonacci gcd\033[0m"
 time ./RsaCtfTool.py --publickey examples/fibonacci_gcd.pub --attack fibonacci_gcd --private
 echo -e "\033[1m\nTest small crt exponent\033[0m"
 time ./RsaCtfTool.py --publickey examples/small_crt_exp.pub --attack small_crt_exp --private
+echo -e "\033[1m\nTest to make sure that it does not fail when the list of ciphertexts does not exist\033[0m"
+time ./RsaCtfTool.py -n 90377629292003121684002147101760858109247336549001090677693 -e 65537 --sendtofdb --private --timeout 100 --attack factordb

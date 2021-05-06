@@ -37,14 +37,15 @@ class Attack(AbstractAttack):
                 for fac in sageresults:
                     phi = phi * (int(fac) - 1)
 
-                for c in cipher:
-                    try:
-                        cipher_int = int.from_bytes(c, "big")
-                        d = modInv(publickey.e, phi)
-                        m = hex(pow(cipher_int, d, publickey.n))[2::]
-                        plain.append(bytes.fromhex(m))
-                    except:
-                        continue
+                if cipher is not None and len(cipher) > 0:
+                    for c in cipher:
+                        try:
+                            cipher_int = int.from_bytes(c, "big")
+                            d = modInv(publickey.e, phi)
+                            m = hex(pow(cipher_int, d, publickey.n))[2::]
+                            plain.append(bytes.fromhex(m))
+                        except:
+                            continue
 
                 return (None, plain)
             return (None, None)
