@@ -24,7 +24,7 @@ class Attack(AbstractAttack):
             if "-" in j:
                 j, sub = j.split("-")
             eq = list(map(int, [k, j, sub]))
-            return powmod(eq[0], eq[1]) - eq[2]
+            return pow(eq[0], eq[1]) - eq[2]
         except Exception as e:
             self.logger.error(
                 "[*] FactorDB gave something we couldn't parse sorry (%s). Got error: %s"
@@ -99,7 +99,7 @@ class Attack(AbstractAttack):
                     plains = []
                     for c in cipher:
                         int_big = int.from_bytes(c, "big")
-                        plain1 = pow(int_big, d, publickey.n)
+                        plain1 = powmod(int_big, d, publickey.n)
                         plains.append(long_to_bytes(plain1))
                     return (None, plains)
                 return (None, None)
