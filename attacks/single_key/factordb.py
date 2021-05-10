@@ -9,7 +9,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from Crypto.Util.number import long_to_bytes
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -97,12 +97,14 @@ class Attack(AbstractAttack):
                         phi *= int(p) - 1
                     d = invmod(publickey.e, phi)
                     plains = []
+
                     if cipher is not None and len(cipher) > 0:
                         for c in cipher:
                             int_big = int.from_bytes(c, "big")
-                            plain1 = pow(int_big, d, publickey.n)
+                            plain1 = powmod(int_big, d, publickey.n)
                             plains.append(long_to_bytes(plain1))
-                    return (None, plains)
+
+                            return (None, plains)
                 return (None, None)
             except NotImplementedError:
                 return (None, None)

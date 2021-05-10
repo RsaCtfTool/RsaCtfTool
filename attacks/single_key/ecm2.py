@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.rsalibnum import modInv
 from lib.utils import rootpath
-
+from gmpy2 import powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -42,7 +42,7 @@ class Attack(AbstractAttack):
                         try:
                             cipher_int = int.from_bytes(c, "big")
                             d = modInv(publickey.e, phi)
-                            m = hex(pow(cipher_int, d, publickey.n))[2::]
+                            m = hex(powmod(cipher_int, d, publickey.n))[2::]
                             plain.append(bytes.fromhex(m))
                         except:
                             continue

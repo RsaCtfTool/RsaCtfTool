@@ -6,7 +6,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from gmpy2 import gcd, isqrt, next_prime
+from gmpy2 import gcd, isqrt, next_prime, powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -39,7 +39,7 @@ class Attack(AbstractAttack):
                 i = 0
                 x = pp
                 while 1:
-                    x = pow(x, z[i], n)
+                    x = powmod(x, z[i], n)
                     i = i + 1
                     y = gcd(n, x - 1)
                     if y != 1:

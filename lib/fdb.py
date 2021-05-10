@@ -1,9 +1,11 @@
 # reports factors to factordb
 import re
 import urllib3
+import logging
 
 http = urllib3.PoolManager()
 
+logger = logging.getLogger("global_logger")
 
 def send2fdb(composite, factors):
     factors = map(str, factors)
@@ -18,4 +20,10 @@ def send2fdb(composite, factors):
         "POST", url, encode_multipart=False, headers=headers, fields=payload
     )
     webpage = str(response.data.decode("utf-8"))
-    print("Factordb: " + re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0])
+
+    msg = re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0]
+    if msg != "":
+        if msg == 'Found 0 factors and 0 ECM':
+            logger.info("[!] All the factors we found are already known to factordb")
+        else:
+            logger.info("[+] Factordb: " + re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0])
