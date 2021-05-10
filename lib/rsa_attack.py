@@ -78,6 +78,10 @@ class RSAAttack(object):
                 else:
                     priv_keys = self.priv_key
 
+                k, ok = self.pre_attack_check(priv_keys)
+                if not ok:
+                    return False
+
                 for priv_key in priv_keys:
                     unciphered = priv_key.decrypt(cipher)
                     if not isinstance(unciphered, list):
@@ -92,37 +96,43 @@ class RSAAttack(object):
 
         print_results(self.args, publickeyname, self.priv_key, self.unciphered)
 
-    def pre_check_attack(self, publickeys):
+    def pre_attack_check(self, publickeys):
         """Basic pre Attack checks implementation"""
         if not isinstance(publickeys, list):
             publickeys = [publickeys]
         tmp = []
+        ok = True
         for publickey in publickeys:
             if publickey.n % 2 == 0:
                 self.logger.error(
-                    "Public key: %s modulus should be odd" % publickey.filename
+                    "[!] Public key: %s modulus should be odd." % publickey.filename
                 )
+                ok = False
             if gcd(publickey.n, publickey.e) > 1:
                 self.logger.info(
-                    "Public key: %s modulus is coprime with exponent"
+                    "[!] Public key: %s modulus is coprime with exponent."
                     % publickey.filename
                 )
+                ok = False
             if not (publickey.n > 3):
                 self.logger.error(
-                    "Public key: %s modulus should be > 3" % publickey.filename
+                    "[!] Public key: %s modulus should be > 3." % publickey.filename
                 )
+                ok = False
             if is_prime(publickey.n):
                 self.logger.error(
-                    "Public key: %s modulus should not be prime" % publickey.filename
+                    "[!] Public key: %s modulus should not be prime." % publickey.filename
                 )
+                ok = False
             i = isqrt(publickey.n)
             if publickey.n == (i ** 2):
                 self.logger.info(
-                    "Public key: %s modulus is a perfect square" % publickey.filename
+                    "[!] Public key: %s modulus should not be a perfect square." % publickey.filename
                 )
                 publickey.p = i
                 publickey.q = i
                 tmp.append(publickey)
+                ok = False
         return (tmp, None)
 
     def load_attacks(self, attacks_list, multikeys=False):
@@ -204,7 +214,9 @@ class RSAAttack(object):
             exit(1)
 
         self.publickey = publickeys_obj
-        self.pre_check_attack(self.publickey)
+        k, ok = self.pre_attack_check(self.publickey)
+        if not ok:
+            return False
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
             if isinstance(self.publickey, list):
@@ -266,7 +278,9 @@ class RSAAttack(object):
             self.logger.error("[*] %s." % e)
             return
 
-        self.pre_check_attack(self.publickey)
+        k, ok = self.pre_attack_check(self.publickey)
+        if not ok:
+            return False
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
             self.args.n = self.publickey.n
