@@ -97,11 +97,14 @@ class Attack(AbstractAttack):
                         phi *= int(p) - 1
                     d = invmod(publickey.e, phi)
                     plains = []
-                    for c in cipher:
-                        int_big = int.from_bytes(c, "big")
-                        plain1 = powmod(int_big, d, publickey.n)
-                        plains.append(long_to_bytes(plain1))
-                    return (None, plains)
+
+                    if cipher is not None and len(cipher) > 0:
+                        for c in cipher:
+                            int_big = int.from_bytes(c, "big")
+                            plain1 = powmod(int_big, d, publickey.n)
+                            plains.append(long_to_bytes(plain1))
+
+                            return (None, plains)
                 return (None, None)
             except NotImplementedError:
                 return (None, None)
