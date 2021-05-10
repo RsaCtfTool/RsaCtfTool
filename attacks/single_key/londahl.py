@@ -6,7 +6,7 @@ from tqdm import tqdm
 from lib.utils import isqrt, invmod
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-
+from gmpy2 import powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -25,8 +25,8 @@ class Attack(AbstractAttack):
             z = (z * 2) % n
 
         # check the table
-        mu = invmod(pow(2, phi_approx, n), n)
-        fac = pow(2, b, n)
+        mu = invmod(powmod(2, phi_approx, n), n)
+        fac = powmod(2, b, n)
 
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if mu in look_up:
