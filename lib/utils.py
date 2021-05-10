@@ -8,22 +8,15 @@ import base64
 import logging
 import subprocess
 import contextlib
-from lib.rsalibnum import invmod
+import binascii
 from lib.keys_wrapper import PublicKey
-import math
+from lib.rsalibnum import invmod
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
 _libutil_ = os.path.realpath(__file__)
 rootpath, _libutil_ = os.path.split(_libutil_)
 rootpath = "%s/.." % rootpath  # up one dir
-
-
-def getpubkeysz(n):
-    size = int(math.log(n) / math.log(2))
-    if size % 2 != 0:
-        size += 1
-    return size
 
 
 def get_numeric_value(value):
@@ -157,48 +150,6 @@ def print_results(args, publickey, private_key, uncipher):
             logger.critical("Sorry, unciphering failed.")
 
 
-def isqrt(n):
-    if n == 0:
-        return 0
-    x, y = n, (n + 1) // 2
-    while y < x:
-        x, y = y, (y + n // y) // 2
-    return x
-
-
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return abs(a)
-
-
-def introot(n, r=2):
-    if n < 0:
-        return None if r % 2 == 0 else -introot(-n, r)
-    if n < 2:
-        return n
-    if r == 2:
-        return isqrt(n)
-    lower, upper = 0, n
-    while lower != upper - 1:
-        mid = (lower + upper) // 2
-        m = mid ** r
-        if m == n:
-            return mid
-        elif m < n:
-            lower = mid
-        elif m > n:
-            upper = mid
-    return lower
-
-
-def modinv(a, m):
-    a, x, u = a % m, 0, 1
-    while a:
-        x, u, m, a = u, x - (m // a) * u, a, m % a
-    return x
-
-
 class TimeoutError(Exception):
     def __init__(self, value="Timed Out"):
         self.value = value
@@ -235,3 +186,23 @@ class timeout(contextlib.ContextDecorator):
         signal.alarm(0)
         if self.suppress and exc_type is TimeoutError:
             return True
+
+
+def s2n(s):
+    """
+    String to number.
+    """
+    if not len(s):
+        return 0
+    return int(binascii.hexlify(s), 16)
+
+
+def n2s(n):
+    """
+    Number to string.
+    """
+    s = hex(n)[2:].rstrip("L")
+    if len(s) % 2 != 0:
+        s = "0" + s
+
+    return binascii.unhexlify(s)
