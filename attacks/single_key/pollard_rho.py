@@ -14,7 +14,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
 
     def pollard_rho(self, n, seed=2, p=2, mode=1):
-        if n % 2 == 0:
+        if n & 1 == 0:
             return 2
         if n % 3 == 0:
             return 3

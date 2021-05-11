@@ -57,7 +57,7 @@ class WienerAttack(object):
                 if discr >= 0:
                     t = isqrt(discr)
                     if t ** 2 == discr: 
-                        if (s + t) % 2 == 0:
+                        if (s + t) & 1 == 0:
                             self.d = d
                             x = Symbol("x")
                             roots = solve(x ** 2 - s * x + n, x)

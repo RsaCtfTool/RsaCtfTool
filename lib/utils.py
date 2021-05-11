@@ -202,7 +202,7 @@ def n2s(n):
     Number to string.
     """
     s = hex(n)[2:].rstrip("L")
-    if len(s) % 2 != 0:
+    if len(s) & 1 != 0:
         s = "0" + s
 
     return binascii.unhexlify(s)

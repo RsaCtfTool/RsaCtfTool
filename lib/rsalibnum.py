@@ -30,7 +30,7 @@ except ImportError:
 
 def getpubkeysz(n):
     size = int(math.log2(n))
-    if size % 2 != 0:
+    if size & 1 != 0:
         size += 1
     return size
 
@@ -60,7 +60,7 @@ def _gcd(a, b):
 
 def _introot(n, r=2):
     if n < 0:
-        return None if r % 2 == 0 else -_introot(-n, r)
+        return None if r & 1 == 0 else -_introot(-n, r)
     if n < 2:
         return n
     if r == 2:
@@ -80,13 +80,13 @@ def _introot(n, r=2):
 
 def _introot_gmpy(n, r=2):
     if n < 0:
-        return None if r % 2 == 0 else -_introot_gmpy(-n, r)
+        return None if r & 1 == 0 else -_introot_gmpy(-n, r)
     return gmpy.root(n, r)[0]
 
 
 def _introot_gmpy2(n, r=2):
     if n < 0:
-        return None if r % 2 == 0 else -_introot_gmpy2(-n, r)
+        return None if r & 1 == 0 else -_introot_gmpy2(-n, r)
     return gmpy.iroot(n, r)[0]
 
 
@@ -114,11 +114,11 @@ def miller_rabin(n, k=40):
     if n == 2:
         return True
 
-    if n % 2 == 0:
+    if n & 1 == 0:
         return False
 
     r, s = 0, n - 1
-    while s % 2 == 0:
+    while s & 1 == 0:
         r += 1
         s //= 2
     i = 0
