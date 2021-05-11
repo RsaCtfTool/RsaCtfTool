@@ -7,11 +7,11 @@ import binascii
 import subprocess
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-from lib.rsalibnum import invmod
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
-from gmpy2 import powmod
+from lib.rsalibnum import powmod, invmod, invert
+#from gmpy2 import invert
 
 logger = logging.getLogger("global_logger")
 
@@ -105,9 +105,10 @@ class PrivateKey(object):
         self.d = None
         if self.phi is not None and self.e is not None:
             try:
-                self.d = invmod(e, self.phi)
+                self.d = int(invert(e, self.phi))
             except ValueError:
                 # invmod failure
+                logger.error("[!] e^d==1 inversion error, check your math.")
                 pass
 
         self.key = None

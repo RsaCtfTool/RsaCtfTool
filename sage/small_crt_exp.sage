@@ -1,5 +1,5 @@
 from sage.libs.ntl.ntl_ZZ_pX import ntl_ZZ_pContext, ntl_ZZ_pX
-from gmpy2 import powmod
+from lib.rsalibnum import powmod
 
 def poly_fast_ntl(ctx, f, xs):
     # Fast multipoint evaulation from Modern Computer Algebra 3rd edition 10.1

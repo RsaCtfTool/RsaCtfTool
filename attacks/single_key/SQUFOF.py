@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
-from gmpy2 import gcd, isqrt
+from lib.rsalibnum import gcd, isqrt
 
 
 # Code borrowed and adapted from the wikipedia: https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization

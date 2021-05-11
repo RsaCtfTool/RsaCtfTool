@@ -18,8 +18,8 @@ import tempfile
 from glob import glob
 from Crypto.PublicKey import RSA
 from lib.rsa_attack import RSAAttack
-from lib.rsalibnum import n2s, invmod
-from lib.utils import get_numeric_value, print_results, get_base64_value
+from lib.rsalibnum import invmod
+from lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
 from lib.customlogger import CustomFormatter, logger_levels

@@ -1,6 +1,6 @@
 import sys
 from sage.all import inverse_mod, PolynomialRing, floor, Zmod
-from gmpy2 import powmod
+from lib.rsalibnum import powmod
 
 
 def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):

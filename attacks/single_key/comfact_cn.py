@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import s2n, gcd
+from lib.rsalibnum import gcd
+from lib.utils import s2n
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
@@ -38,3 +39,6 @@ class Attack(AbstractAttack):
                 return (None, None)
         return (None, None)
 
+    def test(self):
+        """ FIXME: Implment testcase """
+        raise NotImplementedError

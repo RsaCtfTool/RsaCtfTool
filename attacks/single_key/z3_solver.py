@@ -3,7 +3,7 @@
 
 from z3 import Solver, Int ,set_param
 from attacks.abstract_attack import AbstractAttack
-from gmpy2 import isqrt
+from lib.rsalibnum import isqrt
 from lib.utils import timeout, TimeoutError
 from lib.keys_wrapper import PrivateKey
 set_param('parallel.enable', True)

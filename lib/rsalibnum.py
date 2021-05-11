@@ -5,6 +5,7 @@ from functools import reduce
 import binascii
 import math
 import logging
+import random
 
 logger = logging.getLogger("global_logger")
 
@@ -120,19 +121,23 @@ def miller_rabin(n, k=40):
     while s % 2 == 0:
         r += 1
         s //= 2
-    for _ in xrange(k):
+    i = 0
+    while i <= k:
         a = random.randrange(2, n - 1)
         x = pow(a, s, n)
         if x == 1 or x == n - 1:
             continue
-        for _ in xrange(r - 1):
+        j = 0
+        while j <= r - 1:
             x = pow(x, 2, n)
             if x == n - 1:
                 break
+            j += 1
         else:
             return False
+        i += 1
     return True
-
+_is_prime = miller_rabin
 
 def _next_prime(n):
     while True:

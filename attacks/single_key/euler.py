@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from gmpy2 import gcd, isqrt
+from lib.rsalibnum import gcd, isqrt
 from lib.utils import timeout, TimeoutError
 
 

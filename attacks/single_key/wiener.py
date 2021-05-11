@@ -8,7 +8,7 @@ from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-
+from lib.rsalibnum import isqrt, is_square
 
 class WienerAttack(object):
     def rational_to_contfrac(self, x, y):
@@ -39,32 +39,6 @@ class WienerAttack(object):
             (num, denom) = self.contfrac_to_rational(remainder)
             return (frac[0] * num + denom, num)
 
-    def is_perfect_square(self, n):
-        """Is n a perfect square ?"""
-        h = n & 0xF
-        if h > 9:
-            return -1
-
-        if h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8:
-            t = self.isqrt(n)
-            if t * t == n:
-                return t
-            else:
-                return -1
-
-        return -1
-
-    def isqrt(self, n):
-        """Is n a square ?"""
-        if n == 0:
-            return 0
-        a, b = divmod(n.bit_length(), 2)
-        x = 2 ** (a + b)
-        while True:
-            y = (x + n // x) // 2
-            if y >= x:
-                return x
-            x = y
 
     def __init__(self, n, e, progress=True):
         """Constructor"""
@@ -81,15 +55,16 @@ class WienerAttack(object):
                 s = n - phi + 1
                 discr = s * s - 4 * n
                 if discr >= 0:
-                    t = self.is_perfect_square(discr)
-                    if t != -1 and (s + t) % 2 == 0:
-                        self.d = d
-                        x = Symbol("x")
-                        roots = solve(x ** 2 - s * x + n, x)
-                        if len(roots) == 2:
-                            self.p = roots[0]
-                            self.q = roots[1]
-                        break
+                    t = isqrt(discr)
+                    if t ** 2 == discr: 
+                        if (s + t) % 2 == 0:
+                            self.d = d
+                            x = Symbol("x")
+                            roots = solve(x ** 2 - s * x + n, x)
+                            if len(roots) == 2:
+                                self.p = roots[0]
+                                self.q = roots[1]
+                            break
 
 
 class Attack(AbstractAttack):

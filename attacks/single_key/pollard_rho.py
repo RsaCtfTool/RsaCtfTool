@@ -5,7 +5,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from gmpy2 import is_prime, gcd
+from lib.rsalibnum import is_prime, gcd
 
 
 class Attack(AbstractAttack):
