@@ -191,6 +191,13 @@ def _lcm(x, y):
    return (x*y)//_gcd(x,y)
 
 
+def _ilog2_gmpy(n):
+   return int(gmpy.log2(n))
+
+
+def _ilog2_math(n):
+   return int(math.log2(n))
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     invmod = gmpy.invert
@@ -203,6 +210,7 @@ if gmpy_version > 0:
     lcm = gmpy.lcm
     invert = gmpy.invert
     powmod = gmpy.powmod
+    ilog2 = _ilog2_gmpy
     if gmpy_version == 2:
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
@@ -225,5 +233,6 @@ else:
     lcm = _lcm
     invert = _invmod
     powmod = pow
+    ilog2 = _ilog2_math
 
-__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod]
+__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2]
