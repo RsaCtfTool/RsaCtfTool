@@ -46,9 +46,9 @@ def _gcdext(a, b):
 def _isqrt(n):
     if n == 0:
         return 0
-    x, y = n, (n + 1) // 2
+    x, y = n, (n + 1) >> 1
     while y < x:
-        x, y = y, (y + n // y) // 2
+        x, y = y, (y + n // y) >> 1
     return x
 
 
@@ -67,7 +67,7 @@ def _introot(n, r=2):
         return _isqrt(n)
     lower, upper = 0, n
     while lower != upper - 1:
-        mid = (lower + upper) // 2
+        mid = (lower + upper) >> 1
         m = mid ** r
         if m == n:
             return mid

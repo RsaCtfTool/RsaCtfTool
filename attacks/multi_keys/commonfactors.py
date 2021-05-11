@@ -15,7 +15,7 @@ def ProductTree(s):
         if l & 1 != 0:
             s += [1]
             l += 1
-        s = list(map(mul, s[0 : l // 2], s[l // 2 :]))
+        s = list(map(mul, s[0 : l >> 1], s[l >>1 :]))
         l = len(s)
     return s[0]
 

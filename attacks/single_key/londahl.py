@@ -37,7 +37,7 @@ class Attack(AbstractAttack):
             return None
 
         m = n - phi + 1
-        roots = ((m - isqrt(m ** 2 - 4 * n)) // 2, (m + isqrt(m ** 2 - 4 * n)) // 2)
+        roots = ((m - isqrt(m ** 2 - 4 * n)) >> 1, (m + isqrt(m ** 2 - 4 * n)) >> 1)
 
         if roots[0] * roots[1] == n:
             return roots

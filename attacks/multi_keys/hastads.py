@@ -36,9 +36,9 @@ class Attack(AbstractAttack):
         high = 1
         while high ** n < x:
             high *= 2
-        low = high // 2
+        low = high >> 1
         while low < high:
-            mid = (low + high) // 2
+            mid = (low + high) >> 1
             if low < mid and mid ** n < x:
                 low = mid
             elif high > mid and mid ** n > x:

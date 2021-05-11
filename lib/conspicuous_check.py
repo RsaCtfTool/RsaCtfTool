@@ -21,16 +21,16 @@ def privatekey_check(N, p, q, d, e):
     if p * q != N:
         ret = True
         txt += "n IS NOT p * q\n"
-    if not (abs(p - q) > (2 ** (nlen // 2 - 100))):
+    if not (abs(p - q) > (2 ** ((nlen >> 1) - 100))):
         ret = True
         txt += "|p - q| IS NOT > 2^(nlen/2 - 100)\n"
-    if not (p > 2 ** (nlen // 2 - 1)):
+    if not (p > 2 ** ((nlen >> 1) - 1)):
         ret = True
         txt += "p IS NOT > 2^(nlen/2 - 1)\n"
-    if not (q > 2 ** (nlen // 2 - 1)):
+    if not (q > 2 ** ((nlen >> 1) - 1)):
         ret = True
         txt += "q IS NOT > 2^(nlen/2 - 1)\n"
-    if not (d > 2 ** (nlen // 2)):
+    if not (d > 2 ** (nlen >> 1)):
         ret = True
         txt += "d IS NOT > 2^(nlen/2)\n"
     if not (d < lcm(p - 1, q - 1)):

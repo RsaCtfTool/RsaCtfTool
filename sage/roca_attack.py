@@ -53,8 +53,8 @@ def roca(n):
     beta = 0.1
     a3 = Zmod(M_prime)(n).log(65537)
     order = Zmod(M_prime)(65537).multiplicative_order()
-    inf = a3 // 2
-    sup = (a3 + order) // 2
+    inf = a3 >> 1
+    sup = (a3 + order) >> 1
     # Upper bound for the small root x0
     XX = floor(2 * n ** 0.5 / M_prime)
     invmod_Mn = inverse_mod(M_prime, n)

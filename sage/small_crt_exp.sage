@@ -11,7 +11,7 @@ def poly_fast_ntl(ctx, f, xs):
             x = xs[l] if l < len(xs) else 0
             rems[i] = ntl_ZZ_pX([-x, 1], ctx)
             return
-        mid = (l + r) // 2
+        mid = (l + r) >> 1
         build_tree(i * 2, l, mid)
         build_tree(i * 2 + 1, mid, r)
         rems[i] = rems[i * 2] * rems[i * 2 + 1]
@@ -22,7 +22,7 @@ def poly_fast_ntl(ctx, f, xs):
         if l + 1 == r:
             yield f % rems[i]
             return
-        mid = (l + r) // 2
+        mid = (l + r) >> 1
         yield from compute(f % rems[2 * i], 2 * i, l, mid)
         yield from compute(f % rems[2 * i + 1], 2 * i + 1, mid, r)
 

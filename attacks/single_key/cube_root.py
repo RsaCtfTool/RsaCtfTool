@@ -24,7 +24,7 @@ class Attack(AbstractAttack):
                         low = 0
                         high = cipher_int
                         while low < high:
-                            mid = (low + high) // 2
+                            mid = (low + high) >> 1
                             if pow(mid, publickey.e) < cipher_int:
                                 low = mid + 1
                             else:

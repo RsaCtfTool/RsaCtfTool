@@ -14,7 +14,7 @@ class Attack(AbstractAttack):
 
     def euler(self, n):
         if n & 1 == 0:
-            return (n / 2, 2) if n > 2 else (2, 1)
+            return (n >> 1, 2) if n > 2 else (2, 1)
         end = isqrt(n)
         a = 0
         solutionsFound = []
@@ -38,7 +38,7 @@ class Attack(AbstractAttack):
         m = gcd(a + c, d - b)
         l = gcd(a - c, d + b)
         n = (k ** 2 + h ** 2) * (l ** 2 + m ** 2)
-        return [int(k ** 2 + h ** 2) // 2, int(l ** 2 + m ** 2) // 2]
+        return [int(k ** 2 + h ** 2) >> 1, int(l ** 2 + m ** 2) >> 1]
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
