@@ -10,7 +10,7 @@ this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
 """
 
-import sys
+import sys, os
 import logging
 import argparse
 import urllib3
@@ -169,7 +169,11 @@ if __name__ == "__main__":
         args.q = get_numeric_value(args.q)
 
     if args.e is not None:
-        args.e = get_numeric_value(args.e)
+        e_array = []
+        for e in args.e.split(","):
+            e_int = get_numeric_value(e)
+            e_array.append(e_int)
+        args.e = e_array if len(e_array) > 1 else e_array[0]
 
     # get n if we can
     if args.n is not None:
@@ -253,10 +257,12 @@ if __name__ == "__main__":
     # Load keys
     tmpfile = None
     if args.publickey is None and args.e is not None and args.n is not None:
-        tmpfile = tempfile.NamedTemporaryFile()
-        with open(tmpfile.name, "wb") as tmpfd:
-            tmpfd.write(RSA.construct((args.n, args.e)).publickey().exportKey())
-        args.publickey = [tmpfile.name]
+        args.publickey = []
+        for e in (args.e if isinstance(args.e, list) else [args.e]):
+            tmpfile = tempfile.NamedTemporaryFile(delete=False)
+            with open(tmpfile.name, "wb") as tmpfd:
+                tmpfd.write(RSA.construct((args.n, e)).publickey().exportKey())
+            args.publickey.append(tmpfile.name)
 
     elif args.publickey is not None:
         if "*" in args.publickey or "?" in args.publickey:
@@ -374,9 +380,16 @@ if __name__ == "__main__":
     if args.publickey is not None:
         for publickey in args.publickey:
             attackobj.implemented_attacks = []
+            attackobj.unciphered = []
             logger.info("\n[*] Testing key %s." % publickey)
             attackobj.attack_single_key(publickey, attacks_list)
-            attackobj.unciphered = []
 
     if args.publickey is None:
         logger.error("No key specified")
+
+    for pub in args.publickey:
+        try:
+            if "tmp" in pub:
+                os.remove(pub)
+        except:
+            continue
