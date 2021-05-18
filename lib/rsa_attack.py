@@ -78,9 +78,10 @@ class RSAAttack(object):
                 else:
                     priv_keys = self.priv_key
 
-                k, ok = self.pre_attack_check(priv_keys)
-                if not ok:
-                    return False
+                if self.args.check_publickey:
+                    k, ok = self.pre_attack_check(priv_keys)
+                    if not ok:
+                        return False
 
                 for priv_key in priv_keys:
                     unciphered = priv_key.decrypt(cipher)
@@ -109,7 +110,7 @@ class RSAAttack(object):
                 )
                 ok = False
             if gcd(publickey.n, publickey.e) > 1:
-                self.logger.info(
+                self.logger.error(
                     "[!] Public key: %s modulus is coprime with exponent."
                     % publickey.filename
                 )
@@ -126,7 +127,7 @@ class RSAAttack(object):
                 ok = False
             i = isqrt(publickey.n)
             if publickey.n == (i ** 2):
-                self.logger.info(
+                self.logger.error(
                     "[!] Public key: %s modulus should not be a perfect square." % publickey.filename
                 )
                 publickey.p = i
@@ -214,9 +215,10 @@ class RSAAttack(object):
             exit(1)
 
         self.publickey = publickeys_obj
-        k, ok = self.pre_attack_check(self.publickey)
-        if not ok:
-            return False
+        if self.args.check_publickey:
+            k, ok = self.pre_attack_check(self.publickey)
+            if not ok:
+                return False
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
             if isinstance(self.publickey, list):
@@ -278,9 +280,10 @@ class RSAAttack(object):
             self.logger.error("[*] %s." % e)
             return
 
-        k, ok = self.pre_attack_check(self.publickey)
-        if not ok:
-            return False
+        if self.args.check_publickey:
+            k, ok = self.pre_attack_check(self.publickey)
+            if not ok:
+                return False
         # Read n/e from publickey file
         if not self.args.n or not self.args.e:
             self.args.n = self.publickey.n

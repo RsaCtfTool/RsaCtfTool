@@ -134,6 +134,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--convert_idrsa_pub", help="Convert idrsa.pub to pem", action="store_true"
     )
+    parser.add_argument(
+        "--check_publickey", help="Check publickey if modulus is well formed before attack", action="store_true"
+    )
 
     args = parser.parse_args()
 
