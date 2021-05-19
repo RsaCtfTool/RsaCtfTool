@@ -160,7 +160,8 @@ def _primes_yield(n):
     p = i = 1
     while i <= n:
       p = next_prime(p)
-
+      yield p
+      i += 1
 
 def _primes_yield_gmpy(n):
     p = i = 1
