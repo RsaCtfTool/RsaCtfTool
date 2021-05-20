@@ -120,9 +120,9 @@ def miller_rabin(n, k=40):
     r, s = 0, n - 1
     while s & 1 == 0:
         r += 1
-        s //= 2
+        s >>= 1
     i = 0
-    while i <= k:
+    for i in range(0,k):
         a = random.randrange(2, n - 1)
         x = pow(a, s, n)
         if x == 1 or x == n - 1:
@@ -135,9 +135,21 @@ def miller_rabin(n, k=40):
             j += 1
         else:
             return False
-        i += 1
     return True
-_is_prime = miller_rabin
+
+
+def _fermat_prime_criterion(n):
+  """Fermat's prime criterion
+  Returns False if n is definitely composite, True if posible prime."""
+  return pow(2,n-1,n) == 1
+
+
+def _is_prime(n):
+  if _fermat_prime_criterion(n):
+    return miller_rabin(n)
+  else:
+    return False
+
 
 def _next_prime(n):
     while True:
