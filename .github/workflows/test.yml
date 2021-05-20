@@ -11,11 +11,7 @@ jobs:
     strategy:
       matrix:
         python:
-          - { id: "python3.6", version: "3.6" }
           - { id: "python3.9", version: "3.9" }
-        sage:
-          - { id: "sage", install: true }
-          - { id: "no-sage", install: false }
       fail-fast: false
 
     steps:
@@ -61,7 +57,6 @@ jobs:
       run: |
         sudo apt install -y libmpc-dev
     - name: Install SageMath
-      if: matrix.sage.install
       run: |
         sudo apt install sagemath
     - name: Install python dependencies
