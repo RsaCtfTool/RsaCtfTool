@@ -134,7 +134,7 @@ class RSAAttack(object):
                 publickey.q = i
                 tmp.append(publickey)
                 ok = False
-        return (tmp, None)
+        return (tmp, ok)
 
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
