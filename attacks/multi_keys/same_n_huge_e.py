@@ -27,9 +27,8 @@ def exgcd(m, n, x, y):
         return (d, x, y)
 
 class Attack(AbstractAttack):
-    def __init__(self, attack_rsa_obj, timeout=60):
+    def __init__(self, timeout=60):
         super().__init__(timeout)
-        self.attack_rsa_obj = attack_rsa_obj
         self.speed = AbstractAttack.speed_enum["medium"]
 
     def attack(self, publickey, cipher=[], progress=True):
