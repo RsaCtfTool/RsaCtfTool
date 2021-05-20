@@ -138,14 +138,20 @@ def miller_rabin(n, k=40):
     return True
 
 
-def _fermat_prime_criterion(n):
+def _fermat_prime_criterion(n,b=2):
   """Fermat's prime criterion
   Returns False if n is definitely composite, True if posible prime."""
-  return pow(2,n-1,n) == 1
+  return pow(b,n-1,n) == 1
 
 
 def _is_prime(n):
-  if _fermat_prime_criterion(n):
+  """
+  If fermats prime criterion is false by short circuit we dont need to keep testing bases, so we return false for a guaranteed composite.
+  Otherwise we keep trying with primes 3 and 5 as base. The sweet spot is primes 2,3,5, it doesn't improvee the runing time adding more primes to test as base.
+  If all the previus tests pass then we try with rabin miller.
+  All the tests are probabilistic.
+  """
+  if _fermat_prime_criterion(n) and _fermat_prime_criterion(n,b=3) and _fermat_prime_criterion(n,b=5):
     return miller_rabin(n)
   else:
     return False
