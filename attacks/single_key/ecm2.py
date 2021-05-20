@@ -3,9 +3,9 @@
 
 from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.rsalibnum import modInv
 from lib.utils import rootpath
-from gmpy2 import powmod
+from lib.rsalibnum import invert,powmod
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -41,7 +41,7 @@ class Attack(AbstractAttack):
                     for c in cipher:
                         try:
                             cipher_int = int.from_bytes(c, "big")
-                            d = modInv(publickey.e, phi)
+                            d = invert(publickey.e, phi)
                             m = hex(powmod(cipher_int, d, publickey.n))[2::]
                             plain.append(bytes.fromhex(m))
                         except:

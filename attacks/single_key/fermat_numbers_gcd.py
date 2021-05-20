@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from gmpy2 import gcd
+from lib.rsalibnum import gcd
 
 
 class Attack(AbstractAttack):

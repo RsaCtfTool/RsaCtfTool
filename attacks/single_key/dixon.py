@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
-from gmpy2 import isqrt, gcd, next_prime, is_prime, powmod
+from lib.rsalibnum import isqrt, gcd, next_prime, is_prime, primes, powmod
 import bitarray
 
 def dixon_factor(N,B=7,explain=False):
@@ -21,15 +21,6 @@ def dixon_factor(N,B=7,explain=False):
   lqbf = powmod(B,2,N) * 2
   QBF = bitarray.bitarray(lqbf) # This is our quasi-bloom-filter
 
-  def primes(B):
-    p = 2
-    tmp = []
-    #n=0
-    while p <= B:
-      tmp.append(p)
-      p = next_prime(p)
-      #n += 1
-    return tmp
   base = primes(B)
 
   basej2N = []

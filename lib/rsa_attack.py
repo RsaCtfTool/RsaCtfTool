@@ -9,7 +9,7 @@ from lib.utils import print_results
 from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 import inspect
-from gmpy2 import is_prime, isqrt, gcd
+from lib.rsalibnum import is_prime, isqrt, gcd
 
 
 class RSAAttack(object):
@@ -104,7 +104,7 @@ class RSAAttack(object):
         tmp = []
         ok = True
         for publickey in publickeys:
-            if publickey.n % 2 == 0:
+            if publickey.n & 1 == 0:
                 self.logger.error(
                     "[!] Public key: %s modulus should be odd." % publickey.filename
                 )

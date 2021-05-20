@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
-from gmpy2 import isqrt
+from lib.rsalibnum import isqrt
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):

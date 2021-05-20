@@ -5,8 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from math import log2
-from gmpy2 import gcd
+from lib.rsalibnum import gcd, ilog2
 
 
 class Attack(AbstractAttack):
@@ -19,7 +18,7 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 p = q = None
-                for i in tqdm(range(2, int(log2(publickey.n))), disable=(not progress)):
+                for i in tqdm(range(2, ilog2(publickey.n)), disable=(not progress)):
                     i2 = 2 ** i
                     mersenne = [i2 - 1, i2 + 1]
                     g0, g1 = gcd(mersenne[0], publickey.n), gcd(
