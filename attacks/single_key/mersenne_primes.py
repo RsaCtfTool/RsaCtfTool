@@ -71,9 +71,10 @@ class Attack(AbstractAttack):
                     82589933,
                 ]
                 for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
-                    if publickey.n % ((2 ** mersenne_prime) - 1) == 0:
-                        p = (2 ** mersenne_prime) - 1
-                        q = publickey.n // ((2 ** mersenne_prime) - 1)
+                    m = (2 << mersenne_prime)-1
+                    if publickey.n % m == 0:
+                        p = m 
+                        q = publickey.n // p
                         break
                 if p is not None and q is not None:
                     priv_key = PrivateKey(
