@@ -18,10 +18,9 @@ def dixon_factor(N,B=7,explain=False):
   if (start ** 2) == N:
     return start,start
 
-  lqbf = powmod(B,2,N) * 2
-  QBF = bitarray.bitarray(lqbf) # This is our quasi-bloom-filter
-
   base = primes(B)
+  lqbf = pow(base[-1],2)+1
+  QBF = bitarray.bitarray(lqbf) # This is our quasi-bloom-filter
 
   basej2N = []
   for j in range(0,len(base)):
