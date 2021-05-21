@@ -39,8 +39,10 @@ def _gcdext(a, b):
     if a == 0:
         return [b, 0, 1]
     else:
-        g, y, x = _gcdext(b % a, a)
-        return [g, x - (b // a) * y, y]
+        d = b // a
+        r = b - (d * a)
+        g, y, x = _gcdext(r, a)
+        return [g, x - d * y, y]
 
 
 def _isqrt(n):
@@ -68,7 +70,7 @@ def _introot(n, r=2):
     lower, upper = 0, n
     while lower != upper - 1:
         mid = (lower + upper) >> 1
-        m = mid ** r
+        m = pow(mid, r)
         if m == n:
             return mid
         elif m < n:
@@ -167,9 +169,9 @@ def _next_prime(n):
 def erathostenes_sieve(n):
     """ Returns  a list of primes < n """
     sieve = [True] * n
-    for i in range(3, int(n ** 0.5) + 1, 2):
+    for i in range(3, isqrt(n) + 1, 2):
         if sieve[i]:
-            sieve[i * i :: 2 * i] = [False] * ((n - i * i - 1) // (2 * i) + 1)
+            sieve[pow(i, 2) :: (i << 1)] = [False] * ((n - pow(i, 2) - 1) // (i << 1) + 1)
     return [2] + [i for i in range(3, n, 2) if sieve[i]]
 _primes = erathostenes_sieve
 
