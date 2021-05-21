@@ -71,7 +71,7 @@ class Attack(AbstractAttack):
                     82589933,
                 ]
                 for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
-                    m = (2 << mersenne_prime)-1
+                    m = (2 << (mersenne_prime-1))-1
                     if publickey.n % m == 0:
                         p = m 
                         q = publickey.n // p
