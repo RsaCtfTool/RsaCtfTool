@@ -22,11 +22,11 @@ class Attack(AbstractAttack):
         z = 1
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             look_up[z] = i
-            z = (z * 2) % n
+            z = (z  << 1) % n
 
         # check the table
         mu = invmod(powmod(2, phi_approx, n), n)
-        fac = powmod(2, b, n)
+        fac = (2 << b) % n
 
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if mu in look_up:
@@ -37,7 +37,8 @@ class Attack(AbstractAttack):
             return None
 
         m = n - phi + 1
-        roots = ((m - isqrt(m ** 2 - 4 * n)) >> 1, (m + isqrt(m ** 2 - 4 * n)) >> 1)
+        i = isqrt(pow(m, 2) - (n << 2)) # same as isqrt((m**2) - (4*n))
+        roots = ((m - i) >> 1, (m + i) >> 1)
 
         if roots[0] * roots[1] == n:
             return roots
