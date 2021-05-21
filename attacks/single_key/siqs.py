@@ -25,7 +25,6 @@ class SiqsAttack(object):
     def __init__(self, n):
         """Configuration"""
         self.logger = logging.getLogger("global_logger")
-        self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
@@ -38,7 +37,7 @@ class SiqsAttack(object):
 
         try:
             yafutest = subprocess.check_output(
-                [self.yafubin, "siqs(1549388302999519)"],
+                ["yafu", "siqs(1549388302999519)"],
                 timeout=self.timeout,
                 stderr=subprocess.DEVNULL,
             )
@@ -47,20 +46,11 @@ class SiqsAttack(object):
 
         return b"48670331" in yafutest
 
-    def checkyafu(self):
-        # check if yafu exists and we can execute it
-        return os.path.isfile(self.yafubin) and os.access(self.yafubin, os.X_OK)
-
-    def benchmarksiqs(self):
-        # NYI
-        # return the time to factor a 256 bit RSA modulus
-        return
-
     def doattack(self):
         """Perform attack"""
         yafurun = subprocess.check_output(
             [
-                self.yafubin,
+                "yafu",
                 "siqs(" + str(self.n) + ")",
                 "-siqsT",
                 str(self.maxtime),
@@ -97,27 +87,9 @@ class SiqsAttack(object):
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
+        self.required_binaries = ["yafu"]
+        self.logger = logging.getLogger("global_logger")
         self.speed = AbstractAttack.speed_enum["medium"]
-
-    def can_run(self):
-        yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
-
-        if not os.path.isfile(yafubin) and os.access(yafubin, os.X_OK):
-            return False
-
-        try:
-            yafutest = subprocess.check_output(
-                [yafubin, "siqs(1549388302999519)"],
-                timeout=self.timeout,
-                stderr=subprocess.DEVNULL,
-            )
-        except:
-            yafutest = b""
-
-        if not b"48670331" in yafutest:
-            return False
-
-        return True
 
     def attack(self, publickey, cipher=[], progress=True):
         """Try to factorize using yafu"""
@@ -131,7 +103,6 @@ class Attack(AbstractAttack):
 
                 siqsobj = SiqsAttack(publickey.n)
 
-                siqsobj.checkyafu()
                 siqsobj.testyafu()
 
                 if siqsobj.checkyafu() and siqsobj.testyafu():

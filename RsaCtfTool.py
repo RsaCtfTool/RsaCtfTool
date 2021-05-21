@@ -135,7 +135,9 @@ if __name__ == "__main__":
         "--convert_idrsa_pub", help="Convert idrsa.pub to pem", action="store_true"
     )
     parser.add_argument(
-        "--check_publickey", help="Check publickey if modulus is well formed before attack", action="store_true"
+        "--check_publickey",
+        help="Check publickey if modulus is well formed before attack",
+        action="store_true",
     )
 
     args = parser.parse_args()
@@ -261,7 +263,7 @@ if __name__ == "__main__":
     tmpfile = None
     if args.publickey is None and args.e is not None and args.n is not None:
         args.publickey = []
-        for e in (args.e if isinstance(args.e, list) else [args.e]):
+        for e in args.e if isinstance(args.e, list) else [args.e]:
             tmpfile = tempfile.NamedTemporaryFile(delete=False)
             with open(tmpfile.name, "wb") as tmpfd:
                 tmpfd.write(RSA.construct((args.n, e)).publickey().exportKey())
@@ -370,10 +372,13 @@ if __name__ == "__main__":
 
     # Run tests
     if args.publickey is None and args.tests:
+        selected_attacks = attacks_list
+        if args.attack is not None:
+            selected_attacks = args.attack
         tmpfile = tempfile.NamedTemporaryFile()
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
-            attackobj.attack_single_key(tmpfile.name, attacks_list, test=True)
+            attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
 
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:

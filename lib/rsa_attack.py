@@ -122,13 +122,15 @@ class RSAAttack(object):
                 ok = False
             if is_prime(publickey.n):
                 self.logger.error(
-                    "[!] Public key: %s modulus should not be prime." % publickey.filename
+                    "[!] Public key: %s modulus should not be prime."
+                    % publickey.filename
                 )
                 ok = False
             i = isqrt(publickey.n)
             if publickey.n == (i ** 2):
                 self.logger.error(
-                    "[!] Public key: %s modulus should not be a perfect square." % publickey.filename
+                    "[!] Public key: %s modulus should not be a perfect square."
+                    % publickey.filename
                 )
                 publickey.p = i
                 publickey.q = i
