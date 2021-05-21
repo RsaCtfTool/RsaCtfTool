@@ -374,7 +374,11 @@ if __name__ == "__main__":
     if args.publickey is None and args.tests:
         selected_attacks = attacks_list
         if args.attack is not None:
-            selected_attacks = args.attack
+            if "," not in args.attack:
+                selected_attacks = args.attack
+        if "all" in selected_attacks:
+            selected_attacks = attacks_list
+
         tmpfile = tempfile.NamedTemporaryFile()
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
