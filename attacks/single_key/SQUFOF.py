@@ -22,7 +22,7 @@ def SQUFOF(N):
         D = multiplier[k] * N
         Po = Pprev = P = isqrt(D)
         Qprev = 1
-        Q = D - (Po ** 2)
+        Q = D - pow(Po, 2)
         B = 3 * L
         c0 = True
         i = 2
@@ -32,7 +32,7 @@ def SQUFOF(N):
             q = Q
             Q = Qprev + b * (Pprev - P)
             r = int(isqrt(Q) + 0.5)
-            if (not(i & 1) and ((r ** 2) == Q)):
+            if (not(i & 1) and (pow(r, 2) == Q)):
                 break
             Qprev = q
             Pprev = P
@@ -41,7 +41,7 @@ def SQUFOF(N):
         b = ((Po - P) // r)
         Pprev = P = b * r + P
         Qprev = r
-        Q = (D - (Pprev ** 2)) // Qprev
+        Q = (D - pow(Pprev, 2)) // Qprev
         i = 0
         c1 = True
         while(c1):
