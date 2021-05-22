@@ -19,31 +19,32 @@ class Attack(AbstractAttack):
         a = 0
         solutionsFound = []
         firstb = -1
+
         while a < end and len(solutionsFound) < 2:
             bsquare = n - pow(a, 2)
             if bsquare > 0:
                 b = isqrt(bsquare)
                 if (pow(b, 2) == bsquare) and (a != firstb) and (b != firstb):
                     firstb = b
-                    solutionsFound.append([int(b), a])
+                    solutionsFound.append([b, a])
             a += 1
         if len(solutionsFound) < 2:
-            return -1
+            return None
+
         a = solutionsFound[0][0]
         b = solutionsFound[0][1]
         c = solutionsFound[1][0]
         d = solutionsFound[1][1]
-        k = gcd(a - c, d - b)
-        h = gcd(a + c, d + b)
-        m = gcd(a + c, d - b)
-        l = gcd(a - c, d + b)
-        #n = (k ** 2 + h ** 2) * (l ** 2 + m ** 2)
-        pk2 = pow(k, 2)
-        ph2 = pow(h, 2)
-        pl2 = pow(l, 2)
-        pm2 = pow(m, 2)
-        n = (pk2 + ph2) * (pl2 + pm2)
-        return [(pk2 + ph2) >> 1, (pl2 + pm2) >> 1]
+
+        k = pow(gcd(a - c, d - b),2)
+        h = pow(gcd(a + c, d + b),2)
+        m = pow(gcd(a + c, d - b),2)
+        l = pow(gcd(a - c, d + b),2)
+
+        p, q = (k + h) >> 1, (l + m) >> 1
+
+        if n > gcd(p, n) > 1 or n > gcd(q, n) > 1:
+          return p,q
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
