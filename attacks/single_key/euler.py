@@ -5,12 +5,13 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.rsalibnum import gcd, isqrt
 from lib.utils import timeout, TimeoutError
-
+import logging
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
+        self.logger = logging.getLogger("global_logger")
 
     def euler(self, n):
         if n & 1 == 0:
