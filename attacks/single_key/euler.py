@@ -41,10 +41,13 @@ class Attack(AbstractAttack):
         m = pow(gcd(a + c, d - b),2)
         l = pow(gcd(a - c, d + b),2)
 
-        p, q = (k + h) >> 1, (l + m) >> 1
+        p, q = gcd(k + h, n), gcd(l + m, n)
 
-        if n > gcd(p, n) > 1 or n > gcd(q, n) > 1:
-          return p,q
+        if n > p > 1:
+          return p, n // p
+
+        if n > q > 1:
+          return q, n // q
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
@@ -57,7 +60,11 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    euler_res = self.euler(publickey.n)
+                    if ((publickey.n -1) % 4 == 0):
+                        euler_res = self.euler(publickey.n)
+                    else:
+                        self.logger.error("[!] Public key modulus must be congruent 1 mod 4 to work with euler method.")
+                        return(None,None)
                 except:
                     return (None, None)
                 if euler_res and len(euler_res) > 1:
@@ -80,9 +87,7 @@ class Attack(AbstractAttack):
         from lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
-MGYwDQYJKoZIhvcNAQEBBQADVQAwUgJLAi7v97hPb80NkMELBLYGAGEeDOdFAiW6
-5wq4OGN1P6nmUmg5iFRQA6YWU8x1WdQMmVs6KxIUS89W0InUN3JVQ9SzLE32nKXc
-t6rrAgMBAAE=
+MCIwDQYJKoZIhvcNAQEBBQADEQAwDgIHEAABggAEpQIDAQAB
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
