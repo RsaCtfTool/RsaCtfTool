@@ -5,26 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 import gmpy2
 from Crypto.Util import number
 from lib.utils import timeout, TimeoutError
-
-def exgcd(m, n, x, y):
-        if n == 0:
-            x, y = 1, 0
-            return (m, x, y)
-        a1 = b = 1
-        a = b1 = 0
-        c, d = m, n
-        q = int(c / d)
-        r = c % d
-        while r:
-            c, d = d, r
-            t, a1 = a1, a
-            a = t - q * a
-            t, b1 = b1, b
-            b = t - q * b
-            q = int(c / d)
-            r = c % d
-        x, y = a, b
-        return (d, x, y)
+from lib.rsalibnum import gcdext, powmod
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -50,10 +31,10 @@ class Attack(AbstractAttack):
                         return (None, None)
 
                     # e1*s1 + e2*s2 = 1
-                    _, s1, s2 = exgcd(e_array[0], e_array[1], 0, 0)
+                    _, s1, s2 = gcdext(e_array[0], e_array[1])
 
                     # m ≡ c1^s1 * c2*s2 mod n
-                    plain = (gmpy2.powmod(int.from_bytes(cipher[0], "big"), s1, n) * gmpy2.powmod(int.from_bytes(cipher[1], "big"), s2, n)) % n
+                    plain = (powmod(int.from_bytes(cipher[0], "big"), s1, n) * powmod(int.from_bytes(cipher[1], "big"), s2, n)) % n
 
                     return (None, number.long_to_bytes(plain))
             except TimeoutError:

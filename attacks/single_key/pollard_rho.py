@@ -13,7 +13,7 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
 
-    def pollard_rho(self, n, seed=2, p=2, mode=1):
+    def pollard_rho(self, n, seed=2, p=2, c=1):
         if n & 1 == 0:
             return 2
         if n % 3 == 0:
@@ -22,16 +22,14 @@ class Attack(AbstractAttack):
             return 5
         if is_prime(n):
             return n
-        if mode == 1:
-            f = lambda x: x ** p + 1
-        else:
-            f = lambda x: x ** p - 1
-        x, y, d = seed, seed, 1
-        while d == 1:
+        f = lambda x: x ** p + c
+        x, y = seed, seed
+        while True:
             x = f(x) % n
             y = f(f(y)) % n
-            d = gcd((x - y) % n, n)
-        return None if d == n else d
+            d = gcd((x - y), n)
+            if d > 1:
+                return d
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Pollard Rho"""

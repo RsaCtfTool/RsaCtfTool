@@ -50,21 +50,23 @@ class WienerAttack(object):
         convergents = self.convergents_from_contfrac(frac, progress)
 
         for (k, d) in tqdm(convergents, disable=(not progress)):
-            if k != 0 and (e * d - 1) % k == 0:
-                phi = (e * d - 1) // k
-                s = n - phi + 1
-                discr = s * s - 4 * n
-                if discr >= 0:
-                    t = isqrt(discr)
-                    if t ** 2 == discr: 
-                        if (s + t) & 1 == 0:
-                            self.d = d
-                            x = Symbol("x")
-                            roots = solve(x ** 2 - s * x + n, x)
-                            if len(roots) == 2:
-                                self.p = roots[0]
-                                self.q = roots[1]
-                            break
+            if k != 0:
+                ed1 = e * d - 1
+                phi = ed1 // k
+                if ed1 - (k * phi) == 0: # same as ed1 % k == 0 
+                    s = n - phi + 1
+                    discr = pow(s, 2) - (n << 2) # same as  s**2 - 4*n
+                    if discr >= 0:
+                        t = isqrt(discr)
+                        if pow(t, 2) == discr: 
+                            if (s + t) & 1 == 0:
+                                self.d = d
+                                x = Symbol("x")
+                                roots = solve(pow(x, 2) - s * x + n, x)
+                                if len(roots) == 2:
+                                    self.p = roots[0]
+                                    self.q = roots[1]
+                                break
 
 
 class Attack(AbstractAttack):

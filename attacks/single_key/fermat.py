@@ -17,10 +17,10 @@ class Attack(AbstractAttack):
     def fermat(self, n):
         """Fermat attack"""
         a = b = isqrt(n)
-        b2 = (a ** 2) - n
-        while (b ** 2) != b2:
+        b2 = pow(a, 2) - n
+        while pow(b, 2) != b2:
             a += 1
-            b2 = (a ** 2) - n
+            b2 = pow(a, 2) - n
             b = isqrt(b2)
         p, q = (a + b), (a - b)
         assert n == p * q

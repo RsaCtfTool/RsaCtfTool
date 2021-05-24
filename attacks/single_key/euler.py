@@ -5,12 +5,13 @@ from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.rsalibnum import gcd, isqrt
 from lib.utils import timeout, TimeoutError
-
+import logging
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
+        self.logger = logging.getLogger("global_logger")
 
     def euler(self, n):
         if n & 1 == 0:
@@ -19,26 +20,35 @@ class Attack(AbstractAttack):
         a = 0
         solutionsFound = []
         firstb = -1
+
         while a < end and len(solutionsFound) < 2:
-            bsquare = n - a ** 2
+            bsquare = n - pow(a, 2)
             if bsquare > 0:
                 b = isqrt(bsquare)
-                if (b ** 2 == bsquare) and (a != firstb) and (b != firstb):
+                if (pow(b, 2) == bsquare) and (a != firstb) and (b != firstb):
                     firstb = b
-                    solutionsFound.append([int(b), a])
+                    solutionsFound.append([b, a])
             a += 1
         if len(solutionsFound) < 2:
-            return -1
+            return None
+
         a = solutionsFound[0][0]
         b = solutionsFound[0][1]
         c = solutionsFound[1][0]
         d = solutionsFound[1][1]
-        k = gcd(a - c, d - b)
-        h = gcd(a + c, d + b)
-        m = gcd(a + c, d - b)
-        l = gcd(a - c, d + b)
-        n = (k ** 2 + h ** 2) * (l ** 2 + m ** 2)
-        return [int(k ** 2 + h ** 2) >> 1, int(l ** 2 + m ** 2) >> 1]
+
+        k = pow(gcd(a - c, d - b),2)
+        h = pow(gcd(a + c, d + b),2)
+        m = pow(gcd(a + c, d - b),2)
+        l = pow(gcd(a - c, d + b),2)
+
+        p, q = gcd(k + h, n), gcd(l + m, n)
+
+        if n > p > 1:
+          return p, n // p
+
+        if n > q > 1:
+          return q, n // q
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
@@ -51,7 +61,11 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    euler_res = self.euler(publickey.n)
+                    if ((publickey.n -1) % 4 == 0):
+                        euler_res = self.euler(publickey.n)
+                    else:
+                        self.logger.error("[!] Public key modulus must be congruent 1 mod 4 to work with euler method.")
+                        return(None,None)
                 except:
                     return (None, None)
                 if euler_res and len(euler_res) > 1:
@@ -74,9 +88,7 @@ class Attack(AbstractAttack):
         from lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
-MGYwDQYJKoZIhvcNAQEBBQADVQAwUgJLAi7v97hPb80NkMELBLYGAGEeDOdFAiW6
-5wq4OGN1P6nmUmg5iFRQA6YWU8x1WdQMmVs6KxIUS89W0InUN3JVQ9SzLE32nKXc
-t6rrAgMBAAE=
+MCIwDQYJKoZIhvcNAQEBBQADEQAwDgIHEAABggAEpQIDAQAB
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
