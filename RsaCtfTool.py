@@ -211,8 +211,7 @@ if __name__ == "__main__":
     # If we have a private key in input and uncipher in args (or uncipherfile)
     if args.key and args.uncipher:
         priv_key = PrivateKey(filename=args.key, password=args.password)
-        for u in args.uncipher:
-            unciphers.append(priv_key.decrypt(args.u))
+        unciphers = priv_key.decrypt(args.uncipher)
         print_results(args, None, priv_key, unciphers)
         exit(0)
 
