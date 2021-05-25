@@ -215,9 +215,25 @@ def _lcm(x, y):
 def _ilog2_gmpy(n):
    return int(gmpy.log2(n))
 
+def _ilog_gmpy(n):
+   return int(gmpy.log(n))
 
 def _ilog2_math(n):
    return int(math.log2(n))
+
+def _ilog_math(n):
+   return int(math.log(n))
+
+def _ilog10_math(n):
+   return int(math.log10(n))
+
+def _ilog10_gmpy(n):
+   return int(gmpy.log10(n))
+
+
+def _mod(a,b):
+   return a % b
+
 
 if gmpy_version > 0:
     gcd = gmpy.gcd
@@ -231,7 +247,13 @@ if gmpy_version > 0:
     lcm = gmpy.lcm
     invert = gmpy.invert
     powmod = gmpy.powmod
+    ilog = _ilog_gmpy
     ilog2 = _ilog2_gmpy
+    mod = gmpy.f_mod
+    log = gmpy.log
+    log2 = gmpy.log2
+    log10 = gmpy.log10
+    ilog10 = _ilog10_gmpy
     if gmpy_version == 2:
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
@@ -254,6 +276,12 @@ else:
     lcm = _lcm
     invert = _invmod
     powmod = pow
+    ilog = _ilog_math
     ilog2 = _ilog2_math
+    mod = _mod
+    log = math.log
+    log2 = math.log2
+    log10 = math.log10
+    ilog10 = _ilog10_math
 
-__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2]
+__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2, ilog,ilog10, mod, log, log2, log10]
