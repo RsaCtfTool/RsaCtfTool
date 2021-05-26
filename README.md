@@ -51,6 +51,7 @@ Attacks :
 - Return of Coppersmith's attack (ROCA) with NECA variant
 - Dixon
 - brent (Pollard rho variant)
+- Pisano Period
 
 ## Usage
 
@@ -61,7 +62,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
                      [-e E] [--key KEY] [--isconspicuous] [--convert_idrsa_pub] [--isroca] [--check_publickey]
-                     [--attack {brent,fermat_numbers_gcd,comfact_cn,wiener,factordb,smallq,pollard_rho,euler,z3_solver,neca,cm_factor,mersenne_pm1_gcd,SQUFOF,small_crt_exp,fibonacci_gcd,smallfraction,boneh_durfee,roca,fermat,londahl,mersenne_primes,partial_q,siqs,noveltyprimes,binary_polinomial_factoring,primorial_pm1_gcd,pollard_p_1,ecm2,cube_root,system_primes_gcd,dixon,ecm,pastctfprimes,qicheng,wolframalpha,hastads,same_n_huge_e,commonfactors,all}]
+                     [--attack {brent,fermat_numbers_gcd,comfact_cn,wiener,factordb,smallq,pollard_rho,euler,z3_solver,neca,cm_factor,mersenne_pm1_gcd,SQUFOF,small_crt_exp,fibonacci_gcd,smallfraction,boneh_durfee,roca,fermat,londahl,mersenne_primes,partial_q,siqs,noveltyprimes,binary_polinomial_factoring,primorial_pm1_gcd,pollard_p_1,ecm2,cube_root,system_primes_gcd,dixon,ecm,pastctfprimes,qicheng,wolframalpha,hastads,same_n_huge_e,commonfactors,pisano_period,all}]
 ```
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
