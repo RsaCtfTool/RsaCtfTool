@@ -10,7 +10,7 @@ import time
 import sys
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10
+from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, fib
 from lib.utils import timeout, TimeoutError
 sys.setrecursionlimit(5000)
 
@@ -34,9 +34,13 @@ class Fibonacci:
                 return (d, mod((c + d), p))
 
 
-    def get_n_mod_d(self,n,d):
+    def get_n_mod_d(self,n,d, use = 'mersenne'):
         if n < 0:
             ValueError("Negative arguments not implemented")
+        if use == 'gmpy':
+            return mod(fib(n), d)
+        elif use == 'mersenne':
+            return mod(powmod(2,n, d)-1, d)
         else:
             return self._fib_res(n,d)[0]
 
