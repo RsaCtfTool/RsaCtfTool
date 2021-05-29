@@ -10,7 +10,7 @@ import time
 import sys
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, fib
+from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib
 from lib.utils import timeout, TimeoutError
 sys.setrecursionlimit(5000)
 
@@ -40,7 +40,7 @@ class Fibonacci:
         if use == 'gmpy':
             return mod(fib(n), d)
         elif use == 'mersenne':
-            return powmod(2,n, d)-1
+            return powmod(2, n, d) - 1
         else:
             return self._fib_res(n,d)[0]
 
@@ -73,7 +73,7 @@ class Fibonacci:
             search_len = min_accept
   
         if verbose:
-            print('search_len:%d'%(search_len))
+            print('Search_len: %d, log2(N): %d' % (search_len,ilog2(N)))
         
         starttime = time.time()
         diff = xdiff 
@@ -84,44 +84,41 @@ class Fibonacci:
         end = N + int('9' * p_len)
     
         if verbose:    
-            print('search begin:%d,end:%d'%(begin, end))
+            print('Search begin: %d, end: %d'%(begin, end))
                 
         rs = [self.get_n_mod_d(x, N) for x in range(search_len)]
         rs_sort, rs_indices = self.sort_list(rs)
 
         if verbose:    
             #print(rs, rs_sort, rs_indices)        
-            print('sort complete! time used: %f secs' % (time.time() - starttime))
+            print('Sort complete! time used: %f secs' % (time.time() - starttime))
                 
         T = 0
         has_checked_list = []
 
         while True:       
             randi = random.randint(begin,end)            
-            if (not randi in has_checked_list):
-                has_checked_list.append(randi)
-            
-                res = self.get_n_mod_d(randi, N)
-                if res > 0:
-                    inx = self.binary_search(rs_sort, res)
-                    if inx > -1:                
-                        res_n = rs_indices[inx]
-                        T = randi - res_n
+            res = self.get_n_mod_d(randi, N)
+            if res > 0:
+                inx = self.binary_search(rs_sort, res)
+                if inx > -1:                
+                    res_n = rs_indices[inx]
+                    T = randi - res_n
                      
-                        if self.get_n_mod_d(T, N) == 0:
-                            td = int(time.time() - starttime)
-                            if verbose:
-                                print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                            return td, T, randi
-                        else:
-                            if verbose:
-                                print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
-                else:
-                    T = randi
-                    td = int(time.time() - starttime)
-                    if verbose:
-                        print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                    return td, T, randi
+                    if self.get_n_mod_d(T, N) == 0:
+                        td = int(time.time() - starttime)
+                        if verbose:
+                            print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                        return td, T, randi
+                    else:
+                        if verbose:
+                            print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
+            else:
+                T = randi
+                td = int(time.time() - starttime)
+                if verbose:
+                    print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                return td, T, randi
 
 
     def _trivial_factorization_with_n_phi(self, N, phi):
@@ -173,12 +170,12 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """
-        Pisano period factorization algorithm optimal for keys sub 47 bits in less than a minute.
+        Pisano(mersenne) period factorization algorithm optimal for keys sub 70 bits in less than a minute.
         """
         Fib = Fibonacci()
         with timeout(self.timeout):
             try:
-                B1, B2 = pow(10,(ilog10(publickey.n)//2)-3), 2 # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
+                B1, B2 = pow(10,(ilog10(publickey.n)//2)-4), 0 # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
                 r = Fib.factorization(publickey.n,B1,B2)
                 if r != None:
                     publickey.p, publickey.q = r
@@ -196,10 +193,9 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
-        print(powmod,mod)
         from lib.keys_wrapper import PublicKey
         key_data = """-----BEGIN PUBLIC KEY-----
-MCMwDQYJKoZIhvcNAQEBBQADEgAwDwIIDWT8rEw6XZMCAwEAAQ==
+MCQwDQYJKoZIhvcNAQEBBQADEwAwEAIJVqCE2raBvB+lAgMBAAE=
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
