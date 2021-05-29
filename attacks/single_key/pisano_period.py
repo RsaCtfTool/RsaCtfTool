@@ -40,7 +40,7 @@ class Fibonacci:
         if use == 'gmpy':
             return mod(fib(n), d)
         elif use == 'mersenne':
-            return mod(powmod(2,n, d)-1, d)
+            return powmod(2,n, d)-1
         else:
             return self._fib_res(n,d)[0]
 
@@ -196,6 +196,7 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
+        print(powmod,mod)
         from lib.keys_wrapper import PublicKey
         key_data = """-----BEGIN PUBLIC KEY-----
 MCMwDQYJKoZIhvcNAQEBBQADEgAwDwIIDWT8rEw6XZMCAwEAAQ==
