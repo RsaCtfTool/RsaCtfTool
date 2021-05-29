@@ -102,20 +102,26 @@ class Fibonacci:
                 has_checked_list.append(randi)
             
                 res = self.get_n_mod_d(randi, N)
-                inx = self.binary_search(rs_sort, res)
-                                    
-                if inx > -1:                
-                    res_n = rs_indices[inx]
-                    T = randi - res_n
+                if res > 0:
+                    inx = self.binary_search(rs_sort, res)
+                    if inx > -1:                
+                        res_n = rs_indices[inx]
+                        T = randi - res_n
                      
-                    if self.get_n_mod_d(T, N) == 0:
-                        td = int(time.time() - starttime)
-                        if verbose:
-                            print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                        return td, T, randi
-                    else:
-                        if verbose:
-                            print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
+                        if self.get_n_mod_d(T, N) == 0:
+                            td = int(time.time() - starttime)
+                            if verbose:
+                                print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                            return td, T, randi
+                        else:
+                            if verbose:
+                                print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
+                else:
+                    T = randi
+                    td = int(time.time() - starttime)
+                    if verbose:
+                        print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                    return td, T, randi
 
 
     def _trivial_factorization_with_n_phi(self, N, phi):
@@ -172,7 +178,7 @@ class Attack(AbstractAttack):
         Fib = Fibonacci()
         with timeout(self.timeout):
             try:
-                B1, B2 = pow(10,(ilog10(publickey.n)//2)-1), 2 # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
+                B1, B2 = pow(10,(ilog10(publickey.n)//2)-3), 2 # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
                 r = Fib.factorization(publickey.n,B1,B2)
                 if r != None:
                     publickey.p, publickey.q = r
@@ -191,9 +197,8 @@ class Attack(AbstractAttack):
 
     def test(self):
         from lib.keys_wrapper import PublicKey
-
         key_data = """-----BEGIN PUBLIC KEY-----
-MCEwDQYJKoZIhvcNAQEBBQADEAAwDQIGNIS4TN5fAgMBAAE=
+MCMwDQYJKoZIhvcNAQEBBQADEgAwDwIIDWT8rEw6XZMCAwEAAQ==
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
