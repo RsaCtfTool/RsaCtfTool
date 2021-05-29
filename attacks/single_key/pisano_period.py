@@ -11,7 +11,7 @@ import sys
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib
-from lib.utils import timeout, TimeoutError
+from lib.utils import timeout, TimeoutError, binary_search
 sys.setrecursionlimit(5000)
 
 
@@ -44,21 +44,6 @@ class Fibonacci:
         else:
             return self._fib_res(n,d)[0]
 
-    
-    def binary_search(self,L,n):
-        """ Finds item index in O(log2(N)) """ 
-        left = 0
-        right = len(L) - 1
-        while left <= right:
-            mid=(left + right) >> 1
-            if n == L[mid]:
-                return mid
-            elif n < L[mid]:
-                right = mid - 1
-            else:
-                left = mid + 1
-        return -1
-    
     
     def sort_list(self,L):
         from operator import itemgetter
@@ -100,7 +85,7 @@ class Fibonacci:
             randi = random.randint(begin,end)            
             res = self.get_n_mod_d(randi, N)
             if res > 0:
-                inx = self.binary_search(rs_sort, res)
+                inx = binary_search(rs_sort, res)
                 if inx > -1:                
                     res_n = rs_indices[inx]
                     T = randi - res_n
