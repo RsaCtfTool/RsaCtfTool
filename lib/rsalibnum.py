@@ -289,7 +289,7 @@ else:
 def trivial_factorization_with_n_phi(N, phi):
     m = N - phi + 1
     i = isqrt(pow(m, 2) - (N << 2)) # same as isqrt((m**2) - (4*n))
-    roots = ((m - i) >> 1, (m + i) >> 1)
+    roots = int((m - i) >> 1), int((m + i) >> 1)
     if roots[0] * roots[1] == N:
         return roots
 
