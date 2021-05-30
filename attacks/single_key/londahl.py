@@ -26,7 +26,7 @@ class Attack(AbstractAttack):
 
         # check the table
         mu = invmod(powmod(2, phi_approx, n), n)
-        fac = pow(2, b, n)
+        fac = powmod(2, b, n)
 
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if mu in look_up:
