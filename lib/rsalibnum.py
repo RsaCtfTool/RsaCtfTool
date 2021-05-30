@@ -235,6 +235,7 @@ def _mod(a,b):
    return a % b
 
 
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     invmod = gmpy.invert
@@ -284,4 +285,13 @@ else:
     log10 = math.log10
     ilog10 = _ilog10_math
 
-__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2, ilog,ilog10, mod, log, log2, log10]
+
+def trivial_factorization_with_n_phi(N, phi):
+    m = N - phi + 1
+    i = isqrt(pow(m, 2) - (N << 2)) # same as isqrt((m**2) - (4*n))
+    roots = int((m - i) >> 1), int((m + i) >> 1)
+    if roots[0] * roots[1] == N:
+        return roots
+
+
+__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2, ilog,ilog10, mod, log, log2, log10, trivial_factorization_with_n_phi]

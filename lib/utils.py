@@ -206,3 +206,18 @@ def n2s(n):
         s = "0" + s
 
     return binascii.unhexlify(s)
+
+
+def binary_search(L,n):
+    """ Finds item index in O(log2(N)) """
+    left = 0
+    right = len(L) - 1
+    while left <= right:
+        mid=(left + right) >> 1
+        if n == L[mid]:
+            return mid
+        elif n < L[mid]:
+            right = mid - 1
+        else:
+            left = mid + 1
+    return -1
