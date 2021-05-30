@@ -8,6 +8,7 @@ White paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8901977
 import random
 import time
 import sys
+from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib, trivial_factorization_with_n_phi
@@ -16,9 +17,9 @@ sys.setrecursionlimit(5000)
 
 
 class Fibonacci:
-    def __init__(self):
-        pass
-    
+    def __init__(self, progress = False, verbose = True):
+        self.progress = progress
+        self.verbose = verbose
 
     def _fib_res(self,n,p):
         """ fibonacci sequence nth item modulo p """
@@ -57,7 +58,7 @@ class Fibonacci:
         if search_len < min_accept:
             search_len = min_accept
   
-        if verbose:
+        if self.verbose:
             print('Search_len: %d, log2(N): %d' % (search_len,ilog2(N)))
         
         starttime = time.time()
@@ -68,13 +69,13 @@ class Fibonacci:
             begin = 1
         end = N + int('9' * p_len)
     
-        if verbose:    
+        if self.verbose:    
             print('Search begin: %d, end: %d'%(begin, end))
                 
-        rs = [self.get_n_mod_d(x, N) for x in range(search_len)]
+        rs = [self.get_n_mod_d(x, N) for x in tqdm(range(search_len), disable=(not self.progress))]
         rs_sort, rs_indices = self.sort_list(rs)
 
-        if verbose:    
+        if self.verbose:    
             #print(rs, rs_sort, rs_indices)        
             print('Sort complete! time used: %f secs' % (time.time() - starttime))
                 
@@ -92,22 +93,22 @@ class Fibonacci:
                      
                     if self.get_n_mod_d(T, N) == 0:
                         td = int(time.time() - starttime)
-                        if verbose:
+                        if self.verbose:
                             print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
                         return td, T, randi
                     else:
-                        if verbose:
+                        if self.verbose:
                             print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
             else:
                 T = randi
                 td = int(time.time() - starttime)
-                if verbose:
+                if self.verbose:
                     print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
                 return td, T, randi
 
 
-    def factorization(self, N, min_accept, xdiff, verbose=True):
-        res = self.get_period_bigint(N, min_accept, xdiff, verbose=verbose) 
+    def factorization(self, N, min_accept, xdiff):
+        res = self.get_period_bigint(N, min_accept, xdiff) 
         if res != None:
             t, T, r = res 
             return trivial_factorization_with_n_phi(N, T)
@@ -121,8 +122,9 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """
         Pisano(mersenne) period factorization algorithm optimal for keys sub 70 bits in less than a minute.
+        The attack is very similar to londahl's
         """
-        Fib = Fibonacci()
+        Fib = Fibonacci(progress = progress)
         with timeout(self.timeout):
             try:
                 B1, B2 = pow(10,(ilog10(publickey.n)//2)-4), 0 # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
