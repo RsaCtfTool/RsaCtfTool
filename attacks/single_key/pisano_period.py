@@ -10,7 +10,7 @@ import time
 import sys
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib
+from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib, trivial_factorization_with_n_phi
 from lib.utils import timeout, TimeoutError, binary_search
 sys.setrecursionlimit(5000)
 
@@ -106,46 +106,11 @@ class Fibonacci:
                 return td, T, randi
 
 
-    def _trivial_factorization_with_n_phi(self, N, phi):
-        p1 = []
-        d2 = N << 2
-
-        phi2 = pow(phi,2)
-        phi2p4d = phi2 + d2
-        phi2m4d = phi2 - d2
-
-        if phi2m4d > 0:
-            iphi2m4d = isqrt(phi2m4d)
-            p1.append(phi + iphi2m4d)
-            p1.append(phi - iphi2m4d)
-
-        if phi2p4d > 0:
-            iphi2p4d = isqrt(phi2p4d)
-            p1.append(phi + iphi2p4d)
-            p1.append(phi - iphi2p4d)
-
-        if phi2m4d > 0:
-            iphi2m4d = isqrt(phi2m4d)
-            p1.append(-phi + iphi2m4d)
-            p1.append(-phi - iphi2m4d)
-
-        if phi2p4d > 0:
-            iphi2p4d = isqrt(phi2p4d)
-            p1.append(-phi + iphi2p4d)
-            p1.append(-phi - iphi2p4d)
-
-        for p in p1:
-            g = gcd((p >> 1),N)
-            if N > g > 1:
-                return int(g),int(N//g)
-   
-
     def factorization(self, N, min_accept, xdiff, verbose=True):
         res = self.get_period_bigint(N, min_accept, xdiff, verbose=verbose) 
         if res != None:
             t, T, r = res 
-            phi = abs(N - T) + 1 # phi = (p-1)(q-1) => (pq)-(p-q)+1 => N-(p-q)+1 so T = p-q
-            return self._trivial_factorization_with_n_phi(N, phi)
+            return trivial_factorization_with_n_phi(N, T)
 
 
 class Attack(AbstractAttack):
