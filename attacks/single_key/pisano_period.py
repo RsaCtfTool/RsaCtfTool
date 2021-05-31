@@ -91,11 +91,12 @@ class Fibonacci:
                             if self.verbose:
                                 print('For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!' % (N, res, res_n, T))
             else:
-                T = randi
-                td = int(time.time() - starttime)
-                if self.verbose:
-                    print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                return td, T, randi
+                if randi & 1 == 0:
+                    T = randi
+                    td = int(time.time() - starttime)
+                    if self.verbose:
+                        print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                    return td, T, randi
 
 
     def factorization(self, N, min_accept, xdiff):
