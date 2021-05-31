@@ -89,7 +89,7 @@ class Fibonacci:
                             return td, T, randi
                         else:
                             if self.verbose:
-                                print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
+                                print('For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!' % (N, res, res_n, T))
             else:
                 T = randi
                 td = int(time.time() - starttime)
