@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.rsalibnum import isqrt, invmod
+from lib.rsalibnum import isqrt, invmod, trivial_factorization_with_n_phi
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
@@ -26,22 +26,17 @@ class Attack(AbstractAttack):
 
         # check the table
         mu = invmod(powmod(2, phi_approx, n), n)
-        fac = (1 << b) % n
+        fac = powmod(2, b, n)
 
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if mu in look_up:
-                phi = phi_approx + (look_up[mu] - i * b)
-                break
+                phi = phi_approx + (look_up[mu] - (i * b))
+                r = trivial_factorization_with_n_phi(n, phi)
+                if r != None:
+                    return r
             mu = (mu * fac) % n
         else:
             return None
-
-        m = n - phi + 1
-        i = isqrt(pow(m, 2) - (n << 2)) # same as isqrt((m**2) - (4*n))
-        roots = ((m - i) >> 1, (m + i) >> 1)
-
-        if roots[0] * roots[1] == n:
-            return roots
 
     def attack(self, publickey, cipher=[], progress=True):
         """Do nothing, used for multi-key attacks that succeeded so we just print the
