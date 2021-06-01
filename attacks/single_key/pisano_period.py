@@ -46,12 +46,6 @@ class Fibonacci:
             return self._fib_res(n,d)[0]
 
     
-    def sort_list(self,L):
-        from operator import itemgetter
-        indices, L_sorted = zip(*sorted(enumerate(L), key=itemgetter(1)))
-        return list(L_sorted),list(indices)
-
-
     def get_period_bigint(self, N, min_accept, xdiff, verbose = False):            
         search_len = int(pow(N, (1.0 / 6) / 100))
         
@@ -72,39 +66,37 @@ class Fibonacci:
         if self.verbose:    
             print('Search begin: %d, end: %d'%(begin, end))
                 
-        rs = [self.get_n_mod_d(x, N) for x in tqdm(range(search_len), disable=(not self.progress))]
-        rs_sort, rs_indices = self.sort_list(rs)
+        look_up = {}
+        for x in tqdm(range(search_len), disable=(not self.progress)):
+            look_up[self.get_n_mod_d(x, N)] = x
 
-        if self.verbose:    
-            #print(rs, rs_sort, rs_indices)        
-            print('Sort complete! time used: %f secs' % (time.time() - starttime))
-                
-        T = 0
-        has_checked_list = []
+        if verbose:
+            print("Searching...")
 
         while True:       
             randi = random.randint(begin,end)            
             res = self.get_n_mod_d(randi, N)
             if res > 0:
-                inx = binary_search(rs_sort, res)
-                if inx > -1:                
-                    res_n = rs_indices[inx]
+                if res in look_up:
+                    res_n = look_up[res]
                     T = randi - res_n
-                     
-                    if self.get_n_mod_d(T, N) == 0:
-                        td = int(time.time() - starttime)
-                        if self.verbose:
-                            print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                        return td, T, randi
-                    else:
-                        if self.verbose:
-                            print('For N = %d\n Found res: %d, inx: %d, res_n: %d , T: %d\n but failed!' % (N, res, inx, res_n, T))
+                    
+                    if T & 1 == 0: 
+                        if self.get_n_mod_d(T, N) == 0:
+                            td = int(time.time() - starttime)
+                            if self.verbose:
+                                print('For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                            return td, T, randi
+                        else:
+                            if self.verbose:
+                                print('For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!' % (N, res, res_n, T))
             else:
-                T = randi
-                td = int(time.time() - starttime)
-                if self.verbose:
-                    print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
-                return td, T, randi
+                if randi & 1 == 0:
+                    T = randi
+                    td = int(time.time() - starttime)
+                    if self.verbose:
+                        print('First shot, For N = %d Found T:%d, randi: %d, time used %f secs.' % (N , T, randi, td))
+                    return td, T, randi
 
 
     def factorization(self, N, min_accept, xdiff):
