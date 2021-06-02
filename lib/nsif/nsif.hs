@@ -20,7 +20,7 @@ import System.Entropy
 import Control.Monad
 import Data.List.GroupBy
 import qualified Data.List as A
-import Numeric.Statistics.Median
+--import Numeric.Statistics.Median
 import Data.Numbers.Primes
 import Control.Concurrent
 import qualified Data.ByteString.Char8 as C
@@ -108,13 +108,19 @@ combinationsOf k as@(x:xs) = run (l-1) (k-1) as $ combinationsOf (k-1) xs
 nsf_map s x r= map fst (filter (\(x,c)-> c==0) $ map (\x-> (x,tryperiod x (nsf x r))) ([2^s..2^s+x]))
 
 
+
+nsf_map2 m s x r= map fst (filter (\(x,c)-> c==0) $ map (\x-> (x,tryperiod x (nsf x r))) ([m^s..m^s+x]))
+
+
+
+
 -- N bits mapping checking with ECM just products of two primers
 
 nsf_find nbits range to = take to $ filter (\(v,c)-> length c==2) (map (\x-> (x,P.factorise x)) (nsf_map (nbits) range 0))
 
 -- N bits mappingi without perfect squares or prime numers really slow checking primes, delete for faster mapping, pending chage to a fast comprobation 
 
-nsf_map_nsq s x r =  filter (\(d)-> snd (integerSquareRootRem d) /= 0 ) (nsf_map s x r) 
+nsf_map_nsq m s x r =  filter (\(d)-> snd (integerSquareRootRem d) /= 0 ) (nsf_map2 m s x r) 
 
 ex = 1826379812379156297616109238798712634987623891298419
 
@@ -166,12 +172,12 @@ prs = nub $ sort ( concat (map (\x-> map (\y -> x*y) pr) pr ) )
 field_crack2 n s m
 	-- | mod n 3 == 0 = (0,0)
 	-- | mod n 2 == 0 = (0,0)
-	| s > 133300= (0,0,0) 
-	| t == 0 = out
-	| otherwise = field_crack2 n (s+1) m
+	| s > 1313300= (0,0,0) 
+	| t == 0 && ns /= 0 = out
+	| otherwise = field_crack2 n (s+1) (m)
 	where
-	t = tryperiod2 n ((n)-s) m
-	ns = n -s
+	t = tryperiod2 n ((n^2)-s) m
+	ns = (n^2) - s
 	out = (n, s,ns)
 
 field_crack n s m
@@ -183,6 +189,46 @@ field_crack n s m
 	car = (div (n^2-s2) 2)
 	t = tryperiod2 n car m
 	out = (n, s, car)
+
+
+findexp n t
+	| m /= 0 = t
+	| pw /= 1 && pw2 == 1 = t
+	| pw == 1 && pw2 == 1 && m == 0 = findexp n (div t 2)
+	| pw /= 1 && pw2 /= 1 = 0
+	| otherwise = findexp n t 
+	where
+	(dt,m) = divMod t 2
+	pw = powMod 10 (div t 2) n
+	pw2 = powMod 10 t n 
+
+
+sp = nub $ sort $ concat $ map (\x-> map (\y-> x*y) (map (primes !!) [2^17..(2^17)+20]) ) (map (primes !!) [2^17..(2^17)+20])
+
+
+
+primetosquare n limit = filter (\(d,r)-> snd  d== 1) $ map (\x-> ((integerSquareRootRem (n+x)),x) ) $ map (primes !!) [1..(limit)]
+
+
+rsapoison n 
+	| ln == 0 = (0,0,0)
+	| otherwise = crk
+	where
+	ln = length $ head $ primetosquare n 10000000
+	((prsqrt,r),f) = head $ primetosquare n 10000000
+	crk = field_crack2 (n+f) 0 (f)
+
+carnos n pr s 
+	| s >= lpr = (0,0,0)
+	| v == 0 = carnos n pr (s+1)
+	| res2 /= 1 = carnos n pr (s+1)
+	| res2 == 1 = (n,v,pro)
+	| otherwise = carnos n pr (s+1) 
+	where
+	(r,f,v) = field_crack2 (n*pro) 0 (pro)
+	lpr = length pr
+	pro = pr !! s
+	res2 = powMod 10 v n 
 
 
 rep n x =
@@ -247,8 +293,23 @@ alldec2 n = take 1000 $ filter (\(z,y) -> y == 0 ) (map (\x-> (x , tryperiod n (
 
 alldec n = filter (\(z,y) -> y == 0) (map (\x->(x,tryperiod n x)) [1..n])
 
+{--
+rsapoison n prim
+	| fc == (0,0,0) = repoison n pri b
+	| fc /= (0,0,0) = fc
+	where
+	lo = logBase 2 n
+	pri = genprimes 3 lo
+	newn = (product (pri))*n
+	fc = field_crack newn 0 $ product pri 
 
 
+genprimes n b = [a1,a2,a3] 
+	where
+	a1 = (splitOn " " $ show (P.nextPrime (rnd (2^b) (2^b+20000) ) )) !! 1
+	a2 = (splitOn " " $ show (P.nextPrime (rnd (2^b) (2^b+20000) ) )) !! 1
+	a3 = (splitOn " " $ show (P.nextPrime (rnd (2^b) (2^b+20000) ) )) !! 1
+ --}
 
 main = do  
     args <- getArgs                  -- IO [String]
