@@ -1,6 +1,5 @@
 import sys
 from sage.all import inverse_mod, PolynomialRing, floor, Zmod
-from lib.rsalibnum import powmod
 
 
 def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):
@@ -9,7 +8,7 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):
 
     base = int(65537)
     # the known part of p: 65537^a * M^-1 (mod N)
-    known = int(powmod(base, a, M) * invmod_Mn)
+    known = int(pow(base, a, M) * invmod_Mn)
     pol = x + known
     t = m + 1
     # Find a small root (x0 = k) using Coppersmith's algorithm
@@ -17,7 +16,7 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):
     # There will be no roots for an incorrect guess of a.
     for k in roots:
         # reconstruct p from the recovered k
-        p = int(k * M + powmod(base, a, M))
+        p = int(k * M + pow(base, a, M))
         if n % p == 0:
             return p, n // p
 
