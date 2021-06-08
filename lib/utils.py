@@ -145,6 +145,16 @@ def print_results(args, publickey, private_key, uncipher):
 
                         logger.info(f"INT (big endian) : {int_big}")
                         logger.info(f"INT (little endian) : {int_little}")
+                        try:
+                            c_utf8 = c.decode("utf-8")
+                            logger.info(f"utf-8 : { c_utf8 }")
+                        except UnicodeDecodeError:
+                            pass
+                        try:
+                            c_utf16 = c.decode("utf-16")
+                            logger.info(f"utf-16 : { c_utf16 }")
+                        except UnicodeDecodeError:
+                            pass
                         logger.info(f"STR : {repr(c)}")
         else:
             logger.critical("Sorry, unciphering failed.")
@@ -208,12 +218,12 @@ def n2s(n):
     return binascii.unhexlify(s)
 
 
-def binary_search(L,n):
+def binary_search(L, n):
     """ Finds item index in O(log2(N)) """
     left = 0
     right = len(L) - 1
     while left <= right:
-        mid=(left + right) >> 1
+        mid = (left + right) >> 1
         if n == L[mid]:
             return mid
         elif n < L[mid]:

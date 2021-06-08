@@ -400,7 +400,7 @@ if __name__ == "__main__":
 
     for pub in args.publickey:
         try:
-            if "tmp" in pub:
+            if "tmp" in pub and "tmp/" not in pub:
                 os.remove(pub)
         except:
             continue
