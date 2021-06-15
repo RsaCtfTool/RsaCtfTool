@@ -27,8 +27,8 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
         f = 0
     
     #debug
-    #print(f,e,m)
+#    print(publickey.n,m,e)
 
-    result = os.system("lib/nsif/nsif "+str(publickey.n)+" "+str(f)+" "+str(e)+" "+str(m))
+    result = os.system("lib/nsif/nsif "+str(publickey.n)+" "+str(m)+" "+str(e) )
 
     return (str(result), None)
