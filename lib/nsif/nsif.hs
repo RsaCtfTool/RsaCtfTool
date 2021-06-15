@@ -445,43 +445,17 @@ main = do
     let e = args !! 2
     let m = args !! 3
 
-    let (publickey,field,devcarmichael) = nsif (read n::Integer) (read st::Integer) (read m::Integer)
+    let (publickey,factors) = nsifc (read n::Integer) (read st::Integer) (read m::Integer)
     putStrLn "Public Key" 
     
     print $ "N :"++(show publickey)
 
-    print $ "E :"++(show ex)
-
-    print $ "Testing message : "++m
-
-    putStrLn "Field"
-
-    print field
-
-    putStrLn $ "Derivate Carmichael of N"
-
-    print devcarmichael
-    
-    putStrLn $ "Derivate Private Key of N"
-
-    print $ modular_inverse ex devcarmichael
-
-    putStrLn $ "Original Private Key"
-
-    print $ ""
-
     putStrLn $ "Factors"
 
-    print $ "Q :"
-
-    print $ "P :"
+    print $ factors
  
-    putStrLn $ "Period , decimal expansion length"
 
     print $ " "
-    --putStrLn "Carmichael of N Factors"
-
-    --print $ factof devcarmichael
     
-    putStrLn $ "Prime grimoire spells  v0.0.2"
+    putStrLn $ "Prime grimoire spells  v0.1"
 
