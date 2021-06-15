@@ -118,6 +118,9 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --nsif 5 --attack nsif -n 28914087111802359237444159165006361036186102224284916898536608461776485325040080462350193787404457885567798343410305055632222679169605398533 -e 65537`
 
+![image](https://user-images.githubusercontent.com/60758685/121983696-595c4480-cd57-11eb-87f6-7df7285c036a.png)
+
+
 For more examples, look at test.sh file
 
 ## Requirements
