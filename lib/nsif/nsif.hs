@@ -140,6 +140,24 @@ sum_factors n = n + 1 - (totient n)
 
 
 
+ncrack n
+	| p == 0 && p2 /= 0 = (n, ((prim n)^2 - (prim n))^2, p )
+	| p2 == 0 && p /= 0 = (n, ((primb n)^2 - (primb n))^2, p2 )
+	| otherwise = (n, (primb n)^2 - (primb n)-1, p )
+	where
+
+	pa =prim n
+
+	pb = primb n 
+
+	difp = ((prim n) - n )
+
+	p = tryperiod2 (pa^2) (((pa)^2 - difp^2)^2 )  (2) 
+	p2 = tryperiod2 (pb^2) (((pb)^2 - difp^2)^2) (2) 
+
+
+--
+--
 -- Efficient way to calculate decimal expansion in semiprime numbers
 
 -- With P Q
@@ -172,13 +190,16 @@ prs = nub $ sort ( concat (map (\x-> map (\y -> x*y) pr) pr ) )
 field_crack2 n s m
 	-- | mod n 3 == 0 = (0,0)
 	-- | mod n 2 == 0 = (0,0)
-	| s > 1313300= (0,0,0) 
-	| t == 0 && ns /= 0 = out
+	| s-isq > 11112= (0,0,0) 
+	| ns /= 0 && t == 0 && s/=n = out
 	| otherwise = field_crack2 n (s+1) (m)
 	where
-	t = tryperiod2 n ((n^2)-s) m
-	ns = (n^2) - s
-	out = (n, s,ns)
+	s2 = s^2
+	isq = (integerSquareRoot n)*2 
+	t = tryperiod2 n (((prim n)^2)-((prim n)+s)) (m)
+	check = powMod 2 ((prim n)^2-((prim n)+s)) n
+	ns = (n^2) -s
+	out = (n,s,ns)
 
 field_crack n s m
 	| s > 100000= (0,0,0) 
@@ -186,7 +207,7 @@ field_crack n s m
 	| otherwise = field_crack n (s+1) m
 	where
 	s2 = (s*s)
-	car = (div (n^2-s2) 2)
+	car = (div (n-s2) 2)
 	t = tryperiod2 n car m
 	out = (n, s, car)
 
@@ -203,20 +224,124 @@ findexp n t
 	pw2 = powMod 10 t n 
 
 
-sp = nub $ sort $ concat $ map (\x-> map (\y-> x*y) (map (primes !!) [2^17..(2^17)+20]) ) (map (primes !!) [2^17..(2^17)+20])
+prim n = read ((splitOn " " $ show (P.nextPrime n)) !! 1)::Integer
+
+primb n = read ((splitOn " " $ show (P.precPrime n)) !! 1)::Integer
+
+nsifc n base tries = (div n out, out)
+	where
+	primesc = nub $ sort $ map prim [1..n]	
+	out = head $ filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod2 ((n)) ((n)^2-x^2) x)) $ [2^base..2^base+tries]
+
+
+sp s l = nub $ sort $  concat $ map (\x-> map (\y-> x*y) (map (\e-> prim (e*2) ) [(s)..(s)+l]) ) (map (\t-> prim (t*3)) [0,(s)..(s)+l])
+
+
+ncr n f
+	| f > 10 = (n,0,0,0)
+	| tr3 == 1 && tr6 == 1= (n,car2,f,1)
+	| tr4 == 1 = (n,car3,f,2)
+	| tr5 == 1 = (n,car4,f,3)
+
+	| tr7 == 1 && tr72 == 1 = (n,car5,f,4)
+	| tr8 == 1 && tr82 == 1 = (n,car6,f,5)
+	| tr9 == 1 && tr92 == 1 = (n,car7,f,6)
+
+	| tr /= 1 || tr2 /= 1 = ncr n (((f+1)))
+	| tr == 1 && tr2 == 1= (n,car,f,7)
+	| otherwise = ncr n (f+1)
+	where
+	car = (n*(f))^2-(n*f)-(n*f+2)-1
+	car2 = (n*(3^f))^2-(n*(3^f))-(n*(3^f)+2)-1
+	car3 = (n*(4^f))^2-(n*(4^f))-(n*(4^f)+2)-1
+	car4 = (n*(6^f))^2-(n*(6^f))-(n*(6^f)+2)-1
+	car5 = (n*(5^f))^2-(n*(5^f))-(n*(5^f)+2)-1
+	car6 = (n*(7^f))^2-(n*(7^f))-(n*(7^f)+2)-1
+	car7 = (n*(8^f))^2-(n*(8^f))-(n*(8^f)+2)-1
+
+	tr = powMod 10 car n
+	tr2 = powMod 2 car n
+	tr3 = powMod 10 car2 n
+	tr6 = powMod 2 car2 n
+	tr4 = powMod 10 car3 n
+	tr5 = powMod 10 car4 n
+	tr7 = powMod 10 car5 n
+	tr8 = powMod 10 car6 n
+	tr9 = powMod 10 car7 n
+
+	tr52 = powMod 2 car4 n
+	tr72 = powMod 2 car5 n
+	tr82 = powMod 2 car6 n
+	tr92 = powMod 2 car7 n
 
 
 
-primetosquare n limit = filter (\(d,r)-> snd  d== 1) $ map (\x-> ((integerSquareRootRem (n+x)),x) ) $ map (primes !!) [1..(limit)]
+
+ncrk n 
+	-- | tr3 == 1 = (n,tr3,car2,2)
+	| tr2 == 1 = (n,tr2,car,1)
+	| tr4 == 1 = (n,tr4,car3,3)
+	| tr5 == 1 = (n,tr5,car4,4)
+	| tr6 == 1 = (n,tr6,car5,5)
+	| otherwise = (n,0,0,0)
+	where
+	m = n+2
+	car = n^2-n-m-1
+	-- car2 = (n*3)^2-n*3-(n*3+2)-1
+	car3 = (n*9)^2-n*9-(n*9+2)-1
+	car4 = (n*27)^2-n*27-(n*27+2)-1
+	car5 = (n*81)^2-n*81-(n*81+2)-1
+	tr = tryperiod2 (n*m) (car) (m)
+	tr2 = powMod 10 (car) (n)	
+	-- tr3 = powMod 10 (car2) (n)
+	tr4 = powMod 10 (car3) (n)
+	tr5 = powMod 10 (car4) (n)
+	tr6 = powMod 10 (car5) (n)
+
+cubecrack n = head $ filter (\x-> x/=1 && x/=n) $ map (\x-> gcd (n) (x^3-1)) [0,3..n+1000000000]
+
+nos_sieve n s = take 6 $ filter (\(w,r)-> snd (w) == 1 ) $ map (\x-> (integerSquareRootRem ((n+x)),x)) $ concat $ map (\z->[z-1,z+1]) [s,s+6..s*5]
 
 
+rsapoisoning n n2 
+	| n-n2 > 125 = [0,0,0]
+	| waveA /=1 = rsapoisoning n (n2-1)
+	| otherwise = [n,devc]
+	where
+	--waveA = take 1 $ filter (\(a,d,v)-> v==0) $ map (\x-> ( n , x , tryperiod2 n (n^(x*10)-1) 2) ) $ tail $ [1..100] 
+	devc = n2^2+n2
+	waveA = powMod 10 devc n
+--	waveB = powMod 10 (n2^2+n2) n
+	
+
+
+primetosquare n limit =	filter (\(d,r)-> snd  d== 1) $ map (\x-> ((integerSquareRootRem (n+x)),x) ) $ map (\x-> prim x) [1..(limit)]
+
+
+{-
+primetosquare :: Integer -> [Integer]
+primetosquare n = candidates i i2
+   where
+   i = integerSquareRoot (n + 1)
+   i2 = i^2
+   candidates i i2
+      -- | i > limit    = []
+      | isPrime x    = x : candidates o o2
+      | otherwise    = candidates o o2
+      where 
+      o2 = i2 + i + o   -- o2 = (i + 1)^2 = i^2 + i + (i + 1)
+      o = i + 1
+      x = o2 - n + 1  -- (n - 1 + x) must be a perfect square 
+-}
+
+{-
 rsapoison n 
 	| ln == 0 = (0,0,0)
 	| otherwise = crk
 	where
 	ln = length $ head $ primetosquare n 10000000
 	((prsqrt,r),f) = head $ primetosquare n 10000000
-	crk = field_crack2 (n+f) 0 (f)
+	crk = field_crack2 (n*f) 0 (n)
 
 carnos n pr s 
 	| s >= lpr = (0,0,0)
@@ -230,7 +355,7 @@ carnos n pr s
 	pro = pr !! s
 	res2 = powMod 10 v n 
 
-
+-}
 rep n x =
   if n == 1
     then [x]
@@ -320,7 +445,7 @@ main = do
     let e = args !! 2
     let m = args !! 3
 
-    let (publickey,field,devcarmichael) = field_crack (read n::Integer) (read st::Integer) (read m::Integer)
+    let (publickey,field,devcarmichael) = nsif (read n::Integer) (read st::Integer) (read m::Integer)
     putStrLn "Public Key" 
     
     print $ "N :"++(show publickey)
