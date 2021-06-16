@@ -26,10 +26,17 @@ import Codec.Crypto.RSA.Pure
 
 prim n = read ((splitOn " " $ show (P.nextPrime n)) !! 1)::Integer
 
-nsifc n base tries = (div n out, out)
+
+nsifc n base tries
+	| out2 /= 1 && out2 /= n = (div n out2,out2) 
+	| out /=1 && out /= n = (div n out,out)
+	| otherwise = (0,0)
 	where
+	
+	--(nearsquare) = 2^(logBase 2 n)
 	primesc = nub $ sort $ map prim [1..n]	
-	out = head $ filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2-x^2) x)) $ [2^base..2^base+tries]
+	out = head $ filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2+x^2) x)) $ [2^base..2^base+tries]
+	out2 = head $ filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2-x^2) x)) $ [2^base..2^base+tries]
 
 sp s l = nub $ sort $  concat $ map (\x-> map (\y-> x*y) (map (\e-> prim (e*2) ) [(s)..(s)+l]) ) (map (\t-> prim (t*3)) [0,(s)..(s)+l])
 
@@ -50,7 +57,7 @@ tryperiod n period m =
    -- 'xe' would be the privKey, inverse of 'ex', if 'period' was a subgroup order
    xe = modular_inverse ex period
 --}   
-{--
+
 primetosquare :: Integer -> [Integer]
 {- | Search for squares 'o2' and check if subtracting (n - 1) is prime.  -}
 primetosquare n = candidates ini (ini^2)
@@ -65,7 +72,7 @@ primetosquare n = candidates ini (ini^2)
       o2 = i2 + i + o   -- o2 = (i + 1)^2 = i^2 + i + (i + 1)
       x  = o2 - n + 1   -- (n - 1 + x) must be a perfect square 
 
---}
+
 --
 --
 main = do  
