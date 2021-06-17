@@ -32,6 +32,10 @@ nsifc n base tries
 	| out /=1 && out /= n = (div n out,out)
 	| out3 /= 1 && out3 /= n = (div n out3,out3) 
 	| out4 /=1 && out4 /= n = (div n out4,out4)
+	| out5 /= 1 && out5 /= n = (div n out5,out5) 
+	| out6 /=1 && out6 /= n = (div n out6,out6)
+	| out7 /= 1 && out7 /= n = (div n out7,out7) 
+	| out8 /=1 && out8 /= n = (div n out8,out8)
 
 	| otherwise = (0,0)
 	where
@@ -42,6 +46,10 @@ nsifc n base tries
 	out2 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2-x^2) x)) [2^base..2^base+tries]))
 	out3 = head $ reverse ([1]++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3+x^3) x)) [3^base..3^base+tries]))
 	out4 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3-x^3) x)) [3^base..3^base+tries] ))
+	out5 =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^5+x^5) x)) [5^base..5^base+tries]) )
+	out6 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^5-x^5) x)) [5^base..5^base+tries]))
+	out7 = head $ reverse ([1]++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^7+x^7) x)) [7^base..7^base+tries]))
+	out8 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^7-x^7) x)) [7^base..7^base+tries] ))
 
 
 
