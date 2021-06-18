@@ -13,13 +13,16 @@ from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import isqrt, gcd, powmod, is_prime, mod, ilog10, ilog2, fib, trivial_factorization_with_n_phi
 from lib.utils import timeout, TimeoutError, binary_search
+from multiprocessing import Pool, cpu_count, Manager
 sys.setrecursionlimit(5000)
 
 
 class Fibonacci:
-    def __init__(self, progress = False, verbose = True):
+    def __init__(self, progress = False, verbose = True, multitasked = True):
         self.progress = progress
         self.verbose = verbose
+        self.multitasked = multitasked
+
 
     def _fib_res(self,n,p):
         """ fibonacci sequence nth item modulo p """
@@ -45,7 +48,18 @@ class Fibonacci:
         else:
             return self._fib_res(n,d)[0]
 
+
+    def ranged_period(self, N, start, stop, look_up_dest):
+        print("ranged_period (%d,%d) start" % (start,stop))
+        tmp_look_up = {}
+        for x in range(start, stop):
+            tmp_look_up[self.get_n_mod_d(x, N)] = x
+        look_up_dest.update(tmp_look_up)
+        #look_up_dest |= tmp_look_up
+        print("ranged_period (%d,%d) end" % (start,stop))
+        return 1
     
+
     def get_period_bigint(self, N, min_accept, xdiff, verbose = False):            
         search_len = int(pow(N, (1.0 / 6) / 100))
         
@@ -65,22 +79,46 @@ class Fibonacci:
     
         if self.verbose:    
             print('Search begin: %d, end: %d'%(begin, end))
-                
-        look_up = {}
-        for x in tqdm(range(search_len), disable=(not self.progress)):
-            look_up[self.get_n_mod_d(x, N)] = x
+        
+        if self.multitasked and search_len > 1000:
+            C = cpu_count() * 2
+            search_work = search_len // C
 
-        if verbose:
+            manager =  Manager()
+            look_up = manager.dict()
+
+            if self.verbose:
+                print("Precompute LUT with %d tasks..." % C)
+
+            inputs = []
+            for x in range(0, search_len, search_work):
+                inputs += [(N, x, x + search_work, look_up)]
+
+            workpool = Pool(C)
+
+            with workpool:
+                results = workpool.starmap(self.ranged_period,inputs)
+                print(results)
+                workpool.close()
+                workpool.join()
+
+        else:
+            look_up = {}
+            self.ranged_period(N, 0, search_len, look_up)
+
+        if self.verbose:
+            print("LUT creation ended size: %d..." % len(look_up))
             print("Searching...")
+        
 
         while True:       
             randi = random.randint(begin,end)            
             res = self.get_n_mod_d(randi, N)
             if res > 0:
+                #print(res, res in look_up)
                 if res in look_up:
                     res_n = look_up[res]
-                    T = randi - res_n
-                    
+                    T = randi - res_n   
                     if T & 1 == 0: 
                         if self.get_n_mod_d(T, N) == 0:
                             td = int(time.time() - starttime)
