@@ -46,6 +46,14 @@ Attacks :
 - Mersenne pm1 gcd
 - Fermat Numbers gcd
 - Fibonacci gcd
+
+- System primes gcd
+- Small crt exponent
+- Shanks's square forms factorization (SQUFOF)
+- Return of Coppersmith's attack (ROCA) with NECA variant
+- Dixon
+- brent (Pollard rho variant)
+- Pisano Period
 - Small NSIF
 
 ## Usage
@@ -57,13 +65,10 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
 
-                     [-e E] [--key KEY] 
-                     [--nsif FIELD]
-                     [--attack {mersenne_primes,pollard_p_1,smallfraction,smallq,boneh_durfee,noveltyprimes,ecm,factordb,wiener,siqs,pastctfprimes,partial_q,comfact_cn,hastads,fermat,nullattack,commonfactors,same_n_huge_e,small_nsif,all}]
-
                      [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,z3_solver,primorial_pm1_gcd,mersenne_pm1_gcd,fermat_numbers_gcd,fibonacci_gcd,commonfactors,hastads,same_n_huge_e,all]
+                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,z3_solver,primorial_pm1_gcd,mersenne_pm1_gcd,fermat_numbers_gcd,fibonacci_gcd,commonfactors,hastads,same_n_huge_e,nsif,all]
 ````
+
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
 
@@ -123,6 +128,20 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 For more examples, look at test.sh file
 
+### Convert idrsa.pub to pem format
+
+`./RsaCtfTool.py  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
+
+
+### Check if a given key or keys are roca ###
+
+`./RsaCtfTool.py --isroca --publickey "examples/*.pub"`
+
+### Docker run ###
+
+`docker pull Ganapati/RsaCtfTool`
+`docker run -it --rm -v $PWD:/data Ganapati/RsaCtfTool <arguments>`
+
 ## Requirements
 
 - GMPY2
@@ -138,8 +157,24 @@ For more examples, look at test.sh file
 ```bash
 git clone https://github.com/Ganapati/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
+cd RsaCtfTool
 pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
+```
+
+### Fedora (33 and above) specific Instructions
+```bash
+git clone https://github.com/Ganapati/RsaCtfTool.git
+sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
+cd RsaCtfTool
+pip3 install -r "requirements.txt"
+python3 RsaCtfTool.py
+```
+
+If you also want the optional SageMath you need to do
+```bash
+sudo dnf install sagemath
+pip3 install -r "optional-requirements.txt"
 ```
 
 ### MacOS-specific Instructions
@@ -148,6 +183,7 @@ If `pip3 install -r "requirements.txt"` fails to install requirements accessible
 
 ``easy_install `cat requirements.txt` ``
 
-## Todo
+## Todo (aka. Help wanted !)
 
-- Brainstorm moar attack types !
+- Implement test method in each attack
+- Assign the correct speed value in each attack
