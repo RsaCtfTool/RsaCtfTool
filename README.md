@@ -1,5 +1,5 @@
 # RsaCtfTool
-
+[![Test](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml/badge.svg)](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml)
 ![lint_python](https://github.com/Ganapati/RsaCtfTool/workflows/lint_python/badge.svg)
 ![CodeQL](https://github.com/Ganapati/RsaCtfTool/workflows/CodeQL/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/issues)
@@ -128,7 +128,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### NSIF Attack - factorization with GCD inverse modular exponent
 
-`time ./RsaCtfTool.py -n 1078615880917389544637583114473414840170786187365383943640580486946396054833005778796250863934445216126720683279228360145952738612886499734957084583836860500440925043100784911137186209476676352971557693774728859797725277166790113706541220865545309534507638851540886910549436636443182335048699197515327493691587 --uncipher 512 --attack nsif -e 10000`
+`time ./RsaCtfTool.py -n 1078615880917389544637583114473414840170786187365383943640580486946396054833005778796250863934445216126720683279228360145952738612886499734957084583836860500440925043100784911137186209476676352971557693774728859797725277166790113706541220865545309534507638851540886910549436636443182335048699197515327493691587 --attack nsif -e 10000`
 
 ![image](https://user-images.githubusercontent.com/60758685/121983696-595c4480-cd57-11eb-87f6-7df7285c036a.png)
 
