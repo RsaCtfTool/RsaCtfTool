@@ -30,7 +30,6 @@ class RSAAttack(object):
         self.unciphered = []
         self.implemented_attacks = []
 
-        
     def get_boolean_results(self):
         """Return a boolean value according to requested
         actions (private, uncipher) if actions are done or not
