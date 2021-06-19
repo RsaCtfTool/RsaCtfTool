@@ -7,10 +7,11 @@ import binascii
 import subprocess
 from Crypto.PublicKey import RSA
 from Crypto.Cipher import PKCS1_OAEP
-from lib.rsalibnum import invmod, modInv
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
+from lib.rsalibnum import powmod, invmod, invert
+#from gmpy2 import invert
 
 logger = logging.getLogger("global_logger")
 
@@ -103,7 +104,12 @@ class PrivateKey(object):
 
         self.d = None
         if self.phi is not None and self.e is not None:
-            self.d = invmod(e, self.phi)
+            try:
+                self.d = int(invert(e, self.phi))
+            except ValueError:
+                # invmod failure
+                logger.error("[!] e^d==1 inversion error, check your math.")
+                pass
 
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
@@ -157,7 +163,7 @@ class PrivateKey(object):
             if self.n is not None and self.d is not None and self.key is None:
                 try:
                     cipher_int = int.from_bytes(c, "big")
-                    m_int = pow(cipher_int, self.d, self.n)
+                    m_int = powmod(cipher_int, self.d, self.n)
                     m = binascii.unhexlify(hex(m_int)[2:]).decode()
                     plain.append(m)
                 except:
@@ -226,4 +232,7 @@ class PrivateKey(object):
 
     def __str__(self):
         """Print armored private key"""
-        return self.key.exportKey().decode("utf-8")
+        if self.key is not None:
+            return self.key.exportKey().decode("utf-8")
+        else:
+            return ""

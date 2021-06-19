@@ -46,6 +46,13 @@ Attacks :
 - Mersenne pm1 gcd
 - Fermat Numbers gcd
 - Fibonacci gcd
+- System primes gcd
+- Small crt exponent
+- Shanks's square forms factorization (SQUFOF)
+- Return of Coppersmith's attack (ROCA) with NECA variant
+- Dixon
+- brent (Pollard rho variant)
+- Pisano Period
 
 - System primes gcd
 - Small crt exponent
@@ -65,9 +72,9 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
                      [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
 
-                     [-e E] [--key KEY] [--isconspicuous]
-                     [--attack {binary_polinomial_factoring,boneh_durfee,comfact_cn,cube_root,ecm,ecm2,euler,factordb,fermat,londahl,mersenne_primes,noveltyprimes,partial_q,pastctfprimes,pollard_p_1,pollard_rho,qicheng,roca,siqs,smallfraction,smallq,wiener,wolframalpha,cm_factor,z3_solver,primorial_pm1_gcd,mersenne_pm1_gcd,fermat_numbers_gcd,fibonacci_gcd,commonfactors,hastads,same_n_huge_e,nsif,all]
-````
+                     [-e E] [--key KEY] [--isconspicuous] [--convert_idrsa_pub] [--isroca] [--check_publickey]
+                     [--attack {brent,fermat_numbers_gcd,comfact_cn,wiener,factordb,smallq,pollard_rho,euler,z3_solver,neca,cm_factor,mersenne_pm1_gcd,SQUFOF,small_crt_exp,fibonacci_gcd,smallfraction,boneh_durfee,roca,fermat,londahl,mersenne_primes,partial_q,siqs,noveltyprimes,binary_polinomial_factoring,primorial_pm1_gcd,pollard_p_1,ecm2,cube_root,system_primes_gcd,dixon,ecm,pastctfprimes,qicheng,wolframalpha,hastads,same_n_huge_e,commonfactors,pisano_period,nsif,all}]
+```
 
 
 Mode 1 : Attack RSA (specify --publickey or n and e)
@@ -161,6 +168,7 @@ cd RsaCtfTool
 pip3 install -r "requirements.txt"
 python3 RsaCtfTool.py
 ```
+
 
 ### Fedora (33 and above) specific Instructions
 ```bash

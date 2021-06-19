@@ -15,22 +15,19 @@ import os
 import pathlib
 import re
 import logging
+from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 
-logger = logging.getLogger("global_logger")
-
 
 class SiqsAttack(object):
-    def __init__(self, attack_rsa_obj, n):
+    def __init__(self, n):
         """Configuration"""
         self.logger = logging.getLogger("global_logger")
-        self.yafubin = os.path.join(pathlib.Path(__file__).parent, "yafu")
         self.threads = 2  # number of threads
         self.maxtime = 180  # max time to try the sieve
 
-        self.attack_rsa_obj = attack_rsa_obj
         self.n = n
         self.p = None
         self.q = None
@@ -40,45 +37,27 @@ class SiqsAttack(object):
 
         try:
             yafutest = subprocess.check_output(
-                [self.yafubin, "siqs(1549388302999519)"],
-                timeout=self.attack_rsa_obj.args.timeout,
+                ["yafu", "siqs(1549388302999519)"],
+                timeout=self.timeout,
                 stderr=subprocess.DEVNULL,
             )
         except:
             yafutest = b""
 
-        if b"48670331" in yafutest:
-            # yafu is working
-            self.logger.info("[*] Yafu SIQS is working.")
-            return True
-        else:
-            self.logger.error("[!] Yafu SIQS is not working.")
-            return False
-
-    def checkyafu(self):
-        # check if yafu exists and we can execute it
-        if os.path.isfile(self.yafubin) and os.access(self.yafubin, os.X_OK):
-            return True
-        else:
-            return False
-
-    def benchmarksiqs(self):
-        # NYI
-        # return the time to factor a 256 bit RSA modulus
-        return
+        return b"48670331" in yafutest
 
     def doattack(self):
         """Perform attack"""
         yafurun = subprocess.check_output(
             [
-                self.yafubin,
+                "yafu",
                 "siqs(" + str(self.n) + ")",
                 "-siqsT",
                 str(self.maxtime),
                 "-threads",
                 str(self.threads),
             ],
-            timeout=self.attack_rsa_obj.args.timeout,
+            timeout=self.timeout,
             stderr=subprocess.DEVNULL,
         )
 
@@ -105,32 +84,50 @@ class SiqsAttack(object):
         return
 
 
-def attack(attack_rsa_obj, publickey, cipher=[]):
-    """Try to factorize using yafu"""
-    with timeout(attack_rsa_obj.args.timeout):
-        try:
-            if publickey.n.bit_length() > 1024:
-                logger.error("[!] Warning: Modulus too large for SIQS attack module")
+class Attack(AbstractAttack):
+    def __init__(self, timeout=60):
+        super().__init__(timeout)
+        self.required_binaries = ["yafu"]
+        self.logger = logging.getLogger("global_logger")
+        self.speed = AbstractAttack.speed_enum["medium"]
+
+    def attack(self, publickey, cipher=[], progress=True):
+        """Try to factorize using yafu"""
+        with timeout(self.timeout):
+            try:
+                if publickey.n.bit_length() > 1024:
+                    self.logger.error(
+                        "[!] Warning: Modulus too large for SIQS attack module"
+                    )
+                    return (None, None)
+
+                siqsobj = SiqsAttack(publickey.n)
+
+                siqsobj.testyafu()
+
+                if siqsobj.checkyafu() and siqsobj.testyafu():
+                    siqsobj.doattack()
+
+                if siqsobj.p and siqsobj.q:
+                    publickey.q = siqsobj.q
+                    publickey.p = siqsobj.p
+                    priv_key = PrivateKey(
+                        int(publickey.p),
+                        int(publickey.q),
+                        int(publickey.e),
+                        int(publickey.n),
+                    )
+                    return (priv_key, None)
+            except TimeoutError:
                 return (None, None)
+        return (None, None)
 
-            siqsobj = SiqsAttack(attack_rsa_obj, publickey.n)
+    def test(self):
+        from lib.keys_wrapper import PublicKey
 
-            siqsobj.checkyafu()
-            siqsobj.testyafu()
-
-            if siqsobj.checkyafu() and siqsobj.testyafu():
-                siqsobj.doattack()
-
-            if siqsobj.p and siqsobj.q:
-                publickey.q = siqsobj.q
-                publickey.p = siqsobj.p
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return (priv_key, None)
-        except TimeoutError:
-            return (None, None)
-    return (None, None)
+        key_data = """-----BEGIN PUBLIC KEY-----
+MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAM7gDElzPMzEU1htubZ8KvfHomChbmwN
+ZrJ1fw38h5l1AgMBAAE=
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data), progress=False)
+        return result != (None, None)

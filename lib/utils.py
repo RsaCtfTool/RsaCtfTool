@@ -2,14 +2,15 @@
 # -*- coding: utf-8 -*-
 
 import os
-import time
 import errno
 import signal
+import base64
 import logging
 import subprocess
 import contextlib
-from lib.rsalibnum import invmod
+import binascii
 from lib.keys_wrapper import PublicKey
+from lib.rsalibnum import invmod
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
@@ -24,6 +25,17 @@ def get_numeric_value(value):
         return int(value, 16)
     else:
         return int(value)
+
+
+def get_base64_value(value):
+    """Parse input (hex or numerical)"""
+    try:
+        if base64.b64encode(base64.b64decode(value)) == value:
+            return base64.b64decode(value)
+        else:
+            return value
+    except:
+        return value
 
 
 def sageworks():
@@ -65,7 +77,12 @@ def print_results(args, publickey, private_key, uncipher):
                                 output_fd.write("%s\n" % str(priv_key))
                         except:
                             logger.error("Can't write output file : %s" % args.output)
-                    logger.info(priv_key)
+                    if str(priv_key) != "":
+                        logger.info(priv_key)
+                    else:
+                        logger.warning(
+                            "Key format seems wrong, check input data to solve this."
+                        )
 
         if args.dumpkey:
             for priv_key in private_keys:
@@ -128,51 +145,19 @@ def print_results(args, publickey, private_key, uncipher):
 
                         logger.info(f"INT (big endian) : {int_big}")
                         logger.info(f"INT (little endian) : {int_little}")
+                        try:
+                            c_utf8 = c.decode("utf-8")
+                            logger.info(f"utf-8 : { c_utf8 }")
+                        except UnicodeDecodeError:
+                            pass
+                        try:
+                            c_utf16 = c.decode("utf-16")
+                            logger.info(f"utf-16 : { c_utf16 }")
+                        except UnicodeDecodeError:
+                            pass
                         logger.info(f"STR : {repr(c)}")
         else:
             logger.critical("Sorry, unciphering failed.")
-
-
-def isqrt(n):
-    if n == 0:
-        return 0
-    x, y = n, (n + 1) // 2
-    while y < x:
-        x, y = y, (y + n // y) // 2
-    return x
-
-
-def gcd(a, b):
-    while b:
-        a, b = b, a % b
-    return abs(a)
-
-
-def introot(n, r=2):
-    if n < 0:
-        return None if r % 2 == 0 else -introot(-n, r)
-    if n < 2:
-        return n
-    if r == 2:
-        return isqrt(n)
-    lower, upper = 0, n
-    while lower != upper - 1:
-        mid = (lower + upper) // 2
-        m = mid ** r
-        if m == n:
-            return mid
-        elif m < n:
-            lower = mid
-        elif m > n:
-            upper = mid
-    return lower
-
-
-def modinv(a, m):
-    a, x, u = a % m, 0, 1
-    while a:
-        x, u, m, a = u, x - (m // a) * u, a, m % a
-    return x
 
 
 class TimeoutError(Exception):
@@ -211,3 +196,38 @@ class timeout(contextlib.ContextDecorator):
         signal.alarm(0)
         if self.suppress and exc_type is TimeoutError:
             return True
+
+
+def s2n(s):
+    """
+    String to number.
+    """
+    if not len(s):
+        return 0
+    return int(binascii.hexlify(s), 16)
+
+
+def n2s(n):
+    """
+    Number to string.
+    """
+    s = hex(n)[2:].rstrip("L")
+    if len(s) & 1 != 0:
+        s = "0" + s
+
+    return binascii.unhexlify(s)
+
+
+def binary_search(L, n):
+    """ Finds item index in O(log2(N)) """
+    left = 0
+    right = len(L) - 1
+    while left <= right:
+        mid = (left + right) >> 1
+        if n == L[mid]:
+            return mid
+        elif n < L[mid]:
+            right = mid - 1
+        else:
+            left = mid + 1
+    return -1
