@@ -27,6 +27,54 @@ import Codec.Crypto.RSA.Pure
 prim n = read ((splitOn " " $ show (P.nextPrime n)) !! 1)::Integer
 
 
+primb n = read ((splitOn " " $ show (P.precPrime n)) !! 1)::Integer
+
+
+ncr n b e t= map (\x-> gcd n $ (powMod (x) (n^2 - (x^2)) n ) -(x) ) $ [e^b..e^b+t] 
+
+
+
+
+
+primc n l = map (\x-> read ((splitOn " " $ show (P.nextPrime x)) !! 1)::Integer) [1..l]
+
+
+nsifc2 n base tries e
+	| out /=1 && out /= n = (div n out,out)
+	| otherwise = (0,0)
+	where
+	--(nearsquare) = 2^(logBase 2 n)
+	out =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^e+x^e) x)) $ reverse [base^e..base^e+tries]) )
+
+
+-- exponent root
+-- search for best base
+-- search the best exponent
+
+intpowroot n = take 100 $ sort $ filter (\(r,f,g)-> (f^g)<n) $ concat $  map (\x-> map (\y-> (n-(y^x),y,x) ) [2..2000]) [2..112]
+
+-- loop "bit" squares
+--
+--
+--
+
+{--
+nsifcrack n = 
+
+	where
+	-- search for better base
+	-- if base is integer divide by 2
+	-- else find the better base
+	-- start to loop bits in x tries per loop
+	
+	out = head $ map (\x-> nsifc2 n (x) 10000 x) [1..13]
+--}
+
+
+bestpow n =  head $ filter (<n) $  map (\x-> map (\y-> (y^x) ) [1..1000]) [1..15]
+
+
+
 nsifc n base tries
 	| out2 /= 1 && out2 /= n = (div n out2,out2) 
 	| out /=1 && out /= n = (div n out,out)
@@ -42,7 +90,7 @@ nsifc n base tries
 	
 	--(nearsquare) = 2^(logBase 2 n)
 	primesc = nub $ sort $ map prim [1..n]	
-	out =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2+x^2) x)) [2^base..2^base+tries]) )
+	out =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) (x*(n + (n - x))) x)) $ reverse $ [2^base..2^base+tries]) )
 	out2 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2-x^2) x)) [2^base..2^base+tries]))
 	out3 = head $ reverse ([1]++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3+x^3) x)) [3^base..3^base+tries]))
 	out4 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3-x^3) x)) [3^base..3^base+tries] ))
