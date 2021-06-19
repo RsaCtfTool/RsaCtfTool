@@ -30,7 +30,7 @@ prim n = read ((splitOn " " $ show (P.nextPrime n)) !! 1)::Integer
 primb n = read ((splitOn " " $ show (P.precPrime n)) !! 1)::Integer
 
 
-ncr n b e t= map (\x-> gcd n $ (powMod (x) (n^2 - (x^2)) n ) -(x) ) $ [e^b..e^b+t] 
+ncr n b e t=  head $ filter (\(r,w)-> w/=1 && w/=r ) $ map (\x-> (n, (gcd n ((powMod x (n^2-x^2) n) - x ))) )  $ map (\x-> (x+3))  [0..t]-- [(e^b..e^b+t] 
 
 
 
@@ -38,14 +38,15 @@ ncr n b e t= map (\x-> gcd n $ (powMod (x) (n^2 - (x^2)) n ) -(x) ) $ [e^b..e^b+
 
 primc n l = map (\x-> read ((splitOn " " $ show (P.nextPrime x)) !! 1)::Integer) [1..l]
 
-
+{-
 nsifc2 n base tries e
-	| out /=1 && out /= n = (div n out,out)
-	| otherwise = (0,0)
+	| out /=1 && out /= n = (div n (fst out),(fst out),(snd out))
+	| otherwise = (0,0,0)
 	where
+	mods = map (\x-> (powMod x 65537 n) ) $ nub $ sort $ map (primes !!) [1..1000]
 	--(nearsquare) = 2^(logBase 2 n)
-	out =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^e+x^e) x)) $ reverse [base^e..base^e+tries]) )
-
+	out =  head $ filter (\(r,t)-> r/=1 && r/=2 ) $ map (\x-> ((gcd (n) (tryperiod ((n)) ((n)^e-x^e) x)),x)) $ reverse [base^e..base^e+tries] 
+-}
 
 -- exponent root
 -- search for best base
@@ -75,7 +76,7 @@ bestpow n =  head $ filter (<n) $  map (\x-> map (\y-> (y^x) ) [1..1000]) [1..15
 
 
 
-nsifc n base tries
+nsifc n base tries e
 	| out2 /= 1 && out2 /= n = (div n out2,out2) 
 	| out /=1 && out /= n = (div n out,out)
 	| out3 /= 1 && out3 /= n = (div n out3,out3) 
@@ -92,6 +93,7 @@ nsifc n base tries
 	primesc = nub $ sort $ map prim [1..n]	
 	out =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) (x*(n + (n - x))) x)) $ reverse $ [2^base..2^base+tries]) )
 	out2 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^2-x^2) x)) [2^base..2^base+tries]))
+
 	out3 = head $ reverse ([1]++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3+x^3) x)) [3^base..3^base+tries]))
 	out4 = head $ reverse ([1]++ (filter (\x-> x/=1 && x/=2) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^3-x^3) x)) [3^base..3^base+tries] ))
 	out5 =  head $ reverse ([1] ++ (filter (\r-> r/=1 && r/=2 ) $ map (\x-> gcd (n) (tryperiod ((n)) ((n)^5+x^5) x)) [5^base..5^base+tries]) )
@@ -137,6 +139,19 @@ primetosquare n = candidates ini (ini^2)
       x  = o2 - n + 1   -- (n - 1 + x) must be a perfect square 
 
 
+intPowBaseExp n= head $  map (\[h,j,k]-> [k,h]) $ filter (\[e,r,u]-> r=="0") $ map (\([a,b],c)-> [a,b,show c]) $ tail $  map (\x-> (splitOn "." $ show $ (logBase x n),x)) [2..3000]
+
+
+nsif n tries = nsifc n bas tries exp 
+	where
+	--(nearsquare) = 2^(logBase 2 n)
+	[b,e] = intPowBaseExp (fromInteger n)	
+	bas = read ("0"++b)::Integer
+
+	exp = read ("0"++e)::Integer
+
+
+
 --
 --
 main = do  
@@ -149,7 +164,7 @@ main = do
     -- let e = args !! 2
     -- let m = args !! 3
 
-    let (factorA,factorB) = nsifc (read n::Integer) (read st::Integer) (read m::Integer)
+    let (factorA,factorB) = nsifc (read n::Integer) (read st::Integer) (read m::Integer) 2
     
     putStrLn "Public Key" 
     
