@@ -1,5 +1,5 @@
 # RsaCtfTool
-
+[![Test](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml/badge.svg)](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml)
 ![lint_python](https://github.com/Ganapati/RsaCtfTool/workflows/lint_python/badge.svg)
 ![CodeQL](https://github.com/Ganapati/RsaCtfTool/workflows/CodeQL/badge.svg)
 [![GitHub issues](https://img.shields.io/github/issues/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/issues)
