@@ -75,13 +75,12 @@ intpowroot n =  filter (\(_,f,g)-> f^g <= n)
 
 
 {- | Returns all the perfect powers of the bitlength 'b' -}
-bitlengthPowers b = concat $ blpow exponents
+bitlengthPowers b = concatMap (rangePowers (ini, 2*ini)) exponents
    where
-   exponents = takeWhile (<= b) $ fmap unPrime primes 
    ini = 2^b
-   blpow (e : es) = rangePowers (ini, 2*ini) e : blpow es
-   blpow _ = []
-   
+   exponents = takeWhile (<= b) primelist -- reverse for up-down exponents
+   primelist = fmap unPrime primes 
+
 
 {- | Returns all the `e` powers in the range [ini inclusive, end exclusive). -}
 rangePowers (ini, end) e = dropWhile (< ini) . fmap (^ e)
