@@ -74,22 +74,18 @@ intpowroot n =  filter (\(_,f,g)-> f^g <= n)
    $ concatMap (\x-> map (\y-> (n - x^y, x, y) ) [2 .. 512]) [2 .. 512]
 
 
-{- | Returns all the perfect powers of the bitlength 'b'. -}
-bitlengthPowers b = go exponents
+{- | Returns all the perfect powers of the bitlength 'b' -}
+bitlengthPowers b = concat $ blpow exponents
    where
+   exponents = takeWhile (<= b) $ fmap unPrime primes 
    ini = 2^b
-   end = 2*ini - 1
-   iniSq = integerSquareRoot ini
-   endSq = integerSquareRoot end
-   exponents = tail . takeWhile (< end) $ fmap P.unPrime P.primes 
-   -- exponents = tail $ takeWhile (< end) primes 
-   go [] = fmap (^ 2) [iniSq .. endSq]
-      where 
-   go (e:es)
-      | pw > ini  = pw : go es
-      | True      = go es
-      where
-      pw = integerRoot e end ^ e
+   blpow (e : es) = rangePowers (ini, 2*ini) e : blpow es
+   blpow _ = []
+   
+
+{- | Returns all the `e` powers in the range [ini inclusive, end exclusive). -}
+rangePowers (ini, end) e = dropWhile (< ini) . fmap (^ e)
+   $ [integerRoot e ini .. integerRoot e (end - 1)]
 
 
 -- loop "bit" squares
