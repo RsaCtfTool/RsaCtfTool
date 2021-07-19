@@ -25,6 +25,15 @@ import Codec.Crypto.RSA.Pure
 
 
 
+nsi n r2 b e 
+	| n == n2 = (r1,r2)
+	| otherwise = nsi n (r2-1) b e
+	where
+	r1 = div (n - (b^e*(b^e+r2))) (b^e+r2)
+	-- r1 = 1
+	n2 = (r1 + b^e )*(b^e + r2)
+
+
 prim n = read ((splitOn " " $ show (P.nextPrime n)) !! 1)::Integer
 
 
@@ -59,13 +68,13 @@ nsifc2 n base tries e
 
 powRoot n = minimum $ intpowroot (n)
 
-bestroot n = minimum $ nub $ sort $ filter (\(r,e,w)-> e/=n ) $  map (\x-> (n-((integerRoot x n))^x,(integerRoot x n),x) ) [1..1000]
+bestroot n = minimum $ nub $ sort $ filter (\(r,e,w)-> e/=n ) $  map (\x-> (n-((integerRoot x n))^x,(integerRoot x n),x) ) [2..3]
 
 powDiv n o
 	| rest == 0 || rest == 1 || rest == 2 = (o++[(b,e)])
 	| otherwise = powDiv rest (o++[(b,e)])
 	where
-	(rest,b,e) = bestroot n
+	(rest,b,e) = powRoot n
 		
 
 intpowroot n =  filter (\(r,f,g)-> (f^g)<=n) $ concat $  map (\x-> map (\y-> (n-(x^y),x,y) ) [2..512]) [2..512]
@@ -132,11 +141,14 @@ sp s l = nub $ sort $  concat $ map (\x-> map (\y-> x*y) (map (\e-> prim (e*2) )
 
 
 
-ex = 1826379812379156297616109238798712634987623891298419
+ex2 = 1826379812379156297616109238798712634987623891298419
+
+ex = 13 
+
+tryperiod2 n period m = (powMod m (ex*modular_inverse ex period) n) - (m)
 
 
-tryperiod n period m = (powMod (powMod (m) ex n) (modular_inverse ex period) n) - (m)
-
+tryperiod n period _ = (powMod 2 (ex * modular_inverse ex period - 1) n) - 1
 {--
 -- | Cypher 'm', and tries to uncypher using 'period' as the subgroup order
 tryperiod n period m = 
@@ -166,18 +178,14 @@ intPowBaseExp n= head $  map (\[h,j,k]-> [k,h]) $ filter (\[e,r,u]-> r=="0") $ m
 
 
 
-nsif n tries
+nsif n tries distance
 	| d /=1 && d /= n = (div n d,d,divcar)
 	| otherwise = (0,0,0)
 	where
- 	base = 2 
-		
-	--(nearsquare) = 2^(logBase 2 n)
-	primesc = nub $ sort $ map prim [1..n]	
-	
-	out2 = head $ reverse ([(1,1)]++ (filter (\(r,u)-> r/=1 ) $ map (\x-> (gcd (n) ((tryperiod ((n)) ((n)^2-(x)^2) x)  ),x)) [2^base..2^base+tries]))
-	d = fst out2
-	divcar = snd out2
+	modin = head $ map fst $ powDiv n [] 
+	out2 = reverse ((1,1): take 1 (dropWhile (\(r,u)-> r==1 && r /= n ) $ map (\x-> (gcd (n) ((tryperiod ((n)) ((n)^2-x^2) x)  ),x)) $ [distance..distance+tries]))
+	d = fst $ head out2
+	divcar = snd $ head out2
 
 
 --
