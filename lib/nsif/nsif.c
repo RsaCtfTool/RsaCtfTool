@@ -5,6 +5,7 @@
 
 /* 
  * NSI Authors , Enrique Santos, Vicent Nos, Francisco Izquierdo
+ * https://github.com/pedroelbanquero/prime-grimoire
  * C++ Algo improvements, BanachTarskiVeli
  * Solution of banachtarskiveli to NSI/ RSA POISONING / Powe Modular factorization with base difference
  *
@@ -37,7 +38,7 @@ void factor(mpz_t r, const mpz_t n, const int base, const size_t limit) {
         mpz_clears(fexp, x, NULL);
 }
 
-#define DEFAULT_BASE 3
+#define DEFAULT_BASE 2
 #define DEFAULT_LIMIT 1000
 
 int main(int argc, char* argv[])
@@ -45,14 +46,20 @@ int main(int argc, char* argv[])
         mpz_t n,r;
         mpz_init_set_str(n, argv[1], 10);
         mpz_init_set_ui(r, 0);
+	size_t bases,currbase=DEFAULT_BASE;
 
-        factor(r, n, DEFAULT_BASE, DEFAULT_LIMIT);
-
-        if(mpz_cmp_ui(r, 0) == 0) {
-                printf("Could not find factor\n");
-        } else {
-                gmp_printf("Found factor:\n  %Zd\n", r);
-        }
+	for(bases = 0 ; bases < 256; bases++){
+        	factor(r, n, currbase, DEFAULT_LIMIT);
+	
+        	if(mpz_cmp_ui(r, 0) == 0) {
+                	printf("Could not find factor\n");
+			currbase++;
+        	} else {
+                	gmp_printf("Found factor:\n  %Zd\n", r);
+        		break;
+		}
+		
+	}
 }
 
 
