@@ -191,6 +191,9 @@ If `pip3 install -r "requirements.txt"` fails to install requirements accessible
 
 ``easy_install `cat requirements.txt` ``
 
+### Install neca
+You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
+
 ## Todo (aka. Help wanted !)
 
 - Implement test method in each attack
