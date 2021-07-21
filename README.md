@@ -99,7 +99,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### Optionaly send the results back to factordb
 
-`./RsaCtfTool.py --publickey "*.pub" --private` --sendtofdb
+`./RsaCtfTool.py --publickey "*.pub" --private --sendtofdb`
 
 ### Generate a public key
 
@@ -182,6 +182,9 @@ pip3 install -r "optional-requirements.txt"
 If `pip3 install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
 
 ``easy_install `cat requirements.txt` ``
+
+### Install neca
+You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
 
 ## Todo (aka. Help wanted !)
 
