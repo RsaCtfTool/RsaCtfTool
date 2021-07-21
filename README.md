@@ -95,7 +95,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### Optionaly send the results back to factordb
 
-`./RsaCtfTool.py --publickey "*.pub" --private` --sendtofdb
+`./RsaCtfTool.py --publickey "*.pub" --private --sendtofdb`
 
 ### Generate a public key
 
