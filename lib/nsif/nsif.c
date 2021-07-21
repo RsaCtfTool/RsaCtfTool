@@ -39,7 +39,7 @@ void factor(mpz_t r, const mpz_t n, const int base, const size_t limit) {
 }
 
 #define DEFAULT_BASE 2
-#define DEFAULT_LIMIT 1000
+#define DEFAULT_LIMIT 100000
 
 int main(int argc, char* argv[])
 {
@@ -52,7 +52,6 @@ int main(int argc, char* argv[])
         	factor(r, n, currbase, DEFAULT_LIMIT);
 	
         	if(mpz_cmp_ui(r, 0) == 0) {
-                	printf("Could not find factor\n");
 			currbase++;
         	} else {
                 	gmp_printf("Found factor:\n  %Zd\n", r);
@@ -60,6 +59,9 @@ int main(int argc, char* argv[])
 		}
 		
 	}
+        if(mpz_cmp_ui(r, 0) == 0) {
+               	printf("Could not find factor\n");
+        }
 }
 
 
