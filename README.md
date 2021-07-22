@@ -53,15 +53,7 @@ Attacks :
 - Dixon
 - brent (Pollard rho variant)
 - Pisano Period
-
-- System primes gcd
-- Small crt exponent
-- Shanks's square forms factorization (SQUFOF)
-- Return of Coppersmith's attack (ROCA) with NECA variant
-- Dixon
-- brent (Pollard rho variant)
-- Pisano Period
-- Small NSIF
+- NSIF Vulnerability, Power Modular Factorization, Near Power Factors
 
 ## Usage
 

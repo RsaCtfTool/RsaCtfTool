@@ -25,6 +25,6 @@ class Attack(AbstractAttack):
     #debug
 #    print(publickey.n,m,e)
 
-        result = os.system("lib/nsif/nsif "+str(publickey.n)+" "+str("512")+" "+str(e) )
+        result = os.system("lib/nsif/nsifc "+str(publickey.n) )
 
         return (str(result), None)
