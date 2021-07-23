@@ -138,8 +138,8 @@ For more examples, look at test.sh file
 
 ### Docker run ###
 
-`docker pull Ganapati/RsaCtfTool`
-`docker run -it --rm -v $PWD:/data Ganapati/RsaCtfTool <arguments>`
+`docker pull ganapati/rsactftool`
+`docker run -it --rm -v $PWD:/data ganapati/rsactftool <arguments>`
 
 ## Requirements
 
