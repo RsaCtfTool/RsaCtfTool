@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-import itertools
 from lib.rsalibnum import gcd
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
@@ -15,7 +14,7 @@ def ProductTree(s):
         if l & 1 != 0:
             s += [1]
             l += 1
-        s = list(map(mul, s[0 : l >> 1], s[l >>1 :]))
+        s = list(map(mul, s[0 : l >> 1], s[l >> 1 :]))
         l = len(s)
     return s[0]
 
