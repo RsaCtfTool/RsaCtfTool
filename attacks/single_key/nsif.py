@@ -13,18 +13,10 @@ import json
 
 logger = logging.getLogger("global_logger")
 
-print("Module NSIF LOADED")
+
 class Attack(AbstractAttack):
-    
     def attack(self, publickey, cipher=[]):
-        #print (int(attack_rsa_obj.args.uncipher[0])) 
-
-        e = 10000 
-
-    
-    #debug
-#    print(publickey.n,m,e)
-
-        result = os.system("lib/nsif/nsifc "+str(publickey.n) )
-
+        raise NotImplementedError()
+        e = 10000
+        result = os.system("lib/nsif/nsifc " + str(publickey.n))
         return (str(result), None)
