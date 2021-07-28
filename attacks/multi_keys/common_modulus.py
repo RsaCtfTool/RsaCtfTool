@@ -91,4 +91,5 @@ class Attack(AbstractAttack):
             publickeys[0].e, publickeys[1].e, publickeys[0].n, cipher[0], cipher[1]
         )
         deciphered_bytes = long_to_bytes(deciphered_message)
+
         return (None, deciphered_bytes)
