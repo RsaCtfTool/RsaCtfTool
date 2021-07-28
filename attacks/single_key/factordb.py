@@ -11,6 +11,7 @@ from Crypto.Util.number import long_to_bytes
 from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)

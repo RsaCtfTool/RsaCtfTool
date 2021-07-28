@@ -11,12 +11,14 @@ logger = logging.getLogger("global_logger")
 
 try:
     import gmpy2 as gmpy
+
     gmpy_version = 2
     mpz = gmpy.mpz
     logger.info("[+] Using gmpy version 2 for math.")
 except ImportError:
     try:
         import gmpy
+
         gmpy_version = 1
         mpz = gmpy.mpz
         logger.info("[+] Using gmpy version 1 for math.")
@@ -24,8 +26,7 @@ except ImportError:
         gmpy_version = 0
         mpz = int
         gmpy = None
-        logger.info("[+] Using python native functions for math.")        
-
+        logger.info("[+] Using python native functions for math.")
 
 
 def getpubkeysz(n):
@@ -101,7 +102,7 @@ def _invmod(a, m):
 
 def _is_square(n):
     i = _isqrt(n)
-    return (i**2 == n)
+    return i ** 2 == n
 
 
 def miller_rabin(n, k=40):
@@ -124,7 +125,7 @@ def miller_rabin(n, k=40):
         r += 1
         s >>= 1
     i = 0
-    for i in range(0,k):
+    for i in range(0, k):
         a = random.randrange(2, n - 1)
         x = pow(a, s, n)
         if x == 1 or x == n - 1:
@@ -140,30 +141,34 @@ def miller_rabin(n, k=40):
     return True
 
 
-def _fermat_prime_criterion(n,b=2):
-  """Fermat's prime criterion
-  Returns False if n is definitely composite, True if posible prime."""
-  return pow(b,n-1,n) == 1
+def _fermat_prime_criterion(n, b=2):
+    """Fermat's prime criterion
+    Returns False if n is definitely composite, True if posible prime."""
+    return pow(b, n - 1, n) == 1
 
 
 def _is_prime(n):
-  """
-  If fermats prime criterion is false by short circuit we dont need to keep testing bases, so we return false for a guaranteed composite.
-  Otherwise we keep trying with primes 3 and 5 as base. The sweet spot is primes 2,3,5, it doesn't improvee the runing time adding more primes to test as base.
-  If all the previus tests pass then we try with rabin miller.
-  All the tests are probabilistic.
-  """
-  if _fermat_prime_criterion(n) and _fermat_prime_criterion(n,b=3) and _fermat_prime_criterion(n,b=5):
-    return miller_rabin(n)
-  else:
-    return False
+    """
+    If fermats prime criterion is false by short circuit we dont need to keep testing bases, so we return false for a guaranteed composite.
+    Otherwise we keep trying with primes 3 and 5 as base. The sweet spot is primes 2,3,5, it doesn't improvee the runing time adding more primes to test as base.
+    If all the previus tests pass then we try with rabin miller.
+    All the tests are probabilistic.
+    """
+    if (
+        _fermat_prime_criterion(n)
+        and _fermat_prime_criterion(n, b=3)
+        and _fermat_prime_criterion(n, b=5)
+    ):
+        return miller_rabin(n)
+    else:
+        return False
 
 
 def _next_prime(n):
     while True:
         if _is_prime(n):
             return n
-        n+=1
+        n += 1
 
 
 def erathostenes_sieve(n):
@@ -171,24 +176,29 @@ def erathostenes_sieve(n):
     sieve = [True] * n
     for i in range(3, isqrt(n) + 1, 2):
         if sieve[i]:
-            sieve[pow(i, 2) :: (i << 1)] = [False] * ((n - pow(i, 2) - 1) // (i << 1) + 1)
+            sieve[pow(i, 2) :: (i << 1)] = [False] * (
+                (n - pow(i, 2) - 1) // (i << 1) + 1
+            )
     return [2] + [i for i in range(3, n, 2) if sieve[i]]
+
+
 _primes = erathostenes_sieve
 
 
 def _primes_yield(n):
     p = i = 1
     while i <= n:
-      p = next_prime(p)
-      yield p
-      i += 1
+        p = next_prime(p)
+        yield p
+        i += 1
+
 
 def _primes_yield_gmpy(n):
     p = i = 1
     while i <= n:
-      p = gmpy.next_prime(p)
-      yield p
-      i += 1
+        p = gmpy.next_prime(p)
+        yield p
+        i += 1
 
 
 def _primes_gmpy(n):
@@ -200,40 +210,44 @@ def _fib(n):
     i = 0
     while i <= n:
         a, b = b, a + b
-        i += 1 
+        i += 1
     return a
 
 
-def _invert(a,b):
-    return pow(a,b-2,b)
+def _invert(a, b):
+    return pow(a, b - 2, b)
 
 
 def _lcm(x, y):
-   return (x*y)//_gcd(x,y)
+    return (x * y) // _gcd(x, y)
 
 
 def _ilog2_gmpy(n):
-   return int(gmpy.log2(n))
+    return int(gmpy.log2(n))
+
 
 def _ilog_gmpy(n):
-   return int(gmpy.log(n))
+    return int(gmpy.log(n))
+
 
 def _ilog2_math(n):
-   return int(math.log2(n))
+    return int(math.log2(n))
+
 
 def _ilog_math(n):
-   return int(math.log(n))
+    return int(math.log(n))
+
 
 def _ilog10_math(n):
-   return int(math.log10(n))
+    return int(math.log10(n))
+
 
 def _ilog10_gmpy(n):
-   return int(gmpy.log10(n))
+    return int(gmpy.log10(n))
 
 
-def _mod(a,b):
-   return a % b
-
+def _mod(a, b):
+    return a % b
 
 
 if gmpy_version > 0:
@@ -288,10 +302,33 @@ else:
 
 def trivial_factorization_with_n_phi(N, phi):
     m = N - phi + 1
-    i = isqrt(pow(m, 2) - (N << 2)) # same as isqrt((m**2) - (4*n))
+    i = isqrt(pow(m, 2) - (N << 2))  # same as isqrt((m**2) - (4*n))
     roots = int((m - i) >> 1), int((m + i) >> 1)
     if roots[0] * roots[1] == N:
         return roots
 
 
-__all__ = [getpubkeysz, gcd, isqrt, introot, invmod, gcdext , is_square, next_prime, is_prime, fib, primes, lcm, invert, powmod, ilog2, ilog,ilog10, mod, log, log2, log10, trivial_factorization_with_n_phi]
+__all__ = [
+    getpubkeysz,
+    gcd,
+    isqrt,
+    introot,
+    invmod,
+    gcdext,
+    is_square,
+    next_prime,
+    is_prime,
+    fib,
+    primes,
+    lcm,
+    invert,
+    powmod,
+    ilog2,
+    ilog,
+    ilog10,
+    mod,
+    log,
+    log2,
+    log10,
+    trivial_factorization_with_n_phi,
+]

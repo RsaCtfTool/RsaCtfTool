@@ -7,6 +7,7 @@ from lib.exceptions import FactorizationError
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import isqrt
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
