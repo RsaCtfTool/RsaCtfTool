@@ -5,6 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import gcd
 from Crypto.Util.number import long_to_bytes, bytes_to_long
 import gmpy2
+import itertools
 
 # Source: https://crypto.stackexchange.com/a/60404
 def bytes_to_integer(data):
@@ -66,30 +67,29 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
 
+    def common_modulus_attack(self, c1, c2, k1, k2):
+        if k1.n != k2.n:
+            return None
+
+        if gcd(k1.e, k2.e) != 1:
+            return None
+
+        deciphered_message = common_modulus(k1.e, k2.e, k1.n, c1, c2)
+        return long_to_bytes(deciphered_message)
+
     def attack(self, publickeys, cipher=[]):
         """Common modulus attack"""
-        if len(publickeys) != 2:
-            self.logger.warning("[-] There must be two public keys")
+        if len(publickeys) < 2:
             return (None, None)
-        if len(cipher) != 2:
-            self.logger.warning("[-] There must be two ciphertexts")
+        if len(cipher) < 2:
             return (None, None)
 
-        self.logger.info("[+] Trying to find common modulus")
+        plains = []
+        for k1, k2 in itertools.combinations(publickeys, 2):
+            for c1, c2 in itertools.combinations(cipher, 2):
+                plains.append(self.common_modulus_attack(c1, c2, k1, k2))
 
-        if publickeys[0].n != publickeys[1].n:
-            self.logger.warning(
-                "[ERROR] The modulus of both public keys must be the same\n"
-            )
-            return (None, None)
-        if gcd(publickeys[0].e, publickeys[1].e) != 1:
-            self.logger.warning(
-                "[ERROR] The greatest common denominator between the exponent of each keys should be 1\n"
-            )
-            return (None, None)
-        deciphered_message = common_modulus(
-            publickeys[0].e, publickeys[1].e, publickeys[0].n, cipher[0], cipher[1]
-        )
-        deciphered_bytes = long_to_bytes(deciphered_message)
+        if all([_ == None for _ in plains]):
+            plains = None
 
-        return (None, deciphered_bytes)
+        return (None, plains)
