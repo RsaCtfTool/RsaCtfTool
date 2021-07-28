@@ -21,14 +21,14 @@ def brent(N):
             x = y
             i = 0
             while i <= r:
-                y = (powmod(y,2,N) + c) % N
+                y = (powmod(y, 2, N) + c) % N
                 i += 1
             k = 0
             while k < r and g == 1:
                 ys = y
                 i = 0
                 while i <= min(m, r - k):
-                    y = (powmod(y,2,N) + c) % N
+                    y = (powmod(y, 2, N) + c) % N
                     q = q * (abs(x - y)) % N
                     i += 1
                 g, k = gcd(q, N), k + m
@@ -37,7 +37,7 @@ def brent(N):
             r <<= 1
         if g == N:
             while True:
-                ys = (powmod(ys,2, N) + c) % N
+                ys = (powmod(ys, 2, N) + c) % N
                 g = gcd(abs(x - ys), N)
                 if N > g > 1:
                     return g

@@ -10,6 +10,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import isqrt, is_square
 
+
 class WienerAttack(object):
     def rational_to_contfrac(self, x, y):
         """Rational_to_contfrac implementation"""
@@ -39,7 +40,6 @@ class WienerAttack(object):
             (num, denom) = self.contfrac_to_rational(remainder)
             return (frac[0] * num + denom, num)
 
-
     def __init__(self, n, e, progress=True):
         """Constructor"""
         self.d = None
@@ -53,12 +53,12 @@ class WienerAttack(object):
             if k != 0:
                 ed1 = e * d - 1
                 phi = ed1 // k
-                if ed1 - (k * phi) == 0: # same as ed1 % k == 0 
+                if ed1 - (k * phi) == 0:  # same as ed1 % k == 0
                     s = n - phi + 1
-                    discr = pow(s, 2) - (n << 2) # same as  s**2 - 4*n
+                    discr = pow(s, 2) - (n << 2)  # same as  s**2 - 4*n
                     if discr >= 0:
                         t = isqrt(discr)
-                        if pow(t, 2) == discr: 
+                        if pow(t, 2) == discr:
                             if (s + t) & 1 == 0:
                                 self.d = d
                                 x = Symbol("x")

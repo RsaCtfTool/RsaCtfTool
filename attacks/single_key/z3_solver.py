@@ -1,29 +1,30 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from z3 import Solver, Int ,set_param, sat
+from z3 import Solver, Int, set_param, sat
 from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import isqrt, next_prime
 from lib.utils import timeout, TimeoutError
 from lib.keys_wrapper import PrivateKey
-set_param('parallel.enable', True)
+
+set_param("parallel.enable", True)
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-
     def z3_solve(self, n, timeout_amount):
-        """ Integer factorization using z3 theorem prover implementation:
+        """Integer factorization using z3 theorem prover implementation:
         We can factor composite integers by SAT solving the model N=PQ directly using the clasuse (n==p*q),
         wich gives a lot of degree of freedom to z3, so we want to contraint the search space.
         Since every composite number n=pq, there always exists some p>sqrt(n) and q<sqrt(n).
-        We can safely asume the divisor p is in the range n > p >= next_prime(sqrt(n)) 
+        We can safely asume the divisor p is in the range n > p >= next_prime(sqrt(n))
         if this later clause doesn't hold and sqrt(p) is prime the number is a perfect square.
         We can also asume that p and q are alyaws odd otherwise our whole composite is even.
         Not all composite numbers generate a valid model that z3 can SAT.
-        SAT solving is efficient with low bit count set in the factors, 
+        SAT solving is efficient with low bit count set in the factors,
         the complexity of the algorithm grows exponential with every bit set.
         The problem of SAT solving integer factorization still is NP complete,
         making this just a showcase. Don't expect big gains.
@@ -34,7 +35,17 @@ class Attack(AbstractAttack):
         q = Int("q")
         i = int(isqrt(n))
         np = int(next_prime(i))
-        s.add(p*q == n, n > p, n > q ,p >= np, q < i, q > 1, p > 1, q % 2 != 0, p % 2 != 0)
+        s.add(
+            p * q == n,
+            n > p,
+            n > q,
+            p >= np,
+            q < i,
+            q > 1,
+            p > 1,
+            q % 2 != 0,
+            p % 2 != 0,
+        )
         try:
             s_check_output = s.check()
             if s_check_output == sat:
@@ -46,7 +57,6 @@ class Attack(AbstractAttack):
                 return None, None
         except:
             return None, None
-
 
     def attack(self, publickey, cipher=[], progress=True):
 
@@ -78,7 +88,7 @@ class Attack(AbstractAttack):
                     )
                     return (priv_key, None)
                 else:
-                    return (None,None)
+                    return (None, None)
             except TimeoutError:
                 return (None, None)
 

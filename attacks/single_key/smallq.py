@@ -6,11 +6,11 @@ from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import primes
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
-
 
     def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where q < 100,000, from BKPCTF2016 - sourcekris"""

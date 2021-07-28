@@ -6,7 +6,8 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
-from  lib.rsalibnum import gcd, isqrt, next_prime, primes, powmod
+from lib.rsalibnum import gcd, isqrt, next_prime, primes, powmod
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -16,13 +17,13 @@ class Attack(AbstractAttack):
     def pollard_P_1(self, n, progress=True):
         """Pollard P1 implementation"""
         z = []
-        logn=math.log(int(isqrt(n)))
+        logn = math.log(int(isqrt(n)))
         prime = primes(997)
 
         for j in range(0, len(prime)):
-             primej = prime[j]
-             logp = math.log(primej)
-             for i in range(1, int(logn / logp) + 1):
+            primej = prime[j]
+            logp = math.log(primej)
+            for i in range(1, int(logn / logp) + 1):
                 z.append(primej)
 
         try:
@@ -77,5 +78,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MBswDQYJKoZIhvcNAQEBBQADCgAwBwICCg0CAQc=
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data), progress=False) 
+        result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

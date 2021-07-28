@@ -7,6 +7,7 @@ http = urllib3.PoolManager()
 
 logger = logging.getLogger("global_logger")
 
+
 def send2fdb(composite, factors):
     factors = map(str, factors)
     payload = {"report": str(composite) + "=" + "*".join(factors)}
@@ -23,7 +24,10 @@ def send2fdb(composite, factors):
 
     msg = re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0]
     if msg != "":
-        if msg == 'Found 0 factors and 0 ECM':
+        if msg == "Found 0 factors and 0 ECM":
             logger.info("[!] All the factors we found are already known to factordb")
         else:
-            logger.info("[+] Factordb: " + re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0])
+            logger.info(
+                "[+] Factordb: "
+                + re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0]
+            )
