@@ -2,7 +2,7 @@ import sys
 from sage.all import inverse_mod, PolynomialRing, floor, Zmod
 
 
-def solve(M, n, a, m, XX, invmod_Mn, F, x,beta):
+def solve(M, n, a, m, XX, invmod_Mn, F, x, beta):
     # I need to import it in the function otherwise multiprocessing doesn't find it in its context
     from sage_functions import coppersmith_howgrave_univariate
 
@@ -65,7 +65,10 @@ def roca(n):
     chunk_size = 10000
     for inf_a in range(inf, sup, chunk_size):
         # create an array with the parameter for the solve function
-        inputs = [((M_prime, n, a, m, XX, invmod_Mn, F, x, beta), {}) for a in range(inf_a, inf_a + chunk_size)]
+        inputs = [
+            ((M_prime, n, a, m, XX, invmod_Mn, F, x, beta), {})
+            for a in range(inf_a, inf_a + chunk_size)
+        ]
         # the sage builtin multiprocessing stuff
         from sage.parallel.multiprocessing_sage import parallel_iter
         from multiprocessing import cpu_count

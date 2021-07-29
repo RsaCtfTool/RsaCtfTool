@@ -5,6 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -17,7 +18,9 @@ class Attack(AbstractAttack):
                 if publickey.e == 3 or publickey.e == 5:
                     plain = []
                     if (cipher is None) or (len(cipher) < 1):
-                        self.logger.info("[-] No ciphertexts specified, skiping the cube_root test...")
+                        self.logger.info(
+                            "[-] No ciphertexts specified, skiping the cube_root test..."
+                        )
                         return (None, None)
                     for c in cipher:
                         cipher_int = int.from_bytes(c, "big")
@@ -55,6 +58,6 @@ uQIBAw==
         result = self.attack(
             PublicKey(key_data),
             [cipher.to_bytes((cipher.bit_length() + 7) // 8, "big")],
-            progress=False
+            progress=False,
         )
         return result != (None, None)

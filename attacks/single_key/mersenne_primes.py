@@ -7,6 +7,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import getpubkeysz
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -73,9 +74,9 @@ class Attack(AbstractAttack):
                 i = getpubkeysz(publickey.n)
                 for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
                     if mersenne_prime <= i:
-                        m = (1 << mersenne_prime)-1
+                        m = (1 << mersenne_prime) - 1
                         if publickey.n % m == 0:
-                            p = m 
+                            p = m
                             q = publickey.n // p
                             break
                     else:

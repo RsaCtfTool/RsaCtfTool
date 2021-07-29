@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.utils import rootpath
-from lib.rsalibnum import invert,powmod
+from lib.rsalibnum import invert, powmod
 
 
 class Attack(AbstractAttack):

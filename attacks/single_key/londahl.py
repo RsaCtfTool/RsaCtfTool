@@ -8,6 +8,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -22,7 +23,7 @@ class Attack(AbstractAttack):
         z = 1
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             look_up[z] = i
-            z = (z  << 1) % n
+            z = (z << 1) % n
 
         # check the table
         mu = invmod(powmod(2, phi_approx, n), n)
