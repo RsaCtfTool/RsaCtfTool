@@ -7,6 +7,7 @@ from lib.rsalibnum import gcd, isqrt
 from lib.utils import timeout, TimeoutError
 import logging
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -37,18 +38,18 @@ class Attack(AbstractAttack):
         c = solutionsFound[1][0]
         d = solutionsFound[1][1]
 
-        k = pow(gcd(a - c, d - b),2)
-        h = pow(gcd(a + c, d + b),2)
-        m = pow(gcd(a + c, d - b),2)
-        l = pow(gcd(a - c, d + b),2)
+        k = pow(gcd(a - c, d - b), 2)
+        h = pow(gcd(a + c, d + b), 2)
+        m = pow(gcd(a + c, d - b), 2)
+        l = pow(gcd(a - c, d + b), 2)
 
         p, q = gcd(k + h, n), gcd(l + m, n)
 
         if n > p > 1:
-          return p, n // p
+            return p, n // p
 
         if n > q > 1:
-          return q, n // q
+            return q, n // q
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
@@ -61,11 +62,13 @@ class Attack(AbstractAttack):
         with timeout(self.timeout):
             try:
                 try:
-                    if ((publickey.n -1) % 4 == 0):
+                    if (publickey.n - 1) % 4 == 0:
                         euler_res = self.euler(publickey.n)
                     else:
-                        self.logger.error("[!] Public key modulus must be congruent 1 mod 4 to work with euler method.")
-                        return(None,None)
+                        self.logger.error(
+                            "[!] Public key modulus must be congruent 1 mod 4 to work with euler method."
+                        )
+                        return (None, None)
                 except:
                     return (None, None)
                 if euler_res and len(euler_res) > 1:

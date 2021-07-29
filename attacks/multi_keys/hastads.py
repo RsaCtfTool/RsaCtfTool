@@ -5,6 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from functools import reduce
 from lib.utils import timeout, TimeoutError
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)

@@ -7,6 +7,7 @@ from Crypto.Util import number
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import gcdext, powmod
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -21,20 +22,25 @@ class Attack(AbstractAttack):
             try:
                 if len(set([_.n for _ in publickey])) == 1:
                     n = publickey[0].n
-                    
+
                     e_array = []
                     for k in publickey:
                         e_array.append(k.e)
 
                     if (cipher is None) or (len(cipher) < 2):
-                        self.logger.info("[-] Lack of ciphertexts, skiping the same_n_huge_e test...")
+                        self.logger.info(
+                            "[-] Lack of ciphertexts, skiping the same_n_huge_e test..."
+                        )
                         return (None, None)
 
                     # e1*s1 + e2*s2 = 1
                     _, s1, s2 = gcdext(e_array[0], e_array[1])
 
                     # m ≡ c1^s1 * c2*s2 mod n
-                    plain = (powmod(int.from_bytes(cipher[0], "big"), s1, n) * powmod(int.from_bytes(cipher[1], "big"), s2, n)) % n
+                    plain = (
+                        powmod(int.from_bytes(cipher[0], "big"), s1, n)
+                        * powmod(int.from_bytes(cipher[1], "big"), s2, n)
+                    ) % n
 
                     return (None, number.long_to_bytes(plain))
             except TimeoutError:
@@ -62,8 +68,11 @@ class Attack(AbstractAttack):
 
         result = self.attack(
             [PublicKey(key1_data), PublicKey(key2_data)],
-            [cipher1.to_bytes((cipher1.bit_length() + 7) // 8, "big"), cipher2.to_bytes((cipher2.bit_length() + 7) // 8, "big")],
-            progress=False
+            [
+                cipher1.to_bytes((cipher1.bit_length() + 7) // 8, "big"),
+                cipher2.to_bytes((cipher2.bit_length() + 7) // 8, "big"),
+            ],
+            progress=False,
         )
 
         return result != (None, None)

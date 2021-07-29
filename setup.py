@@ -15,7 +15,7 @@ setup(
     url=BASE_CVS_URL,
     download_url="{}/tarball/{}".format(BASE_CVS_URL, VERSION),
     keywords=[],
-    scripts=['RsaCtfTool.py'],
+    scripts=["RsaCtfTool.py"],
     include_package_data=True,
     classifiers=[
         "Development Status :: 1 - Planning",

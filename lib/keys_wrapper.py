@@ -11,7 +11,8 @@ from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
 from lib.rsalibnum import powmod, invmod, invert
-#from gmpy2 import invert
+
+# from gmpy2 import invert
 
 logger = logging.getLogger("global_logger")
 

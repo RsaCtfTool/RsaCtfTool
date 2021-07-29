@@ -37,10 +37,10 @@ class Attack(AbstractAttack):
 
     def test(self):
         from lib.keys_wrapper import PublicKey
+
         key_data = """-----BEGIN PUBLIC KEY-----
 MF0wDQYJKoZIhvcNAQEBBQADTAAwSQJCBcW4rpUeDXt1iPxWHCeb48HXZBIpulCr
 t/e2LMmbGmPfBeS1cG7CKBFPBRdFIknRmApLezz8oBwSBcPhFmVMyBc9AgMBAAE=
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
-
