@@ -308,6 +308,36 @@ def trivial_factorization_with_n_phi(N, phi):
         return roots
 
 
+# Calculates a^{b} mod n when b is negative
+def neg_pow(a, b, n):
+    assert b < 0
+    assert gcd(a, n) == 1
+    res = int(invert(a, n))
+    res = powmod(res, b * (-1), n)
+    return res
+
+
+# e1 --> Public Key exponent used to encrypt message m and get ciphertext c1
+# e2 --> Public Key exponent used to encrypt message m and get ciphertext c2
+# n --> Modulus
+# The following attack works only when m^{GCD(e1, e2)} < n
+def common_modulus(e1, e2, n, c1, c2):
+    c1 = bytes_to_long(c1)
+    c2 = bytes_to_long(c2)
+    g, a, b = egcd(e1, e2)
+    if a < 0:
+        c1 = neg_pow(c1, a, n)
+    else:
+        c1 = powmod(c1, a, n)
+    if b < 0:
+        c2 = neg_pow(c2, b, n)
+    else:
+        c2 = powmod(c2, b, n)
+    ct = c1 * c2 % n
+    m = int(introot(ct, g)[0])
+    return m
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -331,4 +361,6 @@ __all__ = [
     log2,
     log10,
     trivial_factorization_with_n_phi,
+    neg_pow,
+    common_modulus
 ]
