@@ -30,14 +30,12 @@ class Fibonacci:
         """ fibonacci sequence nth item modulo p """
         if n == 0:
             return (0, 1)
-        else:
-            a, b = self._fib_res(n >> 1, p)
-            c = mod((mod(a, p) * mod(((b << 1) - a), p)), p)
-            d = mod((powmod(a, 2, p) + powmod(b, 2, p)), p)
-            if n & 1 == 0:
-                return (c, d)
-            else:
-                return (d, mod((c + d), p))
+        a, b = self._fib_res(n >> 1, p)
+        c = mod((mod(a, p) * mod(((b << 1) - a), p)), p)
+        d = mod((powmod(a, 2, p) + powmod(b, 2, p)), p)
+        if n & 1 == 0:
+            return (c, d)
+        return (d, mod((c + d), p))
 
     def get_n_mod_d(self, n, d, use="mersenne"):
         if n < 0:
@@ -112,7 +110,7 @@ class Fibonacci:
 
     def factorization(self, N, min_accept, xdiff):
         res = self.get_period_bigint(N, min_accept, xdiff)
-        if res != None:
+        if res is not None:
             t, T, r = res
             return trivial_factorization_with_n_phi(N, T)
 
@@ -134,8 +132,11 @@ class Attack(AbstractAttack):
                     pow(10, (ilog10(publickey.n) // 2) - 4),
                     0,
                 )  # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
-                r = Fib.factorization(publickey.n, B1, B2)
-                if r != None:
+                try:
+                    r = Fib.factorization(publickey.n, B1, B2)
+                except OverflowError:
+                    r = None
+                if r is not None:
                     publickey.p, publickey.q = r
                     priv_key = PrivateKey(
                         int(publickey.p),
@@ -144,8 +145,7 @@ class Attack(AbstractAttack):
                         int(publickey.n),
                     )
                     return (priv_key, None)
-                else:
-                    return (None, None)
+                return (None, None)
             except TimeoutError:
                 return (None, None)
         return (None, None)
