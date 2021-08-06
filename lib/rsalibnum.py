@@ -6,6 +6,8 @@ import binascii
 import math
 import logging
 import random
+from Crypto.Util.number import bytes_to_long
+from egcd import egcd
 
 logger = logging.getLogger("global_logger")
 
@@ -362,5 +364,5 @@ __all__ = [
     log10,
     trivial_factorization_with_n_phi,
     neg_pow,
-    common_modulus
+    common_modulus,
 ]

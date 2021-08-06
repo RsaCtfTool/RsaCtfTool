@@ -6,6 +6,7 @@ from lib.rsalibnum import gcd, common_modulus
 from Crypto.Util.number import long_to_bytes, bytes_to_long
 import itertools
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -37,3 +38,37 @@ class Attack(AbstractAttack):
             plains = None
 
         return (None, plains)
+
+    def test(self):
+        from lib.keys_wrapper import PublicKey
+        import base64
+
+        key1_data = """-----BEGIN PUBLIC KEY-----
+        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtbdQAzdaO7GHXxUsVZ+FmcddA
+        Hrugq+azkVdfgnHu6teK3hDQlk0BdNz9LlQT3BoHXg5/g9FDv3bBwaulpQEQPlGM
+        UXEUnQAJ69KSVaLxHb5Wmb0vqX/qySKc8Hseqt5wbXklOrnZeHJ3Hm3mUeIplpWP
+        f19C6goN3bUGrrniwwIDAQAB
+        -----END PUBLIC KEY-----"""
+        key2_data = """-----BEGIN PUBLIC KEY-----
+        MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCtbdQAzdaO7GHXxUsVZ+FmcddA
+        Hrugq+azkVdfgnHu6teK3hDQlk0BdNz9LlQT3BoHXg5/g9FDv3bBwaulpQEQPlGM
+        UXEUnQAJ69KSVaLxHb5Wmb0vqX/qySKc8Hseqt5wbXklOrnZeHJ3Hm3mUeIplpWP
+        f19C6goN3bUGrrniwwIDBTy3
+        -----END PUBLIC KEY-----"""
+
+        cipher1 = base64.b64_decode(
+            "BzFd4riBUZdFuPCkB3LOh+5iyMImeQ/saFLVD+ca2L8VKSz0+wtTaL55RRpHBAQdl24Fb3XyVg2N9UDcx3slT+vZs7tr03W7oJZxVp3M0ihoCwer3xZNieem8WZQvQvyNP5s5gMT+K6pjB9hDFWWmHzsn7eOYxRJZTIDgxA4k2w="
+        )
+        cipher2 = base64.b64_decode(
+            "jmVRiKyVPy1CHiYLl8fvpsDAhz8rDa/Ug87ZUXZ//rMBKfcJ5MqZnQbyTJZwSNASnQfgel3J/xJsjlnf8LoChzhgT28qSppjMfWtQvR6mar1GA0Ya1VRHkhggX1RUFA4uzL56X5voi0wZEpJITUXubbujDXHjlAfdLC7BvL/5+w="
+        )
+
+        result = self.attack(
+            [PublicKey(key1_data), PublicKey(key2_data)],
+            [
+                cipher1,
+                cipher2,
+            ],
+        )
+        print(result)
+        return result != (None, None)
