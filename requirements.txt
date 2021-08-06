@@ -10,3 +10,4 @@ tqdm
 z3-solver
 pycrypto
 bitarray
+egcd
