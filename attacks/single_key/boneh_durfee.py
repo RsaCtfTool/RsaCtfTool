@@ -36,7 +36,8 @@ class Attack(AbstractAttack):
             return (None, None)
         if sageresult > 0:
             tmp_priv = RSA.construct(
-                (int(publickey.n), int(publickey.e), int(sageresult))
+                (int(publickey.n), int(publickey.e), int(sageresult)),
+                consistency_check=False,
             )
             publickey.p = tmp_priv.p
             publickey.q = tmp_priv.q
