@@ -22,11 +22,11 @@ from lib.utils import timeout, TimeoutError
 
 
 class SiqsAttack(object):
-    def __init__(self, n):
+    def __init__(self, n, timeout=180):
         """Configuration"""
         self.logger = logging.getLogger("global_logger")
         self.threads = 2  # number of threads
-        self.maxtime = 180  # max time to try the sieve
+        self.timeout = timeout  # max time to try the sieve
 
         self.n = n
         self.p = None
@@ -53,7 +53,7 @@ class SiqsAttack(object):
                 "yafu",
                 "siqs(" + str(self.n) + ")",
                 "-siqsT",
-                str(self.maxtime),
+                str(self.timeout),
                 "-threads",
                 str(self.threads),
             ],
@@ -101,12 +101,12 @@ class Attack(AbstractAttack):
                     )
                     return (None, None)
 
-                siqsobj = SiqsAttack(publickey.n)
+                siqsobj = SiqsAttack(publickey.n, self.timeout)
 
-                siqsobj.testyafu()
-
-                if siqsobj.checkyafu() and siqsobj.testyafu():
+                if siqsobj.testyafu():
                     siqsobj.doattack()
+                else:
+                    return (None, None)
 
                 if siqsobj.p and siqsobj.q:
                     publickey.q = siqsobj.q

@@ -34,7 +34,7 @@ def generate_keys_from_p_q_e_n(p, q, e, n):
     except (ValueError, TypeError):
         pass
 
-    pub_key = RSA.construct((n, e)).publickey().exportKey()
+    pub_key = RSA.construct((n, e), consistency_check=False).publickey().exportKey()
     return (pub_key, priv_key)
 
 
@@ -114,10 +114,14 @@ class PrivateKey(object):
 
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
-            self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
+            self.key = RSA.construct(
+                (self.n, self.e, self.d, self.p, self.q), consistency_check=False
+            )
         elif n is not None and e is not None and d is not None:
             try:
-                self.key = RSA.construct((self.n, self.e, self.d))
+                self.key = RSA.construct(
+                    (self.n, self.e, self.d), consistency_check=False
+                )
             except NotImplementedError:
                 pass
 

@@ -297,7 +297,10 @@ if __name__ == "__main__":
         for e in args.e if isinstance(args.e, list) else [args.e]:
             tmpfile = tempfile.NamedTemporaryFile(delete=False)
             with open(tmpfile.name, "wb") as tmpfd:
-                tmpfd.write(RSA.construct((args.n, e)).publickey().exportKey())
+                tmpfd.write(
+                    RSA.construct((args.n, e), consistency_check=False).publickey().exportKey(),
+                    
+                )
             args.publickey.append(tmpfile.name)
 
     elif args.publickey is not None:
@@ -412,7 +415,9 @@ if __name__ == "__main__":
 
         tmpfile = tempfile.NamedTemporaryFile()
         with open(tmpfile.name, "wb") as tmpfd:
-            tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
+            tmpfd.write(
+                RSA.construct((35, 3), consistency_check=False).publickey().exportKey()
+            )
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
 
     # Attack multiple keys
