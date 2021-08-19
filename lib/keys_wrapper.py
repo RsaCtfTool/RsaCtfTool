@@ -114,14 +114,10 @@ class PrivateKey(object):
 
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
-            self.key = RSA.construct(
-                (self.n, self.e, self.d, self.p, self.q), consistency_check=False
-            )
+            self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
         elif n is not None and e is not None and d is not None:
             try:
-                self.key = RSA.construct(
-                    (self.n, self.e, self.d), consistency_check=False
-                )
+                self.key = RSA.construct((self.n, self.e, self.d))
             except NotImplementedError:
                 pass
 
