@@ -34,7 +34,7 @@ def generate_keys_from_p_q_e_n(p, q, e, n):
     except (ValueError, TypeError):
         pass
 
-    pub_key = RSA.construct((n, e), consistency_check=False).publickey().exportKey()
+    pub_key = RSA.construct((n, e)).publickey().exportKey()
     return (pub_key, priv_key)
 
 
