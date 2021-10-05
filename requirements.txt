@@ -5,7 +5,7 @@ urllib3==1.26.5
 requests==2.25.1
 gmpy==1.17
 gmpy2==2.1.0b5
-pycryptodome==3.9.7
+pycryptodome==3.10.4
 tqdm
 z3-solver
 pycrypto
