@@ -4,6 +4,7 @@
 import signal
 from lib.exceptions import FactorizationError
 
+
 # source http://stackoverflow.com/a/22348885
 class timeout:
     """Manage timeout for long running attacks"""
