@@ -79,7 +79,7 @@ def roca(n):
                 q = val[1]
                 print("{}:{}".format(p, q))
                 return val
-        return "Fail"
+    return "Fail"
 
 
 if __name__ == "__main__":
