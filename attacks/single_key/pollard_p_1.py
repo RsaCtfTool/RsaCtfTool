@@ -39,7 +39,8 @@ class Attack(AbstractAttack):
                         q = n // y
                         return p, q
                     if i >= len(z):
-                        return 0, None
+                        break
+            return 0, None
         except TypeError:
             return 0, None
 
