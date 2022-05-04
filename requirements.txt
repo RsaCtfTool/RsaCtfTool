@@ -8,6 +8,5 @@ gmpy2==2.1.0b5
 pycryptodome==3.10.4
 tqdm
 z3-solver
-pycrypto
 bitarray
 egcd
