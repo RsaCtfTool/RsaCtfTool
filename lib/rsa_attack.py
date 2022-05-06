@@ -318,6 +318,8 @@ class RSAAttack(object):
                 self.logger.warning("Timeout")
             except NotImplementedError:
                 self.logger.warning("[!] This attack module is not implemented yet")
+            except KeyboardInterrupt:
+                self.logger.warning("[!] Interrupted")
 
         self.print_results_details(publickey)
         self.priv_key_send2fdb()
