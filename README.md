@@ -21,6 +21,7 @@ Attacks :
 - Fermat's factorisation for close p and q
 - Gimmicky Primes method
 - Past CTF Primes method
+- Non RSA key in the form b^x, where b is prime
 - Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/DarkenCode/yafu.git>)
 - Common factor attacks across multiple keys
 - Small fractions method when p/q is close to a small fraction

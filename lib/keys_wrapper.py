@@ -103,14 +103,16 @@ class PrivateKey(object):
             else:
                 self.phi = (self.p ** 2) - self.p
 
-        self.d = None
-        if self.phi is not None and self.e is not None:
-            try:
-                self.d = int(invert(e, self.phi))
-            except ValueError:
-                # invmod failure
-                logger.error("[!] e^d==1 inversion error, check your math.")
-                pass
+        if d is not None:
+            self.d = d
+        else:
+            if self.phi is not None and self.e is not None:
+                try:
+                    self.d = int(invert(e, self.phi))
+                except ValueError:
+                    # invmod failure
+                    logger.error("[!] e^d==1 inversion error, check your math.")
+                    pass
 
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
@@ -124,6 +126,8 @@ class PrivateKey(object):
                 self.key = RSA.construct((self.n, self.e, self.d))
             except NotImplementedError:
                 pass
+            except ValueError:
+                logger.error("[!] Unable to compute factors p and q from exponent d")
 
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
@@ -169,7 +173,10 @@ class PrivateKey(object):
                 try:
                     cipher_int = int.from_bytes(c, "big")
                     m_int = powmod(cipher_int, self.d, self.n)
-                    m = binascii.unhexlify(hex(m_int)[2:])
+                    try:
+                        m = binascii.unhexlify(hex(m_int)[2:])
+                    except:
+                        m = binascii.unhexlify("0" + hex(m_int)[2:])
                     plain.append(m)
                 except:
                     pass
