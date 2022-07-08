@@ -335,8 +335,7 @@ def common_modulus(e1, e2, n, c1, c2):
     else:
         c2 = powmod(c2, b, n)
     ct = c1 * c2 % n
-    m = int(introot(ct, g)[0])
-    return m
+    return int(introot(ct, g))
 
 
 __all__ = [
