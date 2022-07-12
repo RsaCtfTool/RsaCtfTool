@@ -128,7 +128,7 @@ if __name__ == "__main__":
     )
 
     parser.add_argument(
-        "--falzorize",
+        "--show-factors",
         type=int,
         help="Show P Q, the factors of N",
         default=None,
