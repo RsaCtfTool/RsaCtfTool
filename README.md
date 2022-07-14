@@ -36,7 +36,6 @@ Attacks :
 - Primefac
 - Qicheng
 - Same n, huge e
-
 - binary polynomial factoring
 - Euler method
 - Pollard Rho
@@ -118,14 +117,6 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
 
-
-### NSIF Attack - factorization with GCD inverse modular exponent
-
-`time ./RsaCtfTool.py -n 1078615880917389544637583114473414840170786187365383943640580486946396054833005778796250863934445216126720683279228360145952738612886499734957084583836860500440925043100784911137186209476676352971557693774728859797725277166790113706541220865545309534507638851540886910549436636443182335048699197515327493691587 --attack nsif -e 10000`
-
-![image](https://user-images.githubusercontent.com/60758685/121983696-595c4480-cd57-11eb-87f6-7df7285c036a.png)
-
-
 For more examples, look at test.sh file
 
 ### Convert idrsa.pub to pem format
@@ -184,10 +175,11 @@ If `pip3 install -r "requirements.txt"` fails to install requirements accessible
 
 ``easy_install `cat requirements.txt` ``
 
-### Install neca
+### Optional to factor roca keys upto 512 bits, Install neca:
 You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
 
 ## Todo (aka. Help wanted !)
 
-- Implement test method in each attack
-- Assign the correct speed value in each attack
+- Please read the CONTRIBUTING.md guideline for the bare minimum aceptable PRs.
+- Implement test method in each attack.
+- Assign the correct algorithm complexity in **Big O** notation for each attack.
