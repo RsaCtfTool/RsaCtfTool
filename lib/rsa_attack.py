@@ -10,7 +10,7 @@ from lib.fdb import send2fdb
 from Crypto.Util.number import bytes_to_long, long_to_bytes
 import inspect
 from lib.rsalibnum import is_prime, isqrt, gcd
-
+import traceback
 
 class RSAAttack(object):
     def __init__(self, args):
@@ -320,6 +320,11 @@ class RSAAttack(object):
                 self.logger.warning("[!] This attack module is not implemented yet")
             except KeyboardInterrupt:
                 self.logger.warning("[!] Interrupted")
+            except Exception as e:
+                self.logger.error(
+                    "[!] An exception has occurred during the attack. Please check your inputs.")
+                self.logger.error("[!] %s" % e)
+                self.logger.error("[!] %s" % traceback.format_exc())
 
         self.print_results_details(publickey)
         self.priv_key_send2fdb()
