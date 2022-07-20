@@ -9,7 +9,6 @@ from lib.exceptions import FactorizationError
 from lib.keys_wrapper import PrivateKey
 from lib.rsalibnum import invmod
 from lib.utils import timeout, TimeoutError
-from gmpy2 import powmod
 try:
     from Crypto.Util.number import long_to_bytes
 except ModuleNotFoundError:
