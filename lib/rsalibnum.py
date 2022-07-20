@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from functools import reduce
 import binascii
-import math
 import logging
+import math
 import random
-from Crypto.Util.number import bytes_to_long
+from functools import reduce
+try:
+    from Crypto.Util.number import bytes_to_long
+except ModuleNotFoundError:
+    from Cryptodome.Util.number import bytes_to_long
 
 logger = logging.getLogger("global_logger")
 

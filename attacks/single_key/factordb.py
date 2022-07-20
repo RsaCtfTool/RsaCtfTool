@@ -2,15 +2,18 @@
 # -*- coding: utf-8 -*-
 
 import re
-from attacks.abstract_attack import AbstractAttack
 import requests
-from lib.rsalibnum import invmod
-from lib.keys_wrapper import PrivateKey
+from attacks.abstract_attack import AbstractAttack
+from gmpy2 import powmod
 from lib.exceptions import FactorizationError
-from Crypto.Util.number import long_to_bytes
+from lib.keys_wrapper import PrivateKey
+from lib.rsalibnum import invmod
 from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
-
+try:
+    from Crypto.Util.number import long_to_bytes
+except ModuleNotFoundError:
+    from Cryptodome.Util.number import long_to_bytes
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):

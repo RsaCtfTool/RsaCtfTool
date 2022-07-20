@@ -1,12 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
+from attacks.abstract_attack import AbstractAttack
 from Crypto.PublicKey import RSA
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
-
+try:
+    from Crypto.PublicKey import RSA
+except ModuleNotFoundError:
+    from Cryptodome.PublicKey import RSA
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):

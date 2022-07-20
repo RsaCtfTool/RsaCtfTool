@@ -1,11 +1,14 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import gmpy2
-from Crypto.Util import number
+from attacks.abstract_attack import AbstractAttack
 from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import gcdext, powmod
+try:
+    from Crypto.Util import number
+except ModuleNotFoundError:
+    from Cryptodome.Util import number
 
 
 class Attack(AbstractAttack):
