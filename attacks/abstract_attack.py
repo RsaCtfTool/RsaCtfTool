@@ -2,10 +2,11 @@
 # -*- coding: utf-8 -*-
 
 import logging
-from pathlib import Path
 import sys
-from lib.utils import sageworks
 import shutil
+from lib.utils import sageworks, timeout, TimeoutError
+from pathlib import Path
+
 
 
 class AbstractAttack(object):
@@ -32,10 +33,19 @@ class AbstractAttack(object):
                 )
                 return False
         return True
-
+        
+        
     def attack(self, publickeys, cipher=[], progress=True):
         """Attack implementation"""
         raise NotImplementedError
+        
+    def _attack(self, publickeys, cipher=[], progress=True):
+        """Attack wrapper to include timer in all attacks"""
+        with timeout(self.timeout):
+            try:
+                return self.attack(publickeys, cipher)
+            except TimeoutError:
+                return(None, None)
 
     def test(self):
         """Attack test case"""

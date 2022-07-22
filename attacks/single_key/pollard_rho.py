@@ -40,30 +40,26 @@ class Attack(AbstractAttack):
 
         # pollard Rho attack
 
-        with timeout(self.timeout):
-            try:
-                try:
-                    poll_res = self.pollard_rho(publickey.n)
-                except RecursionError:
-                    print("RecursionError")
-                    return (None, None)
+        try:
+            poll_res = self.pollard_rho(publickey.n)
+        except RecursionError:
+            print("RecursionError")
+            return (None, None)
 
-                if poll_res != None:
-                    publickey.p = poll_res
-                    publickey.q = publickey.n // publickey.p
+        if poll_res != None:
+            publickey.p = poll_res
+            publickey.q = publickey.n // publickey.p
 
-                if publickey.q is not None:
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
-            except TypeError:
-                return (None, None)
+        if publickey.q is not None:
+            priv_key = PrivateKey(
+                int(publickey.p),
+                int(publickey.q),
+                int(publickey.e),
+                int(publickey.n),
+            )
+            return (priv_key, None)
+        except TypeError:
+            return (None, None)
 
         return (None, None)
 

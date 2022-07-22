@@ -32,11 +32,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where the public key has a common factor with the ciphertext - sourcekris"""
         if cipher is not None:
-            try:
-                with timeout(self.timeout):
-                    return self.comfact(cipher, publickey)
-            except TimeoutError:
-                return (None, None)
+            return self.comfact(cipher, publickey)
         return (None, None)
 
     def test(self):

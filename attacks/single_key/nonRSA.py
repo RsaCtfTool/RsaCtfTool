@@ -15,14 +15,31 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """try to factorize n when is in the form: root^x, with root prime"""
-        with timeout(self.timeout):
-            try:
-                n = publickey.n
-                e = publickey.e
+        n = publickey.n
+        e = publickey.e
 
-                if is_prime(n):
-                    phi = n - 1
+        if is_prime(n):
+            phi = n - 1
+            d = invmod(e, phi)
+            priv_key = PrivateKey(
+                n=n,
+                e=e,
+                d=d
+            )
+            return (priv_key, None)
+
+        for i in range(2, ilog2(n) + 1)[::-1]:  # we need to find the largest power first, otherwise, it would never be prime
+            root = introot(n, i)
+            if pow(root, i) == n:
+                self.logger.info("n = %d^%d" % (root, i))
+                if not is_prime(root):
+                    self.logger.warning("[!] n = base^x, but base is not prime")
+                    return (None, None)
+                else:
+                    phi = (root - 1) * pow(root, i - 1)
                     d = invmod(e, phi)
+                    self.logger.info("d = %d" % d)
+                    self.logger.warning("[!] Since this is not a valid RSA key, attempts to display the private key will fail")
                     priv_key = PrivateKey(
                         n=n,
                         e=e,
@@ -30,28 +47,7 @@ class Attack(AbstractAttack):
                     )
                     return (priv_key, None)
 
-                for i in range(2, ilog2(n) + 1)[::-1]:  # we need to find the largest power first, otherwise, it would never be prime
-                    root = introot(n, i)
-                    if pow(root, i) == n:
-                        self.logger.info("n = %d^%d" % (root, i))
-                        if not is_prime(root):
-                            self.logger.warning("[!] n = base^x, but base is not prime")
-                            return (None, None)
-                        else:
-                            phi = (root - 1) * pow(root, i - 1)
-                            d = invmod(e, phi)
-                            self.logger.info("d = %d" % d)
-                            self.logger.warning("[!] Since this is not a valid RSA key, attempts to display the private key will fail")
-                            priv_key = PrivateKey(
-                                n=n,
-                                e=e,
-                                d=d
-                            )
-                            return (priv_key, None)
-
-                return (None, None)
-            except TimeoutError:
-                return(None, None)
+        return (None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey

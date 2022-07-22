@@ -30,11 +30,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run fermat attack with a timeout"""
         try:
-            with timeout(seconds=self.timeout):
-                try:
-                    publickey.p, publickey.q = self.fermat(publickey.n)
-                except TimeoutError:
-                    return (None, None)
+            publickey.p, publickey.q = self.fermat(publickey.n)
 
         except FactorizationError:
             return (None, None)
