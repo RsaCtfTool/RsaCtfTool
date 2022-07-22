@@ -304,7 +304,7 @@ class RSAAttack(object):
                 if not attack_module.can_run():
                     continue
 
-                self.priv_key, unciphered = attack_module.attack(
+                self.priv_key, unciphered = attack_module._attack(
                     self.publickey, self.cipher
                 )
                 if unciphered is not None and unciphered is not []:
