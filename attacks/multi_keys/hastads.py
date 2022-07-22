@@ -3,7 +3,6 @@
 
 from attacks.abstract_attack import AbstractAttack
 from functools import reduce
-from lib.utils import timeout, TimeoutError
 
 
 class Attack(AbstractAttack):
@@ -58,44 +57,40 @@ class Attack(AbstractAttack):
         if cipher is None or len(cipher) == 0:
             return (None, None)
 
-        with timeout(self.timeout):
-            try:
-                c = []
-                for _ in cipher:
-                    c.append(int.from_bytes(_, byteorder="big"))
+        c = []
+        for _ in cipher:
+            c.append(int.from_bytes(_, byteorder="big"))
 
-                n = []
-                e = []
-                for publickey in publickeys:
-                    if publickey.e < 11:
-                        n.append(publickey.n)
-                        e.append(publickey.e)
+        n = []
+        e = []
+        for publickey in publickeys:
+            if publickey.e < 11:
+                n.append(publickey.n)
+                e.append(publickey.e)
 
-                e = set(e)
-                if len(e) != 1:
-                    return (None, None)
-                e = e.pop()
-                if e != 3:
-                    return (None, None)
+        e = set(e)
+        if len(e) != 1:
+            return (None, None)
+        e = e.pop()
+        if e != 3:
+            return (None, None)
 
-                result = self.chinese_remainder(n, c)
-                nth = self.find_invpow(result, 3)
+        result = self.chinese_remainder(n, c)
+        nth = self.find_invpow(result, 3)
 
-                unciphered = []
-                unciphered.append(
-                    nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big")
-                )
+        unciphered = []
+        unciphered.append(
+            nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big")
+        )
 
-                try:
-                    unciphered_ = b""
-                    for i in range(0, len(str(nth)), 3):
-                        _ = str(nth)[i : i + 3]
-                        unciphered_ += bytes([int(_)])
-                    unciphered.append(unciphered_)
-                except:
-                    return (None, None)
+        try:
+            unciphered_ = b""
+            for i in range(0, len(str(nth)), 3):
+                _ = str(nth)[i : i + 3]
+                unciphered_ += bytes([int(_)])
+            unciphered.append(unciphered_)
+        except:
+            return (None, None)
 
-            except TimeoutError:
-                return (None, None)
 
         return (None, unciphered)

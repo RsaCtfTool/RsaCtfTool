@@ -5,7 +5,6 @@ from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import gcd
 from lib.utils import s2n
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 
 
 class Attack(AbstractAttack):

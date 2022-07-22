@@ -5,7 +5,6 @@ from cmath import pi
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.rsalibnum import is_prime, invmod, ilog2, introot
-from lib.utils import timeout, TimeoutError
 
 
 class Attack(AbstractAttack):

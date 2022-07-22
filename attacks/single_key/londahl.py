@@ -5,7 +5,6 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.rsalibnum import isqrt, invmod, trivial_factorization_with_n_phi
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
 
@@ -44,21 +43,16 @@ class Attack(AbstractAttack):
         private key without spending any time factoring
         """
         londahl_b = 20000000
-        with timeout(self.timeout):
-            try:
-                factors = self.close_factor(publickey.n, londahl_b, progress)
+        factors = self.close_factor(publickey.n, londahl_b, progress)
 
-                if factors is not None:
-                    p, q = factors
-                    priv_key = PrivateKey(
-                        int(p), int(q), int(publickey.e), int(publickey.n)
-                    )
-                    return (priv_key, None)
-                else:
-                    return (None, None)
-            except TimeoutError:
-                return (None, None)
-        return (None, None)
+        if factors is not None:
+            p, q = factors
+            priv_key = PrivateKey(
+                int(p), int(q), int(publickey.e), int(publickey.n)
+            )
+            return (priv_key, None)
+        else:
+            return (None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey

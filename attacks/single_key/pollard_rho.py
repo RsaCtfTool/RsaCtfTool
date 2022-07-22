@@ -4,7 +4,6 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import is_prime, gcd
 
 
@@ -46,18 +45,19 @@ class Attack(AbstractAttack):
             print("RecursionError")
             return (None, None)
 
-        if poll_res != None:
-            publickey.p = poll_res
-            publickey.q = publickey.n // publickey.p
+        try:
+            if poll_res != None:
+                publickey.p = poll_res
+                publickey.q = publickey.n // publickey.p
 
-        if publickey.q is not None:
-            priv_key = PrivateKey(
-                int(publickey.p),
-                int(publickey.q),
-                int(publickey.e),
-                int(publickey.n),
-            )
-            return (priv_key, None)
+            if publickey.q is not None:
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return (priv_key, None)
         except TypeError:
             return (None, None)
 
