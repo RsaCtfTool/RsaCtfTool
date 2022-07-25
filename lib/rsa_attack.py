@@ -1,16 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
 import importlib
-from lib.keys_wrapper import PublicKey, PrivateKey
-from lib.exceptions import FactorizationError
-from lib.utils import print_results
-from lib.fdb import send2fdb
-from Crypto.Util.number import bytes_to_long, long_to_bytes
 import inspect
-from lib.rsalibnum import is_prime, isqrt, gcd
+import logging
 import traceback
+from lib.exceptions import FactorizationError
+from lib.fdb import send2fdb
+from lib.keys_wrapper import PublicKey, PrivateKey
+from lib.rsalibnum import is_prime, isqrt, gcd
+from lib.utils import print_results
+try:
+    from Crypto.Util.number import bytes_to_long, long_to_bytes
+except ModuleNotFoundError:
+    from Cryptodome.Util.number import bytes_to_long, long_to_bytes
 
 class RSAAttack(object):
     def __init__(self, args):

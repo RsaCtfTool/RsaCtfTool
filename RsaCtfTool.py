@@ -10,19 +10,19 @@ this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
 """
 
-import sys, os
-import logging
 import argparse
+import logging
+import os
+import sys
 import urllib3
 import tempfile
 from glob import glob
-from Crypto.PublicKey import RSA
+from lib.customlogger import CustomFormatter, logger_levels
 from lib.rsa_attack import RSAAttack
 from lib.rsalibnum import invmod
 from lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
-from lib.customlogger import CustomFormatter, logger_levels
 from lib.keys_wrapper import (
     generate_pq_from_n_and_p_or_q,
     generate_keys_from_p_q_e_n,
@@ -30,6 +30,11 @@ from lib.keys_wrapper import (
 )
 from lib.idrsa_pub_disector import disect_idrsa_pub
 from lib.is_roca_test import is_roca_vulnerable
+try:
+    from Crypto.PublicKey import RSA
+except ModuleNotFoundError:
+    from Cryptodome.PublicKey import RSA
+
 
 # Remove insecure warning for factordb.com
 urllib3.disable_warnings(InsecureRequestWarning)
