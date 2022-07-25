@@ -40,5 +40,5 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
-        """ FIXME: Implment testcase """
+        """FIXME: Implment testcase"""
         raise NotImplementedError

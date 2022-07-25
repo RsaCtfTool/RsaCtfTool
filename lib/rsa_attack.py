@@ -12,6 +12,7 @@ import inspect
 from lib.rsalibnum import is_prime, isqrt, gcd
 import traceback
 
+
 class RSAAttack(object):
     def __init__(self, args):
         """Main class managing the attacks"""
@@ -127,7 +128,7 @@ class RSAAttack(object):
                 )
                 ok = False
             i = isqrt(publickey.n)
-            if publickey.n == (i ** 2):
+            if publickey.n == (i**2):
                 self.logger.error(
                     "[!] Public key: %s modulus should not be a perfect square."
                     % publickey.filename
@@ -322,7 +323,8 @@ class RSAAttack(object):
                 self.logger.warning("[!] Interrupted")
             except Exception as e:
                 self.logger.error(
-                    "[!] An exception has occurred during the attack. Please check your inputs.")
+                    "[!] An exception has occurred during the attack. Please check your inputs."
+                )
                 self.logger.error("[!] %s" % e)
                 self.logger.error("[!] %s" % traceback.format_exc())
 

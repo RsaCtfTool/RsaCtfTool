@@ -101,7 +101,7 @@ class PrivateKey(object):
             if self.p != self.q:
                 self.phi = (self.p - 1) * (self.q - 1)
             else:
-                self.phi = (self.p ** 2) - self.p
+                self.phi = (self.p**2) - self.p
 
         if d is not None:
             self.d = d
@@ -149,7 +149,7 @@ class PrivateKey(object):
                     if self.p != self.q:
                         self.phi = (self.p - 1) * (self.q - 1)
                     else:
-                        self.phi = (self.p ** 2) - self.p
+                        self.phi = (self.p**2) - self.p
 
     def is_conspicuous(self):
         is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
