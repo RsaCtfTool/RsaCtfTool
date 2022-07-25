@@ -16,7 +16,7 @@ def dixon_factor(N, B=7, explain=False):
 
     start = isqrt(N)
 
-    if (start ** 2) == N:
+    if (start**2) == N:
         return start, start
 
     base = primes(B)
@@ -63,7 +63,7 @@ class Attack(AbstractAttack):
         try:
             with timeout(seconds=self.timeout):
                 try:
-                    if publickey.n <= 10 ** 10:
+                    if publickey.n <= 10**10:
                         publickey.p, publickey.q = dixon_factor(publickey.n)
                     else:
                         self.logger.info("[-] Dixon is too slow for pubkeys > 10^10...")

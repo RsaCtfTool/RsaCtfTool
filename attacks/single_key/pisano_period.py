@@ -27,7 +27,7 @@ class Fibonacci:
         self.verbose = verbose
 
     def _fib_res(self, n, p):
-        """ fibonacci sequence nth item modulo p """
+        """fibonacci sequence nth item modulo p"""
         if n == 0:
             return (0, 1)
         a, b = self._fib_res(n >> 1, p)
