@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
                 limit = 10000
                 p = q = None
                 for x in tqdm(range(1, limit), disable=(not progress)):
-                    f = (2 ** 2 ** x) + 1
+                    f = (2**2**x) + 1
                     fermat = gcd(f, publickey.n)
                     if 1 < fermat < publickey.n:
                         p = publickey.n // fermat

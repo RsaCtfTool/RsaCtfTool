@@ -219,7 +219,7 @@ def n2s(n):
 
 
 def binary_search(L, n):
-    """ Finds item index in O(log2(N)) """
+    """Finds item index in O(log2(N))"""
     left = 0
     right = len(L) - 1
     while left <= right:

@@ -22,7 +22,7 @@ class Attack(AbstractAttack):
             return 5
         if is_prime(n):
             return n
-        f = lambda x: x ** p + c
+        f = lambda x: x**p + c
         x, y = seed, seed
         while True:
             x = f(x) % n

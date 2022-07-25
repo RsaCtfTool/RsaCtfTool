@@ -20,14 +20,12 @@ class Attack(AbstractAttack):
         if is_prime(n):
             phi = n - 1
             d = invmod(e, phi)
-            priv_key = PrivateKey(
-                n=n,
-                e=e,
-                d=d   
-            )
+            priv_key = PrivateKey(n=n, e=e, d=d)
             return (priv_key, None)
 
-        for i in range(2, ilog2(n) + 1)[::-1]:  # we need to find the largest power first, otherwise, it would never be prime
+        for i in range(2, ilog2(n) + 1)[
+            ::-1
+        ]:  # we need to find the largest power first, otherwise, it would never be prime
             root = introot(n, i)
             if pow(root, i) == n:
                 self.logger.info("n = %d^%d" % (root, i))
@@ -38,18 +36,17 @@ class Attack(AbstractAttack):
                     phi = (root - 1) * pow(root, i - 1)
                     d = invmod(e, phi)
                     self.logger.info("d = %d" % d)
-                    self.logger.warning("[!] Since this is not a valid RSA key, attempts to display the private key will fail")
-                    priv_key = PrivateKey(
-                        n=n,
-                        e=e,
-                        d=d   
+                    self.logger.warning(
+                        "[!] Since this is not a valid RSA key, attempts to display the private key will fail"
                     )
+                    priv_key = PrivateKey(n=n, e=e, d=d)
                     return (priv_key, None)
 
         return (None, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey
+
         key_data = """-----BEGIN PUBLIC KEY-----
 MIIBIzANBgkqhkiG9w0BAQEFAAOCARAAMIIBCwKCAQILdjaT+X2D8Er2cSNPoG6k
 oFBngdQrBrtcAwykNQ9hxbZzX2ZCImBZ7apKUsbJuuK1+1+jcaYJMMkGE9FeVgo/

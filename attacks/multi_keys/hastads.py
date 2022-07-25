@@ -35,14 +35,14 @@ class Attack(AbstractAttack):
 
     def find_invpow(self, x, n):
         high = 1
-        while high ** n < x:
+        while high**n < x:
             high *= 2
         low = high >> 1
         while low < high:
             mid = (low + high) >> 1
-            if low < mid and mid ** n < x:
+            if low < mid and mid**n < x:
                 low = mid
-            elif high > mid and mid ** n > x:
+            elif high > mid and mid**n > x:
                 high = mid
             else:
                 return mid

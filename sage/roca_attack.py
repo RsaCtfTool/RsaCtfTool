@@ -55,7 +55,7 @@ def roca(n):
     inf = a3 >> 1
     sup = (a3 + order) >> 1
     # Upper bound for the small root x0
-    XX = floor(2 * n ** 0.5 / M_prime)
+    XX = floor(2 * n**0.5 / M_prime)
     invmod_Mn = inverse_mod(M_prime, n)
     # Create the polynom f(x)
     F = PolynomialRing(Zmod(n), implementation="NTL", names=("x",))
