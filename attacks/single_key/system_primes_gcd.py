@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.system_primes import load_system_consts
 from lib.rsalibnum import gcd
 
@@ -16,23 +15,19 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """System primes in crypto constants"""
-        with timeout(self.timeout):
-            try:
-                primes = load_system_consts()
-                for prp in tqdm(primes, disable=(not progress)):
-                    g = gcd(publickey.n, prp)
-                    if publickey.n > g > 1:
-                        publickey.q = g
-                        publickey.p = publickey.n // publickey.q
-                        priv_key = PrivateKey(
-                            int(publickey.p),
-                            int(publickey.q),
-                            int(publickey.e),
-                            int(publickey.n),
-                        )
-                        return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
+        primes = load_system_consts()
+        for prp in tqdm(primes, disable=(not progress)):
+            g = gcd(publickey.n, prp)
+            if publickey.n > g > 1:
+                publickey.q = g
+                publickey.p = publickey.n // publickey.q
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return (priv_key, None)
         return (None, None)
 
     def test(self):

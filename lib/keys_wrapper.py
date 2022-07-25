@@ -1,16 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import logging
-import tempfile
 import binascii
+import logging
 import subprocess
-from Crypto.PublicKey import RSA
-from Crypto.Cipher import PKCS1_OAEP
+import tempfile
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
 from lib.rsalibnum import powmod, invmod, invert
+try:
+    from Crypto.Cipher import PKCS1_OAEP
+except ModuleNotFoundError:
+    from Cryptodome.Cipher import PKCS1_OAEP
+try:
+    from Crypto.PublicKey import RSA
+except ModuleNotFoundError:
+    from Cryptodome.PublicKey import RSA
 
 # from gmpy2 import invert
 

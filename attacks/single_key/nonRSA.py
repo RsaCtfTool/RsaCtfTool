@@ -23,7 +23,7 @@ class Attack(AbstractAttack):
             priv_key = PrivateKey(
                 n=n,
                 e=e,
-                d=d   
+                d=d
             )
             return (priv_key, None)
 
@@ -42,7 +42,7 @@ class Attack(AbstractAttack):
                     priv_key = PrivateKey(
                         n=n,
                         e=e,
-                        d=d   
+                        d=d
                     )
                     return (priv_key, None)
 
