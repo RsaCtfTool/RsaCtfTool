@@ -338,6 +338,26 @@ def common_modulus(e1, e2, n, c1, c2):
     return int(introot(ct, g))
 
 
+def phi(n, factors):
+    """
+    Euler totient function
+    """
+    if is_prime(n):
+      return n - 1
+    else:
+      y = n
+      for p in factors:
+        if n % p == 0:
+          y //= p
+          y *= (p - 1)
+          while (n % p) == 0:
+            n //= p
+      if n > 1:
+        y //= n
+        y *= (n - 1)
+      return y
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -363,4 +383,5 @@ __all__ = [
     trivial_factorization_with_n_phi,
     neg_pow,
     common_modulus,
+    phi,
 ]
