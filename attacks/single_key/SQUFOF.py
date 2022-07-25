@@ -34,7 +34,7 @@ def SQUFOF(N):
     s = int(isqrt(N) + 0.5)
     L = int(2 * isqrt(2 * s))
 
-    if s ** 2 == N:
+    if s**2 == N:
         return s
     for k in range(0, len(multiplier)):
         D = multiplier[k] * N

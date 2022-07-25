@@ -10,7 +10,7 @@ from random import randint
 
 
 def brent(N):
-    """ Pollard rho with brent optimizations taken from: https://gist.github.com/ssanin82/18582bf4a1849dfb8afd"""
+    """Pollard rho with brent optimizations taken from: https://gist.github.com/ssanin82/18582bf4a1849dfb8afd"""
     if N & 1 == 0:
         return 2
     g = N
