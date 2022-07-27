@@ -13,7 +13,7 @@ Automatic selection of best attack for the given public key
 
 Attacks :
 
-- Attacks that doesn't depend on the factorization of integers:
+- Attacks that doesn't depend on the factorization of integers (may depend on knowing n,e,cyphertext,etc...):
   - Wiener's attack
   - Hastad's attack (Small public exponent attack)
   - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
@@ -23,7 +23,7 @@ Attacks :
   - Common factor between ciphertext and modulus attack
   - Partial q
 
-- Strict Integer factorization methods:
+- Strict Integer factorization methods (only depends on knowing n):
   - Weak public key factorization
   - Small q (q < 100,000)
   - Fermat's factorisation for close p and q
