@@ -13,47 +13,50 @@ Automatic selection of best attack for the given public key
 
 Attacks :
 
-- Weak public key factorization
-- Wiener's attack
-- Hastad's attack (Small public exponent attack)
-- Small q (q < 100,000)
-- Common factor between ciphertext and modulus attack
-- Fermat's factorisation for close p and q
-- Gimmicky Primes method
-- Past CTF Primes method
-- Non RSA key in the form b^x, where b is prime
-- Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/DarkenCode/yafu.git>)
-- Common factor attacks across multiple keys
-- Small fractions method when p/q is close to a small fraction
-- Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
-- Elliptic Curve Method
-- Pollards p-1 for relatively smooth numbers
-- Mersenne primes factorization
-- Factordb
-- Londahl
-- Noveltyprimes
-- Partial q
-- Primefac
-- Qicheng
-- Same n, huge e
-- binary polynomial factoring
-- Euler method
-- Pollard Rho
-- Wolfram alpha
-- cm-factor
-- z3 theorem prover
-- Primorial pm1 gcd
-- Mersenne pm1 gcd
-- Fermat Numbers gcd
-- Fibonacci gcd
-- System primes gcd
-- Small crt exponent
-- Shanks's square forms factorization (SQUFOF)
-- Return of Coppersmith's attack (ROCA) with NECA variant
-- Dixon
-- brent (Pollard rho variant)
-- Pisano Period
-- NSIF Vulnerability, Power Modular Factorization, Near Power Factors
+- Attacks that doesn't depend on the factorization of integers:
+  - Wiener's attack
+  - Hastad's attack (Small public exponent attack)
+  - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
+  - Londahl
+  - Same n, huge e
+  - Small crt exponent
+  - Common factor between ciphertext and modulus attack
+  - Partial q
+
+- Strict Integer factorization methods:
+  - Weak public key factorization
+  - Small q (q < 100,000)
+  - Fermat's factorisation for close p and q
+  - Gimmicky Primes method
+  - Past CTF Primes method
+  - Non RSA key in the form b^x, where b is prime
+  - Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/DarkenCode/yafu.git>)
+  - Common factor attacks across multiple keys
+  - Small fractions method when p/q is close to a small fraction
+  - Elliptic Curve Method
+  - Pollards p-1 for relatively smooth numbers
+  - Mersenne primes factorization
+  - Factordb
+  - Noveltyprimes
+  - Primefac
+  - Qicheng
+  - binary polynomial factoring
+  - Euler method
+  - Pollard Rho
+  - Wolfram alpha
+  - cm-factor
+  - z3 theorem prover
+  - Primorial pm1 gcd
+  - Mersenne pm1 gcd
+  - Fermat Numbers gcd
+  - Fibonacci gcd
+  - System primes gcd
+  - Shanks's square forms factorization (SQUFOF)
+  - Return of Coppersmith's attack (ROCA) with NECA variant
+  - Dixon
+  - brent (Pollard rho variant)
+  - Pisano Period
+  - NSIF Vulnerability, Power Modular Factorization, Near Power Factors
 
 ## Usage
 
