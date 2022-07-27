@@ -179,7 +179,10 @@ You can follow instructions from : `https://www.mersenneforum.org/showthread.php
 
 ## Todo (aka. Help wanted !)
 
-- Please read the CONTRIBUTING.md guideline for the bare minimum aceptable PRs.
 - Implement test method in each attack.
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
 - Support multiprime RSA, the project currently supports textbook RSA.
+
+## Contributing 
+
+- Please read the CONTRIBUTING.md guideline for the bare minimum aceptable PRs.
