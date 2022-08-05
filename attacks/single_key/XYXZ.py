@@ -4,15 +4,15 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.rsalibnum import isqrt, gcd, next_prime, is_prime, primes, powmod
+from lib.rsalibnum import isqrt, gcd, next_prime, is_prime, primes, powmod, log
 
 def factor_XYXZ(n, base=3):
   """
-  A104081:  Smallest prime >= 3^n.
-  Factor a x^y*x^z form integer
+  Factor a x^y*x^z form integer with x prime.
   """
   power = 1
-  while True:
+  max_power = (int(log(n)/log(base)) + 1) >> 1 
+  while (power <= max_power):
     p = next_prime(base ** power)
     if n % p == 0:
       return p, n // p
@@ -26,7 +26,11 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run (X^Y)(X^Z) form attack with a timeout"""
         try:
-            publickey.p, publickey.q = factor_XYXZ(publickey.n)
+            for base in [2,3,5,7,11,13,17]:
+                pq = factor_XYXZ(publickey.n, base = base)
+                if pq != None:
+                    publickey.p, publickey.q = pq
+                    break
         except FactorizationError:
             return None, None
 
