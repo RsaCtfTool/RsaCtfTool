@@ -56,7 +56,7 @@ Attacks :
   - Dixon
   - brent (Pollard rho variant)
   - Pisano Period
-  - NSIF Vulnerability, Power Modular Factorization, Near Power Factors
+  - XYXZ form integer factorization
 
 ## Usage
 
