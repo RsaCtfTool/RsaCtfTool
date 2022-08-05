@@ -118,26 +118,6 @@ if __name__ == "__main__":
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
 
-    # NSIF
-    parser.add_argument(
-        "--nsif",
-        type=int,
-        help="Nos Santos Izquierdo Field, Integer valuer to start the crack, the loop is +1",
-        default=None,
-    )
-    parser.add_argument(
-        "--nsif-limit",
-        type=int,
-        help="The field to stop the crack",
-        default=None,
-    )
-
-    parser.add_argument(
-        "--dev_carmichael",
-        help="Show carmichael derivation",
-        default=None,
-    )
-
     parser.add_argument(
         "--show-factors",
         type=int,
