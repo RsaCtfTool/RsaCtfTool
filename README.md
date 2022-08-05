@@ -56,6 +56,7 @@ Attacks :
   - Dixon
   - brent (Pollard rho variant)
   - Pisano Period
+  - XYXZ form integer factorization
 
 ## Usage
 
