@@ -255,14 +255,17 @@ class RSAAttack(object):
     def attack_single_key(self, publickey, attacks_list=[], test=False):
         """Run attacks on single keys"""
 
-        if len(attacks_list) == 0:
+        c = 0 # Attack counter
+        l =  len(attacks_list) 
+        if l == 0:
             self.args.attack = "all"
 
         self.load_attacks(attacks_list)
         if test:
             for attack in self.implemented_attacks:
+                c += 1
                 if attack.can_run():
-                    self.logger.info("[*] Testing %s" % attack.get_name())
+                    self.logger.info("[*] %d of %d, Testing: %s" % (c,l,attack.get_name()))
                     try:
                         try:
                             if attack.test():
