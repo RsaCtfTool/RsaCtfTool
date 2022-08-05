@@ -7,7 +7,7 @@ from lib.keys_wrapper import PublicKey, PrivateKey
 from lib.exceptions import FactorizationError
 from lib.utils import print_results
 from lib.fdb import send2fdb
-from Crypto.Util.number import bytes_to_long, long_to_bytes
+from lib.crypto_wrapper import bytes_to_long, long_to_bytes
 import inspect
 from lib.rsalibnum import is_prime, isqrt, gcd
 import traceback
