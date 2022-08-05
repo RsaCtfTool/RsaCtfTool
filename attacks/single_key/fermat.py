@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import isqrt
 
 
@@ -30,14 +29,10 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run fermat attack with a timeout"""
         try:
-            with timeout(seconds=self.timeout):
-                try:
-                    publickey.p, publickey.q = self.fermat(publickey.n)
-                except TimeoutError:
-                    return (None, None)
+            publickey.p, publickey.q = self.fermat(publickey.n)
 
         except FactorizationError:
-            return (None, None)
+            return None, None
 
         if publickey.p is not None and publickey.q is not None:
             try:
@@ -47,11 +42,11 @@ class Attack(AbstractAttack):
                     q=int(publickey.q),
                     e=int(publickey.e),
                 )
-                return (priv_key, None)
+                return priv_key, None
             except ValueError:
-                return (None, None)
+                return None, None
 
-        return (None, None)
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
