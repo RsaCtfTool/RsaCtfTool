@@ -15,9 +15,9 @@ try:
 except ModuleNotFoundError:
     from Cryptodome.Util.number import long_to_bytes, bytes_to_long
 
-__all__= [RSA, PKCS1_OAEP, number, long_to_bytes, bytes_to_long]
 bytes_to_long = bytes_to_long
 long_to_bytes = long_to_bytes
 number = number
 PKCS1_OAEP = PKCS1_OAEP
 RSA = RSA
+__all__= [RSA, PKCS1_OAEP, number, long_to_bytes, bytes_to_long]
