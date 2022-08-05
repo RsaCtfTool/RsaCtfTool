@@ -55,7 +55,7 @@ class Attack(AbstractAttack):
             import wolframalpha
 
             app_id = os.environ.get("WA_API_KEY")
-            wa_enabled = app_id != None
+            wa_enabled = app_id is not None
         except Exception:
             self.logger.warning("[!] Wolfram Alpha is not enabled, install the lib.")
             wa_enabled = False
@@ -69,31 +69,28 @@ class Attack(AbstractAttack):
             )
             self.logger.warning("[!] export WA_API_KEY=XXXXXX-XXXXXXXXXX")
             self.wa_client = None
-            return (None, None)
+            return None, None
         else:
             self.wa_client = wolframalpha.Client(app_id)
 
-        with timeout(self.timeout):
-            try:
-                factors = self.wa_query_factors(publickey.n)
-                self.logger.info("Factors: %s" % str(factors))
-                if factors != None and len(factors) > 1:
-                    publickey.q = factors[
-                        -1
-                    ]  # Let it be the last prime wich is the bigger one
-                    publickey.p = publickey.n // publickey.q
-                    priv_key = PrivateKey(
-                        p=int(publickey.p),
-                        q=int(publickey.q),
-                        e=int(publickey.e),
-                        n=int(publickey.n),
-                    )
-                    return (priv_key, None)
-                else:
-                    return (None, None)
-            except Exception as e:
-                self.logger.error("[*] wolfram alpha could not get a factorization.")
-                self.logger.debug(str(e))
-                return (None, None)
-            except TimeoutError:
-                return (None, None)
+        try:
+            factors = self.wa_query_factors(publickey.n)
+            self.logger.info("Factors: %s" % str(factors))
+            if factors is not None and len(factors) > 1:
+                publickey.q = factors[
+                    -1
+                ]  # Let it be the last prime wich is the bigger one
+                publickey.p = publickey.n // publickey.q
+                priv_key = PrivateKey(
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
+                    n=int(publickey.n),
+                )
+                return priv_key, None
+            else:
+                return None, None
+        except Exception as e:
+            self.logger.error("[*] wolfram alpha could not get a factorization.")
+            self.logger.debug(str(e))
+            return None, None

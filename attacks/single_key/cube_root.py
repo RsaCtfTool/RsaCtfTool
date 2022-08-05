@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
 
@@ -13,32 +12,29 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Try to uncipher c if m < n/e and small e"""
-        with timeout(self.timeout):
-            try:
-                if publickey.e == 3 or publickey.e == 5:
-                    plain = []
-                    if (cipher is None) or (len(cipher) < 1):
-                        self.logger.info(
-                            "[-] No ciphertexts specified, skiping the cube_root test..."
-                        )
-                        return (None, None)
-                    for c in cipher:
-                        cipher_int = int.from_bytes(c, "big")
-                        low = 0
-                        high = cipher_int
-                        while low < high:
-                            mid = (low + high) >> 1
-                            if pow(mid, publickey.e) < cipher_int:
-                                low = mid + 1
-                            else:
-                                high = mid
-                        plain.append(
-                            low.to_bytes((low.bit_length() + 7) // 8, byteorder="big")
-                        )
-                    return (None, plain)
-            except TimeoutError:
-                return (None, None)
-        return (None, None)
+        if publickey.e == 3 or publickey.e == 5:
+            plain = []
+            if (cipher is None) or (len(cipher) < 1):
+                self.logger.info(
+                    "[-] No ciphertexts specified, skiping the cube_root test..."
+                )
+                return None, None
+            for c in cipher:
+                cipher_int = int.from_bytes(c, "big")
+                low = 0
+                high = cipher_int
+                while low < high:
+                    mid = (low + high) >> 1
+                    if pow(mid, publickey.e) < cipher_int:
+                        low = mid + 1
+                    else:
+                        high = mid
+                plain.append(
+                    low.to_bytes((low.bit_length() + 7) // 8, byteorder="big")
+                )
+            return None, plain
+
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

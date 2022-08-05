@@ -8,7 +8,6 @@ from lib.rsalibnum import invmod
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.crypto_wrapper import long_to_bytes
-from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
 
@@ -35,82 +34,79 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
-        with timeout(self.timeout):
-            try:
-                url_1 = "http://factordb.com/index.php?query=%i"
-                url_2 = "http://factordb.com/index.php?id=%s"
-                s = requests.Session()
-                r = s.get(url_1 % publickey.n, verify=False)
-                regex = re.compile(r"index\.php\?id\=([0-9]+)", re.IGNORECASE)
-                ids = regex.findall(r.text)
+        try:
+            url_1 = "http://factordb.com/index.php?query=%i"
+            url_2 = "http://factordb.com/index.php?id=%s"
+            s = requests.Session()
+            r = s.get(url_1 % publickey.n, verify=False)
+            regex = re.compile(r"index\.php\?id\=([0-9]+)", re.IGNORECASE)
+            ids = regex.findall(r.text)
 
-                # check if only 1 factor is returned
-                if len(ids) == 2:
-                    # theres a chance that the only factor returned is prime, and so we can derive the priv key from it
-                    regex = re.compile(r"<td>P<\/td>")
-                    prime = regex.findall(r.text)
-                    if len(prime) == 1:
-                        # n is prime, so lets get the key from it
-                        d = invmod(publickey.e, publickey.n - 1)
-                        # construct key using only n and d
-                        priv_key = PrivateKey(
-                            e=int(publickey.e), n=int(publickey.n), d=d
-                        )
-                        return (priv_key, None)
+            # check if only 1 factor is returned
+            if len(ids) == 2:
+                # theres a chance that the only factor returned is prime, and so we can derive the priv key from it
+                regex = re.compile(r"<td>P<\/td>")
+                prime = regex.findall(r.text)
+                if len(prime) == 1:
+                    # n is prime, so lets get the key from it
+                    d = invmod(publickey.e, publickey.n - 1)
+                    # construct key using only n and d
+                    priv_key = PrivateKey(
+                        e=int(publickey.e), n=int(publickey.n), d=d
+                    )
+                    return priv_key, None
 
-                elif len(ids) == 3:
-                    try:
-                        regex = re.compile(r'value="([0-9\^\-]+)"', re.IGNORECASE)
-                        p_id = ids[1]
-                        r_1 = s.get(url_2 % p_id, verify=False)
-                        key_p = regex.findall(r_1.text)[0]
-                        publickey.p = (
-                            int(key_p) if key_p.isdigit() else self.solveforp(key_p)
-                        )
+            elif len(ids) == 3:
+                try:
+                    regex = re.compile(r'value="([0-9\^\-]+)"', re.IGNORECASE)
+                    p_id = ids[1]
+                    r_1 = s.get(url_2 % p_id, verify=False)
+                    key_p = regex.findall(r_1.text)[0]
+                    publickey.p = (
+                        int(key_p) if key_p.isdigit() else self.solveforp(key_p)
+                    )
 
-                        q_id = ids[2]
-                        r_2 = s.get(url_2 % q_id, verify=False)
-                        key_q = regex.findall(r_2.text)[0]
-                        publickey.q = (
-                            int(key_q) if key_q.isdigit() else self.solveforp(key_q)
-                        )
+                    q_id = ids[2]
+                    r_2 = s.get(url_2 % q_id, verify=False)
+                    key_q = regex.findall(r_2.text)[0]
+                    publickey.q = (
+                        int(key_q) if key_q.isdigit() else self.solveforp(key_q)
+                    )
 
-                        if publickey.n != int(publickey.p) * int(publickey.q):
-                            return (None, None)
+                    if publickey.n != int(publickey.p) * int(publickey.q):
+                        return None, None
 
-                    except IndexError:
-                        return (None, None)
+                except IndexError:
+                    return None, None
 
-                    try:
-                        priv_key = PrivateKey(
-                            p=int(publickey.p),
-                            q=int(publickey.q),
-                            e=int(publickey.e),
-                            n=int(publickey.n),
-                        )
-                    except ValueError:
-                        return (None, None)
+                try:
+                    priv_key = PrivateKey(
+                        p=int(publickey.p),
+                        q=int(publickey.q),
+                        e=int(publickey.e),
+                        n=int(publickey.n),
+                    )
+                except ValueError:
+                    return None, None
 
-                    return (priv_key, None)
-                elif len(ids) > 3:
-                    phi = 1
-                    for p in ids[1:]:
-                        phi *= int(p) - 1
-                    d = invmod(publickey.e, phi)
-                    plains = []
+                return priv_key, None
+            elif len(ids) > 3:
+                phi = 1
+                for p in ids[1:]:
+                    phi *= int(p) - 1
+                d = invmod(publickey.e, phi)
+                plains = []
 
-                    if cipher is not None and len(cipher) > 0:
-                        for c in cipher:
-                            int_big = int.from_bytes(c, "big")
-                            plain1 = powmod(int_big, d, publickey.n)
-                            plains.append(long_to_bytes(plain1))
+                if cipher is not None and len(cipher) > 0:
+                    for c in cipher:
+                        int_big = int.from_bytes(c, "big")
+                        plain1 = powmod(int_big, d, publickey.n)
+                        plains.append(long_to_bytes(plain1))
 
-                            return (None, plains)
-                return (None, None)
-            except NotImplementedError:
-                return (None, None)
-            except TimeoutError:
-                return (None, None)
+                        return None, plains
+            return None, None
+        except NotImplementedError:
+            return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

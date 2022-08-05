@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.rsalibnum import gcd, isqrt
-from lib.utils import timeout, TimeoutError
 import logging
 
 
@@ -59,33 +58,29 @@ class Attack(AbstractAttack):
             publickey.q = None
 
         # Euler attack
-        with timeout(self.timeout):
-            try:
-                try:
-                    if (publickey.n - 1) % 4 == 0:
-                        euler_res = self.euler(publickey.n)
-                    else:
-                        self.logger.error(
-                            "[!] Public key modulus must be congruent 1 mod 4 to work with euler method."
-                        )
-                        return (None, None)
-                except:
-                    return (None, None)
-                if euler_res and len(euler_res) > 1:
-                    publickey.p, publickey.q = euler_res
+        try:
+            if (publickey.n - 1) % 4 == 0:
+                euler_res = self.euler(publickey.n)
+            else:
+                self.logger.error(
+                    "[!] Public key modulus must be congruent 1 mod 4 to work with euler method."
+                )
+                return None, None
+        except:
+            return None, None
+        if euler_res and len(euler_res) > 1:
+            publickey.p, publickey.q = euler_res
 
-                if publickey.q is not None:
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
+        if publickey.q is not None:
+            priv_key = PrivateKey(
+                int(publickey.p),
+                int(publickey.q),
+                int(publickey.e),
+                int(publickey.n),
+            )
+            return priv_key, None
 
-        return (None, None)
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
