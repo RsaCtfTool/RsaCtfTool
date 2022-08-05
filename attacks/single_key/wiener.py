@@ -7,7 +7,6 @@ from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import isqrt, is_square
 
 
@@ -76,23 +75,19 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Wiener's attack"""
-        with timeout(self.timeout):
-            try:
-                wiener = WienerAttack(publickey.n, publickey.e, progress)
-                if wiener.p is not None and wiener.q is not None:
-                    publickey.p = wiener.p
-                    publickey.q = wiener.q
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
+        wiener = WienerAttack(publickey.n, publickey.e, progress)
+        if wiener.p is not None and wiener.q is not None:
+            publickey.p = wiener.p
+            publickey.q = wiener.q
+            priv_key = PrivateKey(
+                int(publickey.p),
+                int(publickey.q),
+                int(publickey.e),
+                int(publickey.n),
+            )
+            return priv_key, None
 
-        return (None, None)
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
