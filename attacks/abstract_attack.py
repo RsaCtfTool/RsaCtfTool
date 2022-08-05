@@ -37,7 +37,7 @@ class AbstractAttack(object):
         """Attack implementation"""
         raise NotImplementedError
 
-    def _attack(self, publickeys, cipher=[], progress=True):
+    def attack_wrapper(self, publickeys, cipher=[], progress=True):
         """Attack wrapper to include timer in all attacks"""
         with timeout(self.timeout):
             try:
