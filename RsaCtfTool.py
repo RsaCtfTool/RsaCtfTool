@@ -397,6 +397,7 @@ if __name__ == "__main__":
     # Run tests
     if args.publickey is None and args.tests:
         selected_attacks = attacks_list
+        logger.info("Testing attacks: %d" % len(selected_attacks))
         if args.attack is not None:
             if "," not in args.attack:
                 selected_attacks = args.attack
@@ -404,6 +405,7 @@ if __name__ == "__main__":
             selected_attacks = attacks_list
 
         tmpfile = tempfile.NamedTemporaryFile()
+        #print(tmpfile)
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
