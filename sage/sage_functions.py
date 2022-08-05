@@ -71,7 +71,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     # transform shortest vector in polynomial
     new_pol = 0
     for ii in range(nn):
-        new_pol += x ** ii * BB[0, ii] / XX ** ii
+        new_pol += x**ii * BB[0, ii] / XX**ii
 
     # factor polynomial
     potential_roots = new_pol.roots()
@@ -81,6 +81,6 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     for root in potential_roots:
         if root[0].is_integer():
             result = polZ(ZZ(root[0]))
-            if gcd(modulus, result) >= modulus ** beta:
+            if gcd(modulus, result) >= modulus**beta:
                 roots.append(ZZ(root[0]))
     return roots

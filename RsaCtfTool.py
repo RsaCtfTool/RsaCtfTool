@@ -86,8 +86,16 @@ if __name__ == "__main__":
         help="Extended dump of RSA private variables in --dumpkey mode - dp,dq,pinv,qinv).",
         action="store_true",
     )
-    parser.add_argument("--uncipherfile", help="uncipher a file, using commas to separate multiple paths", default=None)
-    parser.add_argument("--uncipher", help="uncipher a cipher, using commas to separate multiple ciphers", default=None)
+    parser.add_argument(
+        "--uncipherfile",
+        help="uncipher a file, using commas to separate multiple paths",
+        default=None,
+    )
+    parser.add_argument(
+        "--uncipher",
+        help="uncipher a cipher, using commas to separate multiple ciphers",
+        default=None,
+    )
     parser.add_argument(
         "--verbosity", help="verbose mode", choices=logger_levels.keys(), default="INFO"
     )
@@ -108,7 +116,10 @@ if __name__ == "__main__":
     parser.add_argument(
         "-q", help="Specify the second prime number. format : int or 0xhex"
     )
-    parser.add_argument("-e", help="Specify the public exponent, using commas to separate multiple exponents. format : int or 0xhex")
+    parser.add_argument(
+        "-e",
+        help="Specify the public exponent, using commas to separate multiple exponents. format : int or 0xhex",
+    )
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
 
