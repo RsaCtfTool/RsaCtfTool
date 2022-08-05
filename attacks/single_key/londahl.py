@@ -5,7 +5,6 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.rsalibnum import isqrt, invmod, trivial_factorization_with_n_phi
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from gmpy2 import powmod
 
 
