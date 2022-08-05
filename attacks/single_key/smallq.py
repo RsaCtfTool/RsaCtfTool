@@ -3,7 +3,6 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import primes
 
 
@@ -14,22 +13,19 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where q < 100,000, from BKPCTF2016 - sourcekris"""
-        with timeout(self.timeout):
-            try:
-                for prime in primes(100000):
-                    if publickey.n % prime == 0:
-                        publickey.q = prime
-                        publickey.p = publickey.n // publickey.q
-                        priv_key = PrivateKey(
-                            int(publickey.p),
-                            int(publickey.q),
-                            int(publickey.e),
-                            int(publickey.n),
-                        )
-                        return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
-        return (None, None)
+        for prime in primes(100000):
+            if publickey.n % prime == 0:
+                publickey.q = prime
+                publickey.p = publickey.n // publickey.q
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return priv_key, None
+
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

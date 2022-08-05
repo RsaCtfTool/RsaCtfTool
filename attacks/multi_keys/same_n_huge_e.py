@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 import gmpy2
 from Crypto.Util import number
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import gcdext, powmod
 
 
@@ -18,34 +17,31 @@ class Attack(AbstractAttack):
         if not isinstance(publickey, list):
             return (None, None)
 
-        with timeout(self.timeout):
-            try:
-                if len(set([_.n for _ in publickey])) == 1:
-                    n = publickey[0].n
+        if len(set([_.n for _ in publickey])) == 1:
+            n = publickey[0].n
 
-                    e_array = []
-                    for k in publickey:
-                        e_array.append(k.e)
+            e_array = []
+            for k in publickey:
+                e_array.append(k.e)
 
-                    if (cipher is None) or (len(cipher) < 2):
-                        self.logger.info(
-                            "[-] Lack of ciphertexts, skiping the same_n_huge_e test..."
-                        )
-                        return (None, None)
-
-                    # e1*s1 + e2*s2 = 1
-                    _, s1, s2 = gcdext(e_array[0], e_array[1])
-
-                    # m ≡ c1^s1 * c2*s2 mod n
-                    plain = (
-                        powmod(int.from_bytes(cipher[0], "big"), s1, n)
-                        * powmod(int.from_bytes(cipher[1], "big"), s2, n)
-                    ) % n
-
-                    return (None, number.long_to_bytes(plain))
-            except TimeoutError:
+            if (cipher is None) or (len(cipher) < 2):
+                self.logger.info(
+                    "[-] Lack of ciphertexts, skiping the same_n_huge_e test..."
+                )
                 return (None, None)
-        return (None, None)
+
+            # e1*s1 + e2*s2 = 1
+            _, s1, s2 = gcdext(e_array[0], e_array[1])
+
+            # m ≡ c1^s1 * c2*s2 mod n
+            plain = (
+                powmod(int.from_bytes(cipher[0], "big"), s1, n)
+                * powmod(int.from_bytes(cipher[1], "big"), s2, n)
+            ) % n
+
+            return None, number.long_to_bytes(plain)
+
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
