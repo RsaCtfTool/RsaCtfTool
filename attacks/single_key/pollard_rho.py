@@ -4,7 +4,6 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import is_prime, gcd
 
 
@@ -39,33 +38,29 @@ class Attack(AbstractAttack):
             publickey.q = None
 
         # pollard Rho attack
-
-        with timeout(self.timeout):
+        try:
             try:
-                try:
-                    poll_res = self.pollard_rho(publickey.n)
-                except RecursionError:
-                    print("RecursionError")
-                    return (None, None)
+                poll_res = self.pollard_rho(publickey.n)
+            except RecursionError:
+                print("RecursionError")
+                return None, None
 
-                if poll_res != None:
-                    publickey.p = poll_res
-                    publickey.q = publickey.n // publickey.p
+            if poll_res is not None:
+                publickey.p = poll_res
+                publickey.q = publickey.n // publickey.p
 
-                if publickey.q is not None:
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
-            except TypeError:
-                return (None, None)
+            if publickey.q is not None:
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return priv_key, None
+        except TypeError:
+            return None, None
 
-        return (None, None)
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import isqrt, gcd, next_prime, is_prime, primes, powmod
 import bitarray
 
@@ -61,18 +60,14 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run dixon attack with a timeout"""
         try:
-            with timeout(seconds=self.timeout):
-                try:
-                    if publickey.n <= 10**10:
-                        publickey.p, publickey.q = dixon_factor(publickey.n)
-                    else:
-                        self.logger.info("[-] Dixon is too slow for pubkeys > 10^10...")
-                        return (None, None)
-                except TimeoutError:
-                    return (None, None)
+            if publickey.n <= 10**10:
+                publickey.p, publickey.q = dixon_factor(publickey.n)
+            else:
+                self.logger.info("[-] Dixon is too slow for pubkeys > 10^10...")
+                return None, None
 
         except FactorizationError:
-            return (None, None)
+            return None, None
 
         if publickey.p is not None and publickey.q is not None:
             try:
@@ -82,11 +77,11 @@ class Attack(AbstractAttack):
                     q=int(publickey.q),
                     e=int(publickey.e),
                 )
-                return (priv_key, None)
+                return priv_key, None
             except ValueError:
-                return (None, None)
+                return None, None
 
-        return (None, None)
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

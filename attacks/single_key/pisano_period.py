@@ -18,7 +18,6 @@ from lib.rsalibnum import (
     fib,
     trivial_factorization_with_n_phi,
 )
-from lib.utils import timeout, TimeoutError
 
 
 class Fibonacci:
@@ -126,29 +125,24 @@ class Attack(AbstractAttack):
         The attack is very similar to londahl's
         """
         Fib = Fibonacci(progress=progress)
-        with timeout(self.timeout):
-            try:
-                B1, B2 = (
-                    pow(10, (ilog10(publickey.n) // 2) - 4),
-                    0,
-                )  # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
-                try:
-                    r = Fib.factorization(publickey.n, B1, B2)
-                except OverflowError:
-                    r = None
-                if r is not None:
-                    publickey.p, publickey.q = r
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-                return (None, None)
-            except TimeoutError:
-                return (None, None)
-        return (None, None)
+        B1, B2 = (
+            pow(10, (ilog10(publickey.n) // 2) - 4),
+            0,
+        )  # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
+        try:
+            r = Fib.factorization(publickey.n, B1, B2)
+        except OverflowError:
+            r = None
+        if r is not None:
+            publickey.p, publickey.q = r
+            priv_key = PrivateKey(
+                int(publickey.p),
+                int(publickey.q),
+                int(publickey.e),
+                int(publickey.n),
+            )
+            return priv_key, None
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey

@@ -5,7 +5,6 @@ import math
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.utils import timeout, TimeoutError
 from lib.rsalibnum import gcd, isqrt, next_prime, primes, powmod
 
 
@@ -51,27 +50,24 @@ class Attack(AbstractAttack):
         if not hasattr(publickey, "q"):
             publickey.q = None
 
-        with timeout(self.timeout):
-            try:
-                # Pollard P-1 attack
-                try:
-                    poll_res = self.pollard_P_1(publickey.n, progress)
-                except RecursionError:
-                    return (None, None)
-                if poll_res and len(poll_res) > 1:
-                    publickey.p, publickey.q = poll_res
+        # Pollard P-1 attack
+        try:
+            poll_res = self.pollard_P_1(publickey.n, progress)
+        except RecursionError:
+            return None, None
+        if poll_res and len(poll_res) > 1:
+            publickey.p, publickey.q = poll_res
 
-                if publickey.q is not None:
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-            except TimeoutError:
-                return (None, None)
-        return (None, None)
+        if publickey.q is not None:
+            priv_key = PrivateKey(
+                int(publickey.p),
+                int(publickey.q),
+                int(publickey.e),
+                int(publickey.n),
+            )
+            return priv_key, None
+
+        return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
