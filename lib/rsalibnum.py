@@ -6,7 +6,7 @@ import binascii
 import math
 import logging
 import random
-from Crypto.Util.number import bytes_to_long
+from lib.crypto_wrapper import bytes_to_long
 
 logger = logging.getLogger("global_logger")
 
