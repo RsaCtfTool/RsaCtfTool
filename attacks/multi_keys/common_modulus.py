@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.rsalibnum import gcd, common_modulus
-from Crypto.Util.number import long_to_bytes, bytes_to_long
+from lib.crypto_wrapper import long_to_bytes, bytes_to_long
 import itertools
 
 

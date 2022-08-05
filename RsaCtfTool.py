@@ -16,7 +16,7 @@ import argparse
 import urllib3
 import tempfile
 from glob import glob
-from Crypto.PublicKey import RSA
+from lib.crypto_wrapper import RSA
 from lib.rsa_attack import RSAAttack
 from lib.rsalibnum import invmod
 from lib.utils import get_numeric_value, print_results, get_base64_value, n2s
