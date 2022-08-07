@@ -70,6 +70,7 @@ class PrivateKey(object):
         e=None,
         n=None,
         d=None,
+        phi=None,
         filename=None,
         password=None,
     ):
@@ -96,6 +97,8 @@ class PrivateKey(object):
             self.n = n
 
         self.phi = None
+        if phi is not None:
+            self.phi = phi
 
         if self.p is not None and self.q is not None and self.phi is None:
             if self.p != self.q:
