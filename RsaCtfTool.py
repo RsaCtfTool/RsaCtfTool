@@ -405,7 +405,6 @@ if __name__ == "__main__":
             selected_attacks = attacks_list
 
         tmpfile = tempfile.NamedTemporaryFile()
-        #print(tmpfile)
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
