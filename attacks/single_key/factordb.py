@@ -9,6 +9,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.crypto_wrapper import long_to_bytes
 from gmpy2 import powmod
+from lib.rsalibnum import phi as find_phi
 
 
 class Attack(AbstractAttack):
@@ -32,6 +33,19 @@ class Attack(AbstractAttack):
             )
             raise FactorizationError()
 
+    def parse_factors(self, source):
+        base_regex = re.compile(r"index\.php\?id\=([0-9]+)", re.IGNORECASE)
+        base_list = base_regex.findall(source)[1:]
+        exp_regex = re.compile(r"(\d+)\^(\d+)", re.IGNORECASE)
+        exp_list = exp_regex.findall(source)
+
+        factors = [int(x) for x in base_list]
+
+        for base, exp in exp_list:
+            if int(base) in factors:
+                factors.extend([int(base)] * (int(exp) - 1))
+        return factors
+
     def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
         try:
@@ -39,11 +53,10 @@ class Attack(AbstractAttack):
             url_2 = "http://factordb.com/index.php?id=%s"
             s = requests.Session()
             r = s.get(url_1 % publickey.n, verify=False)
-            regex = re.compile(r"index\.php\?id\=([0-9]+)", re.IGNORECASE)
-            ids = regex.findall(r.text)
+            factors = self.parse_factors(r.text)
 
             # check if only 1 factor is returned
-            if len(ids) == 2:
+            if len(factors) == 1:
                 # theres a chance that the only factor returned is prime, and so we can derive the priv key from it
                 regex = re.compile(r"<td>P<\/td>")
                 prime = regex.findall(r.text)
@@ -56,17 +69,17 @@ class Attack(AbstractAttack):
                     )
                     return priv_key, None
 
-            elif len(ids) == 3:
+            elif len(factors) == 2:
                 try:
                     regex = re.compile(r'value="([0-9\^\-]+)"', re.IGNORECASE)
-                    p_id = ids[1]
+                    p_id = factors[0]
                     r_1 = s.get(url_2 % p_id, verify=False)
                     key_p = regex.findall(r_1.text)[0]
                     publickey.p = (
                         int(key_p) if key_p.isdigit() else self.solveforp(key_p)
                     )
 
-                    q_id = ids[2]
+                    q_id = factors[1]
                     r_2 = s.get(url_2 % q_id, verify=False)
                     key_q = regex.findall(r_2.text)[0]
                     publickey.q = (
@@ -90,21 +103,20 @@ class Attack(AbstractAttack):
                     return None, None
 
                 return priv_key, None
-            elif len(ids) > 3:
-                phi = 1
-                for p in ids[1:]:
-                    phi *= int(p) - 1
-                d = invmod(publickey.e, phi)
-                plains = []
 
-                if cipher is not None and len(cipher) > 0:
-                    for c in cipher:
-                        int_big = int.from_bytes(c, "big")
-                        plain1 = powmod(int_big, d, publickey.n)
-                        plains.append(long_to_bytes(plain1))
+            elif len(factors) > 3:
+                phi = find_phi(publickey.n, factors)
 
-                        return None, plains
-            return None, None
+                try:
+                    priv_key = PrivateKey(
+                        e=int(publickey.e),
+                        n=int(publickey.n),
+                        phi=phi,
+                    )
+                except ValueError:
+                    return None, None
+
+                return priv_key, None
         except NotImplementedError:
             return None, None
 
