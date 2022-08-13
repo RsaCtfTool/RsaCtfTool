@@ -26,7 +26,7 @@ class Attack(AbstractAttack):
         """Common modulus attack"""
         if len(publickeys) < 2:
             return (None, None)
-        if len(cipher) < 2:
+        if cipher is None or len(cipher) < 2:
             return (None, None)
 
         plains = []
