@@ -57,17 +57,16 @@ Attacks :
   - brent (Pollard rho variant)
   - Pisano Period
   - XYXZ form integer factorization
+  - High and Low Bits Equal attack
 
 ## Usage
 
 ```bash
-usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--timeout TIMEOUT]
-                     [--createpub] [--dumpkey] [--ext] [--sendtofdb]
-                     [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
-                     [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}]
-                     [--private] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q]
-                     [-e E] [--key KEY] [--isconspicuous] [--convert_idrsa_pub] [--isroca] [--check_publickey]
-                     [--attack {brent,fermat_numbers_gcd,comfact_cn,wiener,factordb,smallq,pollard_rho,euler,z3_solver,neca,cm_factor,mersenne_pm1_gcd,SQUFOF,small_crt_exp,fibonacci_gcd,smallfraction,boneh_durfee,roca,fermat,londahl,mersenne_primes,partial_q,siqs,noveltyprimes,binary_polinomial_factoring,primorial_pm1_gcd,pollard_p_1,ecm2,cube_root,system_primes_gcd,dixon,ecm,pastctfprimes,qicheng,wolframalpha,hastads,same_n_huge_e,commonfactors,pisano_period,nsif,all}]
+usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
+                     [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}] [--private] [--tests] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E] [--key KEY]
+                     [--password PASSWORD] [--show-factors SHOW_FACTORS]
+                     [--attack {SQUFOF,binary_polinomial_factoring,boneh_durfee,brent,cm_factor,comfact_cn,cube_root,dixon,ecm,ecm2,euler,factordb,fermat,fermat_numbers_gcd,fibonacci_gcd,londahl,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,partial_q,pastctfprimes,pisano_period,pollard_p_1,pollard_rho,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wiener,wolframalpha,z3_solver,XYXZ,highandlowbitsequal,common_factors,common_modulus,hastads,same_n_huge_e,all} [{SQUFOF,binary_polinomial_factoring,boneh_durfee,brent,cm_factor,comfact_cn,cube_root,dixon,ecm,ecm2,euler,factordb,fermat,fermat_numbers_gcd,fibonacci_gcd,londahl,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,partial_q,pastctfprimes,pisano_period,pollard_p_1,pollard_rho,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wiener,wolframalpha,z3_solver,XYXZ,highandlowbitsequal,common_factors,common_modulus,hastads,same_n_huge_e,all} ...]]
+                     [--sendtofdb] [--isconspicuous] [--isroca] [--convert_idrsa_pub] [--check_publickey]
 ```
 
 
