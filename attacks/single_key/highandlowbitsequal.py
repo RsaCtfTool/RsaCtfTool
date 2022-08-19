@@ -22,12 +22,12 @@ def InverseInverseSqrt2exp(n, k):
 def FactorHighAndLowBitsEqual(n, middle_bits = 3):
   """
   Code taken and heavy modified from https://github.com/google/paranoid_crypto/blob/main/paranoid_crypto/lib/rsa_util.py
+  Licensed under open source Apache License Version 2.0, January 2004.
   """
   if (n.bit_length() < 6) or (n % 8 != 1):
     return None
   k = (n.bit_length() + 1) >> 1
   r0 = InverseInverseSqrt2exp(n, k + 1)
-  #print(r0)
   if r0 is None:
     raise ArithmeticError("expecting that square root exists")
   a = isqrt(n - 1) + 1
