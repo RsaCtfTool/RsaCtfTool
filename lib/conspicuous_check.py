@@ -1,4 +1,4 @@
-from lib.rsalibnum import is_prime, isqrt, gcd, lcm, getpubkeysz, invert
+from lib.number_theory import is_prime, isqrt, gcd, lcm, getpubkeysz, invert
 import math
 
 

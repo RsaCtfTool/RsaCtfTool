@@ -10,7 +10,7 @@ import subprocess
 import contextlib
 import binascii
 from lib.keys_wrapper import PublicKey
-from lib.rsalibnum import invmod
+from lib.number_theory import invmod
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs

@@ -10,7 +10,7 @@ import time
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import (
+from lib.number_theory import (
     powmod,
     mod,
     ilog10,

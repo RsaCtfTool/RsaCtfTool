@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.rsalibnum import isqrt
+from lib.number_theory import isqrt
 
 
 class Attack(AbstractAttack):

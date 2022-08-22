@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 import subprocess
 from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
-from lib.rsalibnum import getpubkeysz
+from lib.number_theory import getpubkeysz
 from lib.is_roca_test import is_roca_vulnerable
 from lib.external import neca_factor_driver
 import logging

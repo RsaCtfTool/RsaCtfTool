@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import gcd, common_modulus
+from lib.number_theory import gcd, common_modulus
 from lib.crypto_wrapper import long_to_bytes, bytes_to_long
 import itertools
 
