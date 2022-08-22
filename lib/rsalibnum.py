@@ -358,6 +358,16 @@ def phi(n, factors):
         return y
 
 
+def ProductTree(s):
+    l = len(s)
+    while l > 1:
+        if l & 1 != 0:
+            s += [1]
+            l += 1
+        s = list(map(mul, s[0 : l >> 1], s[l >> 1 :]))
+        l = len(s)
+    return s[0]
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -384,4 +394,5 @@ __all__ = [
     neg_pow,
     common_modulus,
     phi,
+    ProductTree,
 ]
