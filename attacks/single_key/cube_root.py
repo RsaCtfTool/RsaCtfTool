@@ -29,9 +29,7 @@ class Attack(AbstractAttack):
                         low = mid + 1
                     else:
                         high = mid
-                plain.append(
-                    low.to_bytes((low.bit_length() + 7) // 8, byteorder="big")
-                )
+                plain.append(low.to_bytes((low.bit_length() + 7) // 8, byteorder="big"))
             return None, plain
 
         return None, None

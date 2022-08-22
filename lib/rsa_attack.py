@@ -256,7 +256,7 @@ class RSAAttack(object):
         """Run attacks on single keys"""
 
         c = 0  # Attack counter
-        l = len(attacks_list) 
+        l = len(attacks_list)
         if l == 0:
             self.args.attack = "all"
 
@@ -265,7 +265,9 @@ class RSAAttack(object):
             for attack in self.implemented_attacks:
                 c += 1
                 if attack.can_run():
-                    self.logger.info("[*] %d of %d, Testing: %s" % (c, l, attack.get_name()))
+                    self.logger.info(
+                        "[*] %d of %d, Testing: %s" % (c, l, attack.get_name())
+                    )
                     try:
                         try:
                             if attack.test():
