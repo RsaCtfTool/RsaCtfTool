@@ -23,9 +23,7 @@ class Attack(AbstractAttack):
                 q = f
                 break
         if p is not None and q is not None:
-            priv_key = PrivateKey(
-                int(p), int(q), int(publickey.e), int(publickey.n)
-            )
+            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
             return priv_key, None
         return None, None
 

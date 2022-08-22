@@ -6,18 +6,20 @@ from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod, log
 
+
 def factor_XYXZ(n, base=3):
-  """
-  Factor a x^y*x^z form integer with x prime.
-  """
-  power = 1
-  max_power = (int(log(n)/log(base)) + 1) >> 1 
-  while (power <= max_power):
-    p = next_prime(base ** power)
-    if n % p == 0:
-      return p, n // p
-    power += 1
-    
+    """
+    Factor a x^y*x^z form integer with x prime.
+    """
+    power = 1
+    max_power = (int(log(n) / log(base)) + 1) >> 1
+    while power <= max_power:
+        p = next_prime(base**power)
+        if n % p == 0:
+            return p, n // p
+        power += 1
+
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -26,8 +28,8 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run (X^Y)(X^Z) form attack with a timeout"""
         try:
-            for base in [2,3,5,7,11,13,17]:
-                pq = factor_XYXZ(publickey.n, base = base)
+            for base in [2, 3, 5, 7, 11, 13, 17]:
+                pq = factor_XYXZ(publickey.n, base=base)
                 if pq != None:
                     publickey.p, publickey.q = pq
                     break
