@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import gcd
+from lib.number_theory import gcd
 from lib.utils import s2n
 from lib.keys_wrapper import PrivateKey
 

@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.rsalibnum import isqrt, gcd, next_prime, is_prime, primes, powmod
+from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod
 import bitarray
 
 

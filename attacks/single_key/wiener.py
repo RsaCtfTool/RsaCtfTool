@@ -7,7 +7,7 @@ from tqdm import tqdm
 from sympy import Symbol
 from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import isqrt, is_square
+from lib.number_theory import isqrt, is_square
 
 
 class WienerAttack(object):

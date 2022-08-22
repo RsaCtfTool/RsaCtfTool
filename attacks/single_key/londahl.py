@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.rsalibnum import isqrt, invmod, trivial_factorization_with_n_phi
+from lib.number_theory import isqrt, invmod, trivial_factorization_with_n_phi
 from lib.keys_wrapper import PrivateKey
 from gmpy2 import powmod
 

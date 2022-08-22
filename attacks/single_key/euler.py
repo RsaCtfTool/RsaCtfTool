@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import gcd, isqrt
+from lib.number_theory import gcd, isqrt
 import logging
 
 

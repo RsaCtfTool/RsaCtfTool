@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 
-from lib.rsalibnum import invmod
+from lib.number_theory import invmod
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 

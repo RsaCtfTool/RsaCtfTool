@@ -4,7 +4,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import gcd, powmod
+from lib.number_theory import gcd, powmod
 from random import randint
 
 
