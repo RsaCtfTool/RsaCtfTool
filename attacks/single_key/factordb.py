@@ -64,9 +64,7 @@ class Attack(AbstractAttack):
                     # n is prime, so lets get the key from it
                     d = invmod(publickey.e, publickey.n - 1)
                     # construct key using only n and d
-                    priv_key = PrivateKey(
-                        e=int(publickey.e), n=int(publickey.n), d=d
-                    )
+                    priv_key = PrivateKey(e=int(publickey.e), n=int(publickey.n), d=d)
                     return priv_key, None
 
             elif len(factors) == 2:

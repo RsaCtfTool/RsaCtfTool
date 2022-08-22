@@ -93,9 +93,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Try to factorize using yafu"""
         if publickey.n.bit_length() > 1024:
-            self.logger.error(
-                "[!] Warning: Modulus too large for SIQS attack module"
-            )
+            self.logger.error("[!] Warning: Modulus too large for SIQS attack module")
             return None, None
 
         siqsobj = SiqsAttack(publickey.n, self.timeout)

@@ -33,9 +33,7 @@ class Attack(AbstractAttack):
                     x.p = p
                     x.q = q
                     # update each attackobj with a private_key
-                    priv_key_1 = PrivateKey(
-                        int(x.p), int(x.q), int(x.e), int(x.n)
-                    )
+                    priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
                     priv_keys.append(priv_key_1)
 
                     self.logger.info(

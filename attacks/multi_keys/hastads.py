@@ -79,9 +79,7 @@ class Attack(AbstractAttack):
         nth = self.find_invpow(result, 3)
 
         unciphered = []
-        unciphered.append(
-            nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big")
-        )
+        unciphered.append(nth.to_bytes((nth.bit_length() + 7) // 8, byteorder="big"))
 
         try:
             unciphered_ = b""
