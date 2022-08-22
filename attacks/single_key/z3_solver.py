@@ -3,7 +3,7 @@
 
 from z3 import Solver, Int, set_param, sat
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import isqrt, next_prime
+from lib.number_theory import isqrt, next_prime
 from lib.keys_wrapper import PrivateKey
 
 set_param("parallel.enable", True)

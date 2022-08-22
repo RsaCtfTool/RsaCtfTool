@@ -18,7 +18,7 @@ import tempfile
 from glob import glob
 from lib.crypto_wrapper import RSA
 from lib.rsa_attack import RSAAttack
-from lib.rsalibnum import invmod
+from lib.number_theory import invmod
 from lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning

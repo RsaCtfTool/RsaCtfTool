@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import gcd, next_prime
+from lib.number_theory import gcd, next_prime
 
 
 class Attack(AbstractAttack):
