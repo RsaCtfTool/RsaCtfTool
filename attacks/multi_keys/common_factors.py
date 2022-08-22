@@ -2,20 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.rsalibnum import gcd
+from lib.rsalibnum import gcd, ProductTree
 from lib.keys_wrapper import PrivateKey
 from gmpy2 import mul
-
-
-def ProductTree(s):
-    l = len(s)
-    while l > 1:
-        if l & 1 != 0:
-            s += [1]
-            l += 1
-        s = list(map(mul, s[0 : l >> 1], s[l >> 1 :]))
-        l = len(s)
-    return s[0]
 
 
 class Attack(AbstractAttack):
