@@ -4,12 +4,12 @@
 import re
 from attacks.abstract_attack import AbstractAttack
 import requests
-from lib.rsalibnum import invmod
+from lib.number_theory import invmod
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.crypto_wrapper import long_to_bytes
 from gmpy2 import powmod
-from lib.rsalibnum import phi as find_phi
+from lib.number_theory import phi as find_phi
 
 
 class Attack(AbstractAttack):

@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 import gmpy2
 from lib.crypto_wrapper import number
-from lib.rsalibnum import gcdext, powmod
+from lib.number_theory import gcdext, powmod
 
 
 class Attack(AbstractAttack):

@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.rsalibnum import isqrt, is_square, invert
+from lib.number_theory import isqrt, is_square, invert
 
 
 def InverseInverseSqrt2exp(n, k):

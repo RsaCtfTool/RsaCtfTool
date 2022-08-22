@@ -4,7 +4,7 @@
 from cmath import pi
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import is_prime, invmod, ilog2, introot
+from lib.number_theory import is_prime, invmod, ilog2, introot
 
 
 class Attack(AbstractAttack):

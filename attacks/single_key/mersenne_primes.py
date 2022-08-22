@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.rsalibnum import getpubkeysz
+from lib.number_theory import getpubkeysz
 
 
 class Attack(AbstractAttack):
