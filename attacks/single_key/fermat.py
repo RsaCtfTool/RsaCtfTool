@@ -7,29 +7,28 @@ from lib.exceptions import FactorizationError
 from lib.number_theory import isqrt
 
 
+# Source - http://stackoverflow.com/a/20465181
+def fermat(n):
+    """Fermat attack"""
+    a = b = isqrt(n)
+    b2 = (a * a) - n
+    while (b * b) != b2:
+        a += 1
+        b2 = (a * a) - n
+        b = isqrt(b2)
+    return (a + b), (a - b)
+
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    # Source - http://stackoverflow.com/a/20465181
-
-    def fermat(self, n):
-        """Fermat attack"""
-        a = b = isqrt(n)
-        b2 = pow(a, 2) - n
-        while pow(b, 2) != b2:
-            a += 1
-            b2 = pow(a, 2) - n
-            b = isqrt(b2)
-        p, q = (a + b), (a - b)
-        assert n == p * q
-        return p, q
-
+        
     def attack(self, publickey, cipher=[], progress=True):
         """Run fermat attack with a timeout"""
         try:
-            publickey.p, publickey.q = self.fermat(publickey.n)
+            publickey.p, publickey.q = fermat(publickey.n)
 
         except FactorizationError:
             return None, None
