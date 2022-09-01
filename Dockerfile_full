@@ -1,12 +1,18 @@
 # HIGHLY RECOMENDED TO BUILD LOCALLY, paramers for the gmp-ecm tool will be optimised on local hardware
 
 # Base upon sagemath so that we don't have to deal with that dependency
-FROM sagemath/sagemath:9.5
-RUN sudo apt update && \
-    sudo apt -y install build-essential libgmp-dev libmpfr-dev libmpc-dev \
+FROM ubuntu:18.04
+ENV DEBIAN_FRONTEND=noninteractive
+
+# apt-fast
+RUN apt update && apt install -y curl wget aria2
+RUN wget https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast -O /usr/local/sbin/apt-fast && \
+wget https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast.conf -O /etc/apt-fast.conf &&\
+chmod +x /usr/local/sbin/apt-fast
+
+RUN apt-fast install -y libgmp3-dev libmpc-dev  python3-pip sagemath build-essential libgmp-dev libmpfr-dev \
     gcc musl-dev libssl-dev libffi-dev git gcc g++ make cmake git autoconf \
     libtool zlib1g-dev
-RUN sudo chown -R sage:sage /opt
 WORKDIR /opt
 
 # Build neca, copy its binary and delete the source
@@ -17,7 +23,7 @@ RUN git clone https://github.com/jix/neca.git && \
     cd build && \
     cmake .. && \
     make && \
-    sudo cp neca /usr/bin/neca && \
+    cp neca /usr/bin/neca && \
     cd ../.. && \
     rm -rf neca
 
@@ -46,7 +52,7 @@ RUN git clone https://gitlab.inria.fr/zimmerma/ecm.git && \
     make check && \
     make ecm-params && \
     make && \
-    sudo make install && \
+    make install && \
     cd .. && \
     rm -rf ecm
 
@@ -64,20 +70,19 @@ RUN git clone https://github.com/bbuhrow/yafu.git && \
     git checkout ca48c65b66a465a5a47cf7da0301f4ef56227573 && \
     sed -i 's/\/users\/buhrow\/src\/c\/gmp_install\/gmp-6.2.0\/lib\/libgmp.a/-lgmp/g' Makefile && \
     make NFS=1 USE_SSE41=1 USE_AVX2=1 USE_BMI2=1 yafu && \
-    sudo cp yafu /usr/bin/yafu && \
-    sudo cp yafu.ini /usr/bin/yafu.ini && \
+    cp yafu /usr/bin/yafu && \
+    cp yafu.ini /usr/bin/yafu.ini && \
     cd ..
 
 # Patch yafu config (run on all threads, specify ecm path)
-RUN sudo sed -i "s/% threads=1/threads=$(nproc --all)/g" /usr/bin/yafu.ini && \
-    sudo sed -i 's/ecm_path=\.\.\\gmp-ecm\\bin\\x64\\Release\\ecm.exe/ecm_path=\/usr\/bin\/ecm/g' /usr/bin/yafu.ini
+RUN sed -i "s/% threads=1/threads=$(nproc --all)/g" /usr/bin/yafu.ini && \
+    sed -i 's/ecm_path=\.\.\\gmp-ecm\\bin\\x64\\Release\\ecm.exe/ecm_path=\/usr\/bin\/ecm/g' /usr/bin/yafu.ini
 
 WORKDIR /opt
 RUN git clone https://github.com/Ganapati/RsaCtfTool.git
 WORKDIR /opt/RsaCtfTool
-# Alias the sage python venv executable
-RUN sudo ln -s $(find /home/sage/sage -wholename "*bin/python3") /usr/bin/python3
 RUN python3 -m pip install -r "requirements.txt"
+RUN python3 -m pip install -r "optional-requirements.txt"
 WORKDIR /data
 ENTRYPOINT ["/opt/RsaCtfTool/RsaCtfTool.py"]
 CMD ["-h"]
