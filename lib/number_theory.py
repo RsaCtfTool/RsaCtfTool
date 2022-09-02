@@ -369,6 +369,17 @@ def ProductTree(s):
     return s[0]
 
 
+
+def chinese_remainder(m,a):
+  N = list_prod(m)
+  S = 0
+  for i in range(0,len(m)):
+    Ni = N//m[i]
+    inv = invert(Ni,m[i])
+    S += (Ni * inv * a[i])
+  return S % N
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -396,4 +407,5 @@ __all__ = [
     common_modulus,
     phi,
     ProductTree,
+    chinese_remainder,
 ]
