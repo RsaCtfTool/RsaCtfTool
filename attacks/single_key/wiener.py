@@ -4,10 +4,8 @@
 import sys
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from sympy import Symbol
-from sympy.solvers import solve
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import isqrt, is_square
+from lib.number_theory import isqrt, is_square, trivial_factorization_with_n_phi
 
 
 class WienerAttack(object):
@@ -57,15 +55,10 @@ class WienerAttack(object):
                     discr = pow(s, 2) - (n << 2)  # same as  s**2 - 4*n
                     if discr >= 0:
                         t = isqrt(discr)
-                        if pow(t, 2) == discr:
-                            if (s + t) & 1 == 0:
-                                self.d = d
-                                x = Symbol("x")
-                                roots = solve(pow(x, 2) - s * x + n, x)
-                                if len(roots) == 2:
-                                    self.p = roots[0]
-                                    self.q = roots[1]
-                                break
+                        if pow(t, 2) == discr and (s + t) & 1 == 0:
+                            pq = trivial_factorization_with_n_phi(n, phi)
+                            if pq != None:
+                                self.p, self.q = pq
 
 
 class Attack(AbstractAttack):
