@@ -138,7 +138,6 @@ For more examples, look at test.sh file
 ## Requirements
 
 - GMPY2
-- SymPy
 - PyCrypto
 - Requests
 - Libnum
