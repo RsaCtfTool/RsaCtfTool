@@ -389,6 +389,40 @@ def chinese_remainder(m,a):
   return S % N
 
 
+def legendre(a, p):
+    return powmod(a, (p - 1) >> 1, p)
+
+
+def tonelli(n, p):
+    assert legendre(n, p) == 1, "not a square (mod p)"
+    q = p - 1
+    s = 0
+    while q & 1 == 0:
+        q >>= 1
+        s += 1
+    if s == 1:
+        return powmod(n, (p + 1) >> 2, p)
+    for z in range(2, p):
+        if p - 1 == legendre(z, p):
+            break
+    c = powmod(z, q, p)
+    r = powmod(n, (q + 1) >> 1, p)
+    t = powmod(n, q, p)
+    m = s
+    while (t - 1) % p != 0:
+        t2 = powmod(t, 2, p)
+        for i in range(1, m):
+            if (t2 - 1) % p == 0:
+                break
+            t2 = powmod(t2, 2, p)
+        b = powmod(c, 1  <<  (m - i - 1), p)
+        r = (r * b) % p
+        c = powmod(b, 2, p)
+        t = (t * c) % p
+        m = i
+    return r
+
+
 __all__ = [
     getpubkeysz,
     gcd,
