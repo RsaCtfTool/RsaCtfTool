@@ -247,6 +247,15 @@ def _ilog10_gmpy(n):
     return int(gmpy.log10(n))
 
 
+def ilogb(x, b):
+  # greatest integer l such that b**l  < = x.
+  l = 0
+  while x >= b:
+    x /= b
+    l += 1
+  return l
+
+
 def _mod(a, b):
     return a % b
 
@@ -408,4 +417,5 @@ __all__ = [
     phi,
     ProductTree,
     chinese_remainder,
+    ilogb,
 ]
