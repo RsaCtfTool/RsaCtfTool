@@ -102,8 +102,12 @@ def _invmod(a, m):
 
 
 def _is_square(n):
-    i = _isqrt(n)
-    return i**2 == n
+    h = n & 0xF; 
+    if h > 9: return False
+    if ( h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8 ):
+      t = _isqrt(n)
+      return (t * t == n)
+    return False
 
 
 def miller_rabin(n, k=40):
