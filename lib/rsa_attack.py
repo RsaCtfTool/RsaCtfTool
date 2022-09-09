@@ -280,22 +280,26 @@ class RSAAttack(object):
                         self.logger.error("[!] Failure")
             exit(0)
 
+        if isinstance(publickey,str):
         # Read keyfile
-        try:
-            with open(publickey, "rb") as pubkey_fd:
-                self.publickey = PublicKey(pubkey_fd.read(), publickey)
-        except Exception as e:
-            self.logger.error("[*] %s." % e)
-            return
+            try:
+                with open(publickey, "rb") as pubkey_fd:
+                    self.publickey = PublicKey(pubkey_fd.read(), publickey)
+            except Exception as e:
+                self.logger.error("[*] %s." % e)
+                return
 
-        if self.args.check_publickey:
-            k, ok = self.pre_attack_check(self.publickey)
-            if not ok:
-                return False
-        # Read n/e from publickey file
-        if not self.args.n or not self.args.e:
-            self.args.n = self.publickey.n
-            self.args.e = self.publickey.e
+            if self.args.check_publickey:
+                k, ok = self.pre_attack_check(self.publickey)
+                if not ok:
+                    return False
+            # Read n/e from publickey file
+            if not self.args.n or not self.args.e:
+                self.args.n = self.publickey.n
+                self.args.e = self.publickey.e
+        else:
+            self.publickey = publickey
+            
 
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:

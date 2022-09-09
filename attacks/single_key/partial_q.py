@@ -3,6 +3,11 @@
 from lib.number_theory import invmod
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
+import logging
+import importlib
+from lib.keys_wrapper import PublicKey, PrivateKey
+from lib.number_theory import is_prime, isqrt, gcd
+
 
 # TODO
 # Source:
@@ -60,65 +65,75 @@ from tqdm import tqdm
 
 # https://eprint.iacr.org/2004/147.pdf
 
+def solve_partial_q(e, dp, dq, qi, part_q, progress=True):
+    """Search for partial q.
+    Tunable to search longer.
+    """
+    N = 100000
+
+    spart_q = hex(part_q).strip("L").replace("0x", "")
+
+    for j in tqdm(range(N, 1, -1), disable=(not progress)):
+        q = (e * dq - 1) // j + 1
+        if str(hex(q)).strip("L").endswith(spart_q):
+            break
+
+    for k in tqdm(range(1, N, 1), disable=(not progress)):
+        p = (e * dp - 1) // k + 1
+        try:
+            m = invmod(q, p)
+            if m == qi:
+                break
+        except:
+            pass
+
+    print("p = " + str(p))
+    print("q = " + str(q))
+    return p,q
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-    def partial_q(self, e, dp, dq, qi, part_q, progress=True):
-        """Search for partial q.
-        Tunable to search longer.
-        """
-        N = 100000
 
-        for j in tqdm(range(N, 1, -1), disable=(not progress)):
-            q = (e * dq - 1) / j + 1
-            if str(hex(q)).strip("L").endswith(part_q):
-                break
-
-        for k in tqdm(range(1, N, 1), disable=(not progress)):
-            p = (e * dp - 1) / k + 1
-            try:
-                m = invmod(q, p)
-                if m == qi:
-                    break
-            except:
-                pass
-
-        print("p = " + str(p))
-        print("q = " + str(q))
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Partial q in private key.
-        Not implemented yet because it need a private key and rsactftool focus on public keys attacks.
-        But it's here if you need :)
-        """
-        return (None, None)
+        """Run partial_q attack with a timeout"""
+        try:
+            e = publickey.e
+            if e == 0: e = 65537
+            d = publickey.d
+            dp = publickey.dp
+            dq = publickey.dq
+            di = publickey.di
+            partial_q = publickey.q
+            publickey.p, publickey.q = solve_partial_q(e, dp, dq, di, partial_q)
+            if publickey.e == 0: 
+                publickey.e = 65537
+            if publickey.n == 0:
+                publickey.n = publickey.p * publickey.q
+            
+
+        except FactorizationError:
+            return None, None
+
+        if publickey.p is not None and publickey.q is not None:
+            try:
+                priv_key = PrivateKey(
+                    n=int(publickey.n),        
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
+                )
+                #print(priv_key)
+                return priv_key, None
+            except ValueError:
+                return None, None
+
+        return None, None
 
     def test(self):
-        """
-        # TODO FIX TEST
-        from subprocess import check_output
-
-        keyfile = sys.argv[1]
-        keycmd = ["openssl", "asn1parse", "-in", keyfile]
-        private_key = [
-            int(x.split(":")[3], 16)
-            for x in check_output(keycmd).splitlines()
-            if "INTEGER" in x
-        ]
-
-        # dq from examples/masked.pem
-        dp = private_key[4]
-        dq = private_key[5]
-        qi = private_key[6]
-
-        # the last part of q we recovered in examples/masked.pem
-        part_q = hex(private_key[3]).strip("L").replace("0x", "")
-
-        # guessing exponent is standard
-        e = 65537
-        self.partial_q(e, dp, dq, qi, part_q)
-        """
+        
         raise NotImplementedError
