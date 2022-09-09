@@ -163,6 +163,12 @@ if __name__ == "__main__":
         action="store_true",
     )
 
+    parser.add_argument(
+        "--partial",
+        help="work with partial priate keys",
+        action="store_true",
+    )
+
     args = parser.parse_args()
 
     unciphers = []
@@ -422,11 +428,16 @@ if __name__ == "__main__":
             attackobj.attack_single_key(publickey, attacks_list)
 
     if args.publickey is None:
-        logger.error("No key specified")
-
-    for pub in args.publickey:
-        try:
-            if "tmp" in pub and "tmp/" not in pub:
-                os.remove(pub)
-        except:
-            continue
+        if args.partial is not None:
+            priv_key = PrivateKey(filename=args.key,password=None)
+            attackobj.attack_single_key(priv_key, ['partial_q'])
+        else:
+            logger.error("No key specified")
+    
+    if args.publickey is not None:
+        for pub in args.publickey:
+            try:
+                if "tmp" in pub and "tmp/" not in pub:
+                    os.remove(pub)
+            except:
+              continue
