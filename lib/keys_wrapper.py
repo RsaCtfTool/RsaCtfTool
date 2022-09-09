@@ -12,9 +12,30 @@ from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
 from lib.number_theory import powmod, invmod, invert
 
-# from gmpy2 import invert
 
 logger = logging.getLogger("global_logger")
+
+
+def load_partial_privkey(keyfile):
+  """
+  helper function to load a partial mangled asn1 PEM private key into an array of integers
+  version, modulus(n), exponent(e), d, prime(p), prime(q), dp, dq, qi = tmp
+  """
+  keycmd  = ['openssl','asn1parse','-in',keyfile]
+  fields = []
+  i = 0
+  for line in subprocess.check_output(keycmd).decode("utf8").splitlines():
+    if "hl=2 l=   0 prim: " not in line:
+      if i > 0:
+        val = 0
+        if "INTEGER" in line:
+          if "BAD INTEGER" in line:
+            val = int(line.split(":")[4].replace("[","").replace("]",""),16)
+          else:
+            val = int(line.split(":")[3],16)
+        fields.append(val)
+      i += 1
+  return fields
 
 
 def generate_pq_from_n_and_p_or_q(n, p=None, q=None):
@@ -100,11 +121,15 @@ class PrivateKey(object):
         if phi is not None:
             self.phi = phi
 
+        #print(n,e,d,p,q)
+
         if self.p is not None and self.q is not None and self.phi is None:
             if self.p != self.q:
                 self.phi = (self.p - 1) * (self.q - 1)
             else:
                 self.phi = (self.p**2) - self.p
+
+        #print(self.phi)
 
         if d is not None:
             self.d = d
@@ -116,14 +141,17 @@ class PrivateKey(object):
                     # invmod failure
                     logger.error("[!] e^d==1 inversion error, check your math.")
                     pass
-
+                #print("d:",self.d)
+        #print(self.key)
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
-            try:
+            print(">>>",self.n,self.e,self.d,self.p,self.q)
+            #try:
                 # There is no CRT coefficient to construct a key if p equals q
-                self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
-            except ValueError:
-                pass
+            self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
+            #print("ok",self.key)
+            #except ValueError:
+            #    pass
         elif n is not None and e is not None and d is not None:
             try:
                 self.key = RSA.construct((self.n, self.e, self.d))
@@ -131,28 +159,43 @@ class PrivateKey(object):
                 pass
             except ValueError:
                 logger.error("[!] Unable to compute factors p and q from exponent d")
-
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
-                self.key = serialization.load_pem_private_key(
-                    key_data_fd.read(), password=password, backend=default_backend()
-                )
-
-                private_numbers = self.key.private_numbers()
-
-                if p is None:
-                    self.p = private_numbers.p
-                if q is None:
-                    self.q = private_numbers.q
-                if d is None:
-                    self.d = private_numbers.d
-                if self.p and self.q:
-                    self.n = self.p * self.q
-                if self.phi is None:
-                    if self.p != self.q:
-                        self.phi = (self.p - 1) * (self.q - 1)
-                    else:
-                        self.phi = (self.p**2) - self.p
+                try:
+                    self.key = serialization.load_pem_private_key(
+                        key_data_fd.read(), password=password, backend=default_backend()
+                    )
+                    private_numbers = self.key.private_numbers()
+                    loadok = True
+                except:
+                    loadok = False
+                
+                if loadok:
+                    if p is None:
+                        self.p = private_numbers.p
+                    if q is None:
+                        self.q = private_numbers.q
+                    if d is None:
+                        self.d = private_numbers.d
+                    if self.p and self.q:
+                        self.n = self.p * self.q
+                    if self.phi is None:
+                        if self.p != self.q:
+                            self.phi = (self.p - 1) * (self.q - 1)
+                        else:
+                            self.phi = (self.p ** 2) - self.p
+                else:
+                    tmp = load_partial_privkey(filename)
+                    self.n = tmp[1]
+                    self.e = tmp[2]
+                    self.d = tmp[3]
+                    self.p = tmp[4]
+                    self.q = tmp[5]
+                    self.dp = tmp[6]
+                    self.dq = tmp[7]
+                    self.di = tmp[8]
+                    self.filename = filename
+                    
 
     def is_conspicuous(self):
         is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
@@ -246,8 +289,11 @@ class PrivateKey(object):
         return plain
 
     def __str__(self):
+        #print(type(self.key))
         """Print armored private key"""
         if self.key is not None:
             return self.key.exportKey().decode("utf-8")
-        else:
-            return ""
+        #else:
+        #    return "partial key:\nn: %d\ne: %d\nd: %d\np: %d\nq: %d\ndp: %d\ndq: %d\ndi: %d\n%s\n" % (self.n, self.e, self.d, self.p, self.q,self.dp,self.dq,self.di,self.filename)
+            
+            
