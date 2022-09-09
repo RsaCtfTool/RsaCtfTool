@@ -73,13 +73,15 @@ def solve_partial_q(e, dp, dq, qi, part_q, progress=True):
 
     spart_q = hex(part_q).strip("L").replace("0x", "")
 
+    edpm1 = e * dp - 1
+    
     for j in tqdm(range(N, 1, -1), disable=(not progress)):
-        q = (e * dq - 1) // j + 1
+        q = edpm1 // j + 1
         if str(hex(q)).strip("L").endswith(spart_q):
             break
 
     for k in tqdm(range(1, N, 1), disable=(not progress)):
-        p = (e * dp - 1) // k + 1
+        p = edpm1 // k + 1
         try:
             m = invmod(q, p)
             if m == qi:
