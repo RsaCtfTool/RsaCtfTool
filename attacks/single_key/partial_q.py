@@ -71,13 +71,11 @@ def solve_partial_q(e, dp, dq, qi, part_q, progress=True):
     """
     N = 100000
 
-    spart_q = hex(part_q).strip("L").replace("0x", "")
-
     edpm1 = e * dp - 1
     
     for j in tqdm(range(N, 1, -1), disable=(not progress)):
         q = edpm1 // j + 1
-        if str(hex(q)).strip("L").endswith(spart_q):
+        if q & part_q == part_q:
             break
 
     for k in tqdm(range(1, N, 1), disable=(not progress)):
