@@ -121,15 +121,11 @@ class PrivateKey(object):
         if phi is not None:
             self.phi = phi
 
-        #print(n,e,d,p,q)
-
         if self.p is not None and self.q is not None and self.phi is None:
             if self.p != self.q:
                 self.phi = (self.p - 1) * (self.q - 1)
             else:
                 self.phi = (self.p**2) - self.p
-
-        #print(self.phi)
 
         if d is not None:
             self.d = d
@@ -141,17 +137,14 @@ class PrivateKey(object):
                     # invmod failure
                     logger.error("[!] e^d==1 inversion error, check your math.")
                     pass
-                #print("d:",self.d)
-        #print(self.key)
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
-            print(">>>",self.n,self.e,self.d,self.p,self.q)
-            #try:
+            try:
                 # There is no CRT coefficient to construct a key if p equals q
-            self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
-            #print("ok",self.key)
-            #except ValueError:
-            #    pass
+                self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
+            except ValueError:
+                logger.error("[!] Can't construct RSA PEM, internal error....")
+                pass
         elif n is not None and e is not None and d is not None:
             try:
                 self.key = RSA.construct((self.n, self.e, self.d))
@@ -169,7 +162,7 @@ class PrivateKey(object):
                     loadok = True
                 except:
                     loadok = False
-                
+            
                 if loadok:
                     if p is None:
                         self.p = private_numbers.p
