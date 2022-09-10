@@ -9,7 +9,6 @@ from lib.keys_wrapper import PublicKey, PrivateKey
 from lib.number_theory import is_prime, isqrt, gcd
 
 
-# TODO
 # Source:
 # https://0day.work/0ctf-2016-quals-writeups/
 
@@ -65,20 +64,20 @@ from lib.number_theory import is_prime, isqrt, gcd
 
 # https://eprint.iacr.org/2004/147.pdf
 
-def solve_partial_q(e, dp, dq, qi, part_q, progress=True):
+def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
     """Search for partial q.
     Tunable to search longer.
     """
-    N = 100000
 
+    edqm1 = e * dq - 1
     edpm1 = e * dp - 1
-    
-    for j in tqdm(range(N, 1, -1), disable=(not progress)):
-        q = edpm1 // j + 1
+
+    for j in tqdm(range(Limit, 1, -1), disable=(not progress)):
+        q = edqm1 // j + 1
         if q & part_q == part_q:
             break
 
-    for k in tqdm(range(1, N, 1), disable=(not progress)):
+    for k in tqdm(range(1, Limit, 1), disable=(not progress)):
         p = edpm1 // k + 1
         if gcd(p, q) == 1:
             m = invmod(q, p)
