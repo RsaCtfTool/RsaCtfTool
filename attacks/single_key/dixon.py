@@ -4,19 +4,17 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod
+from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod, is_square
 import bitarray
 
 
-def dixon_factor(N, B=7, explain=False):
-
+def dixon_factor(N, B=7):
     if is_prime(N):
         return N, 1
 
-    start = isqrt(N)
-
-    if (start**2) == N:
-        return start, start
+    if is_square(N):
+        i = isqrt(N)
+        return i, i
 
     base = primes(B)
     lqbf = pow(base[-1], 2) + 1
@@ -28,28 +26,15 @@ def dixon_factor(N, B=7, explain=False):
         basej2N.append(p)
         QBF[p] = 1  # We populate our quasi-bloom-filter
 
-    i = start
-    while i < N:
+    for i in range(start, N):
         i2N = pow(i, 2, N)
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
                 if QBF[basej2N[k]] == 1:
                     # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
                     f = gcd(i - base[k], N)
-                    if explain:
-                        print("N = %d" % N)
-                        print("%d = isqrt(N)" % start)
-                        print("%d = pow(%d,2,n)" % (i2N, i))
-                        print("%d = pow(%d,2,n)" % (basej2N[k], base[k]))
-                        print("%d - %d = %d" % (i, base[k], f))
-                        print("%d = gcd(%d - % d, N)" % (f, i, base[k]))
-                        print(
-                            "%d = gcd(%d + % d, N)" % (gcd(i + base[k], N), i, base[k])
-                        )
                     if 1 < f < N:
                         return f, N // f
-        i += 1
-    return None, None
 
 
 class Attack(AbstractAttack):
