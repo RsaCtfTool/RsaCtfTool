@@ -79,13 +79,11 @@ def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
 
     for k in tqdm(range(1, Limit, 1), disable=(not progress)):
         p = edpm1 // k + 1
-        if gcd(p, q) == 1:
-            m = invmod(q, p)
-            if m == qi:
-                break
+        if gcd(p, q) == 1 and invmod(q, p) == qi:
+            break
 
-    print("p = " + str(p))
-    print("q = " + str(q))
+    print("p = " + str(p),k)
+    print("q = " + str(q),j)
     return p,q
 
 
