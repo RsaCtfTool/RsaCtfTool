@@ -101,7 +101,6 @@ class Attack(AbstractAttack):
         try:
             e = publickey.e
             if e == 0: e = 65537
-            d = publickey.d
             dp = publickey.dp
             dq = publickey.dq
             di = publickey.di
