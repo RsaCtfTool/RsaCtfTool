@@ -42,13 +42,8 @@ class Attack(AbstractAttack):
         m = pow(gcd(a + c, d - b), 2)
         l = pow(gcd(a - c, d + b), 2)
 
-        p, q = gcd(k + h, n), gcd(l + m, n)
+        return gcd(k + h, n), gcd(l + m, n)
 
-        if n > p > 1:
-            return p, n // p
-
-        if n > q > 1:
-            return q, n // q
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
