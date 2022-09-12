@@ -32,7 +32,7 @@ def williams_pp1(n):
   return None
         
         
- class Attack(AbstractAttack):
+class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
