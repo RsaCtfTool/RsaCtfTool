@@ -41,6 +41,7 @@ beta = 0.5
 #dLow = 48553333005218622988737502487331247543207235050962932759743329631099614121360173210513133
 
 import sys
+#print("ok")
 n = int(sys.argv[1])
 e = int(sys.argv[2])
 dLow = int(sys.argv[3])
