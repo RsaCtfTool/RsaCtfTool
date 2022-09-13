@@ -12,24 +12,23 @@ from lib.utils import rootpath
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
+        print("attack initialized...")
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
 
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Run partial_q attack with a timeout"""
-        #try:
-        CMD = ["sage","%s/sage/partial_d.sage" % rootpath, str(publickey.n),str(publickey.e),str(publickey.d),]
-        print(CMD)
-        ret = subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,)
-        print(ret)
-        if ret.find(",") > 0:
-            p,q = ret.split(",")
-            publickey.p,publickey.q = int(p),int(q)
+        """Run partial_d attack with a timeout"""
+        try:
+            CMD = ["sage","%s/sage/partial_d.sage" % rootpath, str(publickey.n),str(publickey.e),str(publickey.d),]
+            ret = subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,)
+            if ret.find(",") > 0:
+                p,q = ret.split(",")
+                publickey.p,publickey.q = int(p),int(q)
 
-        #except FactorizationError:
-        #    return None, None
+        except FactorizationError:
+            return None, None
 
         if publickey.p is not None and publickey.q is not None:
             try:
@@ -43,21 +42,7 @@ class Attack(AbstractAttack):
                 return priv_key, None
             except ValueError:
                 return None, None
-
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PrivateKey
-        key_data = """-----BEGIN RSA PRIVATE KEY-----
-MIHAAgEAAoGBAK/tpk+EUFQMb6xzXCQUtFO1x8piS5N4BAeSiHbWu2P87pWujbSo
-FbgRjjvj7B52ACe3nbQqaV7qqMPEkqIs1y47fxjFP/C5oJZTpEOXRN9DakKaz2DP
-lgDPi+03jWFqP+J3FC7TzGsG0UH95kc7x+3Tz/ElsA/9NQHZv3s5sb5VAgFhAiVh
-oRuXgLLFXk77q6y/JnKH0TMJwLsE+jAsey0XGdHTc5uOz67tAgEAAgEAAgEAAgEA
-AgEA
------END RSA PRIVATE KEY-----"""
-        #:print(key_data)
-        pk = PrivateKey(filename="examples/partial_d.pem")
-        print(pk)
-        self.timeout = 180
-        result = self.attack(pk, progress=False)
-        return result != (None, None)
+        raise NotImplementedError
