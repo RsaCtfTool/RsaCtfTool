@@ -16,16 +16,15 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-
-
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_d attack with a timeout"""
         try:
             CMD = ["sage","%s/sage/partial_d.sage" % rootpath, str(publickey.n),str(publickey.e),str(publickey.d),]
-            ret = subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,)
-            if ret.find(",") > 0:
-                p,q = ret.split(",")
-                publickey.p,publickey.q = int(p),int(q)
+            ret = [int (x) for x in subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,).decode("utf8").rstrip().split(" ")]
+            p,q = ret
+            assert p*q == publickey.n
+            publickey.p = p
+            publickey.q = q
 
         except FactorizationError:
             return None, None
