@@ -4,7 +4,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import is_prime, gcd
+from lib.number_theory import is_prime, gcd, powmod
 
 
 class Attack(AbstractAttack):
@@ -13,21 +13,13 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
 
     def pollard_rho(self, n, seed=2, p=2, c=1):
-        if n & 1 == 0:
-            return 2
-        if n % 3 == 0:
-            return 3
-        if n % 5 == 0:
-            return 5
-        if is_prime(n):
-            return n
-        f = lambda x: x**p + c
-        x, y = seed, seed
-        while True:
-            x = f(x) % n
-            y = f(f(y)) % n
+        f = lambda x: powmod(x, p, n) + c
+        x, y, d = seed, seed, 1
+        while d == 1:
+            x = f(x)
+            y = f(f(y))
             d = gcd((x - y), n)
-            if d > 1:
+            if n > d > 1:
                 return d
 
     def attack(self, publickey, cipher=[], progress=True):
