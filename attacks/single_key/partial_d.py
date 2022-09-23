@@ -9,6 +9,7 @@ import subprocess
 from lib.keys_wrapper import PublicKey, PrivateKey
 from lib.number_theory import is_prime, isqrt, gcd
 from lib.utils import rootpath
+from lib.exceptions import FactorizationError
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
