@@ -7,7 +7,7 @@ import logging
 import importlib
 from lib.keys_wrapper import PublicKey, PrivateKey
 from lib.number_theory import is_prime, isqrt, gcd
-
+from lib.exceptions import FactorizationError
 
 # Source:
 # https://0day.work/0ctf-2016-quals-writeups/

@@ -5,7 +5,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.number_theory import gcd, powmod, ilogb, isqrt, next_prime
-
+from itertools import count
 
 def mlucas(v, a, n):
     """ Helper function for williams_pp1().  Multiplies along a Lucas sequence modulo n. """
