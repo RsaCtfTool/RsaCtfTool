@@ -50,6 +50,26 @@ def sageworks():
     else:
         return False
 
+def print_unciphered_res(c, logger):
+    logger.info(f"HEX : 0x{c.hex()}")
+
+    int_big = int.from_bytes(c, "big")
+    int_little = int.from_bytes(c, "little")
+
+    logger.info(f"INT (big endian) : {int_big}")
+    logger.info(f"INT (little endian) : {int_little}")
+    try:
+        c_utf8 = c.decode("utf-8")
+        logger.info(f"utf-8 : { c_utf8 }")
+    except UnicodeDecodeError:
+        pass
+    try:
+        c_utf16 = c.decode("utf-16")
+        logger.info(f"utf-16 : { c_utf16 }")
+    except UnicodeDecodeError:
+        pass
+    logger.info(f"STR : {repr(c)}")
+
 
 def print_results(args, publickey, private_key, uncipher):
     """Print results to output"""
@@ -137,25 +157,13 @@ def print_results(args, publickey, private_key, uncipher):
                                 logger.error(
                                     "Can't write output file : %s" % args.output
                                 )
+                        print_unciphered_res(c, logger)
+                        if len(c)>3 and c[0]==0 and c[1]==2:
+                            nc = c[c[2:].index(0)+2:]
+                            logger.info("\nPKCS#1.5 padding decoded!")
+                            print_unciphered_res(nc, logger)
 
-                        logger.info(f"HEX : 0x{c.hex()}")
 
-                        int_big = int.from_bytes(c, "big")
-                        int_little = int.from_bytes(c, "little")
-
-                        logger.info(f"INT (big endian) : {int_big}")
-                        logger.info(f"INT (little endian) : {int_little}")
-                        try:
-                            c_utf8 = c.decode("utf-8")
-                            logger.info(f"utf-8 : { c_utf8 }")
-                        except UnicodeDecodeError:
-                            pass
-                        try:
-                            c_utf16 = c.decode("utf-16")
-                            logger.info(f"utf-16 : { c_utf16 }")
-                        except UnicodeDecodeError:
-                            pass
-                        logger.info(f"STR : {repr(c)}")
         else:
             logger.critical("Sorry, unciphering failed.")
 
