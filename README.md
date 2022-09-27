@@ -124,11 +124,11 @@ For more examples, look at test.sh file
 
 ### Attack private keys with partial bits of Q known ###
 
-python3 RsaCtfTool.py --attack partial_q --key examples/masked.pem
+`python3 RsaCtfTool.py --attack partial_q --key examples/masked.pem`
 
 ### Attack private keys with partial bits of D known ###
 
-python3 RsaCtfTool.py --attack partial_d --key examples/partial_d.pem
+`python3 RsaCtfTool.py --attack partial_d --key examples/partial_d.pem`
 
 ### Convert idrsa.pub to pem format
 
