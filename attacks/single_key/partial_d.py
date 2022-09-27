@@ -20,6 +20,11 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_d attack with a timeout"""
         try:
+        
+            if not isinstance(publickey, PrivateKey):
+                self.logger.error("[!] partial_d attack is only for partial private keys not pubkeys...") 
+                raise FactorizationError
+        
             CMD = ["sage","%s/sage/partial_d.sage" % rootpath, str(publickey.n),str(publickey.e),str(publickey.d),]
             ret = [int (x) for x in subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,).decode("utf8").rstrip().split(" ")]
             p,q = ret
