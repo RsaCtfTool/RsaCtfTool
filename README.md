@@ -122,6 +122,14 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 For more examples, look at test.sh file
 
+### Attack private keys with partial bits of Q known ###
+
+python3 RsaCtfTool.py --attack partial_q --key examples/masked.pem
+
+### Attack private keys with partial bits of D known ###
+
+python3 RsaCtfTool.py --attack partial_d --key examples/partial_d.pem
+
 ### Convert idrsa.pub to pem format
 
 `./RsaCtfTool.py  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
