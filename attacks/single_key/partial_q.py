@@ -97,6 +97,11 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_q attack with a timeout"""
         try:
+
+            if not isinstance(publickey, PrivateKey):
+                self.logger.error("[!] partial_q attack is only for partial private keys not pubkeys...") 
+                raise FactorizationError
+
             e = publickey.e
             if e == 0: e = 65537
             dp = publickey.dp
