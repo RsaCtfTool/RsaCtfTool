@@ -264,6 +264,10 @@ def _mod(a, b):
     return a % b
 
 
+def _mul(a, b):
+    return a * b
+
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     invmod = gmpy.invert
@@ -283,6 +287,7 @@ if gmpy_version > 0:
     log2 = gmpy.log2
     log10 = gmpy.log10
     ilog10 = _ilog10_gmpy
+    mul = gmpy.mul
     if gmpy_version == 2:
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
@@ -312,6 +317,7 @@ else:
     log2 = math.log2
     log10 = math.log10
     ilog10 = _ilog10_math
+    mul = _mul
 
 
 def trivial_factorization_with_n_phi(N, phi):
@@ -456,4 +462,5 @@ __all__ = [
     ProductTree,
     chinese_remainder,
     ilogb,
+    mul,
 ]
