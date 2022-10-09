@@ -8,6 +8,8 @@ from lib.number_theory import isqrt, is_square
 
 
 def fermat(n):
+    if (n-2) % 4 == 0:
+        raise FactorizationError
     a = isqrt(n)
     while not is_square(a * a - n):
         a += 1
@@ -27,6 +29,7 @@ class Attack(AbstractAttack):
             publickey.p, publickey.q = fermat(publickey.n)
 
         except FactorizationError:
+            self.logger.info("N should not be a 4k+2 number...")
             return None, None
 
         if publickey.p is not None and publickey.q is not None:

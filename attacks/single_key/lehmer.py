@@ -11,6 +11,8 @@ def lehmer_machine(n):
     """
     fermat based integer factorization
     """
+    if (n-2) % 4 == 0:
+        raise FactorizationError
     y = 1
     while not is_square(n + y * y):
         y += 1
@@ -30,6 +32,7 @@ class Attack(AbstractAttack):
             publickey.p, publickey.q = lehmer_machine(publickey.n)
 
         except FactorizationError:
+            self.logger.info("N should not be a 4k+2 number...")
             return None, None
 
         if publickey.p is not None and publickey.q is not None:
