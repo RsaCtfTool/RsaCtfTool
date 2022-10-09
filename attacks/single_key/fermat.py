@@ -4,19 +4,15 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt
+from lib.number_theory import isqrt, is_square
 
 
-# Source - http://stackoverflow.com/a/20465181
 def fermat(n):
-    """Fermat attack"""
-    a = b = isqrt(n)
-    b2 = (a * a) - n
-    while (b * b) != b2:
+    a = isqrt(n)
+    while not is_square(a * a - n):
         a += 1
-        b2 = (a * a) - n
-        b = isqrt(b2)
-    return (a + b), (a - b)
+    b = isqrt(a * a - n)
+    return a - b, a + b
 
 
 class Attack(AbstractAttack):
