@@ -26,7 +26,7 @@ def dixon_factor(N, B=7):
         basej2N.append(p)
         QBF[p] = 1  # We populate our quasi-bloom-filter
 
-    for i in range(start, N):
+    for i in range(isqrt(N), N):
         i2N = pow(i, 2, N)
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
