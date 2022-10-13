@@ -1,12 +1,12 @@
 # RsaCtfTool
 [![Test](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml/badge.svg)](https://github.com/pedroelbanquero/RsaCtfTool/actions/workflows/test.yml)
-![lint_python](https://github.com/Ganapati/RsaCtfTool/workflows/lint_python/badge.svg)
-![CodeQL](https://github.com/Ganapati/RsaCtfTool/workflows/CodeQL/badge.svg)
-[![GitHub issues](https://img.shields.io/github/issues/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/issues)
-[![GitHub forks](https://img.shields.io/github/forks/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/network)
-[![GitHub stars](https://img.shields.io/github/stars/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool/stargazers)
+![lint_python](https://github.com/RsaCtfTool/RsaCtfTool/workflows/lint_python/badge.svg)
+![CodeQL](https://github.com/RsaCtfTool/RsaCtfTool/workflows/CodeQL/badge.svg)
+[![GitHub issues](https://img.shields.io/github/issues/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/issues)
+[![GitHub forks](https://img.shields.io/github/forks/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/network)
+[![GitHub stars](https://img.shields.io/github/stars/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/stargazers)
 [![Rawsec's CyberSecurity Inventory](https://inventory.rawsec.ml/img/badges/Rawsec-inventoried-FF5050_flat.svg)](https://inventory.rawsec.ml/tools.html#RsaCtfTool)
-[![GitHub license](https://img.shields.io/github/license/Ganapati/RsaCtfTool.svg)](https://github.com/Ganapati/RsaCtfTool)
+[![GitHub license](https://img.shields.io/github/license/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool)
 
 RSA multi attacks tool : uncipher data from weak public key and try to recover private key
 Automatic selection of best attack for the given public key
@@ -61,6 +61,7 @@ Attacks :
   - High and Low Bits Equal attack
   - Williams p+1
   - Hart attack similar to fermat
+  - Lehmer machine similar to fermat
 
 ## Usage
 
@@ -157,7 +158,7 @@ For more examples, look at test.sh file
 ### Ubuntu 18.04 and Kali specific Instructions
 
 ```bash
-git clone https://github.com/Ganapati/RsaCtfTool.git
+git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
 cd RsaCtfTool
 pip3 install -r "requirements.txt"
@@ -167,7 +168,7 @@ python3 RsaCtfTool.py
 
 ### Fedora (33 and above) specific Instructions
 ```bash
-git clone https://github.com/Ganapati/RsaCtfTool.git
+git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
 cd RsaCtfTool
 pip3 install -r "requirements.txt"
