@@ -320,6 +320,10 @@ else:
     mul = _mul
 
 
+def cuberoot(n):
+   return introot(n, 3)
+
+
 def trivial_factorization_with_n_phi(N, phi):
     m = N - phi + 1
     i = isqrt(pow(m, 2) - (N << 2))  # same as isqrt((m**2) - (4*n))
@@ -463,4 +467,5 @@ __all__ = [
     chinese_remainder,
     ilogb,
     mul,
+    cuberoot
 ]

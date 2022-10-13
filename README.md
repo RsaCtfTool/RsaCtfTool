@@ -60,6 +60,7 @@ Attacks :
   - XYXZ form integer factorization
   - High and Low Bits Equal attack
   - Williams p+1
+  - Hart attack similar to fermat
 
 ## Usage
 
@@ -67,8 +68,8 @@ Attacks :
 usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}] [--private] [--tests] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E] [--key KEY]
                      [--password PASSWORD] [--show-factors SHOW_FACTORS]
-                     [--attack {SQUFOF,binary_polinomial_factoring,boneh_durfee,brent,cm_factor,comfact_cn,cube_root,dixon,ecm,ecm2,euler,factordb,fermat,fermat_numbers_gcd,fibonacci_gcd,londahl,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,partial_q,partial_d,pastctfprimes,pisano_period,pollard_p_1,pollard_rho,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wiener,wolframalpha,z3_solver,XYXZ,highandlowbitsequal,common_factors,common_modulus,hastads,same_n_huge_e,williams_pp1,all} [{SQUFOF,binary_polinomial_factoring,boneh_durfee,brent,cm_factor,comfact_cn,cube_root,dixon,ecm,ecm2,euler,factordb,fermat,fermat_numbers_gcd,fibonacci_gcd,londahl,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,partial_q,partial_d,pastctfprimes,pisano_period,pollard_p_1,pollard_rho,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wiener,wolframalpha,z3_solver,XYXZ,highandlowbitsequal,common_factors,common_modulus,hastads,same_n_huge_e,williams_pp1,all} ...]]
-                     [--sendtofdb] [--isconspicuous] [--isroca] [--convert_idrsa_pub] [--check_publickey]
+                     [--attack {SQUFOF,XYXZ,binary_polinomial_factoring,brent,cm_factor,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver2,z3_solver,z3test,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,all} [{SQUFOF,XYXZ,binary_polinomial_factoring,brent,cm_factor,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver2,z3_solver,z3test,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,all} ...]]
+                     [--sendtofdb] [--isconspicuous] [--isroca] [--convert_idrsa_pub] [--check_publickey] [--partial]
 ```
 
 
