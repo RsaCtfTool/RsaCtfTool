@@ -11,9 +11,13 @@ def fermat(n):
     if (n-2) % 4 == 0:
         raise FactorizationError
     a = isqrt(n)
-    while not is_square(a * a - n):
-        a += 1
-    b = isqrt(a * a - n)
+    t = (a << 1) + 1
+    b2 = a*a - n
+    while not is_square(b2):
+        b2 += t
+        t += 2
+    a = (t - 1) >> 1 
+    b = isqrt(b2)
     return a - b, a + b
 
 
