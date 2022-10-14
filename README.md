@@ -17,7 +17,6 @@ Attacks :
   - Wiener's attack
   - Hastad's attack (Small public exponent attack)
   - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
-  - Londahl
   - Same n, huge e
   - Small crt exponent
   - Common factor between ciphertext and modulus attack
@@ -38,6 +37,7 @@ Attacks :
   - Pollards p-1 for relatively smooth numbers
   - Mersenne primes factorization
   - Factordb
+  - Londahl
   - Noveltyprimes
   - Primefac
   - Qicheng
