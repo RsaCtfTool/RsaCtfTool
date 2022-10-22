@@ -56,6 +56,11 @@ def _isqrt(n):
     return x
 
 
+def _isqrt_rem(n):
+  i2 = _isqrt(n)
+  return i2, n - (i2*i2)
+
+
 def _gcd(a, b):
     while b:
         a, b = b, a % b
@@ -289,14 +294,18 @@ if gmpy_version > 0:
     ilog10 = _ilog10_gmpy
     mul = gmpy.mul
     if gmpy_version == 2:
+        isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
     else:
+        isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.sqrt
         introot = _introot_gmpy
+        
 else:
     gcd = _gcd
     isqrt = _isqrt
+    isqrt_rem = _isqrt_rem
     introot = _introot
     invmod = _invmod
     gcdext = _gcdext
@@ -467,5 +476,6 @@ __all__ = [
     chinese_remainder,
     ilogb,
     mul,
-    cuberoot
+    cuberoot,
+    isqrt_rem
 ]
