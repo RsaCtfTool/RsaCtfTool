@@ -400,13 +400,12 @@ def ProductTree(s):
         l = len(s)
     return s[0]
 
+def list_prod(lst):
+    return reduce((lambda x, y: x * y), list1)
 
 
 def chinese_remainder(m,a):
-    N = 1
-    for i in m:
-        N *= i
-    S = 0
+    N = list_prod(m)
     for i in range(0,len(m)):
         Ni = N//m[i]
         inv = invert(Ni,m[i])
@@ -475,6 +474,7 @@ __all__ = [
     common_modulus,
     phi,
     ProductTree,
+    list_prod,
     chinese_remainder,
     ilogb,
     mul,
