@@ -414,6 +414,8 @@ if __name__ == "__main__":
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
+            attackobj.attack_multiple_keys(tmpfile.name, selected_attacks, test=True)
+        exit(0)
 
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:
