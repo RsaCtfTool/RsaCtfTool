@@ -401,7 +401,7 @@ def ProductTree(s):
     return s[0]
 
 def list_prod(lst):
-    return reduce((lambda x, y: x * y), list1)
+    return reduce((lambda x, y: x * y), lst)
 
 
 def chinese_remainder(m,a):
