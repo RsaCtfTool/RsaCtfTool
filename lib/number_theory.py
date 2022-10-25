@@ -403,13 +403,15 @@ def ProductTree(s):
 
 
 def chinese_remainder(m,a):
-  N = list_prod(m)
-  S = 0
-  for i in range(0,len(m)):
-    Ni = N//m[i]
-    inv = invert(Ni,m[i])
-    S += (Ni * inv * a[i])
-  return S % N
+    N = 1
+    for i in m:
+        N *= i
+    S = 0
+    for i in range(0,len(m)):
+        Ni = N//m[i]
+        inv = invert(Ni,m[i])
+        S += (Ni * inv * a[i])
+    return S % N
 
 
 def legendre(a, p):
