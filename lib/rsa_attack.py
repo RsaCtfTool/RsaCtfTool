@@ -198,32 +198,10 @@ class RSAAttack(object):
                         for privkey in list(set(self.priv_key)):
                             send2fdb(privkey.n, [privkey.p, privkey.q])
 
-    def attack_multiple_keys(self, publickeys, attacks_list, test=False):
+    def attack_multiple_keys(self, publickeys, attacks_list):
         """Run attacks on multiple keys"""
         self.logger.info("[*] Multikey mode using keys: " + ", ".join(publickeys))
         self.load_attacks(attacks_list, multikeys=True)
-
-        if test:
-            l = len(self.implemented_attacks)
-            c = 0
-
-            for attack in self.implemented_attacks:
-                c += 1
-                if attack.can_run():
-                    self.logger.info(
-                        "[*] %d of %d, Testing: %s" % (c, l, attack.get_name())
-                    )
-                    try:
-                        try:
-                            if attack.test():
-                                self.logger.info("[*] Success")
-                            else:
-                                self.logger.error("[!] Failure")
-                        except NotImplementedError:
-                            self.logger.warning("[!] Test not implemented")
-                    except Exception:
-                        self.logger.error("[!] Failure")
-            return
 
         # Read keyfiles
         publickeys_obj = []
@@ -284,6 +262,7 @@ class RSAAttack(object):
 
         self.load_attacks(attacks_list)
         if test:
+            self.load_attacks(attacks_list, multikeys=True)
             for attack in self.implemented_attacks:
                 c += 1
                 if attack.can_run():
