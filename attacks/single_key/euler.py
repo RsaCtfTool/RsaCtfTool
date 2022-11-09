@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, isqrt
+from lib.number_theory import gcd, isqrt, is_square
 import logging
 
 
@@ -14,6 +14,9 @@ class Attack(AbstractAttack):
         self.logger = logging.getLogger("global_logger")
 
     def euler(self, n):
+        """
+        Euler factorization method is very much like fermat's
+        """
         if n & 1 == 0:
             return (n >> 1, 2) if n > 2 else (2, 1)
         end = isqrt(n)
@@ -22,12 +25,11 @@ class Attack(AbstractAttack):
         firstb = -1
 
         while a < end and len(solutionsFound) < 2:
-            bsquare = n - pow(a, 2)
-            if bsquare > 0:
+            bsquare = n - (a * a)
+            if is_square(bsquare) and (a != firstb) and (b != firstb):
                 b = isqrt(bsquare)
-                if (pow(b, 2) == bsquare) and (a != firstb) and (b != firstb):
-                    firstb = b
-                    solutionsFound.append([b, a])
+                firstb = b
+                solutionsFound.append([b, a])
             a += 1
         if len(solutionsFound) < 2:
             return None
