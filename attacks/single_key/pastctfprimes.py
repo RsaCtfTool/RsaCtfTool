@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-
+from lib.number_theory import is_divisible
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
@@ -137,7 +137,7 @@ class Attack(AbstractAttack):
         ]
         primes = sorted(set(primes_pastctf + primes_rsa_numbers_challenge))
         for prime in tqdm(primes, disable=(not progress)):
-            if publickey.n % prime == 0:
+            if is_divisible(publickey.n, prime):
                 publickey.q = prime
                 publickey.p = publickey.n // publickey.q
                 priv_key = PrivateKey(

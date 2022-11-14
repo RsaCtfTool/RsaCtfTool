@@ -4,14 +4,14 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square
+from lib.number_theory import isqrt, is_square, is_congruent
 
 
 def lehmer_machine(n):
     """
     fermat based integer factorization
     """
-    if (n-2) % 4 == 0:
+    if is_congruent(n, 2, 4):
         raise FactorizationError
     y = 1
     while not is_square(n + y * y):

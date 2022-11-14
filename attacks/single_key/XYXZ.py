@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod, log
+from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod, log, is_divisible
 
 
 def factor_XYXZ(n, base=3):
@@ -15,7 +15,7 @@ def factor_XYXZ(n, base=3):
     max_power = (int(log(n) / log(base)) + 1) >> 1
     while power <= max_power:
         p = next_prime(base**power)
-        if n % p == 0:
+        if is_divisible(n, p):
             return p, n // p
         power += 1
 

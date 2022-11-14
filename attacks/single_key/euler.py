@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, isqrt, is_square
+from lib.number_theory import gcd, isqrt, is_square, is_congruent
 import logging
 
 
@@ -56,7 +56,7 @@ class Attack(AbstractAttack):
 
         # Euler attack
         try:
-            if (publickey.n - 1) % 4 == 0:
+            if is_congruent(publickey.n, 1, 4):
                 euler_res = self.euler(publickey.n)
             else:
                 self.logger.error(

@@ -273,6 +273,12 @@ def _mul(a, b):
     return a * b
 
 
+def _is_divisible(n, p):
+  return n % p == 0
+
+def _is_congruent(a, b, m):
+  return (a - b) % m == 0
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     invmod = gmpy.invert
@@ -297,11 +303,14 @@ if gmpy_version > 0:
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
+        is_divisible = gmpy2.is_divisible
+        is_congruent = gmpy2.is_congruent
     else:
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.sqrt
         introot = _introot_gmpy
-        
+        is_divisible = _is_divisible
+        is_congruent = _is_congruent
 else:
     gcd = _gcd
     isqrt = _isqrt
@@ -327,6 +336,7 @@ else:
     log10 = math.log10
     ilog10 = _ilog10_math
     mul = _mul
+    is_divisible = _is_divisible
 
 
 def cuberoot(n):
@@ -479,5 +489,7 @@ __all__ = [
     ilogb,
     mul,
     cuberoot,
-    isqrt_rem
+    isqrt_rem, 
+    is_divisible,
+    is_congruent
 ]
