@@ -10,6 +10,7 @@ Contributons:
               - They should not include binaries.
               - They should be in small PRs for faster reviewing process.
               - They should include a small testcase.
+              - Avoid naming an algorithm after youself, no vanity is accepted (better describe what the algorithm does).
               - Any contribution not hornoring this criteria will be rejected until it does.
-```
+```             
 
