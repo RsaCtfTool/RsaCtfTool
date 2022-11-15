@@ -303,8 +303,8 @@ if gmpy_version > 0:
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
-        is_divisible = gmpy2.is_divisible
-        is_congruent = gmpy2.is_congruent
+        is_divisible = gmpy.is_divisible
+        is_congruent = gmpy.is_congruent
     else:
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.sqrt
@@ -337,6 +337,7 @@ else:
     ilog10 = _ilog10_math
     mul = _mul
     is_divisible = _is_divisible
+    is_congruent = _is_congruent
 
 
 def cuberoot(n):
