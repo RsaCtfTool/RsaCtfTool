@@ -3,7 +3,8 @@
 
 from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.utils import rootpath
+import os
+from lib.utils import rootpath, TimeoutError, terminate_proc_tree
 from lib.number_theory import invert, powmod
 
 
@@ -21,13 +22,13 @@ class Attack(AbstractAttack):
         try:
             sageresult = []
             try:
-                sageresult = subprocess.check_output(
-                    ["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)],
-                    timeout=self.timeout,
-                    stderr=subprocess.DEVNULL,
-                )
+                sage_proc = subprocess.Popen(["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                sage_proc.wait(timeout=self.timeout)
+                stdout, stderr = sage_proc.communicate()
+                sageresult = stdout
                 sageresult = sageresult[1:-2].split(b", ")
-            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired, TimeoutError):
+                terminate_proc_tree(os.getpgid(sage_proc.pid))
                 return (None, None)
 
             if len(sageresult) > 0:
