@@ -66,3 +66,6 @@ target/
 
 # Sage stuff
 *.sage.py
+
+# python virtual environment
+.venv

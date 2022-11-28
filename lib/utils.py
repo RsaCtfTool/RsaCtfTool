@@ -9,6 +9,7 @@ import logging
 import subprocess
 import contextlib
 import binascii
+import psutil
 from lib.keys_wrapper import PublicKey
 from lib.number_theory import invmod
 
@@ -239,3 +240,11 @@ def binary_search(L, n):
         else:
             left = mid + 1
     return -1
+
+def terminate_proc_tree(pid, including_parent=False):    
+    parent = psutil.Process(pid)
+    children = parent.children(recursive=True)
+    for child in children:
+        child.kill()
+    if including_parent:
+        parent.kill()
