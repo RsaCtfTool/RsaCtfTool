@@ -21,17 +21,24 @@ class Attack(AbstractAttack):
             return (n >> 1, 2) if n > 2 else (2, 1)
         end = isqrt(n)
         a = 0
+        b = 0
         solutionsFound = []
         firstb = -1
 
-        while a < end and len(solutionsFound) < 2:
+        lf = 0
+        while a < end:
             bsquare = n - (a * a)
-            if is_square(bsquare) and (a != firstb) and (b != firstb):
+            if is_square(bsquare):
                 b = isqrt(bsquare)
-                firstb = b
-                solutionsFound.append([b, a])
+                if (a != firstb) and (b != firstb):
+                    solutionsFound.append([b, a])
+                    firstb = b 
+                    lf = len(solutionsFound)
+                    if lf == 2:
+                        break
             a += 1
-        if len(solutionsFound) < 2:
+
+        if lf < 2:
             return None
 
         a = solutionsFound[0][0]
@@ -46,7 +53,6 @@ class Attack(AbstractAttack):
 
         return gcd(k + h, n), gcd(l + m, n)
 
-
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Euler method"""
         if not hasattr(publickey, "p"):
@@ -58,6 +64,7 @@ class Attack(AbstractAttack):
         try:
             if is_congruent(publickey.n, 1, 4):
                 euler_res = self.euler(publickey.n)
+                print(euler_res)
             else:
                 self.logger.error(
                     "[!] Public key modulus must be congruent 1 mod 4 to work with euler method."
@@ -85,5 +92,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MCIwDQYJKoZIhvcNAQEBBQADEQAwDgIHEAABggAEpQIDAQAB
 -----END PUBLIC KEY-----"""
-        result = self.attack(PublicKey(key_data), progress=False)
+        result = self.attack(PublicKey(key_data))
         return result != (None, None)
