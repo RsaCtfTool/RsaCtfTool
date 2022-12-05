@@ -416,6 +416,7 @@ def list_prod(lst):
 
 
 def chinese_remainder(m,a):
+    S = 0
     N = list_prod(m)
     for i in range(0,len(m)):
         Ni = N//m[i]
