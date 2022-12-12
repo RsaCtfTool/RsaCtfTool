@@ -279,6 +279,16 @@ def _is_divisible(n, p):
 def _is_congruent(a, b, m):
   return (a - b) % m == 0
 
+def _powmod(b, e, m):
+  r = 1
+  b = b % m
+  while e > 0:
+    if (e & 1 == 1):
+      r = (r * b) % m
+    e >>= 1
+    b = (b * b) % m
+  return r
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     invmod = gmpy.invert
@@ -290,7 +300,6 @@ if gmpy_version > 0:
     primes = _primes_gmpy
     lcm = gmpy.lcm
     invert = gmpy.invert
-    powmod = gmpy.powmod
     ilog = _ilog_gmpy
     ilog2 = _ilog2_gmpy
     mod = gmpy.f_mod
@@ -300,6 +309,7 @@ if gmpy_version > 0:
     ilog10 = _ilog10_gmpy
     mul = gmpy.mul
     if gmpy_version == 2:
+        powmod = gmpy.powmod
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.isqrt
         introot = _introot_gmpy2
@@ -311,6 +321,7 @@ if gmpy_version > 0:
         introot = _introot_gmpy
         is_divisible = _is_divisible
         is_congruent = _is_congruent
+        powmod = pow
 else:
     gcd = _gcd
     isqrt = _isqrt
@@ -327,7 +338,7 @@ else:
     primes = _primes
     lcm = _lcm
     invert = _invmod
-    powmod = pow
+    powmod = _powmod
     ilog = _ilog_math
     ilog2 = _ilog2_math
     mod = _mod
