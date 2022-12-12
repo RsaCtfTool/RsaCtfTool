@@ -55,10 +55,18 @@ def _isqrt(n):
         x, y = y, (y + n // y) >> 1
     return x
 
-
 def _isqrt_rem(n):
   i2 = _isqrt(n)
   return i2, n - (i2*i2)
+
+
+def _isqrt_gmpy(n):
+  return gmpy.sqrt(n)
+
+
+def _isqrt_rem_gmpy(n):
+  i2 = isqrt_gmpy(n)
+  return i2, n - (i2 * i2)
 
 
 def _gcd(a, b):
@@ -281,7 +289,7 @@ def _is_congruent(a, b, m):
 
 def _powmod(b, e, m):
   r = 1
-  b = b % m
+  b %= m
   while e > 0:
     if (e & 1 == 1):
       r = (r * b) % m
@@ -291,7 +299,6 @@ def _powmod(b, e, m):
 
 if gmpy_version > 0:
     gcd = gmpy.gcd
-    invmod = gmpy.invert
     gcdext = gmpy.gcdext
     is_square = gmpy.is_square
     next_prime = gmpy.next_prime
@@ -300,15 +307,16 @@ if gmpy_version > 0:
     primes = _primes_gmpy
     lcm = gmpy.lcm
     invert = gmpy.invert
-    ilog = _ilog_gmpy
-    ilog2 = _ilog2_gmpy
-    mod = gmpy.f_mod
-    log = gmpy.log
-    log2 = gmpy.log2
-    log10 = gmpy.log10
-    ilog10 = _ilog10_gmpy
-    mul = gmpy.mul
+    invmod = gmpy.invert
     if gmpy_version == 2:
+        ilog = _ilog_gmpy
+        ilog2 = _ilog2_gmpy
+        ilog10 = _ilog10_gmpy
+        log = gmpy.log
+        log2 = gmpy.log2
+        log10 = gmpy.log10
+        mod = gmpy.f_mod
+        mul = gmpy.mul
         powmod = gmpy.powmod
         isqrt_rem = gmpy.isqrt_rem
         isqrt = gmpy.isqrt
@@ -316,12 +324,20 @@ if gmpy_version > 0:
         is_divisible = gmpy.is_divisible
         is_congruent = gmpy.is_congruent
     else:
-        isqrt_rem = gmpy.isqrt_rem
-        isqrt = gmpy.sqrt
+        ilog = _ilog_math
+        ilog2 = _ilog2_math
+        ilog10 = _ilog10_math
+        log = math.log
+        log2 = math.log2
+        log10 = math.log10
+        mul = _mul 
+        mod = _mod
+        powmod = pow
+        isqrt_rem = _isqrt_rem_gmpy
+        isqrt = _isqrt_gmpy
         introot = _introot_gmpy
         is_divisible = _is_divisible
         is_congruent = _is_congruent
-        powmod = pow
 else:
     gcd = _gcd
     isqrt = _isqrt
@@ -341,15 +357,14 @@ else:
     powmod = _powmod
     ilog = _ilog_math
     ilog2 = _ilog2_math
-    mod = _mod
+    ilog10 = _ilog10_math
     log = math.log
     log2 = math.log2
     log10 = math.log10
-    ilog10 = _ilog10_math
+    mod = _mod
     mul = _mul
     is_divisible = _is_divisible
     is_congruent = _is_congruent
-
 
 def cuberoot(n):
    return introot(n, 3)
