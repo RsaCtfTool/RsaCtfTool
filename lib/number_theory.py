@@ -416,8 +416,6 @@ def neg_pow(a, b, n):
 # n --> Modulus
 # The following attack works only when m^{GCD(e1, e2)} < n
 def common_modulus(e1, e2, n, c1, c2):
-    c1 = bytes_to_long(c1)
-    c2 = bytes_to_long(c2)
     g, a, b = gcdext(e1, e2)
     if a < 0:
         c1 = neg_pow(c1, a, n)
