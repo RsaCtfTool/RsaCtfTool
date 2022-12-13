@@ -55,17 +55,18 @@ def _isqrt(n):
         x, y = y, (y + n // y) >> 1
     return x
 
+
 def _isqrt_rem(n):
   i2 = _isqrt(n)
   return i2, n - (i2*i2)
 
 
 def _isqrt_gmpy(n):
-  return gmpy.sqrt(n)
+  return int(gmpy.sqrt(n))
 
 
 def _isqrt_rem_gmpy(n):
-  i2 = isqrt_gmpy(n)
+  i2 = _isqrt_gmpy(n)
   return i2, n - (i2 * i2)
 
 
@@ -93,6 +94,11 @@ def _introot(n, r=2):
         elif m > n:
             upper = mid
     return lower
+
+
+def _iroot(n, p):
+   b = introot(n, p)
+   return b, b ** p == n
 
 
 def _introot_gmpy(n, r=2):
@@ -284,8 +290,10 @@ def _mul(a, b):
 def _is_divisible(n, p):
   return n % p == 0
 
+
 def _is_congruent(a, b, m):
   return (a - b) % m == 0
+
 
 def _powmod(b, e, m):
   r = 1
@@ -296,6 +304,7 @@ def _powmod(b, e, m):
     e >>= 1
     b = (b * b) % m
   return r
+
 
 if gmpy_version > 0:
     gcd = gmpy.gcd
@@ -309,6 +318,7 @@ if gmpy_version > 0:
     invert = gmpy.invert
     invmod = gmpy.invert
     if gmpy_version == 2:
+        iroot = gmpy.iroot
         ilog = _ilog_gmpy
         ilog2 = _ilog2_gmpy
         ilog10 = _ilog10_gmpy
@@ -324,6 +334,7 @@ if gmpy_version > 0:
         is_divisible = gmpy.is_divisible
         is_congruent = gmpy.is_congruent
     else:
+        iroot = gmpy.root
         ilog = _ilog_math
         ilog2 = _ilog2_math
         ilog10 = _ilog10_math
@@ -333,12 +344,13 @@ if gmpy_version > 0:
         mul = _mul 
         mod = _mod
         powmod = pow
-        isqrt_rem = _isqrt_rem_gmpy
-        isqrt = _isqrt_gmpy
+        isqrt_rem = gmpy.sqrtrem
+        isqrt = gmpy.isqrt
         introot = _introot_gmpy
         is_divisible = _is_divisible
         is_congruent = _is_congruent
 else:
+    iroot = _iroot
     gcd = _gcd
     isqrt = _isqrt
     isqrt_rem = _isqrt_rem
@@ -365,6 +377,7 @@ else:
     mul = _mul
     is_divisible = _is_divisible
     is_congruent = _is_congruent
+
 
 def cuberoot(n):
    return introot(n, 3)
@@ -437,6 +450,7 @@ def ProductTree(s):
         l = len(s)
     return s[0]
 
+
 def list_prod(lst):
     return reduce((lambda x, y: x * y), lst)
 
@@ -485,6 +499,11 @@ def tonelli(n, p):
     return r
 
 
+def is_cube(n):
+  a, b = _iroot(n, 3)
+  return b
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -493,6 +512,7 @@ __all__ = [
     invmod,
     gcdext,
     is_square,
+    is_cube,
     next_prime,
     is_prime,
     fib,
@@ -519,5 +539,6 @@ __all__ = [
     cuberoot,
     isqrt_rem, 
     is_divisible,
-    is_congruent
+    is_congruent,
+    iroot
 ]
