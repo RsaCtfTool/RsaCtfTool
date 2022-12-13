@@ -76,6 +76,15 @@ def _gcd(a, b):
     return abs(a)
 
 
+def _remove(n, p):
+  r = n
+  c = 0
+  while (r % p == 0):
+    r //= p
+    c += 1
+  return r, c
+
+
 def _introot(n, r=2):
     if n < 0:
         return None if r & 1 == 0 else -_introot(-n, r)
@@ -317,6 +326,7 @@ if gmpy_version > 0:
     lcm = gmpy.lcm
     invert = gmpy.invert
     invmod = gmpy.invert
+    remove = gmpy.remove
     if gmpy_version == 2:
         iroot = gmpy.iroot
         ilog = _ilog_gmpy
@@ -350,6 +360,7 @@ if gmpy_version > 0:
         is_divisible = _is_divisible
         is_congruent = _is_congruent
 else:
+    remove = _remove
     iroot = _iroot
     gcd = _gcd
     isqrt = _isqrt
@@ -426,14 +437,16 @@ def phi(n, factors):
     """
     if is_prime(n):
         return n - 1
+    elif is_square(n):
+        i2 = isqrt(n)
+        return phi(i2, factors) * i2
     else:
         y = n
         for p in factors:
             if n % p == 0:
                 y //= p
                 y *= p - 1
-                while (n % p) == 0:
-                    n //= p
+                n, _ = remove(n, p)
         if n > 1:
             y //= n
             y *= n - 1
