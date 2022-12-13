@@ -211,7 +211,7 @@ def run_attacks(args, logger):
         with open(tmpfile.name, "wb") as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
-            exit(0)
+            sys.exit(0)
 
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:
@@ -394,9 +394,9 @@ def main():
     # if we have uncipherfile
     if args.uncipherfile is not None:
         if uncipher_file(args, logger):
-            exit(0)
+            sys.exit(0)
         else:
-            exit(-1)
+            sys.exit(-1)
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
@@ -405,17 +405,17 @@ def main():
     # convert a idrsa.pub file to a pem format
     if args.convert_idrsa_pub:
         convert_idrsa_pub(args, logger)
-        exit(0)
+        sys.exit(0)
 
     if args.isroca:
         check_is_roca(args, logger)
-        exit(0)
+        sys.exit(0)
 
     # Create pubkey if requested
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
         print(pub_key.decode("utf-8"))
-        exit(0)
+        sys.exit(0)
 
     # Load keys 
     if args.publickey is None and args.e is not None and args.n is not None:
@@ -445,7 +445,7 @@ def main():
             logger.error(
                 "Looks like the values for generating key are not ok... (no invmod)"
             )
-            exit(1)
+            sys.exit(1)
 
         if args.createpub:
             pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
@@ -459,9 +459,9 @@ def main():
                     logger.error(
                         "Looks like the values for generating key are not ok... (no invmod)"
                     )
-                    exit(1)
+                    sys.exit(1)
         print_results(args, args.publickey[0], priv_key, unciphers)
-        exit(0)
+        sys.exit(0)
 
     # Dump public key informations
     if (
@@ -472,18 +472,18 @@ def main():
         and args.publickey is not None
     ):
         pubkey_detail(args, logger)
-        exit(0)
+        sys.exit(0)
 
     # if dumpkey mode dump the key components then quit
     if args.key is not None and args.dumpkey:
         dump_key_parameters(args)
-        exit(0)
+        sys.exit(0)
 
     if args.key is not None and args.isconspicuous:
         if run_conspicuous_check(args, logger):
-            exit(-1)
+            sys.exit(-1)
         else:
-            exit(0)
+            sys.exit(0)
 
     args = run_attacks(args, logger)
 
