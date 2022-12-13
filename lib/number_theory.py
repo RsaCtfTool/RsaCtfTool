@@ -57,17 +57,17 @@ def _isqrt(n):
 
 
 def _isqrt_rem(n):
-  i2 = _isqrt(n)
-  return i2, n - (i2*i2)
+    i2 = _isqrt(n)
+    return i2, n - (i2 * i2)
 
 
 def _isqrt_gmpy(n):
-  return int(gmpy.sqrt(n))
+    return int(gmpy.sqrt(n))
 
 
 def _isqrt_rem_gmpy(n):
-  i2 = _isqrt_gmpy(n)
-  return i2, n - (i2 * i2)
+    i2 = _isqrt_gmpy(n)
+    return i2, n - (i2 * i2)
 
 
 def _gcd(a, b):
@@ -77,12 +77,12 @@ def _gcd(a, b):
 
 
 def _remove(n, p):
-  r = n
-  c = 0
-  while (r % p == 0):
-    r //= p
-    c += 1
-  return r, c
+    r = n
+    c = 0
+    while r % p == 0:
+        r //= p
+        c += 1
+    return r, c
 
 
 def _introot(n, r=2):
@@ -106,8 +106,8 @@ def _introot(n, r=2):
 
 
 def _iroot(n, p):
-   b = introot(n, p)
-   return b, b ** p == n
+    b = introot(n, p)
+    return b, b**p == n
 
 
 def _introot_gmpy(n, r=2):
@@ -130,11 +130,12 @@ def _invmod(a, m):
 
 
 def _is_square(n):
-    h = n & 0xF; 
-    if h > 9: return False
-    if ( h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8 ):
-      t = _isqrt(n)
-      return (t * t == n)
+    h = n & 0xF
+    if h > 9:
+        return False
+    if h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8:
+        t = _isqrt(n)
+        return t * t == n
     return False
 
 
@@ -280,12 +281,12 @@ def _ilog10_gmpy(n):
 
 
 def ilogb(x, b):
-  # greatest integer l such that b**l  < = x.
-  l = 0
-  while x >= b:
-    x /= b
-    l += 1
-  return l
+    # greatest integer l such that b**l  < = x.
+    l = 0
+    while x >= b:
+        x /= b
+        l += 1
+    return l
 
 
 def _mod(a, b):
@@ -297,22 +298,22 @@ def _mul(a, b):
 
 
 def _is_divisible(n, p):
-  return n % p == 0
+    return n % p == 0
 
 
 def _is_congruent(a, b, m):
-  return (a - b) % m == 0
+    return (a - b) % m == 0
 
 
 def _powmod(b, e, m):
-  r = 1
-  b %= m
-  while e > 0:
-    if (e & 1 == 1):
-      r = (r * b) % m
-    e >>= 1
-    b = (b * b) % m
-  return r
+    r = 1
+    b %= m
+    while e > 0:
+        if e & 1 == 1:
+            r = (r * b) % m
+        e >>= 1
+        b = (b * b) % m
+    return r
 
 
 if gmpy_version > 0:
@@ -351,7 +352,7 @@ if gmpy_version > 0:
         log = math.log
         log2 = math.log2
         log10 = math.log10
-        mul = _mul 
+        mul = _mul
         mod = _mod
         powmod = pow
         isqrt_rem = gmpy.sqrtrem
@@ -391,7 +392,7 @@ else:
 
 
 def cuberoot(n):
-   return introot(n, 3)
+    return introot(n, 3)
 
 
 def trivial_factorization_with_n_phi(N, phi):
@@ -466,13 +467,13 @@ def list_prod(lst):
     return reduce((lambda x, y: x * y), lst)
 
 
-def chinese_remainder(m,a):
+def chinese_remainder(m, a):
     S = 0
     N = list_prod(m)
-    for i in range(0,len(m)):
-        Ni = N//m[i]
-        inv = invert(Ni,m[i])
-        S += (Ni * inv * a[i])
+    for i in range(0, len(m)):
+        Ni = N // m[i]
+        inv = invert(Ni, m[i])
+        S += Ni * inv * a[i]
     return S % N
 
 
@@ -502,7 +503,7 @@ def tonelli(n, p):
             if (t2 - 1) % p == 0:
                 break
             t2 = powmod(t2, 2, p)
-        b = powmod(c, 1  <<  (m - i - 1), p)
+        b = powmod(c, 1 << (m - i - 1), p)
         r = (r * b) % p
         c = powmod(b, 2, p)
         t = (t * c) % p
@@ -511,8 +512,8 @@ def tonelli(n, p):
 
 
 def is_cube(n):
-  a, b = _iroot(n, 3)
-  return b
+    a, b = _iroot(n, 3)
+    return b
 
 
 __all__ = [
@@ -548,8 +549,8 @@ __all__ = [
     ilogb,
     mul,
     cuberoot,
-    isqrt_rem, 
+    isqrt_rem,
     is_divisible,
     is_congruent,
-    iroot
+    iroot,
 ]

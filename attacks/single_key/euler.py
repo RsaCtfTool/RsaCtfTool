@@ -32,7 +32,7 @@ class Attack(AbstractAttack):
                 b = isqrt(bsquare)
                 if (a != firstb) and (b != firstb):
                     solutionsFound.append([b, a])
-                    firstb = b 
+                    firstb = b
                     lf = len(solutionsFound)
                     if lf == 2:
                         break

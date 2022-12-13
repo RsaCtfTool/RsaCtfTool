@@ -17,25 +17,27 @@ logger = logging.getLogger("global_logger")
 
 
 def load_partial_privkey(keyfile):
-  """
-  helper function to load a partial mangled asn1 PEM private key into an array of integers
-  version, modulus(n), exponent(e), d, prime(p), prime(q), dp, dq, qi = tmp
-  """
-  keycmd  = ['openssl','asn1parse','-in',keyfile]
-  fields = []
-  i = 0
-  for line in subprocess.check_output(keycmd).decode("utf8").splitlines():
-    if "hl=2 l=   0 prim: " not in line:
-      if i > 0:
-        val = 0
-        if "INTEGER" in line:
-          if "BAD INTEGER" in line:
-            val = int(line.split(":")[4].replace("[","").replace("]",""),16)
-          else:
-            val = int(line.split(":")[3],16)
-        fields.append(val)
-      i += 1
-  return fields
+    """
+    helper function to load a partial mangled asn1 PEM private key into an array of integers
+    version, modulus(n), exponent(e), d, prime(p), prime(q), dp, dq, qi = tmp
+    """
+    keycmd = ["openssl", "asn1parse", "-in", keyfile]
+    fields = []
+    i = 0
+    for line in subprocess.check_output(keycmd).decode("utf8").splitlines():
+        if "hl=2 l=   0 prim: " not in line:
+            if i > 0:
+                val = 0
+                if "INTEGER" in line:
+                    if "BAD INTEGER" in line:
+                        val = int(
+                            line.split(":")[4].replace("[", "").replace("]", ""), 16
+                        )
+                    else:
+                        val = int(line.split(":")[3], 16)
+                fields.append(val)
+            i += 1
+    return fields
 
 
 def generate_pq_from_n_and_p_or_q(n, p=None, q=None):
@@ -162,7 +164,7 @@ class PrivateKey(object):
                     loadok = True
                 except:
                     loadok = False
-            
+
                 if loadok:
                     if p is None:
                         self.p = private_numbers.p
@@ -176,7 +178,7 @@ class PrivateKey(object):
                         if self.p != self.q:
                             self.phi = (self.p - 1) * (self.q - 1)
                         else:
-                            self.phi = (self.p ** 2) - self.p
+                            self.phi = (self.p**2) - self.p
                 else:
                     tmp = load_partial_privkey(filename)
                     self.n = tmp[1]
@@ -188,7 +190,6 @@ class PrivateKey(object):
                     self.dq = tmp[7]
                     self.di = tmp[8]
                     self.filename = filename
-                    
 
     def is_conspicuous(self):
         is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
@@ -282,11 +283,9 @@ class PrivateKey(object):
         return plain
 
     def __str__(self):
-        #print(type(self.key))
+        # print(type(self.key))
         """Print armored private key"""
         if self.key is not None:
             return self.key.exportKey().decode("utf-8")
-        #else:
+        # else:
         #    return "partial key:\nn: %d\ne: %d\nd: %d\np: %d\nq: %d\ndp: %d\ndq: %d\ndi: %d\n%s\n" % (self.n, self.e, self.d, self.p, self.q,self.dp,self.dq,self.di,self.filename)
-            
-            

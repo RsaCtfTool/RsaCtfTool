@@ -8,19 +8,19 @@ from lib.number_theory import isqrt, is_square, cuberoot, gcd
 
 
 def hart(N):
-  """ 
-  Hart's one line attack 
-  taken from wagstaff the joy of factoring
-  """
-  m = 2
-  i = 1
-  while not is_square(m):
-    s = isqrt(N * i) + 1
-    m = pow(s, 2, N)
-    i += 1
-  t = isqrt(m)
-  g = gcd(s - t, N)
-  return g, N // g
+    """
+    Hart's one line attack
+    taken from wagstaff the joy of factoring
+    """
+    m = 2
+    i = 1
+    while not is_square(m):
+        s = isqrt(N * i) + 1
+        m = pow(s, 2, N)
+        i += 1
+    t = isqrt(m)
+    g = gcd(s - t, N)
+    return g, N // g
 
 
 class Attack(AbstractAttack):
@@ -28,7 +28,6 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-        
     def attack(self, publickey, cipher=[], progress=True):
         """Run Hart's attack with a timeout"""
         try:

@@ -51,6 +51,7 @@ def sageworks():
     else:
         return False
 
+
 def print_unciphered_res(c, logger):
     logger.info(f"HEX : 0x{c.hex()}")
 
@@ -80,7 +81,7 @@ def print_results(args, publickey, private_key, uncipher):
         or (args.dumpkey)
         or (args.uncipher and uncipher not in [None, []])
     ):
-        if publickey is not None and isinstance(publickey,str):
+        if publickey is not None and isinstance(publickey, str):
             logger.info("\nResults for %s:" % publickey)
     if private_key is not None:
         if not isinstance(private_key, list):
@@ -159,11 +160,10 @@ def print_results(args, publickey, private_key, uncipher):
                                     "Can't write output file : %s" % args.output
                                 )
                         print_unciphered_res(c, logger)
-                        if len(c)>3 and c[0]==0 and c[1]==2:
-                            nc = c[c[2:].index(0)+2:]
+                        if len(c) > 3 and c[0] == 0 and c[1] == 2:
+                            nc = c[c[2:].index(0) + 2 :]
                             logger.info("\nPKCS#1.5 padding decoded!")
                             print_unciphered_res(nc, logger)
-
 
         else:
             logger.critical("Sorry, unciphering failed.")
@@ -241,7 +241,8 @@ def binary_search(L, n):
             left = mid + 1
     return -1
 
-def terminate_proc_tree(pid, including_parent=False):    
+
+def terminate_proc_tree(pid, including_parent=False):
     parent = psutil.Process(pid)
     children = parent.children(recursive=True)
     for child in children:

@@ -11,6 +11,7 @@ from lib.number_theory import is_prime, isqrt, gcd
 from lib.utils import rootpath
 from lib.exceptions import FactorizationError
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         print("attack initialized...")
@@ -20,15 +21,33 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_d attack with a timeout"""
         try:
-        
+
             if not isinstance(publickey, PrivateKey):
-                self.logger.error("[!] partial_d attack is only for partial private keys not pubkeys...") 
+                self.logger.error(
+                    "[!] partial_d attack is only for partial private keys not pubkeys..."
+                )
                 raise FactorizationError
-        
-            CMD = ["sage","%s/sage/partial_d.sage" % rootpath, str(publickey.n),str(publickey.e),str(publickey.d),]
-            ret = [int (x) for x in subprocess.check_output(CMD,timeout=self.timeout,stderr=subprocess.DEVNULL,).decode("utf8").rstrip().split(" ")]
-            p,q = ret
-            assert p*q == publickey.n
+
+            CMD = [
+                "sage",
+                "%s/sage/partial_d.sage" % rootpath,
+                str(publickey.n),
+                str(publickey.e),
+                str(publickey.d),
+            ]
+            ret = [
+                int(x)
+                for x in subprocess.check_output(
+                    CMD,
+                    timeout=self.timeout,
+                    stderr=subprocess.DEVNULL,
+                )
+                .decode("utf8")
+                .rstrip()
+                .split(" ")
+            ]
+            p, q = ret
+            assert p * q == publickey.n
             publickey.p = p
             publickey.q = q
 
@@ -38,12 +57,12 @@ class Attack(AbstractAttack):
         if publickey.p is not None and publickey.q is not None:
             try:
                 priv_key = PrivateKey(
-                    n=int(publickey.n),        
+                    n=int(publickey.n),
                     p=int(publickey.p),
                     q=int(publickey.q),
                     e=int(publickey.e),
                 )
-                #print(priv_key)
+                # print(priv_key)
                 return priv_key, None
             except ValueError:
                 return None, None
