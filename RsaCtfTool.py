@@ -430,15 +430,15 @@ if __name__ == "__main__":
 
     if args.publickey is None:
         if args.partial is not None:
-            priv_key = PrivateKey(filename=args.key,password=None)
+            priv_key = PrivateKey(filename=args.key, password=None)
             attackobj.attack_single_key(priv_key, attacks_list)
         else:
             logger.error("No key specified")
-    
+
     if args.publickey is not None:
         for pub in args.publickey:
             try:
                 if "tmp" in pub and "tmp/" not in pub:
                     os.remove(pub)
             except:
-              continue
+                continue

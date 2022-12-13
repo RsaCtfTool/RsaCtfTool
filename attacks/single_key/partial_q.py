@@ -64,6 +64,7 @@ from lib.exceptions import FactorizationError
 
 # https://eprint.iacr.org/2004/147.pdf
 
+
 def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
     """Search for partial q.
     Tunable to search longer.
@@ -82,9 +83,9 @@ def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
         if gcd(p, q) == 1 and invmod(q, p) == qi:
             break
 
-    print("p = " + str(p),k)
-    print("q = " + str(q),j)
-    return p,q
+    print("p = " + str(p), k)
+    print("q = " + str(q), j)
+    return p, q
 
 
 class Attack(AbstractAttack):
@@ -92,28 +93,28 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-
-
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_q attack with a timeout"""
         try:
 
             if not isinstance(publickey, PrivateKey):
-                self.logger.error("[!] partial_q attack is only for partial private keys not pubkeys...") 
+                self.logger.error(
+                    "[!] partial_q attack is only for partial private keys not pubkeys..."
+                )
                 raise FactorizationError
 
             e = publickey.e
-            if e == 0: e = 65537
+            if e == 0:
+                e = 65537
             dp = publickey.dp
             dq = publickey.dq
             di = publickey.di
             partial_q = publickey.q
             publickey.p, publickey.q = solve_partial_q(e, dp, dq, di, partial_q)
-            if publickey.e == 0: 
+            if publickey.e == 0:
                 publickey.e = 65537
             if publickey.n == 0:
                 publickey.n = publickey.p * publickey.q
-            
 
         except FactorizationError:
             return None, None
@@ -121,12 +122,12 @@ class Attack(AbstractAttack):
         if publickey.p is not None and publickey.q is not None:
             try:
                 priv_key = PrivateKey(
-                    n=int(publickey.n),        
+                    n=int(publickey.n),
                     p=int(publickey.p),
                     q=int(publickey.q),
                     e=int(publickey.e),
                 )
-                #print(priv_key)
+                # print(priv_key)
                 return priv_key, None
             except ValueError:
                 return None, None
@@ -134,5 +135,5 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        
+
         raise NotImplementedError

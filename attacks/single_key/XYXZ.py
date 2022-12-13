@@ -4,7 +4,16 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, next_prime, is_prime, primes, powmod, log, is_divisible
+from lib.number_theory import (
+    isqrt,
+    gcd,
+    next_prime,
+    is_prime,
+    primes,
+    powmod,
+    log,
+    is_divisible,
+)
 
 
 def factor_XYXZ(n, base=3):

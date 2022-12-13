@@ -25,7 +25,6 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 
-        
     def attack(self, publickey, cipher=[], progress=True):
         """Run lehmer_machine attack with a timeout"""
         try:
