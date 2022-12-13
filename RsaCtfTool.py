@@ -38,25 +38,23 @@ urllib3.disable_warnings(InsecureRequestWarning)
 sys.setrecursionlimit(5000)
 
 
-cRED = "\033[1;31m"
-cEND = "\033[0m"
-banner = """
+def banner():
+    cRED = "\033[1;31m"
+    cEND = "\033[0m"
+    text = """
 __________               R_______________________________E __                .__   
 \______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
  |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |  
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E                             
-""".replace(
-    "R", cRED
-).replace(
-    "E", cEND
-)
+""".replace("R", cRED).replace("E", cEND)
+    return text
 
-if __name__ == "__main__":
 
-    logger = logging.getLogger("global_logger")
+def parse_args():
     parser = argparse.ArgumentParser(description="RSA CTF Tool")
+
     parser.add_argument(
         "--publickey", help="public key file. You can use wildcards for multiple keys."
     )
@@ -125,6 +123,12 @@ if __name__ == "__main__":
         default=None,
     )
 
+    # If no arguments, diplay help and exit
+    if len(sys.argv) == 1:
+        print(banner())
+        parser.print_help()
+        sys.exit(1)
+
     # Dynamic load all attacks for choices in argparse
     attacks = glob(
         join(dirname(os.path.realpath(__file__)), "attacks", "single_key", "*.py")
@@ -168,8 +172,177 @@ if __name__ == "__main__":
         help="work with partial priate keys",
         action="store_true",
     )
-
     args = parser.parse_args()
+    args.attacks_list = attacks_list
+    return args
+
+
+def run_conspicuous_check(args, logger):
+    with open(args.key, "rb") as key_fp:
+        key_data = key_fp.read()
+        key = RSA.importKey(key_data)
+        try:
+            pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+        except ValueError:
+            logger.error("Looks like the values for generating key are not ok... (no invmod)")
+            return False
+        c = priv_key.is_conspicuous()
+        if c:
+            logger.warning("[!] Key is conspicuous...")
+        return c
+
+
+def run_attacks(args, logger):
+    # Run attacks
+    found = False
+    attackobj = RSAAttack(args)
+
+    # Run tests
+    if args.publickey is None and args.tests:
+        selected_attacks = args.attacks_list
+        if args.attack is not None:
+            if "," not in args.attack:
+                selected_attacks = args.attack
+        if "all" in selected_attacks:
+            selected_attacks = args.attacks_list
+        logger.info("Testing attacks: %d" % len(selected_attacks))
+
+        tmpfile = tempfile.NamedTemporaryFile()
+        with open(tmpfile.name, "wb") as tmpfd:
+            tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
+            attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
+            exit(0)
+
+    # Attack multiple keys
+    if args.publickey is not None and len(args.publickey) > 1:
+        found = attackobj.attack_multiple_keys(args.publickey, selected_attacks)
+
+    # Attack key
+    if args.publickey is not None:
+        for publickey in args.publickey:
+            attackobj.implemented_attacks = []
+            attackobj.unciphered = []
+            logger.info("\n[*] Testing key %s." % publickey)
+            attackobj.attack_single_key(publickey, selected_attacks)
+
+    if args.publickey is None:
+        if args.partial is not None:
+            priv_key = PrivateKey(filename=args.key, password=None)
+            attackobj.attack_single_key(priv_key, selected_attacks)
+        else:
+            logger.error("No key specified")
+    return args
+
+
+def convert_idrsa_pub(args, logger):
+    # for publickey in args.publickey:
+    publickeys = glob(args.publickey)
+    for publickey in publickeys:
+        logger.info("Converting %s: to pem..." % publickey)
+        with open(publickey, "r") as key_data_fd:
+            for line in key_data_fd:
+                n, e = disect_idrsa_pub(line.rstrip())
+                if n != None and e != None:
+                    pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
+                    print(pub_key.decode("utf-8"))
+
+
+def check_is_roca(args, logger):
+    vuln = False
+    pubkeyfilelist = glob(args.publickey)
+    for publickey in pubkeyfilelist:
+        logger.info("[-] Details for %s:" % publickey)
+        with open(publickey, "rb") as key_data_fd:
+            try:
+                key = RSA.importKey(key_data_fd.read())
+            except:
+                key = None
+                logger.error("[!] Error file format: %s" % publickey)
+            if key is not None:
+                if is_roca_vulnerable(key.n):
+                    vuln = True
+                    logger.warning("[!] Public key %s: is roca!!!" % publickey)
+                else:
+                    logger.info(
+                        "[-] Public key %s: is not roca, you are safe" % publickey
+                    )
+    return vuln
+
+
+def load_keys(args, logger):
+    tmpfile = None
+    args.publickey = []
+    for e in args.e if isinstance(args.e, list) else [args.e]:
+        tmpfile = tempfile.NamedTemporaryFile(delete=False)
+        with open(tmpfile.name, "wb") as tmpfd:
+            tmpfd.write(
+                RSA.construct((args.n, e)).publickey().exportKey(),
+            )
+        args.publickey.append(tmpfile.name)
+    return args
+
+
+def dump_key_parameters(args):
+    key_data = open(args.key, "rb").read()
+    key = RSA.importKey(key_data)
+    print("n: " + str(key.n))
+    print("e: " + str(key.e))
+    if key.has_private():
+        print("d: " + str(key.d))
+        print("p: " + str(key.p))
+        print("q: " + str(key.q))
+        if args.ext:
+            dp = key.d % (key.p - 1)
+            dq = key.d % (key.q - 1)
+            pinv = invmod(key.p, key.q)
+            qinv = invmod(key.q, key.p)
+            print("dp: " + str(dp))
+            print("dq: " + str(dq))
+            print("pinv: " + str(pinv))
+            print("qinv: " + str(qinv))
+
+
+def uncipher_file(args, logger):
+    uncipher_array = []
+    for uncipher in args.uncipherfile.split(","):
+        try:
+            with open(uncipher, "rb") as cipherfile_fd:
+                uncipher = get_base64_value(cipherfile_fd.read())
+                uncipher_array.append(uncipher)
+        except OSError:
+            logger.info("--uncipherfile : file not found or not readable.")
+            return False
+    args.uncipher = uncipher_array
+    # If we have a private key in input and uncipher in args (or uncipherfile)
+    if args.key and args.uncipher:
+        priv_key = PrivateKey(filename=args.key, password=args.password)
+        unciphers = priv_key.decrypt(args.uncipher)
+        print_results(args, None, priv_key, unciphers)
+        return True
+
+
+def pubkey_detail(args, logger):
+    for publickey in args.publickey:
+        logger.info("Details for %s:" % publickey)
+        with open(publickey, "rb") as key_data_fd:
+            key = RSA.importKey(key_data_fd.read())
+            print("n: " + str(key.n))
+            print("e: " + str(key.e))
+
+
+def cleanup(args):
+    if args.publickey is not None:
+        for pub in args.publickey:
+            try:
+                if "tmp" in pub and "tmp/" not in pub:
+                    os.remove(pub)
+            except:
+                continue
+
+
+def main():
+    logger = logging.getLogger("global_logger")
+    args = parse_args()
 
     unciphers = []
 
@@ -182,12 +355,6 @@ if __name__ == "__main__":
     logger = logging.getLogger("global_logger")
     logger.propagate = False
     logger.addHandler(ch)
-
-    # If no arguments, diplay help and exit
-    if len(sys.argv) == 1:
-        print(banner)
-        parser.print_help()
-        sys.exit(1)
 
     # Add information
     if not args.private and not args.tests:
@@ -226,23 +393,10 @@ if __name__ == "__main__":
 
     # if we have uncipherfile
     if args.uncipherfile is not None:
-        uncipher_array = []
-        for uncipher in args.uncipherfile.split(","):
-            try:
-                with open(uncipher, "rb") as cipherfile_fd:
-                    uncipher = get_base64_value(cipherfile_fd.read())
-                    uncipher_array.append(uncipher)
-            except OSError:
-                logger.info("--uncipherfile : file not found or not readable.")
-                exit(1)
-        args.uncipher = uncipher_array
-
-    # If we have a private key in input and uncipher in args (or uncipherfile)
-    if args.key and args.uncipher:
-        priv_key = PrivateKey(filename=args.key, password=args.password)
-        unciphers = priv_key.decrypt(args.uncipher)
-        print_results(args, None, priv_key, unciphers)
-        exit(0)
+        if uncipher_file(args, logger):
+            exit(0)
+        else:
+            exit(-1)
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
@@ -250,35 +404,11 @@ if __name__ == "__main__":
 
     # convert a idrsa.pub file to a pem format
     if args.convert_idrsa_pub:
-        # for publickey in args.publickey:
-        publickeys = glob(args.publickey)
-        for publickey in publickeys:
-            logger.info("Converting %s: to pem..." % publickey)
-            with open(publickey, "r") as key_data_fd:
-                for line in key_data_fd:
-                    n, e = disect_idrsa_pub(line.rstrip())
-                    if n != None and e != None:
-                        pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
-                        print(pub_key.decode("utf-8"))
+        convert_idrsa_pub(args, logger)
         exit(0)
 
     if args.isroca:
-        pubkeyfilelist = glob(args.publickey)
-        for publickey in pubkeyfilelist:
-            logger.info("[-] Details for %s:" % publickey)
-            with open(publickey, "rb") as key_data_fd:
-                try:
-                    key = RSA.importKey(key_data_fd.read())
-                except:
-                    key = None
-                    logger.error("[!] Error file format: %s" % publickey)
-                if key is not None:
-                    if is_roca_vulnerable(key.n):
-                        logger.warning("[!] Public key %s: is roca!!!" % publickey)
-                    else:
-                        logger.info(
-                            "[-] Public key %s: is not roca, you are safe" % publickey
-                        )
+        check_is_roca(args, logger)
         exit(0)
 
     # Create pubkey if requested
@@ -287,17 +417,9 @@ if __name__ == "__main__":
         print(pub_key.decode("utf-8"))
         exit(0)
 
-    # Load keys
-    tmpfile = None
+    # Load keys 
     if args.publickey is None and args.e is not None and args.n is not None:
-        args.publickey = []
-        for e in args.e if isinstance(args.e, list) else [args.e]:
-            tmpfile = tempfile.NamedTemporaryFile(delete=False)
-            with open(tmpfile.name, "wb") as tmpfd:
-                tmpfd.write(
-                    RSA.construct((args.n, e)).publickey().exportKey(),
-                )
-            args.publickey.append(tmpfile.name)
+        args = load_keys(args, logger)
 
     elif args.publickey is not None:
         if "*" in args.publickey or "?" in args.publickey:
@@ -326,7 +448,8 @@ if __name__ == "__main__":
             exit(1)
 
         if args.createpub:
-            print(pub_key)
+            pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+            print(pub_key.decode("utf-8"))
 
         if args.uncipher is not None:
             for u in args.uncipher:
@@ -348,97 +471,24 @@ if __name__ == "__main__":
         and args.uncipherfile is None
         and args.publickey is not None
     ):
-        for publickey in args.publickey:
-            logger.info("Details for %s:" % publickey)
-            with open(publickey, "rb") as key_data_fd:
-                key = RSA.importKey(key_data_fd.read())
-                print("n: " + str(key.n))
-                print("e: " + str(key.e))
+        pubkey_detail(args, logger)
         exit(0)
 
     # if dumpkey mode dump the key components then quit
     if args.key is not None and args.dumpkey:
-        key_data = open(args.key, "rb").read()
-        key = RSA.importKey(key_data)
-        print("n: " + str(key.n))
-        print("e: " + str(key.e))
-        if key.has_private():
-            print("d: " + str(key.d))
-            print("p: " + str(key.p))
-            print("q: " + str(key.q))
-            if args.ext:
-                dp = key.d % (key.p - 1)
-                dq = key.d % (key.q - 1)
-                pinv = invmod(key.p, key.q)
-                qinv = invmod(key.q, key.p)
-                print("dp: " + str(dp))
-                print("dq: " + str(dq))
-                print("pinv: " + str(pinv))
-                print("qinv: " + str(qinv))
-
+        dump_key_parameters(args)
         exit(0)
 
     if args.key is not None and args.isconspicuous:
-        with open(args.key, "rb") as key_fp:
-            key_data = key_fp.read()
-            key = RSA.importKey(key_data)
-            try:
-                pub_key, priv_key = generate_keys_from_p_q_e_n(
-                    args.p, args.q, args.e, args.n
-                )
-            except ValueError:
-                logger.error(
-                    "Looks like the values for generating key are not ok... (no invmod)"
-                )
-                exit(1)
-            if priv_key.is_conspicuous() == True:
-                exit(-1)
-            else:
-                exit(0)
-
-    # Run attacks
-    found = False
-    attackobj = RSAAttack(args)
-
-    # Run tests
-    if args.publickey is None and args.tests:
-        selected_attacks = attacks_list
-        logger.info("Testing attacks: %d" % len(selected_attacks))
-        if args.attack is not None:
-            if "," not in args.attack:
-                selected_attacks = args.attack
-        if "all" in selected_attacks:
-            selected_attacks = attacks_list
-
-        tmpfile = tempfile.NamedTemporaryFile()
-        with open(tmpfile.name, "wb") as tmpfd:
-            tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
-            attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
+        if run_conspicuous_check(args, logger):
+            exit(-1)
+        else:
             exit(0)
 
-    # Attack multiple keys
-    if args.publickey is not None and len(args.publickey) > 1:
-        found = attackobj.attack_multiple_keys(args.publickey, attacks_list)
+    args = run_attacks(args, logger)
 
-    # Attack key
-    if args.publickey is not None:
-        for publickey in args.publickey:
-            attackobj.implemented_attacks = []
-            attackobj.unciphered = []
-            logger.info("\n[*] Testing key %s." % publickey)
-            attackobj.attack_single_key(publickey, attacks_list)
+    cleanup(args)
 
-    if args.publickey is None:
-        if args.partial is not None:
-            priv_key = PrivateKey(filename=args.key, password=None)
-            attackobj.attack_single_key(priv_key, attacks_list)
-        else:
-            logger.error("No key specified")
 
-    if args.publickey is not None:
-        for pub in args.publickey:
-            try:
-                if "tmp" in pub and "tmp/" not in pub:
-                    os.remove(pub)
-            except:
-                continue
+if __name__ == "__main__":
+    main()
