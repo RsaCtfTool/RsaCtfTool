@@ -19,6 +19,9 @@ class Attack(AbstractAttack):
         if gcd(k1.e, k2.e) != 1:
             return None
 
+        c1 = bytes_to_long(c1)
+        c2 = bytes_to_long(c2)
+
         deciphered_message = common_modulus(k1.e, k2.e, k1.n, c1, c2)
         return long_to_bytes(deciphered_message)
 
