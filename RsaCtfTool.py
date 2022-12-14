@@ -196,10 +196,10 @@ def run_attacks(args, logger):
     # Run attacks
     found = False
     attackobj = RSAAttack(args)
+    selected_attacks = args.attacks_list
 
     # Run tests
     if args.publickey is None and args.tests:
-        selected_attacks = args.attacks_list
         if args.attack is not None:
             if "," not in args.attack:
                 selected_attacks = args.attack
