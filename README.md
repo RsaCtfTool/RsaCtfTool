@@ -13,7 +13,7 @@ RSA security relies on the complexity of the integer factorization problem.
 This project is a glue between various integer factorization algorithms.
 This is an educational tool and not every key will be broken in reasonable time (manage your expectations).
 
-For an advanced integer factorization tool please use msieve, yafu or cado-nfs.
+For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
 Attacks :
 
@@ -35,7 +35,6 @@ Attacks :
   - Gimmicky Primes method
   - Past CTF Primes method
   - Non RSA key in the form b^x, where b is prime
-  - Self-Initializing Quadratic Sieve (SIQS) using Yafu (<https://github.com/bbuhrow/yafu.git>)
   - Common factor attacks across multiple keys
   - Small fractions method when p/q is close to a small fraction
   - Elliptic Curve Method
