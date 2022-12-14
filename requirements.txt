@@ -9,3 +9,4 @@ tqdm
 z3-solver
 bitarray
 psutil==5.9.4
+factordb-pycli
