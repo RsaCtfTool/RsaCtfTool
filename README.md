@@ -7,8 +7,13 @@
 [![GitHub stars](https://img.shields.io/github/stars/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/stargazers)
 [![GitHub license](https://img.shields.io/github/license/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool)
 
-RSA multi attacks tool : uncipher data from weak public key and try to recover private key
-Automatic selection of best attack for the given public key
+RSA multi attacks tool : uncipher data from weak public key and try to recover private key.
+The tool will cycle through each selected attack for a given public key.
+RSA security relies on the complexity of the integer factorization problem.
+This project is a glue between various integer factorization algorithms.
+This is an educational tool and not every key will be broken in reasonable time (manage your expectations).
+
+For an advanced integer factorization tool please use msieve, yafu or cado-nfs.
 
 Attacks :
 
