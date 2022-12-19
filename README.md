@@ -19,11 +19,11 @@ Attacks :
 
 - Attacks that doesn't depend on the factorization of integers (may depend on knowing n,e,cyphertext,etc...):
   - Wiener's attack
-  - Hastad's attack (Small public exponent attack)
+  - Hastad's attack (Small public exponent)
   - Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)
   - Same n, huge e
   - Small crt exponent
-  - Common factor between ciphertext and modulus attack
+  - Common factor between ciphertext and modulus
   - Partial q
   - Partial d
   - simple lattice
@@ -43,7 +43,6 @@ Attacks :
   - Factordb
   - Londahl
   - Noveltyprimes
-  - Primefac
   - Qicheng
   - binary polynomial factoring
   - Euler method
@@ -61,11 +60,12 @@ Attacks :
   - Dixon
   - brent (Pollard rho variant)
   - Pisano Period
-  - XYXZ form integer factorization
-  - High and Low Bits Equal attack
+  - XYXZ form integer factorization where P prime > X^Y and Q prime > X^Z
+  - High and Low Bits Equal
   - Williams p+1
-  - Hart attack similar to fermat
+  - Hart algorithm similar to fermat
   - Lehmer machine similar to fermat
+  - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
 
 ## Usage
 
