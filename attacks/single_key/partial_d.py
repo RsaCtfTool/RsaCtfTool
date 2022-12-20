@@ -51,7 +51,8 @@ class Attack(AbstractAttack):
             publickey.p = p
             publickey.q = q
 
-        except FactorizationError:
+        except:
+            self.logger.error("[!] partial_d internal error...")
             return None, None
 
         if publickey.p is not None and publickey.q is not None:
