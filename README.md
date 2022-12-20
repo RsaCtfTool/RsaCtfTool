@@ -66,6 +66,7 @@ Attacks :
   - Hart algorithm similar to fermat
   - Lehmer machine similar to fermat
   - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
+  - kraitchik algorithm improvemnt over fermat
 
 ## Usage
 
