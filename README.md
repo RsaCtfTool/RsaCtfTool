@@ -26,7 +26,7 @@ Attacks :
   - Common factor between ciphertext and modulus
   - Partial q
   - Partial d
-  - simple lattice
+  - simple lattice reduction
 
 - Strict Integer factorization methods (only depends on knowing n):
   - Weak public key factorization
@@ -66,7 +66,7 @@ Attacks :
   - Hart algorithm similar to fermat
   - Lehmer machine similar to fermat
   - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
-  - kraitchik algorithm improvemnt over fermat
+  - kraitchik algorithm improvement over fermat
 
 ## Usage
 
