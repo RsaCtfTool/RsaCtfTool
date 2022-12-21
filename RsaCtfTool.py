@@ -350,7 +350,7 @@ def main():
     logging.basicConfig(
         level=logger_levels[args.verbosity],
     )
-    ch = logging.StreamHandler(sys.stdout)
+    ch = logging.StreamHandler(sys.stderr)
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
     logger.propagate = False
