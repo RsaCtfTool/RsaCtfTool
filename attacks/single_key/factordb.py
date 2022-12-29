@@ -1,24 +1,22 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import re
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from factordb.factordb import FactorDB
 
 
 def getfdb(composite):
-  f = FactorDB(composite)
-  f.connect()
-  r = f.get_factor_list()
-  return r
+    f = FactorDB(composite)
+    f.connect()
+    r = f.get_factor_list()
+    return r
 
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["fast"]
-        
 
     def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
@@ -35,10 +33,9 @@ class Attack(AbstractAttack):
                 n=int(publickey.n),
             )
             return priv_key, None
-            
+
         except:
             return None, None
-
 
     def test(self):
         from lib.keys_wrapper import PublicKey

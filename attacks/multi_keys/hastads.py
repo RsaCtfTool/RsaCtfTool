@@ -3,7 +3,6 @@
 
 from lib.number_theory import introot, chinese_remainder
 from attacks.abstract_attack import AbstractAttack
-from functools import reduce
 from collections import defaultdict
 
 

@@ -4,7 +4,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, powmod, ilogb, isqrt, next_prime
+from lib.number_theory import gcd, ilogb, isqrt, next_prime
 from itertools import count
 
 
@@ -81,5 +81,6 @@ class Attack(AbstractAttack):
 MCowDQYJKoZIhvcNAQEBBQADGQAwFgIPPNmaqiPnbwxXooFxLcTXAgMBAAE=
 -----END PUBLIC KEY-----"""
         self.timeout = 180
+        return None, None
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

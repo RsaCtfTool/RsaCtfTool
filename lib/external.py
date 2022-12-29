@@ -48,7 +48,7 @@ def yafu_factor_driver(n):
     )
     for line in proc.stdout:
         line = line.rstrip().decode("utf8")
-        if re.search("P\d+ = \d+", line):
+        if re.search(r"P\d+ = \d+", line):
             tmp += [int(line.split("=")[1])]
     ifferm("/tmp/qs_%d.dat" % n)
     return tmp

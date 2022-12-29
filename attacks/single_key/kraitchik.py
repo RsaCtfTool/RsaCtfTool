@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, isqrt_rem, is_congruent, gcd
+from lib.number_theory import isqrt, is_square, gcd
 
 
 def kraitchik(n):
@@ -18,10 +18,10 @@ def kraitchik(n):
                 z = x + y
                 w = x - y
                 if z % n != 0 and w % n != 0:
-                    return gcd(z,n),gcd(w,n)
+                    return gcd(z, n), gcd(w, n)
             k += 1
             s = x * x - k * n
-        x+=1
+        x += 1
 
 
 class Attack(AbstractAttack):

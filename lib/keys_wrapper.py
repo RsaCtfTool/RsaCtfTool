@@ -10,7 +10,7 @@ from lib.crypto_wrapper import PKCS1_OAEP
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
 from lib.conspicuous_check import privatekey_check
-from lib.number_theory import powmod, invmod, invert
+from lib.number_theory import powmod, invert
 
 
 logger = logging.getLogger("global_logger")
@@ -193,7 +193,7 @@ class PrivateKey(object):
 
     def is_conspicuous(self):
         is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)
-        if is_con == True:
+        if is_con:
             msg = "[!] The given privkey has conspicuousness:\n"
             msg += "[!] It is not advisable to use it in production\n%s" % txt
             logger.error("%s" % msg)
@@ -212,11 +212,10 @@ class PrivateKey(object):
             if self.n is not None and self.d is not None:
                 try:
                     cipher_int = int.from_bytes(c, "big")
-                    m_int = powmod(cipher_int, self.d, self.n)
-                    try:
-                        m = binascii.unhexlify(hex(m_int)[2:])
-                    except:
-                        m = binascii.unhexlify("0" + hex(m_int)[2:])
+                    m_int = hex(powmod(cipher_int, self.d, self.n))
+                    if len(m_int) % 2 == 1:
+                        m_int = "0" + m_int
+                    m = binascii.unhexlify(hex(m_int)[2:])
                     plain.append(m)
                 except:
                     pass

@@ -37,7 +37,7 @@ class Attack(AbstractAttack):
             for c1, c2 in itertools.combinations(cipher, 2):
                 plains.append(self.common_modulus_attack(c1, c2, k1, k2))
 
-        if all([_ == None for _ in plains]):
+        if all([_ is None for _ in plains]):
             plains = None
 
         return (None, plains)

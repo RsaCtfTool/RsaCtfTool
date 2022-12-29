@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, cuberoot, gcd
+from lib.number_theory import isqrt, is_square, gcd
 
 
 def hart(N):

@@ -18,7 +18,7 @@ class Attack(AbstractAttack):
             import wolframalpha
 
             app_id = os.environ.get("WA_API_KEY")
-            assert app_id != None
+            assert app_id is not None
             return True
         except Exception:
             return False
@@ -29,7 +29,7 @@ class Attack(AbstractAttack):
             self.logger.warning("[!] wolfram alpha only works for pubkeys < 192 digits")
             return
         q = "factor(%s)" % n
-        if self.wa_client != None:
+        if self.wa_client is not None:
             res = self.wa_client.query(q)
             pods = list(res.pods)
             if len(pods) > 0:

@@ -1,13 +1,8 @@
 #!/usr/bin/python3
 
-from lib.number_theory import invmod
 from attacks.abstract_attack import AbstractAttack
-from tqdm import tqdm
-import logging
-import importlib
 import subprocess
-from lib.keys_wrapper import PublicKey, PrivateKey
-from lib.number_theory import is_prime, isqrt, gcd
+from lib.keys_wrapper import PrivateKey
 from lib.utils import rootpath
 from lib.exceptions import FactorizationError
 

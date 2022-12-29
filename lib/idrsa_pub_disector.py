@@ -1,8 +1,5 @@
 # ssh id_rsa.pub field decoder
 import binascii
-import sys
-import os
-import time
 import base64
 
 
@@ -20,13 +17,13 @@ def disect_idrsa_pub(pub):
         field = bindata[start:end]
         if len(field) > 0:
             pos = int(binascii.hexlify(field), 16)
-            data = bindata[end : end + pos]
+            data = bindata[end: end + pos]
         else:
             pos = len(bindata)
             data = None
         return pos, data
 
-    if bindata != None:
+    if bindata is not None:
         start = 0
         end = 4
         pos = 0
@@ -35,7 +32,7 @@ def disect_idrsa_pub(pub):
 
         while pos < len(bindata):
             pos, data = getdata(start, end)
-            if data != None:
+            if data is not None:
                 c.append(data)
             start += pos + 4
             end = start + 4

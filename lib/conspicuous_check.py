@@ -1,5 +1,4 @@
-from lib.number_theory import is_prime, isqrt, gcd, lcm, getpubkeysz, invert
-import math
+from lib.number_theory import is_prime, gcd, lcm, getpubkeysz, invert
 
 
 def privatekey_check(N, p, q, d, e):
@@ -7,10 +6,10 @@ def privatekey_check(N, p, q, d, e):
     txt = ""
 
     nlen = getpubkeysz(N)
-    if is_prime(p) == False:
+    if not is_prime(p):
         ret = True
         txt += "p IS NOT PROBABLE PRIME\n"
-    if is_prime(q) == False:
+    if not is_prime(q):
         txt = "q IS NOT PROBABLE PRIME\n"
     if gcd(p, e) > 1:
         ret = True
@@ -42,7 +41,7 @@ def privatekey_check(N, p, q, d, e):
         txt += "The number of unconcealed messages is %d > min\n" % unc
     try:
         inv = invert(e, lcm(p - 1, q - 1))
-    except:
+    except ZeroDivisionError:
         inv = None
         ret = True
         txt += "e IS NOT INVERTIBLE mod lcm(p-1,q-1)\n"
