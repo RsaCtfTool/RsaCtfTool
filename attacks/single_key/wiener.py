@@ -5,7 +5,7 @@ import sys
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import isqrt, is_square, trivial_factorization_with_n_phi
+from lib.number_theory import isqrt, trivial_factorization_with_n_phi
 
 
 class WienerAttack(object):
@@ -33,7 +33,7 @@ class WienerAttack(object):
         elif len(frac) == 1:
             return (frac[0], 1)
         else:
-            remainder = frac[1 : len(frac)]
+            remainder = frac[1:len(frac)]
             (num, denom) = self.contfrac_to_rational(remainder)
             return (frac[0] * num + denom, num)
 
@@ -57,7 +57,7 @@ class WienerAttack(object):
                         t = isqrt(discr)
                         if pow(t, 2) == discr and (s + t) & 1 == 0:
                             pq = trivial_factorization_with_n_phi(n, phi)
-                            if pq != None:
+                            if pq is not None:
                                 self.p, self.q = pq
 
 

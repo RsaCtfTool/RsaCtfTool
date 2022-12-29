@@ -27,7 +27,7 @@ def close_factor(n, b, progress=True):
         if mu in look_up:
             phi = phi_approx + look_up[mu] - (i * b)
             r = trivial_factorization_with_n_phi(n, phi)
-            if r != None:
+            if r is not None:
                 return r
         mu = (mu * fac) % n
 

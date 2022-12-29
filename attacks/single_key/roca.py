@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
                     stderr=subprocess.DEVNULL,
                 )
 
-            except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
                 return (None, None)
 
             if b"FAIL" not in sageresult and b":" in sageresult:

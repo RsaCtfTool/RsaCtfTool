@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from cmath import pi
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.number_theory import is_prime, invmod, ilog2, introot
@@ -56,6 +55,5 @@ ipiPqnu3KcRgO+e2f/Nl8m7YqjQJsrMiRlUf8WstNVAn598EBgqw8oDt0pATVRSR
 bSZ+A/Iw4Vt09AY9zPRqUzxfn7t9kTqsL9+/R8bdREA2byem8SWhCXvWJexmanUr
 ZcECAwEAAQ==
 -----END PUBLIC KEY-----"""
-        e = 0x10001
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

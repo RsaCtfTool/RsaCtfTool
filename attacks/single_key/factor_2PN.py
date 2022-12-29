@@ -3,8 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, isqrt_rem, is_congruent
+from lib.number_theory import isqrt, isqrt_rem
 
 
 def factor_2PN(N, P=3):
@@ -26,29 +25,29 @@ def factor_2PN(N, P=3):
     P2N = 2 * P * N
     A, remainder = isqrt_rem(P2N)
     if remainder != 0:
-      A += 1
+        A += 1
 
     c = -A ** 2 + A + P2N
     disc = (1 - (c << 2))
-    
+
     if disc >= 0:
-      isqrtdisc = isqrt(disc) 
-      
-      for x in [(-1 + isqrtdisc) >> 1, (-1 - isqrtdisc) >> 1]:
-        if x < 0:
-          continue
+        isqrtdisc = isqrt(disc)
 
-        # 2q < Pp
-        p = (A + x) // P
-        q = (A - x - 1) >> 1
-        if p * q == N:
-          return p, q
+        for x in [(-1 + isqrtdisc) >> 1, (-1 - isqrtdisc) >> 1]:
+            if x < 0:
+                continue
 
-        # Pp < 2q
-        p = (A - x - 1) // P
-        q = (A + x) >> 1
-        if p * q == N:
-          return p, q
+            # 2q < Pp
+            p = (A + x) // P
+            q = (A - x - 1) >> 1
+            if p * q == N:
+                return p, q
+
+            # Pp < 2q
+            p = (A - x - 1) // P
+            q = (A + x) >> 1
+            if p * q == N:
+                return p, q
 
     return []
 
@@ -61,11 +60,11 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run factor (2P)N form attack with a timeout"""
         try:
-            for z in [3,5,7,11,13,17]:
-              pq = factor_2PN(publickey.n, z)
-              if pq != []:
-                publickey.p, publickey.q = pq
-                break
+            for z in [3, 5, 7, 11, 13, 17]:
+                pq = factor_2PN(publickey.n, z)
+                if pq != []:
+                    publickey.p, publickey.q = pq
+                    break
 
         except:
             self.logger.info("Internal factorization error...")

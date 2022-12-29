@@ -7,7 +7,6 @@ from lib.exceptions import FactorizationError
 from lib.number_theory import (
     isqrt,
     gcd,
-    next_prime,
     is_prime,
     primes,
     powmod,

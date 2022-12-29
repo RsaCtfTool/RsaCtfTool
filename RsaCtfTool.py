@@ -41,7 +41,7 @@ sys.setrecursionlimit(5000)
 def banner():
     cRED = "\033[1;31m"
     cEND = "\033[0m"
-    text = """
+    text = r"""
 __________               R_______________________________E __                .__   
 \______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
  |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |  
@@ -178,18 +178,15 @@ def parse_args():
 
 
 def run_conspicuous_check(args, logger):
-    with open(args.key, "rb") as key_fp:
-        key_data = key_fp.read()
-        key = RSA.importKey(key_data)
-        try:
-            pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
-        except ValueError:
-            logger.error("Looks like the values for generating key are not ok... (no invmod)")
-            return False
-        c = priv_key.is_conspicuous()
-        if c:
-            logger.warning("[!] Key is conspicuous...")
-        return c
+    try:
+        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+    except ValueError:
+        logger.error("Looks like the values for generating key are not ok... (no invmod)")
+        return False
+    c = priv_key.is_conspicuous()
+    if c:
+        logger.warning("[!] Key is conspicuous...")
+    return c
 
 
 def run_attacks(args, logger):
