@@ -4,7 +4,6 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.number_theory import gcd, ProductTree
 from lib.keys_wrapper import PrivateKey
-from gmpy2 import mul
 
 
 class Attack(AbstractAttack):

@@ -11,8 +11,6 @@
 # @CTFKris - https://github.com/sourcekris/RsaCtfTool/
 #
 
-import os
-import pathlib
 import re
 import logging
 from attacks.abstract_attack import AbstractAttack

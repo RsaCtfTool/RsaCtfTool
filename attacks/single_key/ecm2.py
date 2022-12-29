@@ -52,8 +52,10 @@ class Attack(AbstractAttack):
                             cipher_int = int.from_bytes(c, "big")
                             d = invert(publickey.e, phi)
                             m = hex(powmod(cipher_int, d, publickey.n))[2::]
+                            if len(m) % 2 != 0:
+                                m = "0" + m
                             plain.append(bytes.fromhex(m))
-                        except:
+                        except ZeroDivisionError:
                             continue
 
                 return (None, plain)

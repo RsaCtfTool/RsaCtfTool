@@ -189,7 +189,7 @@ class RSAAttack(object):
         self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 
     def priv_key_send2fdb(self):
-        if self.args.sendtofdb == True:
+        if self.args.sendtofdb:
             if self.priv_key is not None:
                 if type(self.priv_key) is PrivateKey:
                     send2fdb(self.priv_key.n, [self.priv_key.p, self.priv_key.q])
