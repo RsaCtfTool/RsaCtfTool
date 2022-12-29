@@ -88,7 +88,7 @@ def random_cm_prime_sub(thresh_l, thresh_h, rstart, rstop, D):
             return p
 
 
-def generateCMprime(D, bits, verb = 1):
+def generateCMprime(D, bits, verb=1):
     if D % 8 != 3:
         raise ValueError('D must be congruent to 3 modulo 8')
 
@@ -97,8 +97,8 @@ def generateCMprime(D, bits, verb = 1):
     thresh_h = (1 << bits) - 1
 
     # Exact bounds to cover the whole interval
-    rstart = int(isqrt((4r*thresh_l-1r)/D))
-    rstop  = int(isqrt((4r*thresh_h-1r)/D))+1r
+    rstart = int(isqrt((4r * thresh_l - 1r) / D))
+    rstop  = int(isqrt((4r * thresh_h - 1r) / D)) + 1r
 
     while True:
         p = random_cm_prime_sub(thresh_l, thresh_h, rstart, rstop, D)
@@ -124,7 +124,7 @@ def xgcd(f, g, N=1):
         lc *= r_i_plus_plus.lc().lift()
         divisor = gcd(lc, N)
         if divisor > 1:
-            print('Divisisor of %s is %s'%(N,divisor))
+            print('Divisisor of %s is %s' % (N, divisor))
             return divisor, None, None
 
         q = r_i // r_i_plus
@@ -132,7 +132,7 @@ def xgcd(f, g, N=1):
         t_i_plus_plus = t_i - q * t_i_plus
         r_i_plus_plus = r_i - q * r_i_plus
         if r_i_plus.degree() <= r_i_plus_plus.degree() or r_i_plus_plus.degree() == -1:
-            if toswap == True:
+            if toswap:
                 assert (r_i_plus == s_i_plus * f + t_i_plus * g)
                 return r_i_plus, t_i_plus, s_i_plus
             else:
@@ -155,31 +155,31 @@ def Qinverse(Q, a, N):
     :return:
     """
     j = Q.gens()[0]
-    deg =  j.charpoly('X').degree()
+    deg = j.charpoly('X').degree()
     A = Q(a).matrix()
     det_a = det(A)
     logger.debug('DetA: %s' % det_a)
 
     factor = gcd(int(det_a), N)
-    if factor!=1:  # a is not invertible
+    if factor != 1:  # a is not invertible
         raise ZeroDivisionError(a)
 
     else:
-        Y = vector([1] + (deg-1)*[0])
+        Y = vector([1] + (deg - 1) * [0])
         X = A.solve_left(Y)
-        jvec = vector([j^i for i in [0..deg-1]])
-        Xj = jvec*X
+        jvec = vector([j ^ i for i in [0..deg - 1]])
+        Xj = jvec * X
         return Xj
 
 
-def Qinverse2 (Hx, a, N, time_res):
+def Qinverse2(Hx, a, N, time_res):
     ts = time.time()
-    r,s,t = xgcd(a.lift(), Hx, N)
+    r, s, t = xgcd(a.lift(), Hx, N)
     txgcd = time.time()
-    if (s,t) == (None, None):
+    if (s, t) == (None, None):
         res = r, 0
     else:
-        rinv = r[0]^(-1)
+        rinv = r[0] ^ (-1)
         res = 1, s * rinv
     tres = time.time()
 
@@ -189,7 +189,7 @@ def Qinverse2 (Hx, a, N, time_res):
     return res
 
 
-def CMfactor(D, N, verb = 1, ctries=10, utries=10, fact_time=None, use_quinv2=False, use_cheng=False):
+def CMfactor(D, N, verb=1, ctries=10, utries=10, fact_time=None, use_quinv2=False, use_cheng=False):
     """
     Try to factor N with respect to D, with ctries values of c and utries values of u
     """
@@ -211,9 +211,9 @@ def CMfactor(D, N, verb = 1, ctries=10, utries=10, fact_time=None, use_quinv2=Fa
         if use_quinv2:
             Hx = R(Hx)
             Q.<j> = QuotientRing(R, R.ideal(Hx))
-            gcd, inverse = Qinverse2(Hx, 1728 - j, N, res)  
+            gcd, inverse = Qinverse2(Hx, 1728 - j, N, res)
             if gcd == 1:
-                a = Q(j * inverse)                
+                a = Q(j * inverse)
 
         else:
             Q.<j> = ZN.extension(Hx)
@@ -361,7 +361,7 @@ def main():
     parser.add_argument('--prime-bits', dest='prime_bits', action='store', type=int, default=256,
                         help='Number of prime bits to generate')
 
-    parser.add_argument('--timeout', dest='timeout', action="store", type=int, default=4*60,
+    parser.add_argument('--timeout', dest='timeout', action="store", type=int, default=4 * 60,
                         help='Number of seconds for the factorization job, negative for no timeout')
     parser.add_argument('--qinv2', dest='qinv2', default=1, type=int,
                         help='Use optimized inversion algorithm (enabled by default)')
@@ -382,4 +382,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

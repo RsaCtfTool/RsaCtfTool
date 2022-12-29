@@ -27,7 +27,5 @@ def send2fdb(composite, factors):
         if msg == "Found 0 factors and 0 ECM":
             logger.info("[!] All the factors we found are already known to factordb")
         else:
-            logger.info(
-                "[+] Factordb: "
-                + re.findall("Found [0-9] factors and [0-9] ECM", webpage)[0]
-            )
+            response = re.findall(r"Found [0-9] factors and [0-9] ECM", webpage)[0]
+            logger.info("[+] Factordb: " + response)

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-import gmpy2
 from lib.crypto_wrapper import number
 from lib.number_theory import gcdext, powmod
 
@@ -34,10 +33,8 @@ class Attack(AbstractAttack):
             _, s1, s2 = gcdext(e_array[0], e_array[1])
 
             # m ≡ c1^s1 * c2*s2 mod n
-            plain = (
-                powmod(int.from_bytes(cipher[0], "big"), s1, n)
-                * powmod(int.from_bytes(cipher[1], "big"), s2, n)
-            ) % n
+            cipher_bytes = [int.from_bytes(c, "big") for c in cipher]
+            plain = (powmod(cipher_bytes[0], s1, n) * powmod(cipher_bytes[1], s2, n)) % n
 
             return None, number.long_to_bytes(plain)
 

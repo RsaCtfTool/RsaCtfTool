@@ -5,7 +5,7 @@ import math
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, isqrt, next_prime, primes, powmod
+from lib.number_theory import gcd, isqrt, primes, powmod
 
 
 class Attack(AbstractAttack):

@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from gmpy2 import powmod
 
 
 class Attack(AbstractAttack):
