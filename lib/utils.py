@@ -76,7 +76,11 @@ def print_unciphered_res(c, logger):
 def print_results(args, publickey, private_key, uncipher):
     """Print results to output"""
     logger = logging.getLogger("global_logger")
-    if (args.private and private_key is not None) or args.dumpkey or (args.uncipher and uncipher not in [None, []]):
+    if any(
+        (args.private and private_key is not None),
+        args.dumpkey,
+        (args.uncipher and uncipher not in [None, []])
+    ):
         if publickey is not None and isinstance(publickey, str):
             logger.info("\nResults for %s:" % publickey)
     if private_key is not None:
