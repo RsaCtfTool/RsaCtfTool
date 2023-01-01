@@ -187,9 +187,11 @@ def _is_prime(n):
     All the tests are probabilistic.
     """
     if all(
-        _fermat_prime_criterion(n),
-        _fermat_prime_criterion(n, b=3),
-        _fermat_prime_criterion(n, b=5)
+        (
+            _fermat_prime_criterion(n),
+            _fermat_prime_criterion(n, b=3),
+            _fermat_prime_criterion(n, b=5),
+        )
     ):
         return miller_rabin(n)
     else:
@@ -208,7 +210,7 @@ def erathostenes_sieve(n):
     sieve = [True] * n
     for i in range(3, isqrt(n) + 1, 2):
         if sieve[i]:
-            sieve[pow(i, 2)::(i << 1)] = [False] * (
+            sieve[pow(i, 2) :: (i << 1)] = [False] * (
                 (n - pow(i, 2) - 1) // (i << 1) + 1
             )
     return [2] + [i for i in range(3, n, 2) if sieve[i]]
@@ -456,7 +458,7 @@ def ProductTree(s):
         if l & 1 != 0:
             s += [1]
             l += 1
-        s = list(map(mul, s[0:l >> 1], s[l >> 1:]))
+        s = list(map(mul, s[0 : l >> 1], s[l >> 1 :]))
         l = len(s)
     return s[0]
 
@@ -512,7 +514,7 @@ def tonelli(n, p):
 def is_cube(n):
     i = n % 9
     b = False
-    if (0 <= i <= 1 or i == 8):
+    if 0 <= i <= 1 or i == 8:
         a, b = iroot(n, 3)
     return b
 
