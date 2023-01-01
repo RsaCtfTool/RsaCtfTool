@@ -186,11 +186,11 @@ def _is_prime(n):
     If all the previus tests pass then we try with rabin miller.
     All the tests are probabilistic.
     """
-    if all(
+    if all((
         _fermat_prime_criterion(n),
         _fermat_prime_criterion(n, b=3),
         _fermat_prime_criterion(n, b=5)
-    ):
+    )):
         return miller_rabin(n)
     else:
         return False
