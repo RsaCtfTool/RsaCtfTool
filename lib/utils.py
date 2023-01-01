@@ -76,11 +76,13 @@ def print_unciphered_res(c, logger):
 def print_results(args, publickey, private_key, uncipher):
     """Print results to output"""
     logger = logging.getLogger("global_logger")
-    if any((
-        (args.private and private_key is not None),
-        args.dumpkey,
-        (args.uncipher and uncipher not in [None, []])
-    )):
+    if any(
+        (
+            (args.private and private_key is not None),
+            args.dumpkey,
+            (args.uncipher and uncipher not in [None, []]),
+        )
+    ):
         if publickey is not None and isinstance(publickey, str):
             logger.info("\nResults for %s:" % publickey)
     if private_key is not None:
@@ -161,7 +163,7 @@ def print_results(args, publickey, private_key, uncipher):
                                 )
                         print_unciphered_res(c, logger)
                         if len(c) > 3 and c[0] == 0 and c[1] == 2:
-                            nc = c[c[2:].index(0) + 2:]
+                            nc = c[c[2:].index(0) + 2 :]
                             logger.info("\nPKCS#1.5 padding decoded!")
                             print_unciphered_res(nc, logger)
 
