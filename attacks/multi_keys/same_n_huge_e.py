@@ -34,7 +34,9 @@ class Attack(AbstractAttack):
 
             # m ≡ c1^s1 * c2*s2 mod n
             cipher_bytes = [int.from_bytes(c, "big") for c in cipher]
-            plain = (powmod(cipher_bytes[0], s1, n) * powmod(cipher_bytes[1], s2, n)) % n
+            plain = (
+                powmod(cipher_bytes[0], s1, n) * powmod(cipher_bytes[1], s2, n)
+            ) % n
 
             return None, number.long_to_bytes(plain)
 

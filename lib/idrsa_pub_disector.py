@@ -17,7 +17,7 @@ def disect_idrsa_pub(pub):
         field = bindata[start:end]
         if len(field) > 0:
             pos = int(binascii.hexlify(field), 16)
-            data = bindata[end: end + pos]
+            data = bindata[end : end + pos]
         else:
             pos = len(bindata)
             data = None

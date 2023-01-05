@@ -33,7 +33,7 @@ class WienerAttack(object):
         elif len(frac) == 1:
             return (frac[0], 1)
         else:
-            remainder = frac[1:len(frac)]
+            remainder = frac[1 : len(frac)]
             (num, denom) = self.contfrac_to_rational(remainder)
             return (frac[0] * num + denom, num)
 

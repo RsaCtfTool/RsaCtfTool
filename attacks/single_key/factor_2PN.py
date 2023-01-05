@@ -7,7 +7,7 @@ from lib.number_theory import isqrt, isqrt_rem
 
 
 def factor_2PN(N, P=3):
-    '''
+    """
     based on: https://github.com/hirogwa/crypto-playground/blob/master/break_rsa.py
     premise: P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2
     M = (Pp + 2q)/2 is a midpoint of (Pp, 2q).
@@ -20,15 +20,15 @@ def factor_2PN(N, P=3):
     => 2PN = A^2 - x^2 - A - x
     => x^2 + x + (-A^2 + A + 2PN) = 0
     We can obtain p,q from A and N via quadratic formula.
-    '''
+    """
 
     P2N = 2 * P * N
     A, remainder = isqrt_rem(P2N)
     if remainder != 0:
         A += 1
 
-    c = -A ** 2 + A + P2N
-    disc = (1 - (c << 2))
+    c = -(A**2) + A + P2N
+    disc = 1 - (c << 2)
 
     if disc >= 0:
         isqrtdisc = isqrt(disc)

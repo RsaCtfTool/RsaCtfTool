@@ -48,7 +48,11 @@ __________               R_______________________________E __                .__
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E                             
-""".replace("R", cRED).replace("E", cEND)
+""".replace(
+        "R", cRED
+    ).replace(
+        "E", cEND
+    )
     return text
 
 
@@ -181,7 +185,9 @@ def run_conspicuous_check(args, logger):
     try:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
     except ValueError:
-        logger.error("Looks like the values for generating key are not ok... (no invmod)")
+        logger.error(
+            "Looks like the values for generating key are not ok... (no invmod)"
+        )
         return False
     c = priv_key.is_conspicuous()
     if c:
@@ -414,7 +420,7 @@ def main():
         print(pub_key.decode("utf-8"))
         sys.exit(0)
 
-    # Load keys 
+    # Load keys
     if args.publickey is None and args.e is not None and args.n is not None:
         args = load_keys(args, logger)
 
@@ -445,7 +451,9 @@ def main():
             sys.exit(1)
 
         if args.createpub:
-            pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+            pub_key, priv_key = generate_keys_from_p_q_e_n(
+                args.p, args.q, args.e, args.n
+            )
             print(pub_key.decode("utf-8"))
 
         if args.uncipher is not None:
