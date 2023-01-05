@@ -1,7 +1,7 @@
 import sys
 from sage.parallel.multiprocessing_sage import parallel_iter
 from multiprocessing import cpu_count
-sys.setrecursionlimit(1e5)
+sys.setrecursionlimit(10000)
 
 
 def factor(n, attempts=50):
