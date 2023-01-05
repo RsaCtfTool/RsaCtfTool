@@ -15,9 +15,19 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run simple lattice attack with a timeout"""
         try:
-            sageresult = subprocess.check_output(["sage", "%s/sage/lattice.sage" % rootpath, str(publickey.n), str(publickey.p)],
-                                                 timeout=self.timeout, stderr=subprocess.DEVNULL,).decode("utf8")
-            p, q = [int(x) for x in sageresult.replace("[", "").replace("]", "").split(",")]
+            sageresult = subprocess.check_output(
+                [
+                    "sage",
+                    "%s/sage/lattice.sage" % rootpath,
+                    str(publickey.n),
+                    str(publickey.p),
+                ],
+                timeout=self.timeout,
+                stderr=subprocess.DEVNULL,
+            ).decode("utf8")
+            p, q = [
+                int(x) for x in sageresult.replace("[", "").replace("]", "").split(",")
+            ]
             priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
             return (priv_key, None)
 
