@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import time
 import logging
 import importlib
 from lib.keys_wrapper import PublicKey, PrivateKey
@@ -261,9 +262,11 @@ class RSAAttack(object):
             self.args.attack = "all"
 
         self.load_attacks(attacks_list)
+        T = []
         if test:
             self.load_attacks(attacks_list, multikeys=True)
             for attack in self.implemented_attacks:
+                t0 = time.time()
                 c += 1
                 if attack.can_run():
                     self.logger.info(
@@ -279,6 +282,15 @@ class RSAAttack(object):
                             self.logger.warning("[!] Test not implemented")
                     except Exception:
                         self.logger.error("[!] Failure")
+                t1 = time.time()
+                td = t1 - t0
+                T += [td]
+                self.logger.info("[+] Time elapsed: %.4f sec." % round(td, 4))
+            tmin, tmax, tavg = min(T), max(T), sum(T) / len(T)
+            self.logger.info(
+                "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
+                % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
+            )
             return
 
         if isinstance(publickey, str):
@@ -300,9 +312,10 @@ class RSAAttack(object):
                 self.args.e = self.publickey.e
         else:
             self.publickey = publickey
-
+        T = []
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
+            t0 = time.time()
             self.logger.info(
                 "[*] Performing %s attack on %s."
                 % (attack_module.get_name(), self.publickey.filename)
@@ -336,7 +349,15 @@ class RSAAttack(object):
                 )
                 self.logger.error("[!] %s" % e)
                 self.logger.error("[!] %s" % traceback.format_exc())
-
+            t1 = time.time()
+            td = t1 - t0
+            T += [td]
+            self.logger.info("[+] Total time elapsed: %.4f sec." % round(td, 4))
+        tmin, tmax, tavg = min(T), max(T), sum(T) / len(T)
+        self.logger.info(
+            "[+] Time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
+            % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
+        )
         self.print_results_details(publickey)
         self.priv_key_send2fdb()
         return self.get_boolean_results()
