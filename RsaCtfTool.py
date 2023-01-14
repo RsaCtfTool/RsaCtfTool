@@ -66,7 +66,7 @@ def parse_args():
         "--output", help="output file for results (privates keys, plaintext data)."
     )
     parser.add_argument(
-        "--timeout", help="Timeout for long attacks.", default=60, type=int
+        "--timeout", help="Timeout for long attacks in seconds. default is 60s min: MIN_INT in C, max: MAX_INT in C, values < 1 have the same effect as MAX_INT", default=60, type=int
     )
     parser.add_argument(
         "--createpub",
