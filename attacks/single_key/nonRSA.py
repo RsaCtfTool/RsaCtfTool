@@ -27,7 +27,7 @@ class Attack(AbstractAttack):
         ]:  # we need to find the largest power first, otherwise, it would never be prime
             root = introot(n, i)
             if pow(root, i) == n:
-                self.logger.info("n = %d^%d" % (root, i))
+                # self.logger.info("n = %d^%d" % (root, i))
                 if not is_prime(root):
                     self.logger.warning("[!] n = base^x, but base is not prime")
                     return (None, None)

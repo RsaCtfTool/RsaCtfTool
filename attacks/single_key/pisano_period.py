@@ -21,7 +21,7 @@ from lib.number_theory import (
 
 
 class Fibonacci:
-    def __init__(self, progress=False, verbose=True):
+    def __init__(self, progress=False, verbose=False):
         self.progress = progress
         self.verbose = verbose
 
@@ -46,7 +46,7 @@ class Fibonacci:
         else:
             return self._fib_res(n, d)[0]
 
-    def get_period_bigint(self, N, min_accept, xdiff, verbose=False):
+    def get_period_bigint(self, N, min_accept, xdiff):
         search_len = int(pow(N, (1.0 / 6) / 100))
 
         if search_len < min_accept:
