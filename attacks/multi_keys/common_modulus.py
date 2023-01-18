@@ -59,13 +59,13 @@ class Attack(AbstractAttack):
         f19C6goN3bUGrrniwwIDBTy3
         -----END PUBLIC KEY-----"""
 
-        cipher1 = base64.b64_decode(
+        cipher1 = base64.b64decode(
             "BzFd4riBUZdFuPCkB3LOh+5iyMImeQ/saFLVD+ca2L8VKSz0+wtTaL55RRpHBAQdl24Fb3XyVg2N9UDcx3slT+vZs7tr03W7oJZxVp3M0ihoCwer3xZNieem8WZQvQvyNP5s5gMT+K6pjB9hDFWWmHzsn7eOYxRJZTIDgxA4k2w="
         )
-        cipher2 = base64.b64_decode(
+        cipher2 = base64.b64decode(
             "jmVRiKyVPy1CHiYLl8fvpsDAhz8rDa/Ug87ZUXZ//rMBKfcJ5MqZnQbyTJZwSNASnQfgel3J/xJsjlnf8LoChzhgT28qSppjMfWtQvR6mar1GA0Ya1VRHkhggX1RUFA4uzL56X5voi0wZEpJITUXubbujDXHjlAfdLC7BvL/5+w="
         )
-
+        print("cypher decoded..")
         result = self.attack(
             [PublicKey(key1_data), PublicKey(key2_data)],
             [
