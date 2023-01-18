@@ -10,7 +10,7 @@ from lib.number_theory import gcd, powmod
 def shor(n):
     """
     Shor's algorithm: only the classical part of it, implemented in a very naive and linear way.
-    Use the quantum period finding function: f(x) = a^x % N to find r, then a^r == 1 (mod N) and that is what the quantum computer 
+    Use the quantum period finding function: f(x) = a^x % N to find r, then a^r == 1 (mod N) and that is what the quantum computer
     gives advantage over classical algorithms.
     Here in this code we use a linear search of r of even numbers.
     https://en.wikipedia.org/wiki/Shor%27s_algorithm

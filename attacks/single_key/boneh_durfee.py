@@ -20,7 +20,6 @@ class Attack(AbstractAttack):
         many of these problems will be solved by the wiener attack module but perhaps some will fall through to here
         """
         try:
-            print(publickey.n, publickey.e)
             sageresult = int(
                 subprocess.check_output(
                     [
