@@ -352,10 +352,10 @@ class RSAAttack(object):
             t1 = time.time()
             td = t1 - t0
             T += [td]
-            self.logger.info("[+] Total time elapsed: %.4f sec." % round(td, 4))
+            self.logger.info("[+] Time elapsed: %.4f sec." % round(td, 4)) 
         tmin, tmax, tavg = min(T), max(T), sum(T) / len(T)
         self.logger.info(
-            "[+] Time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
+            "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
             % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
         )
         self.print_results_details(publickey)
