@@ -1,7 +1,5 @@
 from sage.libs.ntl.ntl_ZZ_pX import ntl_ZZ_pContext, ntl_ZZ_pX
-from lib.number_theory import powmod
 import sys
-
 
 def poly_fast_ntl(ctx, f, xs):
     # Fast multipoint evaulation from Modern Computer Algebra 3rd edition 10.1
@@ -36,13 +34,13 @@ def factor(n, e, bound):
     D = ceil(sqrt(bound))
     ctx = ntl_ZZ_pContext(n)  # NTL's polynomial multiplication is much faster
     x = randint(1, n - 1)
-    xe = int(powmod(x, e, n))
+    xe = int(power_mod(x, e, n))
     poly_factors = []
     for a in range(0, D):
         poly_factors.append(ntl_ZZ_pX([-x, power_mod(xe, a, n)], ctx))
     poly = product(poly_factors)
-    xed = int(powmod(xe, D, n))
-    ys = [int(powmod(xed, b, n)) for b in range(0, D)]
+    xed = int(power_mod(xe, D, n))
+    ys = [int(power_mod(xed, b, n)) for b in range(0, D)]
     for t in poly_fast_ntl(ctx, poly, ys):
         p = gcd(t, n)
         if p > 1 and p < n:
