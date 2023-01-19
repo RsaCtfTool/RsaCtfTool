@@ -67,7 +67,6 @@ class Attack(AbstractAttack):
             if poll_res is not None:
                 publickey.p = poll_res
                 publickey.q = publickey.n // publickey.p
-                print(publickey.p, publickey.q)
 
             if publickey.q is not None:
                 priv_key = PrivateKey(

@@ -70,7 +70,7 @@ class Fibonacci:
         for x in tqdm(range(search_len), disable=(not self.progress)):
             look_up[self.get_n_mod_d(x, N)] = x
 
-        if verbose:
+        if self.verbose:
             print("Searching...")
 
         while True:

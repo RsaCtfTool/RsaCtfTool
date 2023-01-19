@@ -289,9 +289,9 @@ class RSAAttack(object):
             if len(T) > 0:
                 tmin, tmax, tavg = min(T), max(T), sum(T) / len(T)
                 self.logger.info(
-                "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
-                % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
-            )
+                    "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
+                    % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
+                )
             return
 
         if isinstance(publickey, str):
@@ -357,9 +357,9 @@ class RSAAttack(object):
         if len(T) > 0:
             tmin, tmax, tavg = min(T), max(T), sum(T) / len(T)
             self.logger.info(
-            "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
-            % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
-        )
+                "[+] Total time elapsed min,max,avg: %.4f/%.4f/%.4f sec."
+                % (round(tmin, 4), round(tmax, 4), round(tavg, 4))
+            )
         self.print_results_details(publickey)
         self.priv_key_send2fdb()
         return self.get_boolean_results()
