@@ -34,7 +34,7 @@ class Attack(AbstractAttack):
                 else:
                     phi = (root - 1) * pow(root, i - 1)
                     d = invmod(e, phi)
-                    self.logger.info("d = %d" % d)
+                    # self.logger.info("d = %d" % d)
                     self.logger.warning(
                         "[!] Since this is not a valid RSA key, attempts to display the private key will fail"
                     )
