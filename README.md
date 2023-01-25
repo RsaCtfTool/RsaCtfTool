@@ -196,6 +196,9 @@ If `pip3 install -r "requirements.txt"` fails to install requirements accessible
 
 ``easy_install `cat requirements.txt` ``
 
+If you installed gmpy2 with homebrew(`brew install gmp`), you might have to point clang towards the header files with this command:
+``CFLAGS=-I/opt/homebrew/include LDFLAGS=-L/opt/homebrew/lib pip3 install -r requirements.txt``
+
 ### Optional to factor roca keys upto 512 bits, Install neca:
 You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
 
