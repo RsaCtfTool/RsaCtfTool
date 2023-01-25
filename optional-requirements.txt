@@ -1,2 +1,3 @@
 wolframalpha
 SageMath
+gmpy==1.17
