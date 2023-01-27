@@ -537,7 +537,7 @@ def dlp_bruteforce(g, h, p):
     x for g^x == h (mod p) with brute force.
     """
     for x in range(1, p):
-        if h == powmod(g,x,p):
+        if h == powmod(g, x, p):
             return x
 
 
