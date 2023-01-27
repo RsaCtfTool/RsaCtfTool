@@ -316,6 +316,16 @@ def _powmod(b, e, m):
     return r
 
 
+def _fac(n):
+  """
+  Factorial 
+  """
+  tmp = 1
+  for m in range(n, 1, -1):
+    tmp *= m
+  return tmp
+
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     gcdext = gmpy.gcdext
@@ -328,6 +338,7 @@ if gmpy_version > 0:
     invert = gmpy.invert
     invmod = gmpy.invert
     remove = gmpy.remove
+    fac = gmpy.fac
     if gmpy_version == 2:
         iroot = gmpy.iroot
         ilog = _ilog_gmpy
@@ -389,6 +400,7 @@ else:
     mul = _mul
     is_divisible = _is_divisible
     is_congruent = _is_congruent
+    fac = _fac
 
 
 def cuberoot(n):
@@ -519,6 +531,16 @@ def is_cube(n):
     return b
 
 
+def dlp_bruteforce(g, h, p):
+  """
+  Try to solve the discrete logarithm problem: 
+  x for g^x == h (mod p) with brute force.
+  """
+  for x in range(1, n):
+    if h == powmod(g,x,p):
+      return x
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -556,4 +578,6 @@ __all__ = [
     is_divisible,
     is_congruent,
     iroot,
+    dlp_bruteforce,
+    fac,
 ]
