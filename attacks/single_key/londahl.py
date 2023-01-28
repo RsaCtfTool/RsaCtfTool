@@ -23,7 +23,7 @@ def close_factor(n, b, progress=True):
     mu = invmod(powmod(2, phi_approx, n), n)
     fac = powmod(2, b, n)
 
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
+    for i in tqdm(range(0, (b * b) + 1), disable=(not progress)):
         if mu in look_up:
             phi = phi_approx + look_up[mu] - (i * b)
             r = trivial_factorization_with_n_phi(n, phi)
