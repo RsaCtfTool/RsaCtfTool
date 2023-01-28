@@ -25,6 +25,7 @@ class Fibonacci:
         self.progress = progress
         self.verbose = verbose
 
+
     def _fib_res(self, n, p):
         """fibonacci sequence nth item modulo p"""
         if n == 0:
@@ -36,6 +37,7 @@ class Fibonacci:
             return (c, d)
         return (d, mod((c + d), p))
 
+
     def get_n_mod_d(self, n, d, use="mersenne"):
         if n < 0:
             ValueError("Negative arguments not implemented")
@@ -45,6 +47,7 @@ class Fibonacci:
             return powmod(2, n, d) - 1
         else:
             return self._fib_res(n, d)[0]
+
 
     def get_period_bigint(self, N, min_accept, xdiff):
         search_len = int(pow(N, (1.0 / 6) / 100))
@@ -56,12 +59,9 @@ class Fibonacci:
             print("Search_len: %d, log2(N): %d" % (search_len, ilog2(N)))
 
         starttime = time.time()
-        diff = xdiff
-        p_len = int((len(str(N)) + diff) >> 1) + 1
-        begin = N - int("9" * p_len)
-        if begin <= 0:
-            begin = 1
-        end = N + int("9" * p_len)
+        p_len = 10 ** (((ilog10(N) + xdiff) >> 1) + 1)
+        begin, end = N - p_len, N + p_len
+        if begin <= 0: begin = 1
 
         if self.verbose:
             print("Search begin: %d, end: %d" % (begin, end))
@@ -106,6 +106,7 @@ class Fibonacci:
                             % (N, T, randi, td)
                         )
                     return td, T, randi
+
 
     def factorization(self, N, min_accept, xdiff):
         res = self.get_period_bigint(N, min_accept, xdiff)
