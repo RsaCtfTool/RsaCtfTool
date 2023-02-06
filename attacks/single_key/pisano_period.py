@@ -58,7 +58,7 @@ class Fibonacci:
         starttime = time.time()
         p_len = 10 ** (((ilog10(N) + xdiff) >> 1) + 1)
         begin, end = N - p_len, N + p_len
-        if begin < 1: 
+        if begin < 1:
             begin = 1
 
         if self.verbose:
@@ -104,7 +104,6 @@ class Fibonacci:
                             % (N, T, randi, td)
                         )
                     return td, T, randi
-
 
     def factorization(self, N, min_accept, xdiff):
         res = self.get_period_bigint(N, min_accept, xdiff)

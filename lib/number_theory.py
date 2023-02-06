@@ -318,7 +318,7 @@ def _powmod(b, e, m):
 
 def _fac(n):
     """
-    Factorial 
+    Factorial
     """
     tmp = 1
     for m in range(n, 1, -1):
@@ -533,7 +533,7 @@ def is_cube(n):
 
 def dlp_bruteforce(g, h, p):
     """
-    Try to solve the discrete logarithm problem: 
+    Try to solve the discrete logarithm problem:
     x for g^x == h (mod p) with brute force.
     """
     for x in range(1, p):
