@@ -61,7 +61,7 @@ class SiqsAttack(object):
         primesfound = []
 
         if b"input too big for SIQS" in yafurun:
-            self.logger.info("[-] Modulus too big for SIQS method.")
+            self.logger.error("[-] Modulus too big for SIQS method.")
             return
 
         for line in yafurun.splitlines():

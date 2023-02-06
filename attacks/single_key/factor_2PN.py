@@ -67,7 +67,7 @@ class Attack(AbstractAttack):
                     break
 
         except:
-            self.logger.info("Internal factorization error...")
+            self.logger.error("Internal factorization error...")
             return None, None
 
         if publickey.p is not None and publickey.q is not None:

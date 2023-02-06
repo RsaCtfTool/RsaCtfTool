@@ -31,7 +31,7 @@ class Attack(AbstractAttack):
             publickey.p, publickey.q = lehmer_machine(publickey.n)
 
         except FactorizationError:
-            self.logger.info("N should not be a 4k+2 number...")
+            self.logger.error("N should not be a 4k+2 number...")
             return None, None
 
         if publickey.p is not None and publickey.q is not None:

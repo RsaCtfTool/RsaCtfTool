@@ -55,7 +55,7 @@ class Attack(AbstractAttack):
             if publickey.n <= 10**10:
                 publickey.p, publickey.q = dixon_factor(publickey.n)
             else:
-                self.logger.info("[-] Dixon is too slow for pubkeys > 10^10...")
+                self.logger.error("[-] Dixon is too slow for pubkeys > 10^10...")
                 return None, None
 
         except FactorizationError:
