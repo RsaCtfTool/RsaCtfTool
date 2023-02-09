@@ -23,21 +23,23 @@ class Attack(AbstractAttack):
         """Factors available online?"""
         try:
             n = publickey.n
-            if ilog10(n) < (10 ** 8):
+            if ilog10(n) < (10**8):
                 p, q = getfdb(n)
                 if publickey.n != int(p) * int(q):
                     return None, None
                 publickey.p = p
                 publickey.q = q
                 priv_key = PrivateKey(
-                    p = int(publickey.p),
-                    q = int(publickey.q),
-                    e = int(publickey.e),
-                    n = int(publickey.n),
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
+                    n=int(publickey.n),
                 )
                 return priv_key, None
             else:
-                self.logger.error("publickey.n size should be less than 10000000 digits...")               
+                self.logger.error(
+                    "publickey.n size should be less than 10000000 digits..."
+                )
                 return None, None
         except:
             return None, None
