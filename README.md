@@ -6,6 +6,7 @@
 [![GitHub forks](https://img.shields.io/github/forks/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/network)
 [![GitHub stars](https://img.shields.io/github/stars/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/stargazers)
 [![GitHub license](https://img.shields.io/github/license/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool)
+[![GitHub contributors](https://img.shields.io/github/contributors/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/contributors)
 
 RSA multi attacks tool : uncipher data from weak public key and try to recover private key.
 The tool will cycle through each selected attack for a given public key.
