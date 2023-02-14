@@ -138,13 +138,13 @@ def _is_square(n):
 
 
 def miller_rabin(n, k=40):
-    # Taken from https://gist.github.com/Ayrx/5884790
-    # Implementation uses the Miller-Rabin Primality Test
-    # The optimal number of rounds for this test is 40
-    # See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
-    # for justification
-
-    # If number is even, it's a composite number
+    """ "
+    Taken from https://gist.github.com/Ayrx/5884790
+    Implementation uses the Miller-Rabin Primality Test
+    The optimal number of rounds for this test is 40
+    See http://stackoverflow.com/questions/6325576/how-many-iterations-of-rabin-miller-should-i-use-for-cryptographic-safe-primes
+    for justification
+    """
 
     if n == 2:
         return True
@@ -206,7 +206,9 @@ def _next_prime(n):
 
 
 def erathostenes_sieve(n):
-    """Returns  a list of primes < n"""
+    """
+    Returns  a list of primes < n
+    """
     sieve = [True] * n
     for i in range(3, isqrt(n) + 1, 2):
         if sieve[i]:
@@ -281,7 +283,9 @@ def _ilog10_gmpy(n):
 
 
 def ilogb(x, b):
-    # greatest integer l such that b**l  < = x.
+    """
+    greatest integer l such that b**l  < = x.
+    """
     l = 0
     while x >= b:
         x /= b
@@ -415,8 +419,10 @@ def trivial_factorization_with_n_phi(N, phi):
         return roots
 
 
-# Calculates a^{b} mod n when b is negative
 def neg_pow(a, b, n):
+    """
+    Calculates a^{b} mod n when b is negative
+    """
     assert b < 0
     assert gcd(a, n) == 1
     res = int(invert(a, n))
@@ -424,11 +430,13 @@ def neg_pow(a, b, n):
     return res
 
 
-# e1 --> Public Key exponent used to encrypt message m and get ciphertext c1
-# e2 --> Public Key exponent used to encrypt message m and get ciphertext c2
-# n --> Modulus
-# The following attack works only when m^{GCD(e1, e2)} < n
 def common_modulus_related_message(e1, e2, n, c1, c2):
+    """
+    e1 --> Public Key exponent used to encrypt message m and get ciphertext c1
+    e2 --> Public Key exponent used to encrypt message m and get ciphertext c2
+    n --> Modulus
+    The following attack works only when m^{GCD(e1, e2)} < n
+    """
 
     g, a, b = gcdext(e1, e2)
 
@@ -499,6 +507,9 @@ def legendre(a, p):
 
 
 def tonelli(n, p):
+    """
+    tonelli-shanks modular squareroot algorithm
+    """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1
     s = 0
