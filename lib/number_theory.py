@@ -582,7 +582,7 @@ __all__ = [
     log10,
     trivial_factorization_with_n_phi,
     neg_pow,
-    common_modulus,
+    common_modulus_related_message,
     phi,
     ProductTree,
     list_prod,
