@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.number_theory import gcd, common_modulus
+from lib.number_theory import gcd, common_modulus_related_message
 from lib.crypto_wrapper import long_to_bytes, bytes_to_long
 import itertools
 
@@ -33,7 +33,9 @@ class Attack(AbstractAttack):
         plains = []
         for k1, k2 in itertools.combinations(publickeys, 2):
             for c1, c2 in itertools.combinations(cipher, 2):
-                plains.append(self.common_modulus_related_message_attack(c1, c2, k1, k2))
+                plains.append(
+                    self.common_modulus_related_message_attack(c1, c2, k1, k2)
+                )
 
         if all([_ is None for _ in plains]):
             plains = None
