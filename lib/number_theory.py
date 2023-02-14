@@ -434,7 +434,7 @@ def common_modulus_related_message(e1, e2, n, c1, c2):
 
     if g == 1:
         return None
-    
+
     if a < 0:
         c1 = neg_pow(c1, a, n)
     else:
