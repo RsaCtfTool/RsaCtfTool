@@ -428,8 +428,13 @@ def neg_pow(a, b, n):
 # e2 --> Public Key exponent used to encrypt message m and get ciphertext c2
 # n --> Modulus
 # The following attack works only when m^{GCD(e1, e2)} < n
-def common_modulus(e1, e2, n, c1, c2):
+def common_modulus_related_message(e1, e2, n, c1, c2):
+
     g, a, b = gcdext(e1, e2)
+
+    if g == 1:
+        return None
+    
     if a < 0:
         c1 = neg_pow(c1, a, n)
     else:
