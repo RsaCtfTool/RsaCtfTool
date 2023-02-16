@@ -13,6 +13,7 @@ The tool will cycle through each selected attack for a given public key.
 RSA security relies on the complexity of the integer factorization problem.
 This project is a glue between various integer factorization algorithms.
 This is an educational tool and not every key will be broken in reasonable time (manage your expectations).
+This tool only supports RSA textbook semiprime composite modulus and not composite multiprimes, this is a constraint embbeded upstream in the pycrypto lib (see TODO).
 
 For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
@@ -203,7 +204,7 @@ If you installed gmpy2 with homebrew(`brew install gmp`), you might have to poin
 ### Optional to factor roca keys upto 512 bits, Install neca:
 You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
 
-## Todo (aka. Help wanted !)
+## TODO (aka. Help wanted !)
 
 - Implement test method in each attack.
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
