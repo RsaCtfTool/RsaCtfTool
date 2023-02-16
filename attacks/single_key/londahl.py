@@ -9,6 +9,9 @@ from gmpy2 import powmod
 
 
 def close_factor(n, b, progress=True):
+    """
+    source: https://web.archive.org/web/20201031000312/https://grocid.net/2017/09/16/finding-close-prime-factorizations/
+    """
     # approximate phi
     phi_approx = n - 2 * isqrt(n) + 1
     # create a look-up table
