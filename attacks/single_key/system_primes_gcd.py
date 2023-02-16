@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.system_primes import load_system_consts
-from lib.number_theory import gcd
+from lib.number_theory import gcd, is_prime
 
 
 class Attack(AbstractAttack):
@@ -17,17 +17,23 @@ class Attack(AbstractAttack):
         """System primes in crypto constants"""
         primes = load_system_consts()
         for prp in tqdm(primes, disable=(not progress)):
-            g = gcd(publickey.n, prp)
-            if publickey.n > g > 1:
-                publickey.q = g
-                publickey.p = publickey.n // publickey.q
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return priv_key, None
+            p = gcd(publickey.n, prp)
+            if publickey.n > p > 1:
+                publickey.p = p
+                q = publickey.n // p
+                if is_prime(q):
+                    publickey.p = p
+                    publickey.q = q
+                    priv_key = PrivateKey(
+                        int(publickey.p),
+                        int(publickey.q),
+                        int(publickey.e),
+                        int(publickey.n),
+                    )
+                    return priv_key, None
+                else:
+                  self.logger.error("[!] Currently this tool only supports RSA textbook semiprime modulus, your p and q are: (%d,%d)" % (p,q))
+                  return None, None
 
         return None, None
 
