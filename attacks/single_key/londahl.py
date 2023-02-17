@@ -14,13 +14,21 @@ def close_factor(n, b, progress=True):
     """
     # approximate phi
     phi_approx = n - 2 * isqrt(n) + 1
-    # create a look-up table
+    # Create a look-up table
+    # If phi_approx is odd we are going to search for odd i values in the lookup table,
+    # else we are going to search for even i values in the lookup table.
     look_up = {}
     z = 1
-
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
-        look_up[z] = i
-        z = (z << 1) % n
+    if phi_approx & 1 == 1:
+        for i in tqdm(range(0, b + 1), disable=(not progress)):
+            if i & 1 == 1:
+                look_up[z] = i
+            z = (z << 1) % n
+    else:
+        for i in tqdm(range(0, b + 1), disable=(not progress)):
+            if i & 1 == 0:
+                look_up[z] = i
+            z = (z << 1) % n
 
     # check the table
     mu = invmod(powmod(2, phi_approx, n), n)
