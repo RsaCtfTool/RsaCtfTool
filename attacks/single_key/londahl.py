@@ -23,13 +23,13 @@ def close_factor(n, b, progress=True):
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if i & 1 == 1:
                 look_up[z] = i
-            z =<< 1
+            z <<= 1
             if z >= n: z -= n
     else:
         for i in tqdm(range(0, b + 1), disable=(not progress)):
             if i & 1 == 0:
                 look_up[z] = i
-            z =<< 1
+            z <<= 1
             if z >= n: z -= n
 
     # check the table
