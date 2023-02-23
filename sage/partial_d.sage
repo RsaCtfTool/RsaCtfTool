@@ -11,13 +11,12 @@ def find_p_Coppersmith(n, pLow, lowerBitsNum, beta=0.5):
     x = PolynomialRing(Zmod(n), names='x').gen()
     nbits = n.bit_length()
 
-    f = 2**lowerBitsNum * x + pLow
+    l = 1 << lowerBitsNum
+    f = l * x + pLow
     f = f.monic()
-    roots = f.small_roots(X=2**(nbits // 2 - lowerBitsNum), beta=beta)
+    roots = f.small_roots(X = 1 << ((nbits >> 1) - lowerBitsNum), beta=beta)
     if roots:
-        x0 = roots[0]
-        p = gcd(2 ^ lowerBitsNum * x0 + pLow, n)
-        return ZZ(p)
+        return [int(r) for r in [ ZZ(gcd(l * x0 + pLow, n)) for x0 in roots ] if n > r > 1]
 
 
 def find_p(n, e, dLow, beta=0.5):
@@ -25,12 +24,12 @@ def find_p(n, e, dLow, beta=0.5):
     lowerBitsNum = dLow.bit_length()
 
     for k in range(1, e + 1):
-        results = solve_mod([e * dLow * X - k * X * (n - X + 1) + k * n == X], 2 ^ lowerBitsNum)
+        results = solve_mod([e * dLow * X - k * X * (n - X + 1) + k * n == X], (1 << lowerBitsNum))
         for x in results:
             pLow = ZZ(x[0])
-            p = find_p_Coppersmith(n, pLow, lowerBitsNum)
-            if p:
-                return p
+            roots = find_p_Coppersmith(n, pLow, lowerBitsNum)
+            if roots:
+                return roots[0]
 
 
 def partial_d(n, e, dLow, beta=0.5):
