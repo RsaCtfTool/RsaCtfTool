@@ -23,8 +23,10 @@ def find_p(n, e, dLow, beta=0.5):
     X = var('X')
     lowerBitsNum = dLow.bit_length()
 
+    edX = e * dLow * X
+    XnX1 = X * (n - X + 1)
     for k in range(1, e + 1):
-        results = solve_mod([e * dLow * X - k * X * (n - X + 1) + k * n == X], (1 << lowerBitsNum))
+        results = solve_mod([edX - (k * XnX1) + (k * n) == X], (1 << lowerBitsNum))
         for x in results:
             pLow = ZZ(x[0])
             roots = find_p_Coppersmith(n, pLow, lowerBitsNum)
