@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from attacks.abstract_attack import AbstractAttack
-from lib.number_theory import gcd, ProductTree
+from lib.number_theory import gcd, list_prod
 from lib.keys_wrapper import PrivateKey
 
 
