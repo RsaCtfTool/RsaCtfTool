@@ -137,11 +137,11 @@ For more examples, look at test.sh file
 
 ### Attack private keys with partial bits of Q known ###
 
-`python3 RsaCtfTool.py --attack partial_q --key examples/masked.pem`
+`./RsaCtfTool.py --attack partial_q --key examples/masked.pem`
 
 ### Attack private keys with partial bits of D known ###
 
-`python3 RsaCtfTool.py --attack partial_d --key examples/partial_d.pem`
+`./RsaCtfTool.py --attack partial_d --key examples/partial_d.pem`
 
 ### Convert idrsa.pub to pem format
 
@@ -154,8 +154,26 @@ For more examples, look at test.sh file
 
 ### Docker run ###
 
-`docker pull rsactftool/rsactftool`
-`docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>`
+```bash
+docker pull rsactftool/rsactftool
+docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
+```
+
+
+### Virtual environment run ###
+
+Setup the venv
+```bash
+virtualenv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
+Run
+```bash
+source venv/bin/activate
+./RsaCtfTool.py <arguments>
+```
 
 ## Requirements
 
@@ -173,7 +191,7 @@ git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
 cd RsaCtfTool
 pip3 install -r "requirements.txt"
-python3 RsaCtfTool.py
+./RsaCtfTool.py
 ```
 
 
@@ -183,7 +201,7 @@ git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
 cd RsaCtfTool
 pip3 install -r "requirements.txt"
-python3 RsaCtfTool.py
+./RsaCtfTool.py
 ```
 
 If you also want the optional SageMath you need to do
