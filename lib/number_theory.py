@@ -343,6 +343,7 @@ if gmpy_version > 0:
     invmod = gmpy.invert
     remove = gmpy.remove
     fac = gmpy.fac
+    fdivmod = gmpy.fdivmod
     if gmpy_version == 2:
         iroot = gmpy.iroot
         ilog = _ilog_gmpy
@@ -405,6 +406,7 @@ else:
     is_divisible = _is_divisible
     is_congruent = _is_congruent
     fac = _fac
+    fdivmod = divmod
 
 
 def cuberoot(n):
@@ -620,4 +622,5 @@ __all__ = [
     rational_to_contfrac,
     contfrac_to_rational,
     convergents_from_contfrac,
+    fdivmod,
 ]
