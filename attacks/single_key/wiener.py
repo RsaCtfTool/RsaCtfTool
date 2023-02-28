@@ -5,60 +5,28 @@ import sys
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import isqrt, trivial_factorization_with_n_phi
+from lib.number_theory import isqrt, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational
 
 
-class WienerAttack(object):
-    def rational_to_contfrac(self, x, y):
-        """Rational_to_contfrac implementation"""
-        a = x // y
-        if a * y == x:
-            return [a]
-        else:
-            pquotients = self.rational_to_contfrac(y, x - a * y)
-            pquotients.insert(0, a)
-            return pquotients
+sys.setrecursionlimit(100000)
 
-    def convergents_from_contfrac(self, frac, progress=True):
-        """Convergents_from_contfrac implementation"""
-        convs = []
-        for i in tqdm(range(len(frac)), disable=(not progress)):
-            convs.append(self.contfrac_to_rational(frac[0:i]))
-        return convs
+def wiener(n, e, progress=True):  
+    frac = rational_to_contfrac(e, n)
+    convergents = convergents_from_contfrac(frac, progress)
 
-    def contfrac_to_rational(self, frac):
-        """Contfrac_to_rational implementation"""
-        if len(frac) == 0:
-            return (0, 1)
-        elif len(frac) == 1:
-            return (frac[0], 1)
-        else:
-            remainder = frac[1 : len(frac)]
-            (num, denom) = self.contfrac_to_rational(remainder)
-            return (frac[0] * num + denom, num)
-
-    def __init__(self, n, e, progress=True):
-        """Constructor"""
-        self.d = None
-        self.p = None
-        self.q = None
-        sys.setrecursionlimit(100000)
-        frac = self.rational_to_contfrac(e, n)
-        convergents = self.convergents_from_contfrac(frac, progress)
-
-        for (k, d) in tqdm(convergents, disable=(not progress)):
-            if k != 0:
-                ed1 = e * d - 1
-                phi = ed1 // k
-                if ed1 - (k * phi) == 0:  # same as ed1 % k == 0
-                    s = n - phi + 1
-                    discr = pow(s, 2) - (n << 2)  # same as  s**2 - 4*n
-                    if discr >= 0:
-                        t = isqrt(discr)
-                        if pow(t, 2) == discr and (s + t) & 1 == 0:
-                            pq = trivial_factorization_with_n_phi(n, phi)
-                            if pq is not None:
-                                self.p, self.q = pq
+    for (k, d) in tqdm(convergents, disable=(not progress)):
+        if k != 0:
+            ed1 = e * d - 1
+            phi = ed1 // k
+            if ed1 - (k * phi) == 0:  # same as ed1 % k == 0
+                s = n - phi + 1
+                discr = pow(s, 2) - (n << 2)  # same as  s**2 - 4*n
+                if discr >= 0:
+                    t = isqrt(discr)
+                    if pow(t, 2) == discr and (s + t) & 1 == 0:
+                        pq = trivial_factorization_with_n_phi(n, phi)
+                        if pq is not None:
+                            return pq
 
 
 class Attack(AbstractAttack):
@@ -68,10 +36,9 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Wiener's attack"""
-        wiener = WienerAttack(publickey.n, publickey.e, progress)
-        if wiener.p is not None and wiener.q is not None:
-            publickey.p = wiener.p
-            publickey.q = wiener.q
+        pq = wiener(publickey.n, publickey.e, progress)
+        if pq != None:
+            publickey.p, publickey.q = pq
             priv_key = PrivateKey(
                 int(publickey.p),
                 int(publickey.q),
