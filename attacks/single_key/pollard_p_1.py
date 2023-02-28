@@ -1,47 +1,35 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import math
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, isqrt, primes, powmod
+from lib.number_theory import log, gcd, isqrt, primes, powmod
+
+
+def pollard_P_1(n, progress=True):
+    """Pollard P1 implementation"""
+    z = []
+    logn = log(isqrt(n))
+    prime = primes(997)
+
+    for j in range(0, len(prime)):
+        primej = prime[j]
+        logp = log(primej)
+        for i in range(1, int(logn / logp) + 1):
+            z.append(primej)
+
+    for pp in tqdm(prime, disable=(not progress)):
+        for i in range(0, len(z)):
+            p = gcd(n, powmod(pp, z[i], n) - 1)
+            if n > p > 1:
+                return p, n // p
 
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
-
-    def pollard_P_1(self, n, progress=True):
-        """Pollard P1 implementation"""
-        z = []
-        logn = math.log(int(isqrt(n)))
-        prime = primes(997)
-
-        for j in range(0, len(prime)):
-            primej = prime[j]
-            logp = math.log(primej)
-            for i in range(1, int(logn / logp) + 1):
-                z.append(primej)
-
-        try:
-            for pp in tqdm(prime, disable=(not progress)):
-                i = 0
-                x = pp
-                while 1:
-                    x = powmod(x, z[i], n)
-                    i = i + 1
-                    y = gcd(n, x - 1)
-                    if y != 1:
-                        p = y
-                        q = n // y
-                        return p, q
-                    if i >= len(z):
-                        break
-            return 0, None
-        except TypeError:
-            return 0, None
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run attack with Pollard P1"""
@@ -51,10 +39,7 @@ class Attack(AbstractAttack):
             publickey.q = None
 
         # Pollard P-1 attack
-        try:
-            poll_res = self.pollard_P_1(publickey.n, progress)
-        except RecursionError:
-            return None, None
+        poll_res = pollard_P_1(publickey.n, progress)
         if poll_res and len(poll_res) > 1:
             publickey.p, publickey.q = poll_res
 
