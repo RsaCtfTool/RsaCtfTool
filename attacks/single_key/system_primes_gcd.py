@@ -32,8 +32,8 @@ class Attack(AbstractAttack):
                     )
                     return priv_key, None
                 else:
-                  self.logger.error("[!] Currently this tool only supports RSA textbook semiprime modulus, your p and q are: (%d,%d)" % (p,q))
-                  return None, None
+                    self.logger.error("[!] Currently this tool only supports RSA textbook semiprime modulus, your p and q are: (%d,%d)" % (p, q))
+                    return None, None
 
         return None, None
 
