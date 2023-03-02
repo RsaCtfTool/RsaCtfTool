@@ -343,7 +343,6 @@ if gmpy_version > 0:
     invmod = gmpy.invert
     remove = gmpy.remove
     fac = gmpy.fac
-    fdivmod = gmpy.fdivmod
     if gmpy_version == 2:
         iroot = gmpy.iroot
         ilog = _ilog_gmpy
@@ -360,6 +359,7 @@ if gmpy_version > 0:
         introot = _introot_gmpy2
         is_divisible = gmpy.is_divisible
         is_congruent = gmpy.is_congruent
+        fdivmod = gmpy.f_divmod
     else:
         iroot = gmpy.root
         ilog = _ilog_math
@@ -376,6 +376,9 @@ if gmpy_version > 0:
         introot = _introot_gmpy
         is_divisible = _is_divisible
         is_congruent = _is_congruent
+        fdivmod = gmpy.fdivmod
+
+
 else:
     remove = _remove
     iroot = _iroot
