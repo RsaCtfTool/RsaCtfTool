@@ -5,7 +5,7 @@ import sys
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import isqrt, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod
+from lib.number_theory import isqrt, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_square
 
 
 sys.setrecursionlimit(100000)
@@ -19,7 +19,7 @@ def wiener(n, e, progress=True):
             if (phi & 1 == 0) and (q == 0):
                 s = n - phi + 1
                 discr = (s * s) - (n << 2)  # same as  s**2 - 4*n
-                if (discr == 0): t = 0
+                t = 0
                 if (discr > 0 and is_square(discr)): t = isqrt(discr)
                 if (s + t) & 1 == 0:
                     pq = trivial_factorization_with_n_phi(n, phi)
