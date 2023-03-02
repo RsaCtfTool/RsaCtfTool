@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, isqrt
+from lib.number_theory import gcd, isqrt, is_congruent
 
 
 # Code borrowed and adapted from the wikipedia: https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
@@ -29,50 +29,43 @@ multiplier = [
 
 
 def SQUFOF(N):
-    s = int(isqrt(N) + 0.5)
-    L = int(2 * isqrt(2 * s))
+    if is_congruent(N, 2, 4):
+        raise FactorizationError
 
-    if s**2 == N:
-        return s
+    s = isqrt(N)
+    L = isqrt(s << 1) << 1
+    B = 3 * L
+
     for k in range(0, len(multiplier)):
         D = multiplier[k] * N
         Po = Pprev = P = isqrt(D)
         Qprev = 1
-        Q = D - pow(Po, 2)
-        B = 3 * L
-        c0 = True
-        i = 2
-        while c0:
-            b = int((Po + P) // Q)
+        Q = D - (Po * Po)
+        for i in range(2, B + 1):
+            b = (Po + P) // Q
             P = b * Q - P
             q = Q
             Q = Qprev + b * (Pprev - P)
-            r = int(isqrt(Q) + 0.5)
-            if not (i & 1) and (pow(r, 2) == Q):
-                break
-            Qprev = q
-            Pprev = P
-            i += 1
-            c0 = i <= B
+            r = isqrt(Q)
+            if not (i & 1) and (r * r) == Q: break
+            Pprev, Qprev = P, q
         b = (Po - P) // r
         Pprev = P = b * r + P
         Qprev = r
-        Q = (D - pow(Pprev, 2)) // Qprev
-        i = 0
+        Q = (D - (Pprev * Pprev)) // Qprev
         c1 = True
         while c1:
-            b = int((Po + P) // Q)
+            b = (Po + P) // Q
             Pprev = P
             P = b * Q - P
             q = Q
             Q = Qprev + b * (Pprev - P)
             Qprev = q
-            i += 1
-            c1 = P != Pprev
+            c1 = (P != Pprev)
         r = gcd(N, Qprev)
         if 1 < r < N:
             return r, N // r
-    return -1
+    return None
 
 
 class Attack(AbstractAttack):
@@ -85,22 +78,18 @@ class Attack(AbstractAttack):
 
         try:
             publickey.p, publickey.q = SQUFOF(publickey.n)
-        except TimeoutError:
-            return None, None
-
-        if publickey.p is not None and publickey.q is not None:
-            try:
+            if publickey.p is not None and publickey.q is not None:
                 priv_key = PrivateKey(
-                    n=publickey.n,
-                    p=int(publickey.p),
-                    q=int(publickey.q),
-                    e=int(publickey.e),
+                     n=publickey.n,
+                     p=int(publickey.p),
+                     q=int(publickey.q),
+                     e=int(publickey.e),
                 )
                 return priv_key, None
-            except ValueError:
+            else:
                 return None, None
-
-        return None, None
+        except:
+            return None, None
 
     def test(self):
         from lib.keys_wrapper import PublicKey
