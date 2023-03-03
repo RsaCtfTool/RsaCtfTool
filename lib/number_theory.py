@@ -582,7 +582,17 @@ def convergents_from_contfrac(frac, progress=False):
     return convs
 
 
-
+def inv_mod_pow_of_2(factor, bit_count):
+    """
+    its orders of magnitude faster than invert(a, 2^k)
+    code borrowed from:  https://algassert.com/post/1709
+    """
+    rest = factor & -2
+    acc = 1
+    for i in range(bit_count):
+        if acc & (1 << i): acc -= (rest << i)
+    mask = (1 << bit_count) - 1
+    return acc & mask
 
 __all__ = [
     getpubkeysz,
@@ -626,4 +636,5 @@ __all__ = [
     contfrac_to_rational,
     convergents_from_contfrac,
     fdivmod,
+    inv_mod_pow_of_2,
 ]
