@@ -594,6 +594,20 @@ def inv_mod_pow_of_2(factor, bit_count):
     mask = (1 << bit_count) - 1
     return acc & mask
 
+
+def mlucas(v, a, n):
+    """Helper function for williams_pp1().  Multiplies along a Lucas sequence modulo n."""
+    v1, v2 = v, (v*v - 2) % n
+    while a > 0:
+        v1, v2 = (
+            ((v1*v1 - 2) % n, (v1 * v2 - v) % n)
+            if a & 1 == 0
+            else ((v1 * v2 - v) % n, (v2*v2 - 2) % n)
+        )
+        a >>= 1
+    return v1
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -637,4 +651,5 @@ __all__ = [
     convergents_from_contfrac,
     fdivmod,
     inv_mod_pow_of_2,
+    mlucas,
 ]
