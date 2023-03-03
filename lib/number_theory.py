@@ -10,14 +10,12 @@ logger = logging.getLogger("global_logger")
 
 try:
     import gmpy2 as gmpy
-
     gmpy_version = 2
     mpz = gmpy.mpz
     logger.info("[+] Using gmpy version 2 for math.")
 except ImportError:
     try:
         import gmpy
-
         gmpy_version = 1
         mpz = gmpy.mpz
         logger.info("[+] Using gmpy version 1 for math.")
@@ -25,8 +23,7 @@ except ImportError:
         gmpy_version = 0
         mpz = int
         gmpy = None
-        logger.info("[+] Using python native functions for math.")
-
+        logger.warning("[!] Using native python functions for math, which is slow. install gmpy2 with: 'python3 -m pip install <module>'.")
 
 def getpubkeysz(n):
     size = int(math.log2(n))
