@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import isqrt, is_square, invert
+from lib.number_theory import isqrt, is_square, invert, inv_mod_pow_of_2
 
 
 def InverseInverseSqrt2exp(n, k):
@@ -15,7 +15,7 @@ def InverseInverseSqrt2exp(n, k):
     while t < k:
         t = min(k, (t << 1) - 2)
         a = (a * (3 - (a * a) * n) >> 1) & ((1 << t) - 1)
-    return invert(a, (1 << k))
+    return inv_mod_pow_of_2(a, k)
 
 
 def FactorHighAndLowBitsEqual(n, middle_bits=3):
