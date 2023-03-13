@@ -14,14 +14,14 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Run tests against fermat composites"""
-        limit = 10000
+        limit = 30
         p = q = None
-        for x in tqdm(range(1, limit), disable=(not progress)):
-            f = (2**2**x) + 1
-            fermat = gcd(f, publickey.n)
-            if 1 < fermat < publickey.n:
-                p = publickey.n // fermat
-                q = fermat
+        for x in tqdm(range(2, limit), disable=(not progress)):
+            f = (1 << (1 << x)) + 1
+            g = gcd(f, publickey.n)
+            if 1 < g < publickey.n:
+                p = publickey.n // g
+                q = g
                 break
         if p is not None and q is not None:
             priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
