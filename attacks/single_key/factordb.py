@@ -24,24 +24,28 @@ class Attack(AbstractAttack):
         try:
             n = publickey.n
             if ilog10(n) < (10**8):
-                p, q = getfdb(n)
-                if publickey.n != int(p) * int(q):
-                    return None, None
-                publickey.p = p
-                publickey.q = q
-                priv_key = PrivateKey(
-                    p=int(publickey.p),
-                    q=int(publickey.q),
-                    e=int(publickey.e),
-                    n=int(publickey.n),
-                )
-                return priv_key, None
+                pq = getfdb(n)
+                if pq[0] != n:
+                    p,q = pq
+                    if publickey.n != int(p) * int(q): return None, None
+                    publickey.p = p
+                    publickey.q = q
+                    priv_key = PrivateKey(
+                        p=int(publickey.p),
+                        q=int(publickey.q),
+                        e=int(publickey.e),
+                        n=int(publickey.n),
+                    )
+                    return priv_key, None
+                else:
+                    self.logger.error("[!] Composite not in factordb, couldn't factorize...")
             else:
                 self.logger.error(
                     "publickey.n size should be less than 10000000 digits..."
                 )
                 return None, None
         except:
+            self.logger.error("[!] internal error :-(")
             return None, None
 
     def test(self):
