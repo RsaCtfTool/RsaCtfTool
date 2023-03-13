@@ -55,6 +55,7 @@ Attacks :
   - Primorial pm1 gcd
   - Mersenne pm1 gcd
   - Factorial pm1 gcd
+  - Compositorial pm1 gcd
   - Fermat Numbers gcd
   - Fibonacci gcd
   - System primes gcd
