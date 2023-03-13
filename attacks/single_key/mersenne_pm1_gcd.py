@@ -16,7 +16,7 @@ class Attack(AbstractAttack):
         """Run tests against mersenne composites"""
         p = q = None
         for i in tqdm(range(2, ilog2(publickey.n)), disable=(not progress)):
-            i2 = 2**i
+            i2 = 1 << i
             mersenne = [i2 - 1, i2 + 1]
             g0, g1 = gcd(mersenne[0], publickey.n), gcd(mersenne[1], publickey.n)
             if 1 < g0 < publickey.n:
