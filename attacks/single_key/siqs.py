@@ -29,20 +29,6 @@ class SiqsAttack(object):
         self.p = None
         self.q = None
 
-    def testyafu(self):
-        """Test if yafu can be run"""
-
-        try:
-            yafutest = subprocess.check_output(
-                ["yafu", "siqs(1549388302999519)"],
-                timeout=self.timeout,
-                stderr=subprocess.DEVNULL,
-            )
-        except:
-            yafutest = b""
-
-        return b"48670331" in yafutest
-
     def doattack(self):
         """Perform attack"""
         yafurun = subprocess.check_output(
@@ -95,12 +81,8 @@ class Attack(AbstractAttack):
             return None, None
 
         siqsobj = SiqsAttack(publickey.n, self.timeout)
-
-        if siqsobj.testyafu():
-            siqsobj.doattack()
-        else:
-            return None, None
-
+        siqsobj.doattack()
+        
         if siqsobj.p and siqsobj.q:
             publickey.q = siqsobj.q
             publickey.p = siqsobj.p
