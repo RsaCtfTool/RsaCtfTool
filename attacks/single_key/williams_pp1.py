@@ -9,10 +9,10 @@ from itertools import count
 
 
 def williams_pp1(n):
-    p = 2
+    p, i2 = 2, isqrt(n)
     for v in count(1):
         while True:
-            e = ilogb(isqrt(n), p)
+            e = ilogb(i2, p)
             if e == 0: break
             for _ in range(e): v = mlucas(v, p, n)
             g = gcd(v - 2, n)
