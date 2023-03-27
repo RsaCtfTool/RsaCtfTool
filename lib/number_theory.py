@@ -415,10 +415,12 @@ def cuberoot(n):
 
 def trivial_factorization_with_n_phi(N, phi):
     m = N - phi + 1
-    i = isqrt(pow(m, 2) - (N << 2))  # same as isqrt((m**2) - (4*n))
-    roots = int((m - i) >> 1), int((m + i) >> 1)
-    if roots[0] * roots[1] == N:
-        return roots
+    m2N2 = pow(m, 2) - (N << 2) # same as isqrt((m**2) - (4*n))
+    if m2N2 > 0:
+        i = isqrt(m2N2)
+        roots = int((m - i) >> 1), int((m + i) >> 1)
+        if roots[0] * roots[1] == N:
+            return roots
 
 
 def neg_pow(a, b, n):
