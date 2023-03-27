@@ -44,7 +44,8 @@ class Attack(AbstractAttack):
                 int(publickey.n),
             )
             return priv_key, None
-
+        else:
+            self.logger.warning("[*] Cracking failed...")
         return None, None
 
     def test(self):
