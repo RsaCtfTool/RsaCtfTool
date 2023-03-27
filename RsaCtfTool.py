@@ -232,11 +232,15 @@ def run_attacks(args, logger):
             attackobj.attack_single_key(publickey, selected_attacks)
 
     if args.publickey is None:
-        if args.partial is not None:
+        if args.partial:
             priv_key = PrivateKey(filename=args.key, password=None)
             attackobj.attack_single_key(priv_key, selected_attacks)
         else:
             logger.error("No key specified")
+        if args.n is not None:
+          ### FIXME 
+          publickey, _ = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+          attackobj.attack_single_key(publickey, selected_attacks)
     return args
 
 
@@ -381,6 +385,9 @@ def main():
             e_int = get_numeric_value(e)
             e_array.append(e_int)
         args.e = e_array if len(e_array) > 1 else e_array[0]
+    else:
+        if args.n is not None:
+            args.e = 65537
 
     # get n if we can
     if args.n is not None:
@@ -494,8 +501,6 @@ def main():
             sys.exit(0)
 
     args = run_attacks(args, logger)
-
-    cleanup(args)
 
 
 if __name__ == "__main__":
