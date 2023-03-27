@@ -209,7 +209,7 @@ class RSAAttack(object):
         for publickey in publickeys:
             try:
                 with open(publickey, "rb") as pubkey_fd:
-                    publickeys_obj.append(PublicKey(pubkey_fd.read(), publickey))
+                    publickeys_obj.append(PublicKey(pubkey_fd.read(), filename=publickey))
             except Exception:
                 self.logger.error("[*] Key format not supported : %s." % publickey)
                 continue
@@ -294,15 +294,15 @@ class RSAAttack(object):
                 )
             return
 
+
         if isinstance(publickey, str):
             # Read keyfile
             try:
                 with open(publickey, "rb") as pubkey_fd:
-                    self.publickey = PublicKey(pubkey_fd.read(), publickey)
+                    self.publickey = PublicKey(pubkey_fd.read(), filename = publickey)
             except Exception as e:
-                self.logger.error("[*] %s." % e)
+                self.logger.error("[!] %s." % e)
                 return
-
             if self.args.check_publickey:
                 k, ok = self.pre_attack_check(self.publickey)
                 if not ok:
@@ -313,6 +313,8 @@ class RSAAttack(object):
                 self.args.e = self.publickey.e
         else:
             self.publickey = publickey
+ 
+
         T = []
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
