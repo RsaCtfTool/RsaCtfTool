@@ -33,23 +33,23 @@ Attacks :
 - Strict Integer factorization methods (only depends on knowing n):
   - Weak public key factorization
   - Small q (q < 100,000)
-  - Fermat's factorisation for close p and q
+  - [Fermat's factorisation for close p and q](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
   - Gimmicky Primes method
   - Past CTF Primes method
   - Non RSA key in the form b^x, where b is prime
   - Common factor attacks across multiple keys
   - Small fractions method when p/q is close to a small fraction
-  - Elliptic Curve Method
-  - Pollards p-1 for relatively smooth numbers
+  - [Elliptic Curve Method](https://en.wikipedia.org/wiki/Lenstra_elliptic-curve_factorization)
+  - [Pollards p-1 for relatively smooth numbers](https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm)
   - Mersenne primes factorization
-  - Factordb
+  - [Factordb](http://factordb.com/)
   - Londahl
   - Noveltyprimes
   - Qicheng
   - binary polynomial factoring
-  - Euler method
-  - Pollard Rho
-  - Wolfram alpha
+  - [Euler method](https://en.wikipedia.org/wiki/Euler_method)
+  - [Pollard Rho](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm)
+  - [Wolfram alpha](https://www.wolframalpha.com/)
   - cm-factor
   - z3 theorem prover
   - Primorial pm1 gcd
@@ -59,22 +59,22 @@ Attacks :
   - Fermat Numbers gcd
   - Fibonacci gcd
   - System primes gcd
-  - Shanks's square forms factorization (SQUFOF)
+  - [Shanks's square forms factorization (SQUFOF)](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization)
   - Return of Coppersmith's attack (ROCA) with NECA variant
-  - Dixon
+  - [Dixon](https://en.wikipedia.org/wiki/Dixon%27s_factorization_method)
   - brent (Pollard rho variant)
-  - Pisano Period
+  - [Pisano Period](https://en.wikipedia.org/wiki/Pisano_period)
   - XYXZ form integer factorization where P prime > X^Y and Q prime > X^Z
   - High and Low Bits Equal
-  - Williams p+1
+  - [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm)
   - Hart algorithm similar to fermat
   - Lehmer machine similar to fermat
   - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
-  - Kraitchik algorithm improvement over fermat
+  - [Kraitchik algorithm improvement over fermat](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
   - Lehman algorithm improvement over fermat
   - Carmichael algorithm
-  - Quadratic sieve
-  - Classical part of Shor algorithm
+  - [Quadratic sieve](https://en.wikipedia.org/wiki/Quadratic_sieve)
+  - [Classical part of Shor algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
 
 ## Usage
 
