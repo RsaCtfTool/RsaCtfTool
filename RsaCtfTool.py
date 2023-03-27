@@ -179,6 +179,14 @@ def parse_args():
         help="work with partial priate keys",
         action="store_true",
     )
+
+    parser.add_argument(
+        "--cleanup",
+        help="cleanup *.pub files after finish",
+        action="store_true",
+    )
+
+
     args = parser.parse_args()
     args.attacks_list = attacks_list
     return args
@@ -502,6 +510,9 @@ def main():
 
     args = run_attacks(args, logger)
 
+    # Finish and cleanup
+    if args.cleanup:
+        cleanup(args)
 
 if __name__ == "__main__":
     main()
