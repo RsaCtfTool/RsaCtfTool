@@ -43,15 +43,15 @@ Attacks :
   - [Pollards p-1 for relatively smooth numbers](https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm)
   - Mersenne primes factorization
   - [Factordb](http://factordb.com/)
-  - Londahl
+  - [Londahl](https://web.archive.org/web/20220525193825/https://grocid.net/2017/09/16/finding-close-prime-factorizations/)
   - Noveltyprimes
-  - Qicheng
+  - [Qicheng](https://www.cs.ou.edu/~qcheng/paper/speint.pdf)
   - binary polynomial factoring
   - [Euler method](https://en.wikipedia.org/wiki/Euler_method)
   - [Pollard Rho](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm)
   - [Wolfram alpha](https://www.wolframalpha.com/)
   - cm-factor
-  - z3 theorem prover
+  - [Z3 theorem prover](https://en.wikipedia.org/wiki/Z3_Theorem_Prover)
   - Primorial pm1 gcd
   - Mersenne pm1 gcd
   - Factorial pm1 gcd
@@ -60,17 +60,17 @@ Attacks :
   - Fibonacci gcd
   - System primes gcd
   - [Shanks's square forms factorization (SQUFOF)](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization)
-  - Return of Coppersmith's attack (ROCA) with NECA variant
+  - [Return of Coppersmith's attack (ROCA) with NECA variant](https://en.wikipedia.org/wiki/ROCA_vulnerability)
   - [Dixon](https://en.wikipedia.org/wiki/Dixon%27s_factorization_method)
   - brent (Pollard rho variant)
   - [Pisano Period](https://en.wikipedia.org/wiki/Pisano_period)
   - XYXZ form integer factorization where P prime > X^Y and Q prime > X^Z
   - High and Low Bits Equal
   - [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm)
-  - Hart algorithm similar to fermat
-  - Lehmer machine similar to fermat
+  - [Hart algorithm (similar to fermat)](http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf)
+  - [Lehmer machine (similar to fermat)](https://en.wikipedia.org/wiki/Lehmer_sieve)
   - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
-  - [Kraitchik algorithm improvement over fermat](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+  - [Kraitchik algorithm (improvement over fermat)](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
   - Lehman algorithm improvement over fermat
   - Carmichael algorithm
   - [Quadratic sieve](https://en.wikipedia.org/wiki/Quadratic_sieve)
