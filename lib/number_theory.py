@@ -327,6 +327,14 @@ def _fac(n):
     return tmp
 
 
+from functools import cache
+@cache
+def _lucas(n):
+   if n == 0: return 2
+   if n == 1: return 1
+   if n > 1: return _lucas(n - 1) + _lucas(n - 2)
+
+
 if gmpy_version > 0:
     gcd = gmpy.gcd
     gcdext = gmpy.gcdext
@@ -357,6 +365,7 @@ if gmpy_version > 0:
         is_divisible = gmpy.is_divisible
         is_congruent = gmpy.is_congruent
         fdivmod = gmpy.f_divmod
+        lucas = gmpy.lucas
     else:
         iroot = gmpy.root
         ilog = _ilog_math
@@ -374,7 +383,7 @@ if gmpy_version > 0:
         is_divisible = _is_divisible
         is_congruent = _is_congruent
         fdivmod = gmpy.fdivmod
-
+        lucas = _lucas
 
 else:
     remove = _remove
@@ -407,6 +416,7 @@ else:
     is_congruent = _is_congruent
     fac = _fac
     fdivmod = divmod
+    lucas = _lucas
 
 
 def cuberoot(n):
@@ -651,4 +661,5 @@ __all__ = [
     fdivmod,
     inv_mod_pow_of_2,
     mlucas,
+    lucas,
 ]
