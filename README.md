@@ -52,12 +52,12 @@ Attacks :
   - [Wolfram alpha](https://www.wolframalpha.com/)
   - cm-factor
   - [Z3 theorem prover](https://en.wikipedia.org/wiki/Z3_Theorem_Prover)
-  - Primorial pm1 gcd
-  - Mersenne pm1 gcd
-  - Factorial pm1 gcd
-  - Compositorial pm1 gcd
-  - Fermat Numbers gcd
-  - Fibonacci gcd
+  - [Primorial pm1 gcd](https://en.wikipedia.org/wiki/Primorial)
+  - [Mersenne Numbers pm1 gcd](https://en.wikipedia.org/wiki/Mersenne_prime)
+  - [Factorial pm1 gcd](https://en.wikipedia.org/wiki/Factorial)
+  - [Compositorial pm1 gcd](https://oeis.org/wiki/Compositorial)
+  - [Fermat Numbers gcd](https://en.wikipedia.org/wiki/Fermat_number)
+  - [Fibonacci Numbers gcd](https://en.wikipedia.org/wiki/Fibonacci_sequence)
   - System primes gcd
   - [Shanks's square forms factorization (SQUFOF)](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization)
   - [Return of Coppersmith's attack (ROCA) with NECA variant](https://en.wikipedia.org/wiki/ROCA_vulnerability)
