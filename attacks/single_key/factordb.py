@@ -39,6 +39,7 @@ class Attack(AbstractAttack):
                     return priv_key, None
                 else:
                     self.logger.error("[!] Composite not in factordb, couldn't factorize...")
+                    return None, None
             else:
                 self.logger.error(
                     "publickey.n size should be less than 10000000 digits..."
