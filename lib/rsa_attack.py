@@ -340,18 +340,21 @@ class RSAAttack(object):
                         f"[*] Attack success with {attack_module.get_name()} method !"
                     )
                     break
-            except FactorizationError:
+            except TimeoutError:
                 self.logger.warning("Timeout")
+            except FactorizationError:
+                self.logger.warning("FactorizationError")
             except NotImplementedError:
                 self.logger.warning("[!] This attack module is not implemented yet")
             except KeyboardInterrupt:
                 self.logger.warning("[!] Interrupted")
             except Exception as e:
-                self.logger.error(
-                    "[!] An exception has occurred during the attack. Please check your inputs."
-                )
-                self.logger.error("[!] %s" % e)
-                self.logger.error("[!] %s" % traceback.format_exc())
+                if self.args.withtraceback:
+                    self.logger.error(
+                        "[!] An exception has occurred during the attack. Please check your inputs."
+                    )
+                    self.logger.error("[!] %s" % e)
+                    self.logger.error("[!] %s" % traceback.format_exc())
             t1 = time.time()
             td = t1 - t0
             T += [td]

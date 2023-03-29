@@ -187,6 +187,12 @@ def parse_args():
     )
 
 
+    parser.add_argument(
+        "--withtraceback",
+        help="show tracebacks",
+        action="store_true",
+    )
+
     args = parser.parse_args()
     args.attacks_list = attacks_list
     return args
