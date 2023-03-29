@@ -15,6 +15,9 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run simple lattice attack with a timeout"""
         try:
+            if not hasattr(publickey,"p"):
+              self.logger.error("[!] simple lattice attack is for partial keys only...")
+              return None, None
             sageresult = subprocess.check_output(
                 [
                     "sage",
