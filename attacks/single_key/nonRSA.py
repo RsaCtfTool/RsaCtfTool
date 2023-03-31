@@ -3,7 +3,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import is_prime, invmod, ilog2, introot
+from lib.number_theory import is_prime, invmod, ilog2, introot, iroot, powmod
 
 
 class Attack(AbstractAttack):
@@ -25,14 +25,14 @@ class Attack(AbstractAttack):
         for i in range(2, ilog2(n) + 1)[
             ::-1
         ]:  # we need to find the largest power first, otherwise, it would never be prime
-            root = introot(n, i)
-            if pow(root, i) == n:
+            root , f = iroot(n, i)
+            if f:
                 # self.logger.info("n = %d^%d" % (root, i))
                 if not is_prime(root):
                     self.logger.warning("[!] n = base^x, but base is not prime")
                     return (None, None)
                 else:
-                    phi = (root - 1) * pow(root, i - 1)
+                    phi = (root - 1) * powmod(root, i - 1, n)
                     d = invmod(e, phi)
                     # self.logger.info("d = %d" % d)
                     self.logger.warning(
