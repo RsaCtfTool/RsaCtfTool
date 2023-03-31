@@ -151,9 +151,12 @@ class PrivateKey(object):
             try:
                 self.key = RSA.construct((self.n, self.e, self.d))
             except NotImplementedError:
+                logger.error("[!] Unable to create PEM private key...")
+                logger.info("n:%s\ne:%s\nd:%s\n" % (hex(self.n),hex(self.e),hex(self.d)))
                 pass
             except ValueError:
                 logger.error("[!] Unable to compute factors p and q from exponent d")
+                logger.info("[+] n=%d,e=%d,d=%d" % (self.n,self,e,self.d))
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
                 try:
