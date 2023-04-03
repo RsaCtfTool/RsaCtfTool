@@ -314,6 +314,9 @@ class RSAAttack(object):
         else:
             self.publickey = publickey
  
+        if is_prime(self.publickey.n):
+           self.logger.warning("[!] Your provided modulus is prime:\n%d\nThere is no need to run an integer factorization..." % self.publickey.n)
+           return True
 
         T = []
         # Loop through implemented attack methods and conduct attacks
