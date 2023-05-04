@@ -179,6 +179,7 @@ source venv/bin/activate
 
 ## Requirements
 
+- python3.9
 - GMPY2
 - PyCrypto
 - Requests
