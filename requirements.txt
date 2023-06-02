@@ -1,5 +1,5 @@
 six
-cryptography==39.0.1
+cryptography==41.0.0
 urllib3==1.26.5
 requests==2.25.1
 gmpy2==2.1.2
