@@ -244,7 +244,6 @@ def run_attacks(args, logger):
             attackobj.unciphered = []
             logger.info("\n[*] Testing key %s." % publickey)
             attackobj.attack_single_key(publickey, selected_attacks)
-
     if args.publickey is None:
         if args.partial:
             priv_key = PrivateKey(filename=args.key, password=None)
@@ -253,7 +252,7 @@ def run_attacks(args, logger):
             logger.error("No key specified")
         if args.n is not None:
           ### FIXME 
-          publickey, _ = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
+          publickey, _privkey = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
           attackobj.attack_single_key(publickey, selected_attacks)
     return args
 
@@ -409,6 +408,9 @@ def main():
         args.n = get_numeric_value(args.n)
     elif args.p is not None and args.q is not None:
         args.n = args.p * args.q
+
+    if args.n is not None and (args.p is not None or args.q is not None):
+      logger.warning("[!] It seems you already provided one of the prime factors, nothing to do here...")
 
     # if we have uncipher but no uncipherfile
     if args.uncipher is not None:

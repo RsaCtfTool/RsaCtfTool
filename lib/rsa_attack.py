@@ -317,31 +317,45 @@ class RSAAttack(object):
         if is_prime(self.publickey.n):
            self.logger.warning("[!] Your provided modulus is prime:\n%d\nThere is no need to run an integer factorization..." % self.publickey.n)
            return True
+      
+        if self.args.p is not None and self.args.q is None:
+            self.args.q = self.args.n // self.args.p
+  
+        if self.args.q is not None and self.args.p is None:
+            self.args.p = self.args.n // self.args.q
+
+        self.need_run = not (self.args.p is not None and self.args.q is not None)
 
         T = []
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
             t0 = time.time()
-            self.logger.info(
-                "[*] Performing %s attack on %s."
-                % (attack_module.get_name(), self.publickey.filename)
-            )
+            if self.need_run:
+                self.logger.info(
+                    "[*] Performing %s attack on %s."
+                    % (attack_module.get_name(), self.publickey.filename)
+                )
             try:
                 if not attack_module.can_run():
                     continue
 
-                self.priv_key, unciphered = attack_module.attack_wrapper(
-                    self.publickey, self.cipher
-                )
+                if self.need_run:
+                    self.priv_key, unciphered = attack_module.attack_wrapper(self.publickey, self.cipher)
+                else:
+                    self.logger.warning("[!] No need to factorize since you provided a prime factor...")
+                    unciphered = None
+                    self.priv_key = priv_key = PrivateKey(self.args.p, self.args.q, self.args.e, self.args.n)
+ 
                 if unciphered is not None and unciphered is not []:
                     if isinstance(unciphered, list):
                         self.unciphered = self.unciphered + unciphered
                     else:
                         self.unciphered.append(unciphered)
                 if self.can_stop_tests():
-                    self.logger.info(
-                        f"[*] Attack success with {attack_module.get_name()} method !"
-                    )
+                    if self.need_run:
+                        self.logger.info(
+                            f"[*] Attack success with {attack_module.get_name()} method !"
+                        )
                     break
             except TimeoutError:
                 self.logger.warning("Timeout")
