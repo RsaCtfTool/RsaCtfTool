@@ -343,6 +343,7 @@ def uncipher_file(args, logger):
         unciphers = priv_key.decrypt(args.uncipher)
         print_results(args, None, priv_key, unciphers)
         return True
+    return True
 
 
 def pubkey_detail(args, logger):
@@ -418,12 +419,10 @@ def main():
             uncipher_array.append(n2s(uncipher))
         args.uncipher = uncipher_array
 
-    # if we have uncipherfile
+    #if we have uncipherfile
     if args.uncipherfile is not None:
-        if uncipher_file(args, logger):
-            sys.exit(0)
-        else:
-            sys.exit(-1)
+        if not uncipher_file(args, logger):
+          sys.exit(-1)
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
@@ -452,6 +451,7 @@ def main():
         if "*" in args.publickey or "?" in args.publickey:
             pubkeyfilelist = glob(args.publickey)
             args.publickey = pubkeyfilelist
+            
         elif "," in args.publickey:
             args.publickey = args.publickey.split(",")
         else:
