@@ -326,6 +326,10 @@ class RSAAttack(object):
 
         self.need_run = not (self.args.p is not None and self.args.q is not None)
 
+        if self.args.show_modulus is not None and self.args.show_modulus == True:
+            print("modulus:", self.args.n)
+        
+
         T = []
         # Loop through implemented attack methods and conduct attacks
         for attack_module in self.implemented_attacks:
