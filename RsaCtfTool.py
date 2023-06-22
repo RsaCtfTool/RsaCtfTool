@@ -193,6 +193,13 @@ def parse_args():
         action="store_true",
     )
 
+
+    parser.add_argument(
+        "--show_modulus",
+        help="show tracebacks",
+        action="store_true",
+    )
+
     args = parser.parse_args()
     args.attacks_list = attacks_list
     return args
@@ -458,6 +465,8 @@ def main():
             args.publickey = args.publickey.split(",")
         else:
             args.publickey = [args.publickey]
+
+    print(args.publickey)
 
     # If we already have all informations
     if (
