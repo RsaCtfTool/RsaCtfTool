@@ -8,18 +8,19 @@
 [![GitHub license](https://img.shields.io/github/license/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool)
 [![GitHub contributors](https://img.shields.io/github/contributors/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/contributors)
 
-RSA multi attacks tool : uncipher data from weak public key and try to recover private key.
-The tool will cycle through each selected attack for a given public key.
-RSA security relies on the complexity of the integer factorization problem.
-This project is a glue between various integer factorization algorithms.
-This is an educational tool and not every key will be broken in reasonable time (manage your expectations).
-This tool only supports RSA textbook semiprime composite modulus and not composite multiprimes, this is a constraint embbeded upstream in the pycrypto lib (see TODO).
+The RSA Multi-Attack Tool is a sophisticated utility designed to uncipher data from weak public keys and attempt to recover the corresponding private key. This tool offers a comprehensive range of attack options, enabling users to apply various strategies to crack the encryption.
+RSA security, at its core, relies on the complexity of the integer factorization problem. This project serves as a valuable resource by combining multiple integer factorization algorithms, effectively enhancing the overall decryption capabilities.
+Please note that this tool is primarily intended for educational purposes. It is important to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
+It is essential to highlight that the tool exclusively supports RSA textbook semiprime composite modulus, rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
+
 For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
-Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
-* Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
-* Read the code in this repo to see what and how it does and how to improve it, send PR's.
-* Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
+This tool is meant for educational purposes. For those participating in CTFs, please do the following first:
+* Learn the basics of RSA math and understand number theory, modular arithmetic, integer factorization, and the fundamental theorem of arithmetic.
+* Read the code in this repository to understand what it does and how it works, and suggest improvements by sending pull requests.
+* Avoid copy-pasting and running the tool without understanding the underlying math, as knowing the math is more valuable than knowing how to run the tool.
+
+We hope this tool enhances your understanding of RSA encryption and serves as a valuable resource for exploring the intricacies of integer factorization. Use it responsibly and within the bounds of applicable laws and regulations.
                                              
 __Attacks provided:__
 
@@ -238,3 +239,4 @@ You can follow instructions from : `https://www.mersenneforum.org/showthread.php
 ## Contributing 
 
 - Please read the CONTRIBUTING.md guideline for the bare minimum aceptable PRs.
+
