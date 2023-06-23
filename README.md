@@ -16,7 +16,7 @@ This is an educational tool and not every key will be broken in reasonable time 
 This tool only supports RSA textbook semiprime composite modulus and not composite multiprimes, this is a constraint embbeded upstream in the pycrypto lib (see TODO).
 For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
-Disclaimer: for those doing CTF's first try: 
+Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
 * Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
 * Read the code in this repo to see what and how it does and how to improve it, send PR's.
 * Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
