@@ -20,9 +20,8 @@ Disclaimer: for those doing CTF's first try:
 * Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
 * Read the code in this repo to see what and how it does and how to improve it, send PR's.
 * Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
-
                                              
-Attacks :
+__Attacks provided:__
 
 - Attacks that doesn't depend on the factorization of integers (may depend on knowing n,e,cyphertext,etc...):
   - [Wiener's attack](https://en.wikipedia.org/wiki/Wiener%27s_attack)
