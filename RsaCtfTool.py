@@ -48,6 +48,14 @@ __________               R_______________________________E __                .__
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E                             
+
+Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
+
+Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
+Read the code in this repo to see what and how it does and how to improve it, send PR's.
+Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
+
+        
 """.replace(
         "R", cRED
     ).replace(
