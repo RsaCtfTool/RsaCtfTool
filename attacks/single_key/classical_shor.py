@@ -17,7 +17,7 @@ def shor(n):
     https://en.wikipedia.org/wiki/Shor%27s_algorithm
     """
     for a in range(2, n):
-        g = gcd(n, a): # a should be coprime of n otherwise it is a trivial factor of n.
+        g = gcd(n, a) # a should be coprime of n otherwise it is a trivial factor of n.
         if g == 1:
             for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search. 
                 ar = powmod(a, r, n)  # ar is the period returned by the quantum computer, we are just bruteforcing it.
