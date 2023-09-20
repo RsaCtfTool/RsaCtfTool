@@ -80,6 +80,7 @@ __Attacks provided:__
   - [Quadratic sieve](https://en.wikipedia.org/wiki/Quadratic_sieve)
   - [Classical part of Shor algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
   - [Lucas Numbers gcd](https://en.wikipedia.org/wiki/Lucas_number)
+  - [Rapid7 gcd prime dataset](https://opendata.rapid7.com/sonar.ssl/)
 
 ## Usage
 
