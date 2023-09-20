@@ -63,7 +63,7 @@ from lib.exceptions import FactorizationError
 # https://eprint.iacr.org/2004/147.pdf
 
 
-def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
+def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
     """Search for partial q.
     Tunable to search longer.
     """
@@ -75,6 +75,8 @@ def solve_partial_q(e, dp, dq, qi, part_q, progress=True, Limit=100000):
         q = edqm1 // j + 1
         if q & part_q == part_q:
             break
+
+    if n > q and n % q == 0: return q, n // q
 
     for k in tqdm(range(1, Limit, 1), disable=(not progress)):
         p = edpm1 // k + 1
@@ -101,6 +103,7 @@ class Attack(AbstractAttack):
                 )
                 raise FactorizationError
 
+            n = publickey.n
             e = publickey.e
             if e == 0:
                 e = 65537
@@ -108,7 +111,7 @@ class Attack(AbstractAttack):
             dq = publickey.dq
             di = publickey.di
             partial_q = publickey.q
-            publickey.p, publickey.q = solve_partial_q(e, dp, dq, di, partial_q)
+            publickey.p, publickey.q = solve_partial_q(n, e, dp, dq, di, partial_q)
             if publickey.e == 0:
                 publickey.e = 65537
             if publickey.n == 0:
