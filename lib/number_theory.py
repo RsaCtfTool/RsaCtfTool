@@ -462,14 +462,13 @@ def factor_ned_deterministic(n, e, d):
   """
   800-56B R2 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.2.
   """
-  n4 = n << 2
-  k = d*e - 1
-  a = k * gcd(n - 1, k)
-  m, r = divmod(a, n)
+  n4, k = n << 2, d*e - 1
+  m, r = divmod(k * gcd(n - 1, k) , n)
   b = ((n - r) // (m + 1)) + 1
   if (b2n4 := b*b - n4) > 0:
     p = (b + isqrt(b2n4)) >> 1
     return p, n // p
+
 factor_ned = factor_ned_deterministic
 
 
