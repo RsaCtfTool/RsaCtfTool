@@ -423,16 +423,6 @@ def cuberoot(n):
     return introot(n, 3)
 
 
-def trivial_factorization_with_n_phi(N, phi):
-    m = N - phi + 1
-    m2N2 = pow(m, 2) - (N << 2) # same as isqrt((m**2) - (4*n))
-    if m2N2 > 0:
-        i = isqrt(m2N2)
-        roots = int((m - i) >> 1), int((m + i) >> 1)
-        if roots[0] * roots[1] == N:
-            return roots
-
-
 import random
 def factor_ned_probabilistic(n, e, d):
   """
@@ -456,20 +446,29 @@ def factor_ned_probabilistic(n, e, d):
     if (x := pow(y, 2, n)) == 1:
       p = gcd(x - 1, n)
       return p, n // p
+        
+
+def trivial_factorization_with_n_b(n, b):
+    if (b2n4 := (b*b) - (n << 2)) > 0:
+        i = isqrt(b2n4)
+        p, q = int((b - i) >> 1), int((b + i) >> 1)
+        if p*q == n:
+          return p, q
 
 
 def factor_ned_deterministic(n, e, d):
   """
   800-56B R2 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.2.
   """
-  n4, k = n << 2, d*e - 1
+  k = d*e - 1
   m, r = divmod(k * gcd(n - 1, k) , n)
-  b = ((n - r) // (m + 1)) + 1
-  if (b2n4 := b*b - n4) > 0:
-    p = (b + isqrt(b2n4)) >> 1
-    return p, n // p
-
+  return trivial_factorization_with_n_b(n, ((n - r) // (m + 1)) + 1)
+    
 factor_ned = factor_ned_deterministic
+
+
+def trivial_factorization_with_n_phi(n, phi):
+    return trivial_factorization_with_n_b(n, n - phi + 1) 
 
 
 def neg_pow(a, b, n):
