@@ -434,7 +434,7 @@ def trivial_factorization_with_n_phi(N, phi):
 
 
 import random
-def factor_ned(n, e, d):
+def factor_ned_probabilistic(n, e, d):
   """
   800-56B R1 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.
   """
@@ -456,6 +456,21 @@ def factor_ned(n, e, d):
     if (x := pow(y, 2, n)) == 1:
       p = gcd(x - 1, n)
       return p, n // p
+
+
+def factor_ned_deterministic(n, e, d):
+  """
+  800-56B R2 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.2.
+  """
+  n4 = n << 2
+  k = d*e - 1
+  a = k * gcd(n - 1, k)
+  m, r = divmod(a, n)
+  b = ((n - r) // (m + 1)) + 1
+  if (b2n4 := b*b - n4) > 0:
+    p = (b + isqrt(b2n4)) >> 1
+    return p, n // p
+factor_ned = factor_ned_deterministic
 
 
 def neg_pow(a, b, n):
