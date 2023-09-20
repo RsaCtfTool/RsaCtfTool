@@ -104,9 +104,7 @@ class Attack(AbstractAttack):
                 raise FactorizationError
 
             n = publickey.n
-            e = publickey.e
-            if e == 0:
-                e = 65537
+            if (e := publickey.e) == 0: e = 65537
             dp = publickey.dp
             dq = publickey.dq
             di = publickey.di
