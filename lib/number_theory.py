@@ -666,6 +666,7 @@ __all__ = [
     log2,
     log10,
     trivial_factorization_with_n_phi,
+    factor_ned,
     neg_pow,
     common_modulus_related_message,
     phi,
