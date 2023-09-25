@@ -16,8 +16,7 @@ def pollard_P_1(n, progress=True):
     for j in range(0, len(prime)):
         primej = prime[j]
         logp = log(primej)
-        for i in range(1, int(logn / logp) + 1):
-            z.append(primej)
+        z.extend(primej for _ in range(1, int(logn / logp) + 1))
 
     for pp in tqdm(prime, disable=(not progress)):
         for i in range(0, len(z)):

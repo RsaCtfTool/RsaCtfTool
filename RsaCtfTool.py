@@ -195,13 +195,11 @@ def parse_args():
         action="store_true",
     )
 
-
     parser.add_argument(
         "--withtraceback",
         help="show tracebacks",
         action="store_true",
     )
-
 
     parser.add_argument(
         "--show_modulus",
@@ -267,9 +265,11 @@ def run_attacks(args, logger):
         else:
             logger.error("No key specified")
         if args.n is not None:
-          ### FIXME 
-          publickey, _privkey = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
-          attackobj.attack_single_key(publickey, selected_attacks)
+            ### FIXME
+            publickey, _privkey = generate_keys_from_p_q_e_n(
+                args.p, args.q, args.e, args.n
+            )
+            attackobj.attack_single_key(publickey, selected_attacks)
     return args
 
 
@@ -426,7 +426,9 @@ def main():
         args.n = args.p * args.q
 
     if args.n is not None and (args.p is not None or args.q is not None):
-      logger.warning("[!] It seems you already provided one of the prime factors, nothing to do here...")
+        logger.warning(
+            "[!] It seems you already provided one of the prime factors, nothing to do here..."
+        )
 
     # if we have uncipher but no uncipherfile
     if args.uncipher is not None:
@@ -437,10 +439,10 @@ def main():
             uncipher_array.append(n2s(uncipher))
         args.uncipher = uncipher_array
 
-    #if we have uncipherfile
+    # if we have uncipherfile
     if args.uncipherfile is not None:
         if not uncipher_file(args, logger):
-          sys.exit(-1)
+            sys.exit(-1)
 
     # If we have n and one of p and q, calculated the other
     if args.n and (args.p or args.q):
@@ -469,7 +471,7 @@ def main():
         if "*" in args.publickey or "?" in args.publickey:
             pubkeyfilelist = glob(args.publickey)
             args.publickey = pubkeyfilelist
-            
+
         elif "," in args.publickey:
             args.publickey = args.publickey.split(",")
         else:
@@ -539,6 +541,7 @@ def main():
     # Finish and cleanup
     if args.cleanup:
         cleanup(args)
+
 
 if __name__ == "__main__":
     main()

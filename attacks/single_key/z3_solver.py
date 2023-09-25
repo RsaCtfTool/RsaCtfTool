@@ -58,7 +58,6 @@ class Attack(AbstractAttack):
             return None, None
 
     def attack(self, publickey, cipher=[], progress=True):
-
         if not hasattr(publickey, "p"):
             publickey.p = None
         if not hasattr(publickey, "q"):

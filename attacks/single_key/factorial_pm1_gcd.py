@@ -18,7 +18,7 @@ class Attack(AbstractAttack):
         p = q = None
         f = 1
         for x in tqdm(range(2, limit), disable=(not progress)):
-            #f  = fac(x)
+            # f  = fac(x)
             f *= x
             g = gcd(f - 1, publickey.n)
             if 1 < g < publickey.n:

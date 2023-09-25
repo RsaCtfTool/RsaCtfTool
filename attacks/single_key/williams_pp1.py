@@ -13,11 +13,15 @@ def williams_pp1(n):
     for v in count(1):
         while True:
             e = ilogb(i2, p)
-            if e == 0: break
-            for _ in range(e): v = mlucas(v, p, n)
+            if e == 0:
+                break
+            for _ in range(e):
+                v = mlucas(v, p, n)
             g = gcd(v - 2, n)
-            if 1 < g < n: return g, n // g
-            if g == n: break
+            if 1 < g < n:
+                return g, n // g
+            if g == n:
+                break
             p = next_prime(p)
     return None
 

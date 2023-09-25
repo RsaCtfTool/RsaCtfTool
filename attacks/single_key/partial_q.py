@@ -76,7 +76,8 @@ def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
         if q & part_q == part_q:
             break
 
-    if n > q and n % q == 0: return q, n // q
+    if n > q and n % q == 0:
+        return q, n // q
 
     for k in tqdm(range(1, Limit, 1), disable=(not progress)):
         p = edpm1 // k + 1
@@ -96,7 +97,6 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run partial_q attack with a timeout"""
         try:
-
             if not isinstance(publickey, PrivateKey):
                 self.logger.error(
                     "[!] partial_q attack is only for partial private keys not pubkeys..."
@@ -104,7 +104,8 @@ class Attack(AbstractAttack):
                 raise FactorizationError
 
             n = publickey.n
-            if (e := publickey.e) == 0: e = 65537
+            if (e := publickey.e) == 0:
+                e = 65537
             dp = publickey.dp
             dq = publickey.dq
             di = publickey.di
@@ -134,5 +135,4 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-
         raise NotImplementedError

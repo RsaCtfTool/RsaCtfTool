@@ -25,7 +25,7 @@ class Attack(AbstractAttack):
         for i in range(2, ilog2(n) + 1)[
             ::-1
         ]:  # we need to find the largest power first, otherwise, it would never be prime
-            root , f = iroot(n, i)
+            root, f = iroot(n, i)
             if f:
                 # self.logger.info("n = %d^%d" % (root, i))
                 if not is_prime(root):

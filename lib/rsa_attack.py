@@ -209,7 +209,9 @@ class RSAAttack(object):
         for publickey in publickeys:
             try:
                 with open(publickey, "rb") as pubkey_fd:
-                    publickeys_obj.append(PublicKey(pubkey_fd.read(), filename=publickey))
+                    publickeys_obj.append(
+                        PublicKey(pubkey_fd.read(), filename=publickey)
+                    )
             except Exception:
                 self.logger.error("[*] Key format not supported : %s." % publickey)
                 continue
@@ -294,12 +296,11 @@ class RSAAttack(object):
                 )
             return
 
-
         if isinstance(publickey, str):
             # Read keyfile
             try:
                 with open(publickey, "rb") as pubkey_fd:
-                    self.publickey = PublicKey(pubkey_fd.read(), filename = publickey)
+                    self.publickey = PublicKey(pubkey_fd.read(), filename=publickey)
             except Exception as e:
                 self.logger.error("[!] %s." % e)
                 return
@@ -313,14 +314,17 @@ class RSAAttack(object):
                 self.args.e = self.publickey.e
         else:
             self.publickey = publickey
- 
+
         if is_prime(self.publickey.n):
-           self.logger.warning("[!] Your provided modulus is prime:\n%d\nThere is no need to run an integer factorization..." % self.publickey.n)
-           return True
-      
+            self.logger.warning(
+                "[!] Your provided modulus is prime:\n%d\nThere is no need to run an integer factorization..."
+                % self.publickey.n
+            )
+            return True
+
         if self.args.p is not None and self.args.q is None:
             self.args.q = self.args.n // self.args.p
-  
+
         if self.args.q is not None and self.args.p is None:
             self.args.p = self.args.n // self.args.q
 
@@ -328,7 +332,6 @@ class RSAAttack(object):
 
         if self.args.show_modulus is not None and self.args.show_modulus == True:
             print("modulus:", self.args.n)
-        
 
         T = []
         # Loop through implemented attack methods and conduct attacks
@@ -344,12 +347,18 @@ class RSAAttack(object):
                     continue
 
                 if self.need_run:
-                    self.priv_key, unciphered = attack_module.attack_wrapper(self.publickey, self.cipher)
+                    self.priv_key, unciphered = attack_module.attack_wrapper(
+                        self.publickey, self.cipher
+                    )
                 else:
-                    self.logger.warning("[!] No need to factorize since you provided a prime factor...")
+                    self.logger.warning(
+                        "[!] No need to factorize since you provided a prime factor..."
+                    )
                     unciphered = None
-                    self.priv_key = priv_key = PrivateKey(self.args.p, self.args.q, self.args.e, self.args.n)
- 
+                    self.priv_key = priv_key = PrivateKey(
+                        self.args.p, self.args.q, self.args.e, self.args.n
+                    )
+
                 if unciphered is not None and unciphered is not []:
                     if isinstance(unciphered, list):
                         self.unciphered = self.unciphered + unciphered

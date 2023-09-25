@@ -54,10 +54,11 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     # compute polynomials
     gg = []
     for ii in range(mm):
-        for jj in range(dd):
-            gg.append((x * XX) ** jj * modulus ** (mm - ii) * polZ(x * XX) ** ii)
-    for ii in range(tt):
-        gg.append((x * XX) ** ii * polZ(x * XX) ** mm)
+        gg.extend(
+            (x * XX) ** jj * modulus ** (mm - ii) * polZ(x * XX) ** ii
+            for jj in range(dd)
+        )
+    gg.extend((x * XX) ** ii * polZ(x * XX) ** mm for ii in range(tt))
 
     # construct lattice B
     BB = Matrix(ZZ, nn)
@@ -69,9 +70,7 @@ def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     BB = BB.LLL()
 
     # transform shortest vector in polynomial
-    new_pol = 0
-    for ii in range(nn):
-        new_pol += x**ii * BB[0, ii] / XX**ii
+    new_pol = sum(x**ii * BB[0, ii] / XX**ii for ii in range(nn))
 
     # factor polynomial
     potential_roots = new_pol.roots()
