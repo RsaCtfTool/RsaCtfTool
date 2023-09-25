@@ -5,6 +5,6 @@ if len(str(n)) >= 40:
   p, q = pq
   print(p, q)
 else:
-  p, q = factor(n)
-  print(p[0], q[0])
+  p,q = factor(n)
+  print(p[0],q[0])
   

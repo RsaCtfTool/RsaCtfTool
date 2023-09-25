@@ -14,8 +14,7 @@ def find_p_Coppersmith(n, pLow, lowerBitsNum, beta=0.5):
     l = 1 << lowerBitsNum
     f = l * x + pLow
     f = f.monic()
-    roots = f.small_roots(X = 1 << ((nbits >> 1) - lowerBitsNum), beta=beta)
-    if roots:
+    if (roots = f.small_roots(X = 1 << ((nbits >> 1) - lowerBitsNum), beta=beta)):
         return [int(r) for r in [ ZZ(gcd(l * x0 + pLow, n)) for x0 in roots ] if n > r > 1]
 
 
@@ -29,8 +28,7 @@ def find_p(n, e, dLow, beta=0.5):
         results = solve_mod([edX - (k * XnX1) + (k * n) == X], (1 << lowerBitsNum))
         for x in results:
             pLow = ZZ(x[0])
-            roots = find_p_Coppersmith(n, pLow, lowerBitsNum)
-            if roots:
+            if (roots := find_p_Coppersmith(n, pLow, lowerBitsNum)):
                 return roots[0]
 
 

@@ -8,6 +8,7 @@ from lib.number_theory import is_divisible
 from lib.pickling import *
 import glob
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -17,7 +18,7 @@ class Attack(AbstractAttack):
         """Search for rapid7 gcd primes"""
         for txtfile in glob.glob("data/*.pkl.bz2"):
             self.logger.info("[+] loading prime list file %s..." % txtfile)
-            #primes = sorted([int(l.rstrip()) for l in open(txtfile,"r").readlines()])
+            # primes = sorted([int(l.rstrip()) for l in open(txtfile,"r").readlines()])
             primes = decompress_pickle(txtfile)
             for prime in tqdm(primes, disable=(not progress)):
                 if is_divisible(publickey.n, prime):

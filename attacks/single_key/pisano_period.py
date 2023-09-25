@@ -32,9 +32,7 @@ class Fibonacci:
         a, b = self._fib_res(n >> 1, p)
         c = mod((mod(a, p) * mod(((b << 1) - a), p)), p)
         d = mod((powmod(a, 2, p) + powmod(b, 2, p)), p)
-        if n & 1 == 0:
-            return (c, d)
-        return (d, mod((c + d), p))
+        return (c, d) if n & 1 == 0 else (d, mod((c + d), p))
 
     def get_n_mod_d(self, n, d, use="mersenne"):
         if n < 0:
@@ -64,9 +62,10 @@ class Fibonacci:
         if self.verbose:
             print("Search begin: %d, end: %d" % (begin, end))
 
-        look_up = {}
-        for x in tqdm(range(search_len), disable=(not self.progress)):
-            look_up[self.get_n_mod_d(x, N)] = x
+        look_up = {
+            self.get_n_mod_d(x, N): x
+            for x in tqdm(range(search_len), disable=(not self.progress))
+        }
 
         if self.verbose:
             print("Searching...")
@@ -94,7 +93,7 @@ class Fibonacci:
                                     "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
                                     % (N, res, res_n, T)
                                 )
-                
+
     def factorization(self, N, min_accept, xdiff):
         phi_guess = self.get_period_bigint(N, min_accept, xdiff)
         if phi_guess is not None:

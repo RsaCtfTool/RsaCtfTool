@@ -47,7 +47,8 @@ def SQUFOF(N):
             q = Q
             Q = Qprev + b * (Pprev - P)
             r = isqrt(Q)
-            if not (i & 1) and (r * r) == Q: break
+            if not (i & 1) and (r * r) == Q:
+                break
             Pprev, Qprev = P, q
         b = (Po - P) // r
         Pprev = P = b * r + P
@@ -61,7 +62,7 @@ def SQUFOF(N):
             q = Q
             Q = Qprev + b * (Pprev - P)
             Qprev = q
-            c1 = (P != Pprev)
+            c1 = P != Pprev
         r = gcd(N, Qprev)
         if 1 < r < N:
             return r, N // r
@@ -80,10 +81,10 @@ class Attack(AbstractAttack):
             publickey.p, publickey.q = SQUFOF(publickey.n)
             if publickey.p is not None and publickey.q is not None:
                 priv_key = PrivateKey(
-                     n=publickey.n,
-                     p=int(publickey.p),
-                     q=int(publickey.q),
-                     e=int(publickey.e),
+                    n=publickey.n,
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
                 )
                 return priv_key, None
             else:

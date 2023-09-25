@@ -13,7 +13,6 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["fast"]
 
     def common_modulus_related_message_attack(self, c1, c2, k1, k2):
-
         if k1.n != k2.n:
             return None
 

@@ -7,6 +7,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.number_theory import is_divisible
 import glob
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
@@ -16,7 +17,7 @@ class Attack(AbstractAttack):
         """Search for previously used primes in CTFs"""
         for txtfile in glob.glob("data/*.txt"):
             self.logger.info("[+] loading prime list file %s..." % txtfile)
-            primes = sorted([int(l.rstrip()) for l in open(txtfile,"r").readlines()])
+            primes = sorted([int(l.rstrip()) for l in open(txtfile, "r").readlines()])
             for prime in tqdm(primes, disable=(not progress)):
                 if is_divisible(publickey.n, prime):
                     publickey.q = prime

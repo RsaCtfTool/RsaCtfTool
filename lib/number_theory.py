@@ -10,12 +10,14 @@ logger = logging.getLogger("global_logger")
 
 try:
     import gmpy2 as gmpy
+
     gmpy_version = 2
     mpz = gmpy.mpz
     logger.info("[+] Using gmpy version 2 for math.")
 except ImportError:
     try:
         import gmpy
+
         gmpy_version = 1
         mpz = gmpy.mpz
         logger.info("[+] Using gmpy version 1 for math.")
@@ -23,11 +25,16 @@ except ImportError:
         gmpy_version = 0
         mpz = int
         gmpy = None
-        logger.warning("[!] Using native python functions for math, which is slow. install gmpy2 with: 'python3 -m pip install <module>'.")
+        logger.warning(
+            "[!] Using native python functions for math, which is slow. install gmpy2 with: 'python3 -m pip install <module>'."
+        )
+
+
+list_prod = lambda lst: reduce((lambda x, y: x * y), lst)
+
 
 def getpubkeysz(n):
-    size = int(math.log2(n))
-    if size & 1 != 0:
+    if (size := n.bit_length()) & 1 != 0:
         size += 1
     return size
 
@@ -36,10 +43,9 @@ def _gcdext(a, b):
     if a == 0:
         return [b, 0, 1]
     else:
-        d = b // a
-        r = b - (d * a)
+        d, r = divmod(b, a)
         g, y, x = _gcdext(r, a)
-        return [g, x - d * y, y]
+    return [g, x - d * y, y]
 
 
 def _isqrt(n):
@@ -54,10 +60,6 @@ def _isqrt(n):
 def _isqrt_rem(n):
     i2 = _isqrt(n)
     return i2, n - (i2 * i2)
-
-
-def _isqrt_gmpy(n):
-    return int(gmpy.sqrt(n))
 
 
 def _isqrt_rem_gmpy(n):
@@ -125,13 +127,9 @@ def _invmod(a, m):
 
 
 def _is_square(n):
-    h = n & 0xF
-    if h > 9:
+    if (h := n & 0xF) > 9 or h in [2, 3, 5, 6, 7, 8]:
         return False
-    if h != 2 and h != 3 and h != 5 and h != 6 and h != 7 and h != 8:
-        t = _isqrt(n)
-        return t * t == n
-    return False
+    return (t := _isqrt(n) * t) == n
 
 
 def miller_rabin(n, k=40):
@@ -145,7 +143,6 @@ def miller_rabin(n, k=40):
 
     if n == 2:
         return True
-
     if n & 1 == 0:
         return False
 
@@ -157,7 +154,7 @@ def miller_rabin(n, k=40):
     for i in range(0, k):
         a = random.randrange(2, n - 1)
         x = pow(a, s, n)
-        if x == 1 or x == n - 1:
+        if x in [1, n - 1]:
             continue
         j = 0
         while j <= r - 1:
@@ -234,10 +231,6 @@ def _primes_yield_gmpy(n):
         i += 1
 
 
-def _primes_gmpy(n):
-    return list(_primes_yield_gmpy(n))
-
-
 def _fib(n):
     a, b = 0, 1
     i = 0
@@ -245,38 +238,6 @@ def _fib(n):
         a, b = b, a + b
         i += 1
     return a
-
-
-def _invert(a, b):
-    return pow(a, b - 2, b)
-
-
-def _lcm(x, y):
-    return (x * y) // _gcd(x, y)
-
-
-def _ilog2_gmpy(n):
-    return int(gmpy.log2(n))
-
-
-def _ilog_gmpy(n):
-    return int(gmpy.log(n))
-
-
-def _ilog2_math(n):
-    return int(math.log2(n))
-
-
-def _ilog_math(n):
-    return int(math.log(n))
-
-
-def _ilog10_math(n):
-    return int(math.log10(n))
-
-
-def _ilog10_gmpy(n):
-    return int(gmpy.log10(n))
 
 
 def ilogb(x, b):
@@ -290,20 +251,20 @@ def ilogb(x, b):
     return l
 
 
-def _mod(a, b):
-    return a % b
-
-
-def _mul(a, b):
-    return a * b
-
-
-def _is_divisible(n, p):
-    return n % p == 0
-
-
-def _is_congruent(a, b, m):
-    return (a - b) % m == 0
+_primes_gmpy = lambda n: list(_primes_yield_gmpy(n))
+_isqrt_gmpy = lambda n: int(gmpy.sqrt(n))
+_invert = lambda a, b: pow(a, b - 2, b)
+_lcm = lambda x, y: (x * y) // _gcd(x, y)
+_ilog2_gmpy = lambda n: int(gmpy.log2(n))
+_ilog_gmpy = lambda n: int(gmpy.log(n))
+_ilog2_math = lambda n: int(math.log2(n))
+_ilog_math = lambda n: int(math.log(n))
+_ilog10_math = lambda n: int(math.log10(n))
+_ilog10_gmpy = lambda n: int(gmpy.log10(n))
+_mod = lambda a, b: a % b
+_mul = lambda a, b: a * b
+_is_divisible = lambda n, p: n % p == 0
+_is_congruent = lambda a, b, m: (a - b) % m == 0
 
 
 def _powmod(b, e, m):
@@ -328,11 +289,16 @@ def _fac(n):
 
 
 from functools import cache
+
+
 @cache
 def _lucas(n):
-   if n == 0: return 2
-   if n == 1: return 1
-   if n > 1: return _lucas(n - 1) + _lucas(n - 2)
+    if n == 0:
+        return 2
+    if n == 1:
+        return 1
+    if n > 1:
+        return _lucas(n - 1) + _lucas(n - 2)
 
 
 if gmpy_version > 0:
@@ -419,56 +385,62 @@ else:
     lucas = _lucas
 
 
-def cuberoot(n):
-    return introot(n, 3)
-
+legendre = lambda a, p: powmod(a, (p - 1) >> 1, p)
+cuberoot = lambda n: introot(n, 3)
 
 import random
+
+
 def factor_ned_probabilistic(n, e, d):
-  """
-  800-56B R1 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.
-  """
-  n1, k = n - 1, d*e - 1
-  if k & 1 == 1: return
-  t,r = 0, k
-  while r & 1 == 0:
-    r >>= 1
-    t += 1
-  for i in range(1, 101):
-    g = random.randint(0, n1)
-    if (y := pow(g, r ,n)) == 1 or y == n1: continue
-    for j in range(1, t):
-      if (x := pow(y, 2, n)) == 1:
-        p = gcd(y - 1, n)
-        return p, n // p
-      if x == n1: continue
-      y = x
-    if (x := pow(y, 2, n)) == 1:
-      p = gcd(x - 1, n)
-      return p, n // p
-        
+    """
+    800-56B R1 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.
+    """
+    n1, k = n - 1, d * e - 1
+    if k & 1 == 1:
+        return
+    t, r = 0, k
+    while r & 1 == 0:
+        r >>= 1
+        t += 1
+    for i in range(1, 101):
+        g = random.randint(0, n1)
+        if (y := pow(g, r, n)) == 1 or y == n1:
+            continue
+        for j in range(1, t):
+            if (x := pow(y, 2, n)) == 1:
+                p = gcd(y - 1, n)
+                return p, n // p
+            if x == n1:
+                continue
+            y = x
+        if (x := pow(y, 2, n)) == 1:
+            p = gcd(x - 1, n)
+            return p, n // p
+
 
 def trivial_factorization_with_n_b(n, b):
-    if (b2n4 := (b*b) - (n << 2)) > 0:
+    if (b2n4 := (b * b) - (n << 2)) > 0:
         i = isqrt(b2n4)
         p, q = int((b - i) >> 1), int((b + i) >> 1)
-        if p*q == n:
-          return p, q
+        if p * q == n:
+            return p, q
 
 
 def factor_ned_deterministic(n, e, d):
-  """
-  800-56B R2 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.2.
-  """
-  k = d*e - 1
-  m, r = divmod(k * gcd(n - 1, k) , n)
-  return trivial_factorization_with_n_b(n, ((n - r) // (m + 1)) + 1)
-    
+    """
+    800-56B R2 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.2.
+    """
+    k = d * e - 1
+    m, r = divmod(k * gcd(n - 1, k), n)
+    return trivial_factorization_with_n_b(n, ((n - r) // (m + 1)) + 1)
+
+
 factor_ned = factor_ned_deterministic
 
 
-def trivial_factorization_with_n_phi(n, phi):
-    return trivial_factorization_with_n_b(n, n - phi + 1) 
+trivial_factorization_with_n_phi = lambda n, phi: trivial_factorization_with_n_b(
+    n, n - phi + 1
+)
 
 
 def neg_pow(a, b, n):
@@ -478,8 +450,7 @@ def neg_pow(a, b, n):
     assert b < 0
     assert gcd(a, n) == 1
     res = int(invert(a, n))
-    res = powmod(res, b * (-1), n)
-    return res
+    return powmod(res, b * (-1), n)
 
 
 def common_modulus_related_message(e1, e2, n, c1, c2):
@@ -495,14 +466,8 @@ def common_modulus_related_message(e1, e2, n, c1, c2):
     if g == 1:
         return None
 
-    if a < 0:
-        c1 = neg_pow(c1, a, n)
-    else:
-        c1 = powmod(c1, a, n)
-    if b < 0:
-        c2 = neg_pow(c2, b, n)
-    else:
-        c2 = powmod(c2, b, n)
+    c1 = neg_pow(c1, a, n) if a < 0 else powmod(c1, a, n)
+    c2 = neg_pow(c2, b, n) if a < 0 else powmod(c2, b, n)
     ct = c1 * c2 % n
     return int(introot(ct, g))
 
@@ -529,22 +494,13 @@ def phi(n, factors):
         return y
 
 
-def list_prod(lst):
-    return reduce((lambda x, y: x * y), lst)
-
-
 def chinese_remainder(m, a):
     S = 0
     N = list_prod(m)
     for i in range(0, len(m)):
         Ni = N // m[i]
-        inv = invert(Ni, m[i])
-        S += Ni * inv * a[i]
+        S += Ni * invert(Ni, m[i]) * a[i]
     return S % N
-
-
-def legendre(a, p):
-    return powmod(a, (p - 1) >> 1, p)
 
 
 def tonelli(n, p):
@@ -562,10 +518,7 @@ def tonelli(n, p):
     for z in range(2, p):
         if p - 1 == legendre(z, p):
             break
-    c = powmod(z, q, p)
-    r = powmod(n, (q + 1) >> 1, p)
-    t = powmod(n, q, p)
-    m = s
+    c, r, t, m = powmod(z, q, p), powmod(n, (q + 1) >> 1, p), powmod(n, q, p), s
     while (t - 1) % p != 0:
         t2 = powmod(t, 2, p)
         for i in range(1, m):
@@ -581,9 +534,8 @@ def tonelli(n, p):
 
 
 def is_cube(n):
-    i = n % 9
     b = False
-    if 0 <= i <= 1 or i == 8:
+    if (i := n % 9) in [0, 1, 8]:
         a, b = iroot(n, 3)
     return b
 
@@ -596,8 +548,8 @@ def dlp_bruteforce(g, h, p):
     for x in range(1, p):
         if h == powmod(g, x, p):
             return x
-            
-            
+
+
 def rational_to_contfrac(x, y):
     """Rational_to_contfrac implementation"""
     a = x // y
@@ -616,7 +568,7 @@ def contfrac_to_rational(frac):
     elif len(frac) == 1:
         return (frac[0], 1)
     else:
-        remainder = frac[1 : len(frac)]
+        remainder = frac[1:]
         (num, denom) = contfrac_to_rational(remainder)
         return (frac[0] * num + denom, num)
 
@@ -625,7 +577,7 @@ def convergents_from_contfrac(frac, progress=False):
     """Convergents_from_contfrac implementation"""
     convs = []
     for i in range(0, len(frac)):
-        convs.append(contfrac_to_rational(frac[0:i]))
+        convs.append(contfrac_to_rational(frac[:i]))
     return convs
 
 
@@ -637,19 +589,20 @@ def inv_mod_pow_of_2(factor, bit_count):
     rest = factor & -2
     acc = 1
     for i in range(bit_count):
-        if acc & (1 << i): acc -= (rest << i)
+        if acc & (1 << i):
+            acc -= rest << i
     mask = (1 << bit_count) - 1
     return acc & mask
 
 
 def mlucas(v, a, n):
     """Helper function for williams_pp1().  Multiplies along a Lucas sequence modulo n."""
-    v1, v2 = v, (v*v - 2) % n
+    v1, v2 = v, (v * v - 2) % n
     while a > 0:
         v1, v2 = (
-            ((v1*v1 - 2) % n, (v1 * v2 - v) % n)
+            ((v1 * v1 - 2) % n, (v1 * v2 - v) % n)
             if a & 1 == 0
-            else ((v1 * v2 - v) % n, (v2*v2 - 2) % n)
+            else ((v1 * v2 - v) % n, (v2 * v2 - 2) % n)
         )
         a >>= 1
     return v1

@@ -18,12 +18,12 @@ class Attack(AbstractAttack):
         p = q = None
         F = 1
         p = 2
-        
+
         for x in tqdm(range(2, limit), disable=(not progress)):
             F *= x
             while F % p == 0:
-              F //= p
-              p = next_prime(p)
+                F //= p
+                p = next_prime(p)
             g = gcd(F - 1, publickey.n)
             if 1 < g < publickey.n:
                 p = publickey.n // g

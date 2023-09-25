@@ -6,7 +6,7 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x, beta):
     # I need to import it in the function otherwise multiprocessing doesn't find it in its context
     from sage_functions import coppersmith_howgrave_univariate
 
-    base = int(65537)
+    base = 65537
     # the known part of p: 65537^a * M^-1 (mod N)
     known = int(pow(base, a, M) * invmod_Mn)
     pol = x + known
@@ -22,7 +22,6 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x, beta):
 
 
 def roca(n):
-
     keySize = n.bit_length()
 
     if keySize <= 960:

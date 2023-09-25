@@ -68,13 +68,14 @@ class Attack(AbstractAttack):
             77232917,
             82589933,
         ]
-        i = getpubkeysz(publickey.n)
+        n = publickey.n
+        i = getpubkeysz(n)
         for mersenne_prime in tqdm(mersenne_tab, disable=(not progress)):
             if mersenne_prime <= i:
                 m = (1 << mersenne_prime) - 1
-                if is_divisible(publickey.n, m):
+                if is_divisible(n, m):
                     p = m
-                    q = publickey.n // p
+                    q = n // p
                     break
             else:
                 break
