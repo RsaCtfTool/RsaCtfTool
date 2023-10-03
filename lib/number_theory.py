@@ -31,6 +31,7 @@ except ImportError:
 
 
 list_prod = lambda lst: reduce((lambda x, y: x * y), lst)
+digit_sum = lambda n: sum([int(d) for d in str(n)])
 
 
 def getpubkeysz(n):
@@ -141,26 +142,20 @@ def miller_rabin(n, k=40):
     for justification
     """
 
-    if n == 2:
-        return True
-    if n & 1 == 0:
-        return False
+    if n == 2: return True
+    if (n & 1 == 0) or (digit_sum(n) % 9 in [0,3,6]): return False
 
     r, s = 0, n - 1
-    while s & 1 == 0:
+    while (s & 1 == 0):
         r += 1
         s >>= 1
     i = 0
     for i in range(0, k):
         a = random.randrange(2, n - 1)
-        x = pow(a, s, n)
-        if x in [1, n - 1]:
-            continue
+        if (x := pow(a, s, n)) in [1, n - 1]: continue
         j = 0
-        while j <= r - 1:
-            x = pow(x, 2, n)
-            if x == n - 1:
-                break
+        while (j <= r - 1):
+            if (x := pow(x, 2, n)) == (n - 1): break
             j += 1
         else:
             return False
