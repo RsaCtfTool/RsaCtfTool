@@ -1,7 +1,7 @@
 from setuptools import setup
 
 VERSION = "0.0.01"
-BASE_CVS_URL = "https://github.com/Ganapati/RsaCtfTool"
+BASE_CVS_URL = "https://github.com/RsaCtfTool/RsaCtfTool"
 
 setup(
     name="RsaCtfTool",
