@@ -1,6 +1,6 @@
 six
 cryptography==39.0.1
-urllib3==1.26.5
+urllib3==1.26.18
 requests==2.25.1
 gmpy2==2.1.2
 pycryptodome==3.10.4
