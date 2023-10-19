@@ -22,12 +22,12 @@ def factor_2PN(N, P=3):
     We can obtain p,q from A and N via quadratic formula.
     """
 
-    P2N = 2 * P * N
+    P2N = (P * N) << 1
     A, remainder = isqrt_rem(P2N)
     if remainder != 0:
         A += 1
 
-    c = -(A**2) + A + P2N
+    c = -(A*A) + A + P2N
     disc = 1 - (c << 2)
 
     if disc >= 0:
