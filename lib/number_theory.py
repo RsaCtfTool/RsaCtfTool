@@ -32,7 +32,7 @@ except ImportError:
 
 list_prod = lambda lst: reduce((lambda x, y: x * y), lst)
 digit_sum = lambda n: sum([int(d) for d in str(n)])
-
+A007814 = lambda n: (~n & n-1).bit_length()
 
 def getpubkeysz(n):
     if (size := n.bit_length()) & 1 != 0:
@@ -145,10 +145,11 @@ def miller_rabin(n, k=40):
     if n == 2: return True
     if (n & 1 == 0) or (digit_sum(n) % 9 in [0,3,6]): return False
 
-    r, s = 0, n - 1
-    while (s & 1 == 0):
-        r += 1
-        s >>= 1
+    #r, s = 0, n - 1
+    #while (s & 1 == 0):
+    #    r += 1
+    #    s >>= 1
+    r = A007814(s:=n-1)
     i = 0
     for i in range(0, k):
         a = random.randrange(2, n - 1)
@@ -393,10 +394,11 @@ def factor_ned_probabilistic(n, e, d):
     n1, k = n - 1, d * e - 1
     if k & 1 == 1:
         return
-    t, r = 0, k
-    while r & 1 == 0:
-        r >>= 1
-        t += 1
+    #t, r = 0, k
+    #while r & 1 == 0:
+    #    r >>= 1
+    #    t += 1 
+    r = A007814(k)
     for i in range(1, 101):
         g = random.randint(0, n1)
         if (y := pow(g, r, n)) == 1 or y == n1:
@@ -504,10 +506,11 @@ def tonelli(n, p):
     """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1
-    s = 0
-    while q & 1 == 0:
-        q >>= 1
-        s += 1
+    #s = 0
+    #while q & 1 == 0:
+    #    q >>= 1
+    #    s += 1
+    r = A007814(q)
     if s == 1:
         return powmod(n, (p + 1) >> 2, p)
     for z in range(2, p):
