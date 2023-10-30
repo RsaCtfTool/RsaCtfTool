@@ -18,7 +18,7 @@ import tempfile
 from glob import glob
 from lib.crypto_wrapper import RSA
 from lib.rsa_attack import RSAAttack
-from lib.number_theory import invmod
+from lib.number_theory import invmod, factor_ned
 from lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
@@ -129,6 +129,10 @@ def parse_args():
         "-e",
         help="Specify the public exponent, using commas to separate multiple exponents. format : int or 0xhex",
     )
+    parser.add_argument(
+        "-d",
+        help="Specify the private exponent. Format : int or 0xhex",
+    )
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
 
@@ -139,7 +143,7 @@ def parse_args():
         default=None,
     )
 
-    # If no arguments, diplay help and exit
+    # If no arguments, display help and exit
     if len(sys.argv) == 1:
         print(banner())
         parser.print_help()
@@ -231,7 +235,7 @@ def run_attacks(args, logger):
     found = False
     attackobj = RSAAttack(args)
     selected_attacks = args.attacks_list
-
+    
     # Run tests
     if args.publickey is None and args.tests:
         if args.attack is not None:
@@ -268,7 +272,7 @@ def run_attacks(args, logger):
             ### FIXME
             publickey, _privkey = generate_keys_from_p_q_e_n(
                 args.p, args.q, args.e, args.n
-            )
+            )   
             attackobj.attack_single_key(publickey, selected_attacks)
     return args
 
@@ -409,6 +413,9 @@ def main():
     if args.q is not None:
         args.q = get_numeric_value(args.q)
 
+    if args.d is not None:
+        args.d = get_numeric_value(args.d)
+
     if args.e is not None:
         e_array = []
         for e in args.e.split(","):
@@ -429,6 +436,14 @@ def main():
         logger.warning(
             "[!] It seems you already provided one of the prime factors, nothing to do here..."
         )
+
+    # get p and q from n, e and d
+    if args.n is not None and args.e is not None and args.d is not None and args.p is None and args.q is None:
+        pq = factor_ned(args.n, args.e, args.d)
+        if pq is not None:
+            args.p, args.q = pq
+        else:
+            logger.warning("[!] Impossible to recover p and q from d")
 
     # if we have uncipher but no uncipherfile
     if args.uncipher is not None:
