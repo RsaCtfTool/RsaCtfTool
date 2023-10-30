@@ -19,7 +19,7 @@ def close_factor(n, b, progress=True):
     # else we are going to search for even i values in the lookup table.
     look_up = {}
     z = 1
-    parity = int(phi_approx & 1 == 1)
+    parity = phi_approx & 1
     for i in tqdm(range(0, b + 1), disable=(not progress)):
         if i & 1 == parity:
             look_up[z] = i
