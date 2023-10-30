@@ -10,10 +10,10 @@
 
 The RSA Multi-Attack Tool is a sophisticated utility designed to uncipher data from weak public keys and attempt to recover the corresponding private key. This tool offers a comprehensive range of attack options, enabling users to apply various strategies to crack the encryption.
 RSA security, at its core, relies on the complexity of the integer factorization problem. This project serves as a valuable resource by combining multiple integer factorization algorithms, effectively enhancing the overall decryption capabilities.
-Please note that this tool is primarily intended for educational purposes. It is important to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
-It is essential to highlight that the tool exclusively supports RSA textbook semiprime composite modulus, rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
+Please note that this tool is primarily intended for educational purposes. It is essential to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
+It is essential to highlight that the tool exclusively supports the RSA textbook semiprime composite modulus rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
 
-For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
+For an advanced integer factorization tool, please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git) or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
 This tool is meant for educational purposes. For those participating in CTFs, please do the following first:
 * Learn the basics of RSA math and understand number theory, modular arithmetic, integer factorization, and the fundamental theorem of arithmetic.
@@ -24,10 +24,10 @@ We hope this tool enhances your understanding of RSA encryption and serves as a 
                                              
 __Attacks provided:__
 
-- Attacks that doesn't depend on the factorization of integers (may depend on knowing n,e,cyphertext,etc...):
+- Attacks that don't depend on the factorization of integers (may depend on knowing n,e, cyphertext, etc...):
   - [Wiener's attack](https://en.wikipedia.org/wiki/Wiener%27s_attack)
   - Hastad's attack (Small public exponent)
-  - [Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e d < n^0.292)](https://staff.emu.edu.tr/alexanderchefranov/Documents/CMSE491/Fall2019/BonehIEEETIT2000%20Cryptanalysis%20of%20RSA.pdf)
+  - [Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e., d < n^0.292)](https://staff.emu.edu.tr/alexanderchefranov/Documents/CMSE491/Fall2019/BonehIEEETIT2000%20Cryptanalysis%20of%20RSA.pdf)
   - Same n, huge e
   - [Small CRT exponent](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
   - Common factor between ciphertext and modulus
@@ -38,10 +38,10 @@ __Attacks provided:__
 - Strict Integer factorization methods (only depends on knowing n):
   - Weak public key factorization
   - Small q (q < 100,000)
-  - [Fermat's factorisation for close p and q](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+  - [Fermat's factorization for close p and q](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
   - Gimmicky Primes method
   - Past CTF Primes method
-  - Non RSA key in the form b^x, where b is prime
+  - Non-RSA key in the form b^x, where b is the prime
   - Common factor attacks across multiple keys
   - Small fractions method when p/q is close to a small fraction
   - [Elliptic Curve Method](https://en.wikipedia.org/wiki/Lenstra_elliptic-curve_factorization)
@@ -64,18 +64,18 @@ __Attacks provided:__
   - [Fibonacci Numbers gcd](https://en.wikipedia.org/wiki/Fibonacci_sequence)
   - System primes gcd
   - [Shanks's square forms factorization (SQUFOF)](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization)
-  - [Return of Coppersmith's attack (ROCA) with NECA variant](https://en.wikipedia.org/wiki/ROCA_vulnerability)
+  - [Return of Coppersmith's Attack (ROCA) with NECA variant](https://en.wikipedia.org/wiki/ROCA_vulnerability)
   - [Dixon](https://en.wikipedia.org/wiki/Dixon%27s_factorization_method)
   - brent (Pollard rho variant)
   - [Pisano Period](https://en.wikipedia.org/wiki/Pisano_period)
   - XYXZ form integer factorization where P prime > X^Y and Q prime > X^Z
   - High and Low Bits Equal
   - [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm)
-  - [Hart algorithm (similar to fermat)](http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf)
-  - [Lehmer machine (similar to fermat)](https://en.wikipedia.org/wiki/Lehmer_sieve)
+  - [Hart algorithm (similar to Fermat)](http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf)
+  - [Lehmer machine (similar to Fermat)](https://en.wikipedia.org/wiki/Lehmer_sieve)
   - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
-  - [Kraitchik algorithm (improvement over fermat)](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
-  - Lehman algorithm improvement over fermat
+  - [Kraitchik algorithm (an improvement over Fermat)](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
+  - Lehman algorithm improvement over Fermat
   - Carmichael algorithm
   - [Quadratic sieve](https://en.wikipedia.org/wiki/Quadratic_sieve)
   - [Classical part of Shor algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
@@ -141,7 +141,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
 
-For more examples, look at test.sh file
+For more examples, look at the test.sh file
 
 ### Attack private keys with partial bits of Q known ###
 
@@ -213,7 +213,7 @@ pip3 install -r "requirements.txt"
 ./RsaCtfTool.py
 ```
 
-If you also want the optional SageMath you need to do
+If you also want the optional SageMath , you need to do
 ```bash
 sudo dnf install sagemath
 pip3 install -r "optional-requirements.txt"
@@ -221,7 +221,7 @@ pip3 install -r "optional-requirements.txt"
 
 ### MacOS-specific Instructions
 
-If `pip3 install -r "requirements.txt"` fails to install requirements accessible within environment, the following command may work.
+If `pip3 install -r "requirements.txt"` fails to install requirements accessible within the environment, the following command may work.
 
 ``easy_install `cat requirements.txt` ``
 
@@ -229,11 +229,11 @@ If you installed gmpy2 with homebrew(`brew install gmp`), you might have to poin
 ``CFLAGS=-I/opt/homebrew/include LDFLAGS=-L/opt/homebrew/lib pip3 install -r requirements.txt``
 
 ### Optional to factor roca keys upto 512 bits, Install neca:
-You can follow instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
+You can follow the instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
 
 ## TODO (aka. Help wanted !)
 
-- Implement test method in each attack.
+- Implement a test method in each attack.
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
 - Support multiprime RSA, the project currently supports textbook RSA.
 
