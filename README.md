@@ -242,17 +242,17 @@ If you installed gmpy2 with homebrew(`brew install gmp`), you might have to poin
 ``CFLAGS=-I/opt/homebrew/include LDFLAGS=-L/opt/homebrew/lib pip3 install -r requirements.txt``
 
 ### Optional to factor roca keys upto 512 bits, Install neca:
-You can follow the instructions from : `https://www.mersenneforum.org/showthread.php?t=23087`
+You can follow the instructions at : `https://www.mersenneforum.org/showthread.php?t=23087`
 
 ## TODO (aka. Help wanted !)
 
-- Implement a test method in each attack.
+- Implement a test method for each attack.
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
 - Support multiprime RSA, the project currently supports textbook RSA.
 
 ## Contributing 
 
-- Please read the CONTRIBUTING.md guideline for the bare minimum aceptable PRs.
+- Please read the CONTRIBUTING.md guideline for the bare minimum acceptable PRs.
 
 ## All Thanks To Our Contributors 
 
