@@ -24,7 +24,7 @@ We hope this tool enhances your understanding of RSA encryption and serves as a 
                                              
 __Attacks provided:__
 
-- Attacks that don't depend on the factorization of integers (may depend on knowing n,e, cyphertext, etc...):
+- Attacks that don't depend on the factorization of integers (may depend on knowing n,e,ciphertext,etc...):
   - [Wiener's attack](https://en.wikipedia.org/wiki/Wiener%27s_attack)
   - Hastad's attack (Small public exponent)
   - [Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e., d < n^0.292)](https://staff.emu.edu.tr/alexanderchefranov/Documents/CMSE491/Fall2019/BonehIEEETIT2000%20Cryptanalysis%20of%20RSA.pdf)
