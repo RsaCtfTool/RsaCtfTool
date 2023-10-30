@@ -11,13 +11,8 @@ def euler(n):
     """
     Euler factorization method is very much like fermat's
     """
-    end = isqrt(n)
-    a = 0
-    b = 0
-    solutionsFound = []
-    firstb = -1
-
-    lf = 0
+    end,a,b,solutionsFound,firstb,lf = isqrt(n),0,0,[],-1,0
+    
     while a < end:
         b, f = isqrt_rem(n - (a * a))
         if f == 0 and (a != firstb) and (b != firstb):
