@@ -37,11 +37,9 @@ def dixon_factor(N, B=7):
         i2N = pow(i, 2, N)
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
-                if QBF[basej2N[k]] == 1:
-                    # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
-                    f = gcd(i - base[k], N)
-                    if 1 < f < N:
-                        return f, N // f
+                # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
+                if QBF[basej2N[k]] == 1 and 1 < (f:= gcd(i - base[k], N)) < N:
+                    return f, N // f
 
 
 class Attack(AbstractAttack):
