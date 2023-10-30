@@ -165,7 +165,7 @@ def miller_rabin(n, k=40):
 
 def _fermat_prime_criterion(n, b=2):
     """Fermat's prime criterion
-    Returns False if n is definitely composite, True if posible prime."""
+    Returns False if n is definitely composite, True if possible prime."""
     return pow(b, n - 1, n) == 1
 
 
