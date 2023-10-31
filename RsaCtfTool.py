@@ -339,13 +339,23 @@ def dump_key_parameters(args):
 
 
 def uncipher_file(args, logger):
+    """
+    Decrypts files specified in args.uncipherfile using the provided private key.
+    
+    Args:
+        args (Namespace): Command-line arguments.
+        logger (Logger): Logger object for logging messages.
+        
+    Returns:
+        bool: True if decryption is successful, False otherwise.
+    """
     uncipher_array = []
     for uncipher in args.uncipherfile.split(","):
         try:
             with open(uncipher, "rb") as cipherfile_fd:
                 uncipher = get_base64_value(cipherfile_fd.read())
                 uncipher_array.append(uncipher)
-        except OSError:
+        except(OSError, FileNotFoundError, PermissionError):
             logger.info("--uncipherfile : file not found or not readable.")
             return False
     args.uncipher = uncipher_array
@@ -355,7 +365,8 @@ def uncipher_file(args, logger):
         unciphers = priv_key.decrypt(args.uncipher)
         print_results(args, None, priv_key, unciphers)
         return True
-    return True
+ logger.error("Private key and unciphered data are required.")
+    return False
 
 
 def pubkey_detail(args, logger):
