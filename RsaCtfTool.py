@@ -48,7 +48,7 @@ __________               R_______________________________E __                .__
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E                             
-        
+
 """.replace(
         "R", cRED
     ).replace(
@@ -135,13 +135,6 @@ def parse_args():
     )
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
-
-    parser.add_argument(
-        "--show-factors",
-        type=int,
-        help="Show P Q, the factors of N",
-        default=None,
-    )
 
     # If no arguments, display help and exit
     if len(sys.argv) == 1:
@@ -235,7 +228,7 @@ def run_attacks(args, logger):
     found = False
     attackobj = RSAAttack(args)
     selected_attacks = args.attacks_list
-    
+
     # Run tests
     if args.publickey is None and args.tests:
         if args.attack is not None:
@@ -269,7 +262,7 @@ def run_attacks(args, logger):
         else:
             logger.error("No key specified")
         if args.n is not None:
-            ### FIXME
+            # FIXME
             publickey, _privkey = generate_keys_from_p_q_e_n(
                 args.p, args.q, args.e, args.n
             )   
