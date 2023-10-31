@@ -109,6 +109,7 @@ def print_results(args, publickey, private_key, uncipher):
                         )
 
         if args.dumpkey:
+            logger.info("\nPrivate key details:")
             for priv_key in private_keys:
                 if priv_key.n is not None:
                     logger.info("n: " + str(priv_key.n))
@@ -133,14 +134,14 @@ def print_results(args, publickey, private_key, uncipher):
         if args.private:
             logger.critical("Sorry, cracking failed.")
 
-    if args.dumpkey:
-        if args.publickey is not None:
-            for public_key in args.publickey:
-                with open(public_key, "rb") as pubkey_fd:
-                    publickey_obj = PublicKey(pubkey_fd.read(), publickey)
-                    logger.info("\nPublic key details for %s" % publickey_obj.filename)
-                    logger.info("n: " + str(publickey_obj.n))
-                    logger.info("e: " + str(publickey_obj.e))
+        if args.dumpkey:
+            if args.publickey is not None:
+                for public_key in args.publickey:
+                    with open(public_key, "rb") as pubkey_fd:
+                        publickey_obj = PublicKey(pubkey_fd.read(), publickey)
+                        logger.info("\nPublic key details for %s" % publickey_obj.filename)
+                        logger.info("n: " + str(publickey_obj.n))
+                        logger.info("e: " + str(publickey_obj.e))
 
     if args.uncipher:
         if uncipher is not None:
