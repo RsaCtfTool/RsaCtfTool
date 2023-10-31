@@ -278,7 +278,7 @@ def convert_idrsa_pub(args, logger):
         with open(publickey, "r") as key_data_fd:
             for line in key_data_fd:
                 n, e = disect_idrsa_pub(line.rstrip())
-                if n != None and e != None:
+                if n and e:
                     pub_key, _ = generate_keys_from_p_q_e_n(None, None, e, n)
                     if pub_key:
                         logger.info(pub_key.decode("utf-8"))
