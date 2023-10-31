@@ -506,11 +506,8 @@ def tonelli(n, p):
     """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1
-    #s = 0
-    #while q & 1 == 0:
-    #    q >>= 1
-    #    s += 1
     r = A007814(q)
+    q >>= s
     if s == 1:
         return powmod(n, (p + 1) >> 2, p)
     for z in range(2, p):
