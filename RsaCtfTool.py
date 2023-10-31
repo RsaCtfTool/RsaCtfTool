@@ -378,7 +378,7 @@ def uncipher_file(args, logger):
         unciphers = priv_key.decrypt(args.uncipher)
         print_results(args, None, priv_key, unciphers)
         return True
- logger.error("Private key and unciphered data are required.")
+    logger.error("Private key and unciphered data are required.")
     return False
 
 
