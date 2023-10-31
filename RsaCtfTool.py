@@ -280,9 +280,8 @@ def convert_idrsa_pub(args, logger):
                 n, e = disect_idrsa_pub(line.rstrip())
                 if n != None and e != None:
                     pub_key, priv_key = generate_keys_from_p_q_e_n(None, None, e, n)
-                    if pub_key and priv_key:
+                    if pub_key:
                         logger.info(pub_key.decode("utf-8"))
-                        logger.info(priv_key.decode("utf-8"))
                     else:
                         logger.error("Error generating keys from n and e values.")
 
