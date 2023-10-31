@@ -5,8 +5,9 @@ import logging
 from pathlib import Path
 import sys
 from typing import List, Any, Optional, Tuple
-from lib.utils import timeout
 import shutil
+from lib.utils import timeout
+
 
 class AbstractAttack(object):
     SPEED_ENUM = {"slow": 0, "medium": 1, "fast": 2}
