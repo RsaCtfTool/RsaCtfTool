@@ -1,3 +1,4 @@
+<div id="top"></div>
 <div align="center">
 
 # RsaCtfTool
@@ -260,3 +261,4 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
   <img src="https://contrib.rocks/image?repo=RsaCtfTool/RsaCtfTool" />
 </a>
 
+<p align="right"><a href="#top">🔼 Back to top</a></p>
