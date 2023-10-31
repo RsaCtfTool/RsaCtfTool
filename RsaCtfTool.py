@@ -284,6 +284,16 @@ def convert_idrsa_pub(args, logger):
 
 
 def check_is_roca(args, logger):
+    """
+    Checks the given list of public key files for the ROCA vulnerability.
+
+    Args:
+        args (Namespace): Command line arguments or configuration settings.
+        logger: Logger instance for logging messages.
+
+    Returns:
+        bool: True if any of the public keys are vulnerable, False otherwise.
+    """
     vuln = False
     pubkeyfilelist = glob(args.publickey)
     for publickey in pubkeyfilelist:
@@ -291,7 +301,7 @@ def check_is_roca(args, logger):
         with open(publickey, "rb") as key_data_fd:
             try:
                 key = RSA.importKey(key_data_fd.read())
-            except:
+            except Exception as e:
                 key = None
                 logger.error("[!] Error file format: %s" % publickey)
             if key is not None:
