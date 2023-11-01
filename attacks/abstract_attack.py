@@ -10,11 +10,11 @@ from lib.utils import timeout
 
 
 class AbstractAttack(object):
-    SPEED_ENUM = {"slow": 0, "medium": 1, "fast": 2}
+    speed_enum = {"slow": 0, "medium": 1, "fast": 2}
 
     def __init__(self, timeout: int = 60):
         self.logger = logging.getLogger("global_logger")
-        self.speed = AbstractAttack.SPEED_ENUM["medium"]
+        self.speed = AbstractAttack.speed_enum["medium"]
         self.timeout = timeout
         self.required_binaries = []
 
