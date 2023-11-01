@@ -1,7 +1,7 @@
 # HIGHLY RECOMENDED TO BUILD LOCALLY, paramers for the gmp-ecm tool will be optimised on local hardware
 
 # Base upon sagemath so that we don't have to deal with that dependency
-FROM ubuntu:18.04
+FROM ubuntu:20.04
 ENV DEBIAN_FRONTEND=noninteractive
 
 # apt-fast
