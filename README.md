@@ -22,7 +22,7 @@
 
 </div>
 
-The RSA Multi-Attack Tool is a sophisticated utility designed to uncipher data from weak public keys and attempt to recover the corresponding private key. This tool offers a comprehensive range of attack options, enabling users to apply various strategies to crack the encryption.
+The RSA Multi-Attack Tool is a sophisticated utility designed to decipher data from weak public keys and attempt to recover the corresponding private key. This tool offers a comprehensive range of attack options, enabling users to apply various strategies to crack the encryption.
 RSA security, at its core, relies on the complexity of the integer factorization problem. This project serves as a valuable resource by combining multiple integer factorization algorithms, effectively enhancing the overall decryption capabilities.
 Please note that this tool is primarily intended for educational purposes. It is essential to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
 It is essential to highlight that the tool, exclusively supports the RSA textbook semiprime composite modulus rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
@@ -99,7 +99,7 @@ __Attacks provided:__
 ## Usage
 
 ```bash
-usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--uncipherfile UNCIPHERFILE] [--uncipher UNCIPHER]
+usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--decipherfile UNCIPHERFILE] [--decipher UNCIPHER]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}] [--private] [--tests] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E] [--key KEY]
                      [--password PASSWORD] [--show-factors SHOW_FACTORS]
                      [--attack {SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,all} [{SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,factorial_pm1_gcd,lucas_gcd,all} ...]]
@@ -110,7 +110,7 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout T
 Mode 1 : Attack RSA (specify --publickey or n and e)
 
 - publickey : public rsa key to crack. You can import multiple public keys with wildcards.
-- uncipher : cipher message to decrypt
+- decipher : cipher message to decrypt
 - private : display private rsa key if recovered
 
 Mode 2 : Create a Public Key File Given n and e (specify --createpub)
@@ -124,7 +124,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### Uncipher file
 
-`./RsaCtfTool.py --publickey ./key.pub --uncipherfile ./ciphered\_file`
+`./RsaCtfTool.py --publickey ./key.pub --decipherfile ./ciphered\_file`
 
 ### Print private key
 

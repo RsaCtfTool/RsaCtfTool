@@ -10,7 +10,7 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Try to uncipher c if m < n/e and small e"""
+        """Try to decipher c if m < n/e and small e"""
         if publickey.e == 3 or publickey.e == 5:
             plain = []
             if (cipher is None) or (len(cipher) < 1):
