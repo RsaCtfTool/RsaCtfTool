@@ -52,7 +52,7 @@ def sageworks():
         return False
 
 
-def print_unciphered_res(c, logger):
+def print_deciphered_res(c, logger):
     logger.info(f"HEX : 0x{c.hex()}")
 
     int_big = int.from_bytes(c, "big")
@@ -73,14 +73,14 @@ def print_unciphered_res(c, logger):
     logger.info(f"STR : {repr(c)}")
 
 
-def print_results(args, publickey, private_key, uncipher):
+def print_results(args, publickey, private_key, decipher):
     """Print results to output"""
     logger = logging.getLogger("global_logger")
     if any(
         (
             (args.private and private_key is not None),
             args.dumpkey,
-            (args.uncipher and uncipher not in [None, []]),
+            (args.decipher and decipher not in [None, []]),
         )
     ):
         if publickey is not None and isinstance(publickey, str):
@@ -143,17 +143,17 @@ def print_results(args, publickey, private_key, uncipher):
                         logger.info("n: " + str(publickey_obj.n))
                         logger.info("e: " + str(publickey_obj.e))
 
-    if args.uncipher:
-        if uncipher is not None:
-            if not isinstance(uncipher, list):
-                uncipher = [uncipher]
-            if len(uncipher) > 0:
+    if args.decipher:
+        if decipher is not None:
+            if not isinstance(decipher, list):
+                decipher = [decipher]
+            if len(decipher) > 0:
                 logger.info("\nUnciphered data :")
-                for uncipher_ in uncipher:
-                    if not isinstance(uncipher_, list):
-                        uncipher_ = [uncipher_]
+                for decipher_ in decipher:
+                    if not isinstance(decipher_, list):
+                        decipher_ = [decipher_]
 
-                    for c in uncipher_:
+                    for c in decipher_:
                         if args.output:
                             try:
                                 with open(args.output, "ab") as output_fd:
@@ -162,14 +162,14 @@ def print_results(args, publickey, private_key, uncipher):
                                 logger.error(
                                     "Can't write output file : %s" % args.output
                                 )
-                        print_unciphered_res(c, logger)
+                        print_deciphered_res(c, logger)
                         if len(c) > 3 and c[0] == 0 and c[1] == 2:
                             nc = c[c[2:].index(0) + 2 :]
                             logger.info("\nPKCS#1.5 padding decoded!")
-                            print_unciphered_res(nc, logger)
+                            print_deciphered_res(nc, logger)
 
         else:
-            logger.critical("Sorry, unciphering failed.")
+            logger.critical("Sorry, deciphering failed.")
 
 
 class TimeoutError(Exception):

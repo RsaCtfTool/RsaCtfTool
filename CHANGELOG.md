@@ -49,13 +49,13 @@ def attack(attack_rsa_obj, publickey, cipher=[]):
 
 - attack_rsa_obj : a reference to `lib.rsa_attack.RSAAttack` instance. it gave access to cli arguments and various information;
 - publickey : a `lib.keys_wrapper.PublicKey` instance;
-- cipher : a list containing each data to uncipher.
+- cipher : a list containing each data to decipher.
 
 The attack method return a tuple :
-(`private_key`, `unciphered_data`)
+(`private_key`, `deciphered_data`)
 
 - private_key : an instance of `lib.keys_wrapper.PrivateKey` if recovered, else None. If multiple keys are recovered, return a `list` of `lib.keys_wrapper.PrivateKey`;
-- unciphered_data : if the attack focus on unciphering and not private key retrieving. If the private key is recovered, just return `None` and it will be deciphered later in script. If no data is recovered, return `None`. If multiple ciphers are recovered, return a `list` of `bytes`.
+- deciphered_data : if the attack focus on deciphering and not private key retrieving. If the private key is recovered, just return `None` and it will be deciphered later in script. If no data is recovered, return `None`. If multiple ciphers are recovered, return a `list` of `bytes`.
 
 #### Adding multiple keys attack
 
@@ -73,13 +73,13 @@ def attack(attack_rsa_obj, publickeys, cipher=[]):
 
 - attack_rsa_obj : a reference to `lib.rsa_attack.RSAAttack` instance. it gave access to cli arguments and various information;
 - publickeys : a list of `lib.keys_wrapper.PublicKey` instance;
-- cipher : a list containing each data to uncipher.
+- cipher : a list containing each data to decipher.
 
 The attack method return a tuple :
-(`private_key`, `unciphered_data`)
+(`private_key`, `deciphered_data`)
 
 - private_key : an instance of `lib.keys_wrapper.PrivateKey` if recovered, else None. If multiple keys are recovered, return a `list` of `lib.keys_wrapper.PrivateKey`;
-- unciphered_data : if the attack focus on unciphering and not private key retrieving. If the private key is recovered, just return `None` and it will be deciphered later in script. If no data is recovered, return `None`. If multiple ciphers are recovered, return a `list` of `bytes`.
+- deciphered_data : if the attack focus on deciphering and not private key retrieving. If the private key is recovered, just return `None` and it will be deciphered later in script. If no data is recovered, return `None`. If multiple ciphers are recovered, return a `list` of `bytes`.
 
 ## Ending note
 
