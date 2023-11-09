@@ -72,27 +72,24 @@ class Fibonacci:
 
         while True:
             randi = random.randint(begin, end)
-            res = self.get_n_mod_d(randi, N)
-            if res > 0:
-                if res in look_up:
-                    res_n = look_up[res]
-                    if randi > res_n:
-                        phi_guess = randi - res_n
-                        if phi_guess & 1 == 0:
-                            if self.get_n_mod_d(phi_guess, N) == 0:
-                                td = int(time.time() - starttime)
-                                if self.verbose:
-                                    print(
-                                        "For N = %d Found T:%d, randi: %d, time used %f secs."
-                                        % (N, T, randi, td)
-                                    )
-                                return phi_guess
-                        else:
-                            if self.verbose:
-                                print(
-                                    "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
-                                    % (N, res, res_n, T)
-                                )
+            if (res := self.get_n_mod_d(randi, N)) > 0 and res in look_up:
+                if randi > (res_n := look_up[res]):
+                    if (phi_guess := randi - res_n) & 1 == 0 and self.get_n_mod_d(
+                        phi_guess, N
+                    ) == 0:
+                        td = int(time.time() - starttime)
+                        if self.verbose:
+                            print(
+                                "For N = %d Found T:%d, randi: %d, time used %f secs."
+                                % (N, T, randi, td)
+                            )
+                        return phi_guess
+                    else:
+                        if self.verbose:
+                            print(
+                                "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
+                                % (N, res, res_n, T)
+                            )
 
     def factorization(self, N, min_accept, xdiff):
         phi_guess = self.get_period_bigint(N, min_accept, xdiff)
