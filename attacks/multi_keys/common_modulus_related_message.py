@@ -19,8 +19,8 @@ class Attack(AbstractAttack):
         c1 = bytes_to_long(c1)
         c2 = bytes_to_long(c2)
 
-        deciphered_message = common_modulus_related_message(k1.e, k2.e, k1.n, c1, c2)
-        return long_to_bytes(deciphered_message)
+        decrypted_message = common_modulus_related_message(k1.e, k2.e, k1.n, c1, c2)
+        return long_to_bytes(decrypted_message)
 
     def attack(self, publickeys, cipher=[]):
         """Common modulus attack"""

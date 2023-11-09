@@ -96,13 +96,13 @@ def parse_args():
         action="store_true",
     )
     parser.add_argument(
-        "--decipherfile",
-        help="decipher a file, using commas to separate multiple paths",
+        "--decryptfile",
+        help="decrypt a file, using commas to separate multiple paths",
         default=None,
     )
     parser.add_argument(
-        "--decipher",
-        help="decipher a cipher, using commas to separate multiple ciphers",
+        "--decrypt",
+        help="decrypt a cipher, using commas to separate multiple ciphers",
         default=None,
     )
     parser.add_argument(
@@ -252,7 +252,7 @@ def run_attacks(args, logger):
     if args.publickey is not None:
         for publickey in args.publickey:
             attackobj.implemented_attacks = []
-            attackobj.deciphered = []
+            attackobj.decrypted = []
             logger.info("\n[*] Testing key %s." % publickey)
             attackobj.attack_single_key(publickey, selected_attacks)
     if args.publickey is None:
@@ -351,9 +351,9 @@ def dump_key_parameters(args):
             print("qinv: " + str(qinv))
 
 
-def decipher_file(args, logger):
+def decrypt_file(args, logger):
     """
-    Decrypts files specified in args.decipherfile using the provided private key.
+    Decrypts files specified in args.decryptfile using the provided private key.
     
     Args:
         args (Namespace): Command-line arguments.
@@ -362,23 +362,23 @@ def decipher_file(args, logger):
     Returns:
         bool: True if decryption is successful, False otherwise.
     """
-    decipher_array = []
-    for decipher in args.decipherfile.split(","):
+    decrypt_array = []
+    for decrypt in args.decryptfile.split(","):
         try:
-            with open(decipher, "rb") as cipherfile_fd:
-                decipher = get_base64_value(cipherfile_fd.read())
-                decipher_array.append(decipher)
+            with open(decrypt, "rb") as cipherfile_fd:
+                decrypt = get_base64_value(cipherfile_fd.read())
+                decrypt_array.append(decrypt)
         except(OSError, FileNotFoundError, PermissionError):
-            logger.info("--decipherfile : file not found or not readable.")
+            logger.info("--decryptfile : file not found or not readable.")
             return False
-    args.decipher = decipher_array
-    # If we have a private key in input and decipher in args (or decipherfile)
-    if args.key and args.decipher:
+    args.decrypt = decrypt_array
+    # If we have a private key in input and decrypt in args (or decryptfile)
+    if args.key and args.decrypt:
         priv_key = PrivateKey(filename=args.key, password=args.password)
-        deciphers = priv_key.decrypt(args.decipher)
-        print_results(args, None, priv_key, deciphers)
+        decrypts = priv_key.decrypt(args.decrypt)
+        print_results(args, None, priv_key, decrypts)
         return True
-    logger.error("Private key and deciphered data are required.")
+    logger.error("Private key and decrypted data are required.")
     return False
 
 
@@ -405,7 +405,7 @@ def main():
     logger = logging.getLogger("global_logger")
     args = parse_args()
 
-    deciphers = []
+    decrypts = []
 
     # Set logger level
     logging.basicConfig(
@@ -462,18 +462,18 @@ def main():
         else:
             logger.warning("[!] Impossible to recover p and q from d")
 
-    # if we have decipher but no decipherfile
-    if args.decipher is not None:
-        decipher_array = []
-        for decipher in args.decipher.split(","):
-            decipher = get_numeric_value(decipher)
-            decipher = get_base64_value(decipher)
-            decipher_array.append(n2s(decipher))
-        args.decipher = decipher_array
+    # if we have decrypt but no decryptfile
+    if args.decrypt is not None:
+        decrypt_array = []
+        for decrypt in args.decrypt.split(","):
+            decrypt = get_numeric_value(decrypt)
+            decrypt = get_base64_value(decrypt)
+            decrypt_array.append(n2s(decrypt))
+        args.decrypt = decrypt_array
 
-    # if we have decipherfile
-    if args.decipherfile is not None:
-        if not decipher_file(args, logger):
+    # if we have decryptfile
+    if args.decryptfile is not None:
+        if not decrypt_file(args, logger):
             sys.exit(-1)
 
     # If we have n and one of p and q, calculated the other
@@ -534,24 +534,24 @@ def main():
             )
             print(pub_key.decode("utf-8"))
 
-        if args.decipher is not None:
-            for u in args.decipher:
+        if args.decrypt is not None:
+            for u in args.decrypt:
                 if priv_key is not None:
-                    deciphers.append(priv_key.decrypt(args.decipher))
+                    decrypts.append(priv_key.decrypt(args.decrypt))
                 else:
                     logger.error(
                         "Looks like the values for generating key are not ok... (no invmod)"
                     )
                     sys.exit(1)
-        print_results(args, args.publickey[0], priv_key, deciphers)
+        print_results(args, args.publickey[0], priv_key, decrypts)
         sys.exit(0)
 
     # Dump public key informations
     if (
         args.dumpkey
         and not args.private
-        and args.decipher is None
-        and args.decipherfile is None
+        and args.decrypt is None
+        and args.decryptfile is None
         and args.publickey is not None
     ):
         pubkey_detail(args, logger)
