@@ -21,25 +21,25 @@ class RSAAttack(object):
         self.logger = logging.getLogger("global_logger")
 
         # Load ciphertext
-        if args.decipher is not None:
-            self.cipher = args.decipher
+        if args.decrypt is not None:
+            self.cipher = args.decrypt
         else:
             self.cipher = None
 
         self.priv_key = None
         self.priv_keys = []
         self.partitial_priv_key = None
-        self.deciphered = []
+        self.decrypted = []
         self.implemented_attacks = []
 
     def get_boolean_results(self):
         """Return a boolean value according to requested
-        actions (private, decipher) if actions are done or not
+        actions (private, decrypt) if actions are done or not
         """
         if self.args.private and self.priv_key:
             return True
 
-        if self.args.decipher and self.deciphered:
+        if self.args.decrypt and self.decrypted:
             return True
 
         return False
@@ -49,12 +49,12 @@ class RSAAttack(object):
         avoiding running extra attacks
         """
         if self.args.private is not None and self.priv_key is not None:
-            if self.args.decipher is None:
+            if self.args.decrypt is None:
                 return True
-            if self.args.decipher is not None and self.deciphered is not []:
+            if self.args.decrypt is not None and self.decrypted is not []:
                 return True
 
-        if self.args.decipher is not None and self.deciphered is not []:
+        if self.args.decrypt is not None and self.decrypted is not []:
             if self.args.private is None:
                 return True
             if self.args.private is not None and self.priv_key is not None:
@@ -86,18 +86,18 @@ class RSAAttack(object):
                         return False
 
                 for priv_key in priv_keys:
-                    deciphered = priv_key.decrypt(cipher)
-                    if not isinstance(deciphered, list):
-                        deciphered = [deciphered]
+                    decrypted = priv_key.decrypt(cipher)
+                    if not isinstance(decrypted, list):
+                        decrypted = [decrypted]
 
-                self.deciphered = self.deciphered + deciphered
+                self.decrypted = self.decrypted + decrypted
         elif self.cipher and self.partitial_priv_key is not None:
             # needed, if n is prime and so we cant calc p and q
             enc_msg = bytes_to_long(self.cipher)
             dec_msg = self.partitial_priv_key.key._decrypt(enc_msg)
-            self.deciphered.append(long_to_bytes(dec_msg))
+            self.decrypted.append(long_to_bytes(dec_msg))
 
-        print_results(self.args, publickeyname, self.priv_key, self.deciphered)
+        print_results(self.args, publickeyname, self.priv_key, self.decrypted)
 
     def pre_attack_check(self, publickeys):
         """Basic pre Attack checks implementation"""
@@ -233,15 +233,15 @@ class RSAAttack(object):
                     if not attack_module.can_run():
                         continue
 
-                    self.priv_key, deciphered = attack_module.attack(
+                    self.priv_key, decrypted = attack_module.attack(
                         self.publickey, self.cipher
                     )
 
-                    if deciphered is not None and deciphered is not []:
-                        if isinstance(deciphered, list):
-                            self.deciphered = self.deciphered + deciphered
+                    if decrypted is not None and decrypted is not []:
+                        if isinstance(decrypted, list):
+                            self.decrypted = self.decrypted + decrypted
                         else:
-                            self.deciphered.append(deciphered)
+                            self.decrypted.append(decrypted)
                     if self.can_stop_tests():
                         self.logger.info(
                             f"[*] Attack success with {attack_module.get_name()} method !"
@@ -347,23 +347,23 @@ class RSAAttack(object):
                     continue
 
                 if self.need_run:
-                    self.priv_key, deciphered = attack_module.attack_wrapper(
+                    self.priv_key, decrypted = attack_module.attack_wrapper(
                         self.publickey, self.cipher
                     )
                 else:
                     self.logger.warning(
                         "[!] No need to factorize since you provided a prime factor..."
                     )
-                    deciphered = None
+                    decrypted = None
                     self.priv_key = priv_key = PrivateKey(
                         self.args.p, self.args.q, self.args.e, self.args.n
                     )
 
-                if deciphered is not None and deciphered is not []:
-                    if isinstance(deciphered, list):
-                        self.deciphered = self.deciphered + deciphered
+                if decrypted is not None and decrypted is not []:
+                    if isinstance(decrypted, list):
+                        self.decrypted = self.decrypted + decrypted
                     else:
-                        self.deciphered.append(deciphered)
+                        self.decrypted.append(decrypted)
                 if self.can_stop_tests():
                     if self.need_run:
                         self.logger.info(
