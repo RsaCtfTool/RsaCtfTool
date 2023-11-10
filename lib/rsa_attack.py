@@ -64,7 +64,7 @@ class RSAAttack(object):
 
     def print_results_details(self, publickeyname):
         """Print extra output according to requested action.
-        Uncipher data if needed.
+        Decrypt data if needed.
         """
         # check and print resulting private key
         if self.partitial_priv_key is not None and self.args.private:

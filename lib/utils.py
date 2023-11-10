@@ -148,7 +148,7 @@ def print_results(args, publickey, private_key, decrypt):
             if not isinstance(decrypt, list):
                 decrypt = [decrypt]
             if len(decrypt) > 0:
-                logger.info("\nUnciphered data :")
+                logger.info("\nDecrypted data :")
                 for decrypted_ in decrypt:
                     if not isinstance(decrypted_, list):
                         decrypted_ = [decrypted_]

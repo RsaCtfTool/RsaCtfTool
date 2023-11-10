@@ -205,7 +205,7 @@ class PrivateKey(object):
         return is_con
 
     def decrypt(self, cipher):
-        """Uncipher data with private key
+        """Decrypt data with private key
         :param cipher: input cipher
         :type cipher: string
         """

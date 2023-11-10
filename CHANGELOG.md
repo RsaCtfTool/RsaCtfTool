@@ -18,7 +18,7 @@
 ### New tests in test.sh
 
 - Hastads;
-- Unciphering multiple files;
+- Decrypt multiple files;
 - Testing multiple keys against on cipher;
 - Extra information output.
 
