@@ -12,9 +12,9 @@ def euler(n):
     Euler factorization method is very much like fermat's
     """
     end,a,b,solutionsFound,firstb,lf = isqrt(n),0,0,[],-1,0
-    
+
     while a < end:
-        b, f = isqrt_rem(n - (a * a))
+        b, f = isqrt_rem(n - a**2)
         if f == 0 and (a != firstb) and (b != firstb):
             solutionsFound.append([b, a])
             firstb = b

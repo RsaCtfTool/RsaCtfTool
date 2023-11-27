@@ -71,7 +71,7 @@ class PublicKey(object):
             pub = RSA.importKey(key)
         except:
             if filename:
-                raise Exception("Key format not supported : %s." % filename)
+                raise Exception(f"Key format not supported : {filename}.")
             else:
                 raise Exception("Key format not supported.")
 
@@ -131,14 +131,12 @@ class PrivateKey(object):
 
         if d is not None:
             self.d = d
-        else:
-            if self.phi is not None and self.e is not None:
-                try:
-                    self.d = int(invert(e, self.phi))
-                except ValueError:
-                    # invmod failure
-                    logger.error("[!] e^d==1 inversion error, check your math.")
-                    pass
+        elif self.phi is not None and self.e is not None:
+            try:
+                self.d = int(invert(e, self.phi))
+            except ValueError:
+                # invmod failure
+                logger.error("[!] e^d==1 inversion error, check your math.")
         self.key = None
         if self.p is not None and self.q is not None and self.d is not None:
             try:
@@ -146,7 +144,6 @@ class PrivateKey(object):
                 self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
             except ValueError:
                 logger.error("[!] Can't construct RSA PEM, internal error....")
-                pass
         elif n is not None and e is not None and d is not None:
             try:
                 self.key = RSA.construct((self.n, self.e, self.d))
@@ -155,7 +152,6 @@ class PrivateKey(object):
                 logger.info(
                     "n:%s\ne:%s\nd:%s\n" % (hex(self.n), hex(self.e), hex(self.d))
                 )
-                pass
             except ValueError:
                 logger.error("[!] Unable to compute factors p and q from exponent d")
                 logger.info("[+] n=%d,e=%d,d=%d" % (self.n, self, e, self.d))
@@ -201,7 +197,7 @@ class PrivateKey(object):
         if is_con:
             msg = "[!] The given privkey has conspicuousness:\n"
             msg += "[!] It is not advisable to use it in production\n%s" % txt
-            logger.error("%s" % msg)
+            logger.error(f"{msg}")
         return is_con
 
     def decrypt(self, cipher):
@@ -219,7 +215,7 @@ class PrivateKey(object):
                     cipher_int = int.from_bytes(c, "big")
                     m_int = hex(powmod(cipher_int, self.d, self.n))
                     if len(m_int) % 2 == 1:
-                        m_int = "0" + m_int
+                        m_int = f"0{m_int}"
                     m = binascii.unhexlify(hex(m_int)[2:])
                     plain.append(m)
                 except:

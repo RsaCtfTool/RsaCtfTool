@@ -28,8 +28,7 @@ class AbstractAttack(object):
         for required_binary in self.required_binaries:
             if shutil.which(required_binary) is None:
                 self.logger.warning(
-                    "Can't load %s because %s binary is not installed"
-                    % (self.get_name(), required_binary)
+                    f"Can't load {self.get_name()} because {required_binary} binary is not installed"
                 )
                 return False
         return True

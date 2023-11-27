@@ -24,7 +24,7 @@ class Attack(AbstractAttack):
 
             CMD = [
                 "sage",
-                "%s/sage/partial_d.sage" % rootpath,
+                f"{rootpath}/sage/partial_d.sage",
                 str(publickey.n),
                 str(publickey.e),
                 str(publickey.d),
