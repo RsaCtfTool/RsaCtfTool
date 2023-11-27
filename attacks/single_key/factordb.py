@@ -10,8 +10,7 @@ from factordb.factordb import FactorDB
 def getfdb(composite):
     f = FactorDB(composite)
     f.connect()
-    r = f.get_factor_list()
-    return r
+    return f.get_factor_list()
 
 
 class Attack(AbstractAttack):

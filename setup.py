@@ -13,7 +13,7 @@ setup(
     author_email="something",
     install_requires=[x.strip() for x in open("requirements.txt").readlines()],
     url=BASE_CVS_URL,
-    download_url="{}/tarball/{}".format(BASE_CVS_URL, VERSION),
+    download_url=f"{BASE_CVS_URL}/tarball/{VERSION}",
     keywords=[],
     scripts=["RsaCtfTool.py"],
     include_package_data=True,

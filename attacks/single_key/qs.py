@@ -22,11 +22,7 @@ class Attack(AbstractAttack):
         try:
             sageresult = (
                 subprocess.check_output(
-                    [
-                        "sage",
-                        "%s/sage/qs.sage" % rootpath,
-                        str(publickey.n),
-                    ],
+                    ["sage", f"{rootpath}/sage/qs.sage", str(publickey.n)],
                     timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
@@ -37,13 +33,13 @@ class Attack(AbstractAttack):
             if len(sageresult) > 0:
                 for line in sageresult:
                     # print(line)
-                    if not line.rstrip().find("// ** ") == 0:
+                    if line.rstrip().find("// ** ") != 0:
                         p, q = line.split(" ")
                         p, q = int(p), int(q)
                         publickey.p, publickey.q = p, q
                         privatekey = PrivateKey(
-                            p=int(publickey.p),
-                            q=int(publickey.q),
+                            p=publickey.p,
+                            q=publickey.q,
                             e=int(publickey.e),
                             n=int(publickey.n),
                         )

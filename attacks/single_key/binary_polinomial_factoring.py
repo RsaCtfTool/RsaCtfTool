@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
                 subprocess.check_output(
                     [
                         "sage",
-                        "%s/sage/binary_polinomial_factoring.sage" % rootpath,
+                        f"{rootpath}/sage/binary_polinomial_factoring.sage",
                         str(publickey.n),
                     ],
                     timeout=self.timeout,
@@ -38,7 +38,7 @@ class Attack(AbstractAttack):
 
         if p > 0:
             q = publickey.n // p
-            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
+            priv_key = PrivateKey(p, int(q), int(publickey.e), int(publickey.n))
             return (priv_key, None)
         else:
             return (None, None)

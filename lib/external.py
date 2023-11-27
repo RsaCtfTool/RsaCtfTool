@@ -10,7 +10,7 @@ NECA_BIN = os.environ.get("NECA_BIN", "NONE")
 
 
 def ifferm(fname):
-    os.system("if [ -f '%s' ];  then rm '%s'; fi" % (fname, fname))
+    os.system(f"if [ -f '{fname}' ];  then rm '{fname}'; fi")
 
 
 def msieve_factor_driver(n):
@@ -38,11 +38,11 @@ def yafu_factor_driver(n):
             "timeout",
             str(TIMEOUT),
             YAFU_BIN,
-            "factor(%s)" % str(n),
+            f"factor({str(n)})",
             "-session",
             str(n),
             "-qssave",
-            "/tmp/qs_%s.dat" % str(n),
+            f"/tmp/qs_{str(n)}.dat",
         ],
         stdout=subprocess.PIPE,
     )
@@ -57,9 +57,7 @@ def yafu_factor_driver(n):
 def neca_factor_driver(n, timeout=None):
     print("[*] Factoring %d with neca..." % n)
     necaresult = subprocess.check_output(
-        [NECA_BIN, "%s" % n],
-        timeout=timeout,
-        stderr=subprocess.DEVNULL,
+        [NECA_BIN, f"{n}"], timeout=timeout, stderr=subprocess.DEVNULL
     )
     necaresult_l = necaresult.decode("utf8").split("\n")
     if b"FAIL" not in necaresult and b"*" in necaresult:

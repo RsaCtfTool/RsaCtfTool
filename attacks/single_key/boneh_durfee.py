@@ -24,7 +24,7 @@ class Attack(AbstractAttack):
                 subprocess.check_output(
                     [
                         "sage",
-                        "%s/sage/boneh_durfee.sage" % rootpath,
+                        f"{rootpath}/sage/boneh_durfee.sage",
                         str(publickey.n),
                         str(publickey.e),
                     ],
@@ -35,9 +35,7 @@ class Attack(AbstractAttack):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return (None, None)
         if sageresult > 0:
-            tmp_priv = RSA.construct(
-                (int(publickey.n), int(publickey.e), int(sageresult)),
-            )
+            tmp_priv = RSA.construct((int(publickey.n), int(publickey.e), sageresult))
             publickey.p = tmp_priv.p
             publickey.q = tmp_priv.q
             privatekey = PrivateKey(

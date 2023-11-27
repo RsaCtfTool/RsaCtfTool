@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
         if is_roca_vulnerable(publickey.n):
             try:
                 sageresult = subprocess.check_output(
-                    ["sage", "%s/sage/roca_attack.py" % rootpath, str(publickey.n)],
+                    ["sage", f"{rootpath}/sage/roca_attack.py", str(publickey.n)],
                     timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )

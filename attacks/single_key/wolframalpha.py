@@ -28,21 +28,17 @@ class Attack(AbstractAttack):
         if safe and len(str(n)) > 192:
             self.logger.warning("[!] wolfram alpha only works for pubkeys < 192 digits")
             return
-        q = "factor(%s)" % n
+        q = f"factor({n})"
         if self.wa_client is not None:
             res = self.wa_client.query(q)
-            pods = list(res.pods)
-            if len(pods) > 0:
+            if pods := list(res.pods):
                 for pod in pods:
                     x = str(pod).replace("@", "").replace("'", '"')
                     pod = json.loads(x)
                     tmp = pod["subpod"]["plaintext"]
                     if tmp.find("×") > 0:
                         tmp = tmp.split(" ")[0]
-                        # tmp2 = list(map(lambda x:int(x,16),tmp.split("×")))
-                        tmp2 = list(map(int, tmp.split("×")))
-
-                        return tmp2
+                        return list(map(int, tmp.split("×")))
             else:
                 self.logger.error("[!] Could not get factorization from wolfram alpha")
 
@@ -74,7 +70,7 @@ class Attack(AbstractAttack):
 
         try:
             factors = self.wa_query_factors(publickey.n)
-            self.logger.info("Factors: %s" % str(factors))
+            self.logger.info(f"Factors: {str(factors)}")
             if factors is not None and len(factors) > 1:
                 publickey.q = factors[
                     -1

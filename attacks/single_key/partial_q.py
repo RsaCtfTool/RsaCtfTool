@@ -84,8 +84,8 @@ def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
         if gcd(p, q) == 1 and invmod(q, p) == qi:
             break
 
-    print("p = " + str(p), k)
-    print("q = " + str(q), j)
+    print(f"p = {str(p)}", k)
+    print(f"q = {str(q)}", j)
     return p, q
 
 

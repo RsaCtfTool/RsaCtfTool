@@ -30,9 +30,7 @@ class Attack(AbstractAttack):
 
     def attack(self, publickey, cipher=[], progress=True):
         """Try an attack where the public key has a common factor with the ciphertext - sourcekris"""
-        if cipher is not None:
-            return self.comfact(cipher, publickey)
-        return None, None
+        return self.comfact(cipher, publickey) if cipher is not None else (None, None)
 
     def test(self):
         """FIXME: Implment testcase"""

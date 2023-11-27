@@ -31,7 +31,7 @@ except ImportError:
 
 
 list_prod = lambda lst: reduce((lambda x, y: x * y), lst)
-digit_sum = lambda n: sum([int(d) for d in str(n)])
+digit_sum = lambda n: sum(int(d) for d in str(n))
 A007814 = lambda n: (~n & n-1).bit_length()
 A135481 = lambda n: (~n & n-1)
 A000265 = lambda n: n // (A135481(n)+1)
@@ -51,9 +51,8 @@ def getpubkeysz(n):
 def _gcdext(a, b):
     if a == 0:
         return [b, 0, 1]
-    else:
-        d, r = divmod(b, a)
-        g, y, x = _gcdext(r, a)
+    d, r = divmod(b, a)
+    g, y, x = _gcdext(r, a)
     return [g, x - d * y, y]
 
 
@@ -158,7 +157,7 @@ def miller_rabin(n, k=40):
         r += 1
         s >>= 1
     i = 0
-    for i in range(0, k):
+    for _ in range(0, k):
         a = random.randrange(2, n - 1)
         if (x := pow(a, s, n)) in [1, n - 1]: continue
         j = 0
@@ -329,7 +328,6 @@ if gmpy_version > 0:
         mul = gmpy.mul
         powmod = gmpy.powmod
         isqrt_rem = gmpy.isqrt_rem
-        isqrt = gmpy.isqrt
         introot = _introot_gmpy2
         is_divisible = gmpy.is_divisible
         is_congruent = gmpy.is_congruent
@@ -347,13 +345,13 @@ if gmpy_version > 0:
         mod = _mod
         powmod = pow
         isqrt_rem = gmpy.sqrtrem
-        isqrt = gmpy.isqrt
         introot = _introot_gmpy
         is_divisible = _is_divisible
         is_congruent = _is_congruent
         fdivmod = gmpy.fdivmod
         lucas = _lucas
 
+    isqrt = gmpy.isqrt
 else:
     remove = _remove
     iroot = _iroot
@@ -406,11 +404,11 @@ def factor_ned_probabilistic(n, e, d):
     #    r >>= 1
     #    t += 1 
     r = A000265(k)
-    for i in range(1, 101):
+    for _ in range(1, 101):
         g = random.randint(0, n1)
         if (y := pow(g, r, n)) == 1 or y == n1:
             continue
-        for j in range(1, t):
+        for _ in range(1, t):
             if (x := pow(y, 2, n)) == 1:
                 p = gcd(y - 1, n)
                 return p, n // p
@@ -558,10 +556,9 @@ def rational_to_contfrac(x, y):
     a = x // y
     if a * y == x:
         return [a]
-    else:
-        pquotients = rational_to_contfrac(y, x - a * y)
-        pquotients.insert(0, a)
-        return pquotients
+    pquotients = rational_to_contfrac(y, x - a * y)
+    pquotients.insert(0, a)
+    return pquotients
 
 
 def contfrac_to_rational(frac):
@@ -578,10 +575,7 @@ def contfrac_to_rational(frac):
 
 def convergents_from_contfrac(frac, progress=False):
     """Convergents_from_contfrac implementation"""
-    convs = []
-    for i in range(0, len(frac)):
-        convs.append(contfrac_to_rational(frac[:i]))
-    return convs
+    return [contfrac_to_rational(frac[:i]) for i in range(0, len(frac))]
 
 
 def inv_mod_pow_of_2(factor, bit_count):

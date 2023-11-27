@@ -16,13 +16,10 @@ class Attack(AbstractAttack):
         if not isinstance(publickey, list):
             return (None, None)
 
-        if len(set([_.n for _ in publickey])) == 1:
+        if len({_.n for _ in publickey}) == 1:
             n = publickey[0].n
 
-            e_array = []
-            for k in publickey:
-                e_array.append(k.e)
-
+            e_array = [k.e for k in publickey]
             if (cipher is None) or (len(cipher) < 2):
                 self.logger.info(
                     "[-] Lack of ciphertexts, skiping the same_n_huge_e test..."

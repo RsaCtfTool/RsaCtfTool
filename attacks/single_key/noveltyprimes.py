@@ -23,7 +23,7 @@ class Attack(AbstractAttack):
                 publickey.p = prime
                 publickey.q = publickey.n // publickey.p
                 priv_key = PrivateKey(
-                    p=int(publickey.p),
+                    p=publickey.p,
                     q=int(publickey.q),
                     e=int(publickey.e),
                     n=int(publickey.n),
