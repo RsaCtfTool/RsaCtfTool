@@ -70,5 +70,3 @@ MCowDQYJKoZIhvcNAQEBBQADGQAwFgIPPNmaqiPnbwxXooFxLcTXAgMBAAE=
 -----END PUBLIC KEY-----"""
         self.timeout = 180
         return None, None
-        result = self.attack(PublicKey(key_data), progress=False)
-        return result != (None, None)

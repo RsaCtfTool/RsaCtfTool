@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         """
         try:
             r = subprocess.check_output(
-                ["sage", "%s/sage/smallfraction.sage" % rootpath, str(publickey.n)],
+                ["sage", f"{rootpath}/sage/smallfraction.sage", str(publickey.n)],
                 timeout=self.timeout,
                 stderr=subprocess.DEVNULL,
             )
@@ -28,7 +28,7 @@ class Attack(AbstractAttack):
                 publickey.p = sageresult
                 publickey.q = publickey.n // publickey.p
                 priv_key = PrivateKey(
-                    int(publickey.p),
+                    publickey.p,
                     int(publickey.q),
                     int(publickey.e),
                     int(publickey.n),

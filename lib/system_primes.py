@@ -1315,5 +1315,4 @@ def load_system_consts():
     primes_tmp1 = map(lambda x: int(x), primes_tmp1)
     primes_tmp1 = sorted(set(primes_tmp1))
     ALL = sorted(set(primes_tmp0 + notprimes_tmp0 + primes_int + primes_tmp1))
-    ALL = sorted(set(sum(map(addpm1, ALL), [])))
-    return ALL
+    return sorted(set(sum(map(addpm1, ALL), [])))

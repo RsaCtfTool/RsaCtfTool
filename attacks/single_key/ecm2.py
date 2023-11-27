@@ -23,7 +23,7 @@ class Attack(AbstractAttack):
             sageresult = []
             try:
                 sage_proc = subprocess.Popen(
-                    ["sage", "%s/sage/ecm2.sage" % rootpath, str(publickey.n)],
+                    ["sage", f"{rootpath}/sage/ecm2.sage", str(publickey.n)],
                     stdout=subprocess.PIPE,
                     stderr=subprocess.PIPE,
                 )
@@ -53,7 +53,7 @@ class Attack(AbstractAttack):
                             d = invert(publickey.e, phi)
                             m = hex(powmod(cipher_int, d, publickey.n))[2::]
                             if len(m) % 2 != 0:
-                                m = "0" + m
+                                m = f"0{m}"
                             plain.append(bytes.fromhex(m))
                         except ZeroDivisionError:
                             continue

@@ -39,9 +39,10 @@ sys.setrecursionlimit(5000)
 
 
 def banner():
-    cRED = "\033[1;31m"
     cEND = "\033[0m"
-    text = r"""
+    cRED = "\033[1;31m"
+    return (
+        r"""
 __________               R_______________________________E __                .__   
 \______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
  |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |  
@@ -50,11 +51,11 @@ __________               R_______________________________E __                .__
         \/     \/      \/        R\/E               R\/E                             
 
 """.replace(
-        "R", cRED
-    ).replace(
-        "E", cEND
-    )
-    text += """
+            "R", cRED
+        ).replace(
+            "E", cEND
+        )
+        + """
 Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
 
 Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
@@ -62,7 +63,7 @@ Read the code in this repo to see what and how it does and how to improve it, se
 Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
 
 """
-    return text
+    )
 
 
 def parse_args():
@@ -274,7 +275,7 @@ def convert_idrsa_pub(args, logger):
     # for publickey in args.publickey:
     publickeys = glob(args.publickey)
     for publickey in publickeys:
-        logger.info("Converting %s: to pem..." % publickey)
+        logger.info(f"Converting {publickey}: to pem...")
         with open(publickey, "r") as key_data_fd:
             for line in key_data_fd:
                 n, e = disect_idrsa_pub(line.rstrip())
@@ -300,21 +301,19 @@ def check_is_roca(args, logger):
     vuln = False
     pubkeyfilelist = glob(args.publickey)
     for publickey in pubkeyfilelist:
-        logger.info("[-] Details for %s:" % publickey)
+        logger.info(f"[-] Details for {publickey}:")
         with open(publickey, "rb") as key_data_fd:
             try:
                 key = RSA.importKey(key_data_fd.read())
             except Exception as e:
                 key = None
-                logger.error("[!] Error file format: %s" % publickey)
+                logger.error(f"[!] Error file format: {publickey}")
             if key is not None:
                 if is_roca_vulnerable(key.n):
                     vuln = True
-                    logger.warning("[!] Public key %s: is roca!!!" % publickey)
+                    logger.warning(f"[!] Public key {publickey}: is roca!!!")
                 else:
-                    logger.info(
-                        "[-] Public key %s: is not roca, you are safe" % publickey
-                    )
+                    logger.info(f"[-] Public key {publickey}: is not roca, you are safe")
     return vuln
 
 
@@ -334,21 +333,21 @@ def load_keys(args, logger):
 def dump_key_parameters(args):
     key_data = open(args.key, "rb").read()
     key = RSA.importKey(key_data)
-    print("n: " + str(key.n))
-    print("e: " + str(key.e))
+    print(f"n: {str(key.n)}")
+    print(f"e: {str(key.e)}")
     if key.has_private():
-        print("d: " + str(key.d))
-        print("p: " + str(key.p))
-        print("q: " + str(key.q))
+        print(f"d: {str(key.d)}")
+        print(f"p: {str(key.p)}")
+        print(f"q: {str(key.q)}")
         if args.ext:
             dp = key.d % (key.p - 1)
             dq = key.d % (key.q - 1)
             pinv = invmod(key.p, key.q)
             qinv = invmod(key.q, key.p)
-            print("dp: " + str(dp))
-            print("dq: " + str(dq))
-            print("pinv: " + str(pinv))
-            print("qinv: " + str(qinv))
+            print(f"dp: {str(dp)}")
+            print(f"dq: {str(dq)}")
+            print(f"pinv: {str(pinv)}")
+            print(f"qinv: {str(qinv)}")
 
 
 def decrypt_file(args, logger):
@@ -368,7 +367,7 @@ def decrypt_file(args, logger):
             with open(decrypt, "rb") as cipherfile_fd:
                 decrypt = get_base64_value(cipherfile_fd.read())
                 decrypt_array.append(decrypt)
-        except(OSError, FileNotFoundError, PermissionError):
+        except OSError:
             logger.info("--decryptfile : file not found or not readable.")
             return False
     args.decrypt = decrypt_array
@@ -384,11 +383,11 @@ def decrypt_file(args, logger):
 
 def pubkey_detail(args, logger):
     for publickey in args.publickey:
-        logger.info("Details for %s:" % publickey)
+        logger.info(f"Details for {publickey}:")
         with open(publickey, "rb") as key_data_fd:
             key = RSA.importKey(key_data_fd.read())
-            print("n: " + str(key.n))
-            print("e: " + str(key.e))
+            print(f"n: {str(key.n)}")
+            print(f"e: {str(key.e)}")
 
 
 def cleanup(args):
@@ -439,9 +438,8 @@ def main():
             e_int = get_numeric_value(e)
             e_array.append(e_int)
         args.e = e_array if len(e_array) > 1 else e_array[0]
-    else:
-        if args.n is not None:
-            args.e = 65537
+    elif args.n is not None:
+        args.e = 65537
 
     # get n if we can
     if args.n is not None:

@@ -30,10 +30,10 @@ class Attack(AbstractAttack):
                 # update each attackobj with a private_key
                 priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
                 priv_keys.append(priv_key_1)
-                self.logger.info("[*] Found common factor in modulus for " + x.filename)
+                self.logger.info(f"[*] Found common factor in modulus for {x.filename}")
 
         priv_keys = list(set(priv_keys))
-        if len(priv_keys) == 0:
+        if not priv_keys:
             priv_keys = None
 
         return (priv_keys, None)

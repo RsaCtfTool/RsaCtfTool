@@ -18,7 +18,7 @@ class Attack(AbstractAttack):
         try:
             sageresult = int(
                 subprocess.check_output(
-                    ["sage", "%s/sage/qicheng.sage" % rootpath, str(publickey.n)],
+                    ["sage", f"{rootpath}/sage/qicheng.sage", str(publickey.n)],
                     timeout=self.timeout,
                     stderr=subprocess.DEVNULL,
                 )
@@ -26,13 +26,11 @@ class Attack(AbstractAttack):
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired, ValueError):
             return (None, None)
 
-        if sageresult > 0:
-            p = sageresult
-            q = publickey.n // sageresult
-            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-            return (priv_key, None)
-        else:
+        if sageresult <= 0:
             return (None, None)
+        q = publickey.n // sageresult
+        priv_key = PrivateKey(sageresult, int(q), int(publickey.e), int(publickey.n))
+        return (priv_key, None)
 
     def test(self):
         from lib.keys_wrapper import PublicKey
