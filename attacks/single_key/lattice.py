@@ -23,7 +23,7 @@ class Attack(AbstractAttack):
             sageresult = subprocess.check_output(
                 [
                     "sage",
-                    "%s/sage/lattice.sage" % rootpath,
+                    f"{rootpath}/sage/lattice.sage",
                     str(publickey.n),
                     str(publickey.p),
                 ],

@@ -45,7 +45,7 @@ def roca(n):
         return None
 
     else:
-        print("Invalid key size: {}".format(keySize))
+        print(f"Invalid key size: {keySize}")
         return None
 
     beta = 0.1
@@ -76,7 +76,7 @@ def roca(n):
             if val:
                 p = val[0]
                 q = val[1]
-                print("{}:{}".format(p, q))
+                print(f"{p}:{q}")
                 return val
     return "Fail"
 

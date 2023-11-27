@@ -17,7 +17,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Search for rapid7 gcd primes"""
         for txtfile in glob.glob("data/*.pkl.bz2"):
-            self.logger.info("[+] loading prime list file %s..." % txtfile)
+            self.logger.info(f"[+] loading prime list file {txtfile}...")
             # primes = sorted([int(l.rstrip()) for l in open(txtfile,"r").readlines()])
             primes = decompress_pickle(txtfile)
             for prime in tqdm(primes, disable=(not progress)):

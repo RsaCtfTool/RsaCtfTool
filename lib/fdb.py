@@ -10,7 +10,7 @@ logger = logging.getLogger("global_logger")
 
 def send2fdb(composite, factors):
     factors = map(str, factors)
-    payload = {"report": str(composite) + "=" + "*".join(factors)}
+    payload = {"report": f"{str(composite)}=" + "*".join(factors)}
     url = "http://factordb.com/report.php"
     headers = {
         "User-Agent": "Mozilla/5.0",
@@ -28,4 +28,4 @@ def send2fdb(composite, factors):
             logger.info("[!] All the factors we found are already known to factordb")
         else:
             response = re.findall(r"Found [0-9] factors and [0-9] ECM", webpage)[0]
-            logger.info("[+] Factordb: " + response)
+            logger.info(f"[+] Factordb: {response}")

@@ -14,9 +14,9 @@ def lehmer_machine(n):
     if is_congruent(n, 2, 4):
         raise FactorizationError
     y = 1
-    while not is_square(n + y * y):
+    while not is_square(n + y**2):
         y += 1
-    x = isqrt(n + y * y)
+    x = isqrt(n + y**2)
     return x - y, x + y
 
 

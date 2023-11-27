@@ -31,12 +31,11 @@ class Attack(AbstractAttack):
 
         plains = []
         for k1, k2 in itertools.combinations(publickeys, 2):
-            for c1, c2 in itertools.combinations(cipher, 2):
-                plains.append(
-                    self.common_modulus_related_message_attack(c1, c2, k1, k2)
-                )
-
-        if all([_ is None for _ in plains]):
+            plains.extend(
+                self.common_modulus_related_message_attack(c1, c2, k1, k2)
+                for c1, c2 in itertools.combinations(cipher, 2)
+            )
+        if all(_ is None for _ in plains):
             plains = None
 
         return (None, plains)

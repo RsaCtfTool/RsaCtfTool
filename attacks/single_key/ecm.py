@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
         only works if the sageworks() function returned True
         """
 
-        path_to_sage_interface = "%s/sage/ecm.sage" % rootpath
+        path_to_sage_interface = f"{rootpath}/sage/ecm.sage"
         sage_find_factor_n = str(publickey.n)
 
         try:
@@ -58,7 +58,7 @@ class Attack(AbstractAttack):
                 publickey.q = publickey.n // publickey.p
                 try:
                     priv_key = PrivateKey(
-                        int(publickey.p),
+                        publickey.p,
                         int(publickey.q),
                         int(publickey.e),
                         int(publickey.n),
