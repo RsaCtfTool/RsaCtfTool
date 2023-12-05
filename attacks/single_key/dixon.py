@@ -11,6 +11,7 @@ from lib.number_theory import (
     primes,
     powmod,
     is_square,
+    powmod_base_list,
 )
 import bitarray
 
@@ -27,14 +28,11 @@ def dixon_factor(N, B=7):
     lqbf = pow(base[-1], 2) + 1
     QBF = bitarray.bitarray(lqbf)  # This is our quasi-bloom-filter
 
-    basej2N = []
-    for j in range(0, len(base)):
-        p = powmod(base[j], 2, N)
-        basej2N.append(p)
-        QBF[p] = 1  # We populate our quasi-bloom-filter
+    basej2N = powmod_base_list(base, 2, N)
+    for p in basej2N: QBF[p] = 1
 
     for i in range(isqrt(N), N):
-        i2N = pow(i, 2, N)
+        i2N = powmod(i, 2, N)
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
                 # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter

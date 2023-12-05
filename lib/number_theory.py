@@ -144,6 +144,11 @@ def _is_square(n):
         return False
     return (t := _isqrt(n) * t) == n
 
+def _powmod_base_list(base_lst, exp, mod):
+  return list(powmod(i, exp, mod) for i in base_lst)
+
+def _powmod_exp_list(base, exp_lst, mod):
+  return list(powmod(base, i, mod) for i in exp_lst)
 
 def miller_rabin(n, k=40):
     """ "
@@ -335,6 +340,8 @@ if gmpy_version > 0:
         is_congruent = gmpy.is_congruent
         fdivmod = gmpy.f_divmod
         lucas = gmpy.lucas
+        powmod_base_list = gmpy.powmod_base_list
+        powmod_exp_list = gmpy.powmod_exp_list
     else:
         iroot = gmpy.root
         ilog = _ilog_math
@@ -352,6 +359,8 @@ if gmpy_version > 0:
         is_congruent = _is_congruent
         fdivmod = gmpy.fdivmod
         lucas = _lucas
+        powmod_base_list = _powmod_base_list
+        powmod_exp_list = _powmod_exp_list
 
     isqrt = gmpy.isqrt
 else:
@@ -386,7 +395,8 @@ else:
     fac = _fac
     fdivmod = divmod
     lucas = _lucas
-
+    powmod_base_list = _powmod_base_list
+    powmod_exp_list = _powmod_exp_list
 
 legendre = lambda a, p: powmod(a, (p - 1) >> 1, p)
 cuberoot = lambda n: introot(n, 3)
@@ -655,4 +665,6 @@ __all__ = [
     lucas,
     mulmod,
     A000265,
+    powmod_base_list,
+    powmod_exp_list,
 ]
