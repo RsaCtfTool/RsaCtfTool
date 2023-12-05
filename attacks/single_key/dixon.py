@@ -48,7 +48,7 @@ class Attack(AbstractAttack):
     def attack(self, publickey, cipher=[], progress=True):
         """Run dixon attack with a timeout"""
         try:
-            if publickey.n <= 10**10:
+            if publickey.n <= 10_000_000_000:
                 publickey.p, publickey.q = dixon_factor(publickey.n)
             else:
                 self.logger.error("[-] Dixon is too slow for pubkeys > 10^10...")
