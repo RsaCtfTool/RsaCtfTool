@@ -17,24 +17,15 @@ def shor(n):
     https://en.wikipedia.org/wiki/Shor%27s_algorithm
     """
     for a in range(2, n):
-        g = gcd(n, a)  # a should be coprime of n otherwise it is a trivial factor of n.
-        if g != 1:
-            return g, n // g
-        for r in range(
-            2, n, 2
-        ):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
-            ar = powmod(
-                a, r, n
-            )  # ar is the period returned by the quantum computer, we are just bruteforcing it.
-            if ar == 1:
-                ar2 = powmod(a, r >> 1, n)
-                if ar2 != -1:
-                    g1 = gcd(ar2 - 1, n)
-                    g2 = gcd(ar2 + 1, n)
+        # a should be coprime of n otherwise it is a trivial factor of n.
+        if (g:=gcd(n,a)) != 1: return g, n // g
+        for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
+            if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
+                if (ar2 := powmod(a, r >> 1, n)) != -1:
+                    g1, g2 = gcd(ar2 - 1, n), gcd(ar2 + 1, n)
                     if (n > g1 > 1) or (n > g2 > 1):
                         p = max(max(min(n, g1), 1), max(min(n, g2), 1))
-                        q = n // p
-                        return (p, q)
+                        return (p, n // p)
 
 
 class Attack(AbstractAttack):
