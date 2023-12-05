@@ -40,6 +40,7 @@ A007814 = lambda n: (~n & n-1).bit_length()
 A135481 = lambda n: (~n & n-1)
 A000265 = lambda n: n // (A135481(n)+1)
 
+@cache
 def mulmod(a,b,m):
   if b == 0: return 0
   if b == 1: return a % m
@@ -292,9 +293,6 @@ def _fac(n):
     for m in range(n, 1, -1):
         tmp *= m
     return tmp
-
-
-from functools import cache
 
 
 @cache
