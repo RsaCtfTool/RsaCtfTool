@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from functools import reduce
+from functools import reduce, cache
 import math
 import logging
 import random
@@ -30,7 +30,11 @@ except ImportError:
         )
 
 
-list_prod = lambda lst: reduce((lambda x, y: x * y), lst)
+@cache
+def list_prod(list_):
+  if (l:=len(list_)) == 0: return 1
+  return list_prod(list_[:l-1]) * list_[-1]
+
 digit_sum = lambda n: sum(int(d) for d in str(n))
 A007814 = lambda n: (~n & n-1).bit_length()
 A135481 = lambda n: (~n & n-1)
