@@ -19,7 +19,7 @@ class Attack(AbstractAttack):
         pubs = [pub.n for pub in publickeys]
         # Try to find the gcd between each pair of moduli and resolve the private keys if gcd > 1
         priv_keys = []
-        M = list_prod(pubs)
+        M = list_prod(tuple(pubs))
         for i in range(0, len(pubs)):
             pub = pubs[i]
             p = gcd(pub, M // pub)
