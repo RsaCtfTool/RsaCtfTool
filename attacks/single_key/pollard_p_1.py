@@ -20,7 +20,8 @@ def pollard_P_1(n, progress=True):
 
     for pp in tqdm(prime, disable=(not progress)):
         for i in range(0, len(z)):
-            p = gcd(n, powmod(pp, z[i], n) - 1)
+            pp = powmod(pp, z[i], n)
+            p = gcd(n, pp - 1)
             if n > p > 1:
                 return p, n // p
 
