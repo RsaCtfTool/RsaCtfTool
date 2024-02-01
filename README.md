@@ -255,7 +255,7 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 
 - Please read the CONTRIBUTING.md guideline for the bare minimum acceptable PRs.
 
-## All Thanks To Our Contributors 
+## Thanks to all our Contributors 
 
 <a href="https://github.com/RsaCtfTool/RsaCtfTool/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=RsaCtfTool/RsaCtfTool" />
