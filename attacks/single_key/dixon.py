@@ -4,40 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import (
-    isqrt,
-    gcd,
-    is_prime,
-    primes,
-    powmod,
-    is_square,
-    powmod_base_list,
-)
-import bitarray
-
-
-def dixon_factor(N, B=7):
-    if is_prime(N):
-        return N, 1
-
-    if is_square(N):
-        i = isqrt(N)
-        return i, i
-
-    base = primes(B)
-    lqbf = pow(base[-1], 2) + 1
-    QBF = bitarray.bitarray(lqbf)  # This is our quasi-bloom-filter
-
-    basej2N = powmod_base_list(base, 2, N)
-    for p in basej2N: QBF[p] = 1
-
-    for i in range(isqrt(N), N):
-        i2N = powmod(i, 2, N)
-        if i2N < lqbf and QBF[i2N] == 1:
-            for k in range(0, len(base)):
-                # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
-                if QBF[basej2N[k]] == 1 and 1 < (f:= gcd(i - base[k], N)) < N:
-                    return f, N // f
+from lib.algos import dixon
 
 
 class Attack(AbstractAttack):
@@ -49,7 +16,7 @@ class Attack(AbstractAttack):
         """Run dixon attack with a timeout"""
         try:
             if publickey.n <= 10_000_000_000:
-                publickey.p, publickey.q = dixon_factor(publickey.n)
+                publickey.p, publickey.q = dixon(publickey.n)
             else:
                 self.logger.error("[-] Dixon is too slow for pubkeys > 10^10...")
                 return None, None

@@ -4,23 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, gcd
-
-
-def hart(N):
-    """
-    Hart's one line attack
-    taken from wagstaff the joy of factoring
-    """
-    m = 2
-    i = 1
-    while not is_square(m):
-        s = isqrt(N * i) + 1
-        m = pow(s, 2, N)
-        i += 1
-    t = isqrt(m)
-    g = gcd(s - t, N)
-    return g, N // g
+from lib.algos import hart
 
 
 class Attack(AbstractAttack):

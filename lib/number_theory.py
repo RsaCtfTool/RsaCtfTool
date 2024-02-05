@@ -598,8 +598,9 @@ def inv_mod_pow_of_2(factor, bit_count):
     rest = factor & -2
     acc = 1
     for i in range(bit_count):
-        if acc & (1 << i):
-            acc -= rest << i
+        #if acc & (1 << i):
+        #    acc -= rest << i
+        acc -= (acc & (1 << i)) * (rest << i)
     mask = (1 << bit_count) - 1
     return acc & mask
 

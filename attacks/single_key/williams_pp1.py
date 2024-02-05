@@ -1,29 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, ilogb, isqrt, next_prime, mlucas
-from itertools import count
-
-
-def williams_pp1(n):
-    p, i2 = 2, isqrt(n)
-    for v in count(1):
-        while True:
-            e = ilogb(i2, p)
-            if e == 0:
-                break
-            for _ in range(e):
-                v = mlucas(v, p, n)
-            g = gcd(v - 2, n)
-            if 1 < g < n:
-                return g, n // g
-            if g == n:
-                break
-            p = next_prime(p)
-    return None
+from lib.algos import williams_pp1
 
 
 class Attack(AbstractAttack):

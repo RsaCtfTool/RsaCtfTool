@@ -3,41 +3,8 @@
 
 from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.number_theory import isqrt, invmod, trivial_factorization_with_n_phi
 from lib.keys_wrapper import PrivateKey
-from gmpy2 import powmod
-
-
-def close_factor(n, b, progress=True):
-    """
-    source: https://web.archive.org/web/20201031000312/https://grocid.net/2017/09/16/finding-close-prime-factorizations/
-    """
-    # approximate phi
-    phi_approx = n - 2 * isqrt(n) + 1
-    # Create a look-up table
-    # If phi_approx is odd we are going to search for odd i values in the lookup table,
-    # else we are going to search for even i values in the lookup table.
-    look_up = {}
-    z = 1
-    parity = phi_approx & 1
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
-        if i & 1 == parity:
-            look_up[z] = i
-        z <<= 1
-        if z >= n:
-            z -= n
-    
-    # check the table
-    mu = invmod(powmod(2, phi_approx, n), n)
-    fac = powmod(2, b, n)
-
-    for i in tqdm(range(0, (b * b) + 1), disable=(not progress)):
-        if mu in look_up:
-            phi = phi_approx + look_up[mu] - (i * b)
-            r = trivial_factorization_with_n_phi(n, phi)
-            if r is not None:
-                return r
-        mu = (mu * fac) % n
+from lib.algos import close_factor
 
 
 class Attack(AbstractAttack):

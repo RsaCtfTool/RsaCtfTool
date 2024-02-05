@@ -4,28 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import next_prime, powmod, gcd, A000265
-
-
-def carmichael(N):
-    """
-    Algorithm described in the Wagstaf's joy of factoring book.
-    """
-    f = N1 = N - 1
-    #while f & 1 == 0:
-    #    f >>= 1
-    f = A000265(f)
-    a = 2
-    while a <= N1:
-        r1 = powmod(a, f << 1, N)
-        if r1 == 1:
-            r = powmod(a, f, N)
-            p = gcd(r - 1, N)
-            q = gcd(r + 1, N)
-            if q > p > 1:  # and (p * q == N):
-                return p, q
-        a = next_prime(a)
-    return []
+from lib.algos import carmichael
 
 
 class Attack(AbstractAttack):

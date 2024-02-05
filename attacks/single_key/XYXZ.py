@@ -4,24 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import (
-    next_prime,
-    log,
-    is_divisible,
-)
-
-
-def factor_XYXZ(n, base=3):
-    """
-    Factor a x^y*x^z form integer with x prime.
-    """
-    power = 1
-    max_power = (int(log(n) / log(base)) + 1) >> 1
-    while power <= max_power:
-        p = next_prime(base**power)
-        if is_divisible(n, p):
-            return p, n // p
-        power += 1
+from lib.algos import  factor_XYXZ
 
 
 class Attack(AbstractAttack):

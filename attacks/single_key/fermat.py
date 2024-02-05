@@ -4,22 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, is_square, isqrt_rem, is_congruent
-
-
-def fermat(n):
-    if is_congruent(n, 2, 4):
-        raise FactorizationError
-    a, rem = isqrt_rem(n)
-    b2 = -rem
-    c0 = (a << 1) + 1
-    c = c0
-    while not is_square(b2):
-        b2 += c
-        c += 2
-    a = (c - 1) >> 1
-    b = isqrt(b2)
-    return a - b, a + b
+from lib.algos import fermat
 
 
 class Attack(AbstractAttack):
