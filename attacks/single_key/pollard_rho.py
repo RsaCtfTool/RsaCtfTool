@@ -4,15 +4,7 @@
 
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
-from lib.number_theory import is_prime, gcd, powmod
-
-
-def pollard_rho(n):
-    d, x, y, g = 1, 2, 2, lambda x: powmod(x, 2, n) - 1
-    while d == 1:
-        x, y = g(x), g(g(y))
-        d = gcd(abs(y - x), n)
-    return d
+from lib.algos import pollard_rho
 
 
 class Attack(AbstractAttack):

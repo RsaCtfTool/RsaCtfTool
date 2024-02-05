@@ -4,29 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.number_theory import gcd, powmod
-
-
-def shor(n):
-    """
-    Shor's algorithm: only the classical part of it, implemented in a very naive and linear way.
-    Use the quantum period finding function: f(x) = a^x % N to find r, then a^r == 1 (mod N) and that is what the quantum computer
-    gives advantage over classical algorithms.
-    Here in this code we use a linear search of r of even numbers.
-    Equivalent to solving DLP with bruteforce.
-    https://en.wikipedia.org/wiki/Shor%27s_algorithm
-    """
-    for a in range(2, n):
-        # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g:=gcd(n,a)) != 1: return g, n // g
-        for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
-            if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
-                if (ar2 := powmod(a, r >> 1, n)) != -1:
-                    g1, g2 = gcd(ar2 - 1, n), gcd(ar2 + 1, n)
-                    if (n > g1 > 1) or (n > g2 > 1):
-                        p = max(max(min(n, g1), 1), max(min(n, g2), 1))
-                        return (p, n // p)
-
+from lib.algos import shor
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
