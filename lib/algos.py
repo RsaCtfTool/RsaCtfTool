@@ -56,8 +56,7 @@ def carmichael(N):
     f = A000265(f)
     a = 2
     while a <= N1:
-        r1 = powmod(a, f << 1, N)
-        if r1 == 1:
+        if (r1 := powmod(a, f << 1, N)) == 1:
             r = powmod(a, f, N)
             p = gcd(r - 1, N)
             q = gcd(r + 1, N)
@@ -99,13 +98,6 @@ def close_factor(n, b, progress=True):
         
         
 def dixon(N, B=7):
-    if is_prime(N):
-        return N, 1
-
-    if is_square(N):
-        i = isqrt(N)
-        return i, i
-
     base = primes(B)
     lqbf = pow(base[-1], 2) + 1
     QBF = bitarray.bitarray(lqbf)  # This is our quasi-bloom-filter
@@ -206,7 +198,7 @@ def factor_XYXZ(n, base=3):
     power = 1
     max_power = (int(log(n) / log(base)) + 1) >> 1
     while power <= max_power:
-        p = next_prime(base**power)
+        p = next_prime(base ** power)
         if is_divisible(n, p):
             return p, n // p
         power += 1
@@ -401,9 +393,9 @@ def lehmer_machine(n):
     if is_congruent(n, 2, 4):
         raise FactorizationError
     y = 1
-    while not is_square(n + y**2):
+    while not is_square(n + y ** 2):
         y += 1
-    x = isqrt(n + y**2)
+    x = isqrt(n + y ** 2)
     return x - y, x + y
         
 
