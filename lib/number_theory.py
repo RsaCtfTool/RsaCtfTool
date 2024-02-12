@@ -104,7 +104,7 @@ def _introot(n, r=2):
         return _isqrt(n)
     lower, upper = 0, n
     while lower != upper - 1:
-        mid = (lower + upper) >> 1
+        mid = lower + ((upper - lower) >> 1)
         m = pow(mid, r)
         if m == n:
             return mid
