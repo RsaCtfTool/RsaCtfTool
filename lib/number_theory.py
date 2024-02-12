@@ -108,10 +108,8 @@ def _introot(n, r=2):
         m = pow(mid, r)
         if m == n:
             return mid
-        elif m < n:
-            lower = mid
-        elif m > n:
-            upper = mid
+        lower = mid * (m < n) + lower * (m >= n)
+        upper = mid * (m > n) + upper * (m <= n)
     return lower
 
 
@@ -283,8 +281,7 @@ def _powmod(b, e, m):
     r = 1
     b %= m
     while e > 0:
-        if e & 1 == 1:
-            r = (r * b) % m
+        r = ((r * b) % m) * (e & 1) + r * ((e + 1) & 1)
         e >>= 1
         b = (b * b) % m
     return r
@@ -302,12 +299,7 @@ def _fac(n):
 
 @cache
 def _lucas(n):
-    if n == 0:
-        return 2
-    if n == 1:
-        return 1
-    if n > 1:
-        return _lucas(n - 1) + _lucas(n - 2)
+    return _lucas(n - 1) + _lucas(n - 2) * (n > 1) + 1 * (n == 1) + 2 * (n == 0)
 
 
 if gmpy_version > 0:
@@ -598,8 +590,6 @@ def inv_mod_pow_of_2(factor, bit_count):
     rest = factor & -2
     acc = 1
     for i in range(bit_count):
-        #if acc & (1 << i):
-        #    acc -= rest << i
         acc -= (acc & (1 << i)) * (rest << i)
     mask = (1 << bit_count) - 1
     return acc & mask
