@@ -299,7 +299,9 @@ def _fac(n):
 
 @cache
 def _lucas(n):
-    return _lucas(n - 1) + _lucas(n - 2) * (n > 1) + 1 * (n == 1) + 2 * (n == 0)
+    if n == 0: return 2
+    if n == 1: return 1
+    return _lucas(n - 1) + _lucas(n - 2)
 
 
 if gmpy_version > 0:
