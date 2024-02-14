@@ -253,7 +253,7 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 
 ## Contributing 
 
-- Please read the CONTRIBUTING.md guideline for the bare minimum acceptable PRs.
+- Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guideline for the bare minimum acceptable PRs.
 
 ## Thanks to all our Contributors 
 
