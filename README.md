@@ -27,7 +27,7 @@ RSA security, at its core, relies on the complexity of the integer factorization
 Please note that this tool is primarily intended for educational purposes. It is essential to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
 It is essential to highlight that the tool, exclusively supports the RSA textbook semiprime composite modulus rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
 
-For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu.git), or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
+For an advanced integer factorization tool please use [msieve](https://github.com/radii/msieve), [yafu](https://github.com/bbuhrow/yafu), or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
 This tool is meant for educational purposes. For those participating in CTFs, please do the following first:
 * Learn the basics of RSA math and understand number theory, modular arithmetic, integer factorization and the fundamental theorem of arithmetic.
