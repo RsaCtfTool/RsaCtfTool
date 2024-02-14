@@ -10,6 +10,7 @@ Contributions:
               - They should not include binaries.
               - They should be in small PRs for faster reviewing process.
               - They should include a small testcase.
+              - Dependencies: they should not point to your own fork, but the original even if its not maintained (also ask to clone to the organization).
               - Avoid naming an algorithm after yourself, no vanity is accepted (better describe what the algorithm does).
               - Any contribution not hornoring this criteria will be rejected until it does.
 ```             
