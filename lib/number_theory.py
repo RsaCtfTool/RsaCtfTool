@@ -52,6 +52,7 @@ def getpubkeysz(n):
         size += 1
     return size
 
+is_pow2 = lambda n: return n & (nu - 1) == 0
 
 def _gcdext(a, b):
     if a == 0:
@@ -660,4 +661,5 @@ __all__ = [
     A000265,
     powmod_base_list,
     powmod_exp_list,
+    is_pow2,
 ]
