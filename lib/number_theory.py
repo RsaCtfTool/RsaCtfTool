@@ -52,7 +52,7 @@ def getpubkeysz(n):
         size += 1
     return size
 
-is_pow2 = lambda n: return n & (nu - 1) == 0
+is_pow2 = lambda n: n & (nu - 1) == 0
 
 def _gcdext(a, b):
     if a == 0:
