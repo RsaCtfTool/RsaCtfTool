@@ -254,6 +254,7 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 ## Contributing 
 
 - Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guideline for the bare minimum acceptable PRs.
+- Also please read the [CONTRIBUTING.md](CODE_OF_CONDUCT.md), any contribution of any user not honoring it will ignored and the user blocked, good manners are paramount.
 
 ## Thanks to all our Contributors 
 
