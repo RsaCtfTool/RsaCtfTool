@@ -56,10 +56,10 @@ def print_decrypted_res(c, logger):
     logger.info(f"INT (little endian) : {int_little}")
     with contextlib.suppress(UnicodeDecodeError):
         c_utf8 = c.decode("utf-8")
-        logger.info(f"utf-8 : { c_utf8 }")
+        logger.info(f"utf-8 : {c_utf8}")
     with contextlib.suppress(UnicodeDecodeError):
         c_utf16 = c.decode("utf-16")
-        logger.info(f"utf-16 : { c_utf16 }")
+        logger.info(f"utf-16 : {c_utf16}")
     logger.info(f"STR : {repr(c)}")
 
 
