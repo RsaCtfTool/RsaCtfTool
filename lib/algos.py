@@ -6,7 +6,7 @@ import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, powmod, gcd, A000265, isqrt_rem, is_square, invert, inv_mod_pow_of_2,  trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, isqrt, next_prime, mlucas
+from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, powmod, gcd, A000265, isqrt_rem, is_square, invert, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, isqrt, next_prime, mlucas
 
 
 sys.setrecursionlimit(100000)
@@ -118,7 +118,7 @@ def euler(n):
     """
     Euler factorization method is very much like fermat's
     """
-    end,a,b,solutionsFound,firstb,lf = isqrt(n),0,0,[],-1,0
+    end, a, b, solutionsFound, firstb, lf = isqrt(n), 0, 0, [], -1, 0
 
     while a < end:
         b, f = isqrt_rem(n - a**2)
@@ -518,7 +518,7 @@ def shor(n):
     """
     for a in range(2, n):
         # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g := gcd(n,a)) != 1: return g, n // g
+        if (g := gcd(n, a)) != 1: return g, n // g
         for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
             if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
