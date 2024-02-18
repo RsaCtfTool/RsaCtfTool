@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import time
 import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, invert, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, mlucas
-
+from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas #, is_prime, invert, contfrac_to_rational
+from tqdm import tqdm
+from lib.number_theory import invmod, introot
 
 sys.setrecursionlimit(100000)
 
@@ -304,7 +306,7 @@ class Fibonacci:
             print("Searching...")
 
         while True:
-            randi = random.randint(begin, end)
+            randi = randint(begin, end)
             if (res := self.get_n_mod_d(randi, N)) > 0 and res in look_up:
                 if randi > (res_n := look_up[res]):
                     if (phi_guess := randi - res_n) & 1 == 0 and self.get_n_mod_d(
@@ -312,16 +314,24 @@ class Fibonacci:
                     ) == 0:
                         td = int(time.time() - starttime)
                         if self.verbose:
+                            # print(
+                            #     "For N = %d Found T:%d, randi: %d, time used %f secs."
+                            #     % (N, T, randi, td)
+                            # )
                             print(
-                                "For N = %d Found T:%d, randi: %d, time used %f secs."
-                                % (N, T, randi, td)
+                                "For N = %d Found randi: %d, time used %f secs."
+                                % (N, randi, td)
                             )
                         return phi_guess
                     else:
                         if self.verbose:
+                            # print(
+                            #     "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
+                            #     % (N, res, res_n, T)
+                            # )
                             print(
-                                "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
-                                % (N, res, res_n, T)
+                                "For N = %d\n Found res: %d, res_n: %d\n but failed!"
+                                % (N, res, res_n,)
                             )
 
     def factorization(self, N, min_accept, xdiff):
