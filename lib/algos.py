@@ -110,7 +110,7 @@ def dixon(N, B=7):
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
                 # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
-                if QBF[basej2N[k]] == 1 and 1 < (f:= gcd(i - base[k], N)) < N:
+                if QBF[basej2N[k]] == 1 and 1 < (f := gcd(i - base[k], N)) < N:
                     return f, N // f
 
 
@@ -166,7 +166,7 @@ def factor_2PN(N, P=3):
     A, remainder = isqrt_rem(P2N)
     A += int(remainder != 0)
 
-    c = -(A*A) + A + P2N
+    c = -(A * A) + A + P2N
     disc = 1 - (c << 2)
 
     if disc >= 0:
@@ -518,7 +518,7 @@ def shor(n):
     """
     for a in range(2, n):
         # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g:=gcd(n,a)) != 1: return g, n // g
+        if (g := gcd(n,a)) != 1: return g, n // g
         for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
             if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
