@@ -6,6 +6,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
 from lib.algos import shor
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)

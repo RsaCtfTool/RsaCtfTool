@@ -51,5 +51,6 @@ class AbstractAttack(object):
         """Attack test case"""
         raise NotImplementedError
 
+
 # Configure logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
