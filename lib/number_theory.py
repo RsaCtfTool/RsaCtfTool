@@ -41,7 +41,7 @@ A135481 = lambda n: (~n & n - 1)
 A000265 = lambda n: n // (A135481(n) + 1)
 
 @cache
-def mulmod(a,b,m):
+def mulmod(a, b, m):
     if b == 0: return 0
     if b == 1: return a % m
     if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
@@ -159,7 +159,7 @@ def miller_rabin(n, k=40):
     """
 
     if n == 2: return True
-    if (n & 1 == 0) or (digit_sum(n) % 9 in [0,3,6]): return False
+    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]): return False
 
     r, s = 0, n - 1
     while (s & 1 == 0):
