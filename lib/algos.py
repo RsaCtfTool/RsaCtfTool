@@ -44,8 +44,8 @@ def brent(N):
                 g = gcd(abs(x - ys), N)
                 if N > g > 1:
                     return g
-                    
-                    
+
+
 def carmichael(N):
     """
     Algorithm described in the Wagstaf's joy of factoring book.
@@ -64,7 +64,7 @@ def carmichael(N):
                 return p, q
         a = next_prime(a)
     return []
-    
+
 
 def close_factor(n, b, progress=True):
     """
@@ -83,7 +83,7 @@ def close_factor(n, b, progress=True):
             look_up[z] = i
         z <<= 1
         z -= (z >= n) * n
-    
+
     # check the table
     mu = invmod(powmod(2, phi_approx, n), n)
     fac = powmod(2, b, n)
@@ -95,8 +95,8 @@ def close_factor(n, b, progress=True):
             if r is not None:
                 return r
         mu = (mu * fac) % n
-        
-        
+
+
 def dixon(N, B=7):
     base = primes(B)
     lqbf = pow(base[-1], 2) + 1
@@ -189,7 +189,7 @@ def factor_2PN(N, P=3):
                 return p, q
 
     return []
-  
+
 
 def factor_XYXZ(n, base=3):
     """
@@ -202,8 +202,8 @@ def factor_XYXZ(n, base=3):
         if is_divisible(n, p):
             return p, n // p
         power += 1
-        
-        
+
+
 def fermat(n):
     if is_congruent(n, 2, 4):
         raise FactorizationError
@@ -255,8 +255,8 @@ def FactorHighAndLowBitsEqual(n, middle_bits=3):
                         d_sqrt = isqrt(d)
                         return (s - d_sqrt, s + d_sqrt)
     return None
-      
-      
+
+
 class Fibonacci:
     def __init__(self, progress=False, verbose=False):
         self.progress = progress
@@ -328,8 +328,8 @@ class Fibonacci:
         phi_guess = self.get_period_bigint(N, min_accept, xdiff)
         if phi_guess is not None:
             return trivial_factorization_with_n_phi(N, phi_guess)
-            
-            
+
+
 def hart(N):
     """
     Hart's one line attack
@@ -384,7 +384,7 @@ def lehman(n):
                 q = gcd(a - b, n)
                 return p, q
     return []
-    
+
 
 def lehmer_machine(n):
     """
@@ -397,12 +397,12 @@ def lehmer_machine(n):
         y += 1
     x = isqrt(n + y ** 2)
     return x - y, x + y
-        
+
 
 def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
     """Search for partial q.
     Tunable to search longer.
-    
+
     Source:
     https://0day.work/0ctf-2016-quals-writeups/
 
@@ -455,7 +455,7 @@ def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
 
     Additionally the following paper details an algorithm to generate
     p and q prime candidates with just the CRT components
-    
+
     https://eprint.iacr.org/2004/147.pdf
     """
 
@@ -526,8 +526,8 @@ def shor(n):
                     if (n > g1 > 1) or (n > g2 > 1):
                         p = max(max(min(n, g1), 1), max(min(n, g2), 1))
                         return (p, n // p)
-                        
-                        
+
+
 def SQUFOF(N):
     """
     Code borrowed and adapted from the wikipedia: https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
@@ -591,8 +591,8 @@ def SQUFOF(N):
         if 1 < r < N:
             return r, N // r
     return None
-    
-    
+
+
 def wiener(n, e, progress=True):
     convergents = convergents_from_contfrac(rational_to_contfrac(e, n))
 
