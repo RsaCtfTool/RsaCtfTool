@@ -6,7 +6,7 @@ import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, powmod, gcd, A000265, isqrt_rem, is_square, invert, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, isqrt, next_prime, mlucas
+from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, invert, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, mlucas
 
 
 sys.setrecursionlimit(100000)
