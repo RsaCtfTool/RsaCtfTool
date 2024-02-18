@@ -10,7 +10,8 @@ this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
 """
 
-import sys, os
+import os
+import sys
 import logging
 import argparse
 import urllib3
