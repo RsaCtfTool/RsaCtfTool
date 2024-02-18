@@ -43,12 +43,12 @@ def banner():
     cRED = "\033[1;31m"
     return (
         r"""
-__________               R_______________________________E __                .__   
-\______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |  
- |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |  
+__________               R_______________________________E __                .__
+\______   \ ___________  R\_   ___ \__    ___/\_   _____/E/  |_  ____   ____ |  |
+ |       _//  ___/\__  \ R/    \  \/ |    |    |    __)E \   __\/  _ \ /  _ \|  |
  |    |   \\\___ \  / __ \R\     \____|    |    |     \E   |  | (  <_> |  <_> )  |__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
-        \/     \/      \/        R\/E               R\/E                             
+        \/     \/      \/        R\/E               R\/E
 
 """.replace(
             "R", cRED
@@ -266,7 +266,7 @@ def run_attacks(args, logger):
             # FIXME
             publickey, _privkey = generate_keys_from_p_q_e_n(
                 args.p, args.q, args.e, args.n
-            )   
+            )
             attackobj.attack_single_key(publickey, selected_attacks)
     return args
 
@@ -353,11 +353,11 @@ def dump_key_parameters(args):
 def decrypt_file(args, logger):
     """
     Decrypts files specified in args.decryptfile using the provided private key.
-    
+
     Args:
         args (Namespace): Command-line arguments.
         logger (Logger): Logger object for logging messages.
-        
+
     Returns:
         bool: True if decryption is successful, False otherwise.
     """

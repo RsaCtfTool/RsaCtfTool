@@ -409,7 +409,7 @@ def factor_ned_probabilistic(n, e, d):
     #t, r = 0, k
     #while r & 1 == 0:
     #    r >>= 1
-    #    t += 1 
+    #    t += 1
     r = A000265(k)
     for _ in range(1, 101):
         g = random.randint(0, n1)
