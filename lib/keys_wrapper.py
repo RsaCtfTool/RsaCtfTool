@@ -154,7 +154,7 @@ class PrivateKey(object):
                 )
             except ValueError:
                 logger.error("[!] Unable to compute factors p and q from exponent d")
-                logger.info("[+] n=%d,e=%d,d=%d" % (self.n, self, e, self.d))
+                logger.info("[+] n=%d,e=%d,d=%d" % (self.n, self.e, self.d))
         elif filename is not None:
             with open(filename, "rb") as key_data_fd:
                 try:
