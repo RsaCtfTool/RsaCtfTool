@@ -32,20 +32,20 @@ except ImportError:
 
 @cache
 def list_prod(list_):
-    if (l:=len(list_)) == 0: return 1
-    return list_prod(list_[:l-1]) * list_[-1]
+    if (l := len(list_)) == 0: return 1
+    return list_prod(list_[:l - 1]) * list_[-1]
 
 digit_sum = lambda n: sum(int(d) for d in str(n))
-A007814 = lambda n: (~n & n-1).bit_length()
-A135481 = lambda n: (~n & n-1)
-A000265 = lambda n: n // (A135481(n)+1)
+A007814 = lambda n: (~n & n - 1).bit_length()
+A135481 = lambda n: (~n & n - 1)
+A000265 = lambda n: n // (A135481(n) + 1)
 
 @cache
 def mulmod(a,b,m):
     if b == 0: return 0
     if b == 1: return a % m
     if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
-    else: return (a + mulmod(a, b-1, m)) % m
+    else: return (a + mulmod(a, b - 1, m)) % m
 
 def getpubkeysz(n):
     if (size := n.bit_length()) & 1 != 0:
@@ -518,7 +518,7 @@ def tonelli(n, p):
     """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1
-    q >>= (s:= A007814(q))
+    q >>= (s := A007814(q))
     if s == 1:
         return powmod(n, (p + 1) >> 2, p)
     for z in range(2, p):
