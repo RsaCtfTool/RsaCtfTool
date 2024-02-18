@@ -414,8 +414,8 @@ def factor_ned_probabilistic(n, e, d):
     n1, k = n - 1, d * e - 1
     if k & 1 == 1:
         return
-    #t, r = 0, k
-    #while r & 1 == 0:
+    # t, r = 0, k
+    # while r & 1 == 0:
     #    r >>= 1
     #    t += 1
     r = A000265(k)
@@ -540,10 +540,10 @@ def tonelli(n, p):
                 break
             t2 = powmod(t2, 2, p)
         b = powmod(c, 1 << (m - i - 1), p)
-        #r = (r * b) % p
+        # r = (r * b) % p
         r = mulmod(r, b, p)
         c = powmod(b, 2, p)
-        #t = (t * c) % p
+        # t = (t * c) % p
         t = mulmod(t, c, p)
         m = i
     return r

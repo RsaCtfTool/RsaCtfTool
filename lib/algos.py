@@ -51,7 +51,7 @@ def carmichael(N):
     Algorithm described in the Wagstaf's joy of factoring book.
     """
     f = N1 = N - 1
-    #while f & 1 == 0:
+    # while f & 1 == 0:
     #    f >>= 1
     f = A000265(f)
     a = 2
