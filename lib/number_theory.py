@@ -404,8 +404,6 @@ else:
 legendre = lambda a, p: powmod(a, (p - 1) >> 1, p)
 cuberoot = lambda n: introot(n, 3)
 
-import random
-
 
 def factor_ned_probabilistic(n, e, d):
     """
