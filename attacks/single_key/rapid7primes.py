@@ -5,7 +5,7 @@ from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from lib.number_theory import is_divisible
-from lib.pickling import *
+from lib.pickling import decompress_pickle
 import glob
 
 
