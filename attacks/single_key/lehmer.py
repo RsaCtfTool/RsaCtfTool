@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.algos import lehmer_machine
-
+from lib.exceptions import FactorizationError
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):

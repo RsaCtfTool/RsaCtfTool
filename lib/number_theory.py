@@ -5,6 +5,7 @@ from functools import reduce, cache
 import math
 import logging
 import random
+from lib.number_theory import ilog10
 
 logger = logging.getLogger("global_logger")
 
@@ -32,27 +33,32 @@ except ImportError:
 
 @cache
 def list_prod(list_):
-  if (l:=len(list_)) == 0: return 1
-  return list_prod(list_[:l-1]) * list_[-1]
+    if (l := len(list_)) == 0: return 1
+    return list_prod(list_[:l - 1]) * list_[-1]
+
 
 digit_sum = lambda n: sum(int(d) for d in str(n))
-A007814 = lambda n: (~n & n-1).bit_length()
-A135481 = lambda n: (~n & n-1)
-A000265 = lambda n: n // (A135481(n)+1)
+A007814 = lambda n: (~n & n - 1).bit_length()
+A135481 = lambda n: (~n & n - 1)
+A000265 = lambda n: n // (A135481(n) + 1)
+
 
 @cache
-def mulmod(a,b,m):
-  if b == 0: return 0
-  if b == 1: return a % m
-  if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
-  else: return (a + mulmod(a, b-1, m)) % m
+def mulmod(a, b, m):
+    if b == 0: return 0
+    if b == 1: return a % m
+    if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
+    else: return (a + mulmod(a, b - 1, m)) % m
+
 
 def getpubkeysz(n):
     if (size := n.bit_length()) & 1 != 0:
         size += 1
     return size
 
-is_pow2 = lambda n: n & (nu - 1) == 0
+
+is_pow2 = lambda n: n & (n - 1) == 0
+
 
 def _gcdext(a, b):
     if a == 0:
@@ -143,11 +149,14 @@ def _is_square(n):
         return False
     return (t := _isqrt(n) * t) == n
 
+
 def _powmod_base_list(base_lst, exp, mod):
-  return list(powmod(i, exp, mod) for i in base_lst)
+    return list(powmod(i, exp, mod) for i in base_lst)
+
 
 def _powmod_exp_list(base, exp_lst, mod):
-  return list(powmod(base, i, mod) for i in exp_lst)
+    return list(powmod(base, i, mod) for i in exp_lst)
+
 
 def miller_rabin(n, k=40):
     """ "
@@ -159,7 +168,7 @@ def miller_rabin(n, k=40):
     """
 
     if n == 2: return True
-    if (n & 1 == 0) or (digit_sum(n) % 9 in [0,3,6]): return False
+    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]): return False
 
     r, s = 0, n - 1
     while (s & 1 == 0):
@@ -396,8 +405,6 @@ else:
 legendre = lambda a, p: powmod(a, (p - 1) >> 1, p)
 cuberoot = lambda n: introot(n, 3)
 
-import random
-
 
 def factor_ned_probabilistic(n, e, d):
     """
@@ -406,22 +413,24 @@ def factor_ned_probabilistic(n, e, d):
     n1, k = n - 1, d * e - 1
     if k & 1 == 1:
         return
-    #t, r = 0, k
-    #while r & 1 == 0:
+    # t, r = 0, k
+    # while r & 1 == 0:
     #    r >>= 1
-    #    t += 1 
+    #    t += 1
     r = A000265(k)
     for _ in range(1, 101):
         g = random.randint(0, n1)
         if (y := pow(g, r, n)) == 1 or y == n1:
             continue
-        for _ in range(1, t):
-            if (x := pow(y, 2, n)) == 1:
-                p = gcd(y - 1, n)
-                return p, n // p
-            if x == n1:
-                continue
-            y = x
+        # Also commenting out this section which wouldn't run since
+        #   before commenting-out t = 0, and was only incremented in a loop (also previously commented out)
+        # for _ in range(1, t):
+        #     if (x := pow(y, 2, n)) == 1:
+        #         p = gcd(y - 1, n)
+        #         return p, n // p
+        #     if x == n1:
+        #         continue
+        #     y = x
         if (x := pow(y, 2, n)) == 1:
             p = gcd(x - 1, n)
             return p, n // p
@@ -518,7 +527,7 @@ def tonelli(n, p):
     """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1
-    q >>= (s:= A007814(q))
+    q >>= (s := A007814(q))
     if s == 1:
         return powmod(n, (p + 1) >> 2, p)
     for z in range(2, p):
@@ -532,10 +541,10 @@ def tonelli(n, p):
                 break
             t2 = powmod(t2, 2, p)
         b = powmod(c, 1 << (m - i - 1), p)
-        #r = (r * b) % p
+        # r = (r * b) % p
         r = mulmod(r, b, p)
         c = powmod(b, 2, p)
-        #t = (t * c) % p
+        # t = (t * c) % p
         t = mulmod(t, c, p)
         m = i
     return r

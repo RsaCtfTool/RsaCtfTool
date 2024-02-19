@@ -5,13 +5,13 @@ Integer factorization with pisano period
 Heavily based on original repo https://github.com/wuliangshun/IntegerFactorizationWithPisanoPeriod/
 White paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8901977
 """
-import random
-import time
-from tqdm import tqdm
+# import random
+# import time
+# from tqdm import tqdm
 from lib.keys_wrapper import PrivateKey
 from attacks.abstract_attack import AbstractAttack
 from lib.algos import Fibonacci
-
+from lib.number_theory import ilog10
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):

@@ -35,7 +35,7 @@ This tool is meant for educational purposes. For those participating in CTFs, pl
 * Avoid copy-pasting and running the tool without understanding the underlying math, as knowing the math is more valuable than knowing how to run the tool.
 
 We hope this tool enhances your understanding of RSA encryption and serves as a valuable resource for exploring the intricacies of integer factorization. Use it responsibly and within the bounds of applicable laws and regulations.
-                                             
+
 __Attacks provided:__
 
 - Attacks that don't depend on the factorization of integers (may depend on knowing n,e,ciphertext,etc...):
@@ -87,7 +87,7 @@ __Attacks provided:__
   - [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm)
   - [Hart algorithm (similar to Fermat)](http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf)
   - [Lehmer machine (similar to Fermat)](https://en.wikipedia.org/wiki/Lehmer_sieve)
-  - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2 
+  - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2
   - [Kraitchik algorithm (an improvement over Fermat)](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
   - Lehman algorithm improvement over Fermat
   - Carmichael algorithm
@@ -147,7 +147,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `./RsaCtfTool.py --dumpkey --key ./key.pub`
 
-### Check a given private key for conspicuousness 
+### Check a given private key for conspicuousness
 
 `./RsaCtfTool.py --key examples/conspicuous.priv --isconspicuous`
 
@@ -251,12 +251,12 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
 - Support multiprime RSA, the project currently supports textbook RSA.
 
-## Contributing 
+## Contributing
 
 - Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guideline for the bare minimum acceptable PRs.
 - Also please read the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), any contribution of any user not honoring it will ignored and the user blocked, good manners are paramount.
 
-## Thanks to all our Contributors 
+## Thanks to all our Contributors
 
 <a href="https://github.com/RsaCtfTool/RsaCtfTool/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=RsaCtfTool/RsaCtfTool" />
