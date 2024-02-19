@@ -250,6 +250,7 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 - Implement a test method for each attack.
 - Assign the correct algorithm complexity in **Big O** notation for each attack.
 - Support multiprime RSA, the project currently supports textbook RSA.
+- Wanted feature: Ransomware decrypter.
 
 ## Contributing
 
