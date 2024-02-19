@@ -4,7 +4,7 @@
 from attacks.abstract_attack import AbstractAttack
 from lib.keys_wrapper import PrivateKey
 from lib.exceptions import FactorizationError
-from lib.algos import  factor_XYXZ
+from lib.algos import factor_XYXZ
 
 
 class Attack(AbstractAttack):

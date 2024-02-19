@@ -2,12 +2,14 @@
 # -*- coding: utf-8 -*-
 
 import sys
+import time
 import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, is_prime, primes, powmod, is_square, powmod_base_list, next_prime, powmod, gcd, A000265, isqrt_rem, is_square, invert, inv_mod_pow_of_2,  trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, trivial_factorization_with_n_phi, rational_to_contfrac, convergents_from_contfrac, contfrac_to_rational, fdivmod, is_congruent, is_divisible, ilogb, isqrt, next_prime, mlucas
-
+from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas #, is_prime, invert, contfrac_to_rational
+from tqdm import tqdm
+from lib.number_theory import invmod, introot
 
 sys.setrecursionlimit(100000)
 
@@ -44,14 +46,14 @@ def brent(N):
                 g = gcd(abs(x - ys), N)
                 if N > g > 1:
                     return g
-                    
-                    
+
+
 def carmichael(N):
     """
     Algorithm described in the Wagstaf's joy of factoring book.
     """
     f = N1 = N - 1
-    #while f & 1 == 0:
+    # while f & 1 == 0:
     #    f >>= 1
     f = A000265(f)
     a = 2
@@ -64,7 +66,7 @@ def carmichael(N):
                 return p, q
         a = next_prime(a)
     return []
-    
+
 
 def close_factor(n, b, progress=True):
     """
@@ -83,7 +85,7 @@ def close_factor(n, b, progress=True):
             look_up[z] = i
         z <<= 1
         z -= (z >= n) * n
-    
+
     # check the table
     mu = invmod(powmod(2, phi_approx, n), n)
     fac = powmod(2, b, n)
@@ -95,8 +97,8 @@ def close_factor(n, b, progress=True):
             if r is not None:
                 return r
         mu = (mu * fac) % n
-        
-        
+
+
 def dixon(N, B=7):
     base = primes(B)
     lqbf = pow(base[-1], 2) + 1
@@ -110,7 +112,7 @@ def dixon(N, B=7):
         if i2N < lqbf and QBF[i2N] == 1:
             for k in range(0, len(base)):
                 # if i2N == basej2N[k]: # this is replaced with a quasi-bloom-filter
-                if QBF[basej2N[k]] == 1 and 1 < (f:= gcd(i - base[k], N)) < N:
+                if QBF[basej2N[k]] == 1 and 1 < (f := gcd(i - base[k], N)) < N:
                     return f, N // f
 
 
@@ -118,7 +120,7 @@ def euler(n):
     """
     Euler factorization method is very much like fermat's
     """
-    end,a,b,solutionsFound,firstb,lf = isqrt(n),0,0,[],-1,0
+    end, a, b, solutionsFound, firstb, lf = isqrt(n), 0, 0, [], -1, 0
 
     while a < end:
         b, f = isqrt_rem(n - a**2)
@@ -166,7 +168,7 @@ def factor_2PN(N, P=3):
     A, remainder = isqrt_rem(P2N)
     A += int(remainder != 0)
 
-    c = -(A*A) + A + P2N
+    c = -(A * A) + A + P2N
     disc = 1 - (c << 2)
 
     if disc >= 0:
@@ -189,7 +191,7 @@ def factor_2PN(N, P=3):
                 return p, q
 
     return []
-  
+
 
 def factor_XYXZ(n, base=3):
     """
@@ -202,8 +204,8 @@ def factor_XYXZ(n, base=3):
         if is_divisible(n, p):
             return p, n // p
         power += 1
-        
-        
+
+
 def fermat(n):
     if is_congruent(n, 2, 4):
         raise FactorizationError
@@ -255,8 +257,8 @@ def FactorHighAndLowBitsEqual(n, middle_bits=3):
                         d_sqrt = isqrt(d)
                         return (s - d_sqrt, s + d_sqrt)
     return None
-      
-      
+
+
 class Fibonacci:
     def __init__(self, progress=False, verbose=False):
         self.progress = progress
@@ -304,7 +306,7 @@ class Fibonacci:
             print("Searching...")
 
         while True:
-            randi = random.randint(begin, end)
+            randi = randint(begin, end)
             if (res := self.get_n_mod_d(randi, N)) > 0 and res in look_up:
                 if randi > (res_n := look_up[res]):
                     if (phi_guess := randi - res_n) & 1 == 0 and self.get_n_mod_d(
@@ -312,24 +314,32 @@ class Fibonacci:
                     ) == 0:
                         td = int(time.time() - starttime)
                         if self.verbose:
+                            # print(
+                            #     "For N = %d Found T:%d, randi: %d, time used %f secs."
+                            #     % (N, T, randi, td)
+                            # )
                             print(
-                                "For N = %d Found T:%d, randi: %d, time used %f secs."
-                                % (N, T, randi, td)
+                                "For N = %d Found randi: %d, time used %f secs."
+                                % (N, randi, td)
                             )
                         return phi_guess
                     else:
                         if self.verbose:
+                            # print(
+                            #     "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
+                            #     % (N, res, res_n, T)
+                            # )
                             print(
-                                "For N = %d\n Found res: %d, res_n: %d , T: %d\n but failed!"
-                                % (N, res, res_n, T)
+                                "For N = %d\n Found res: %d, res_n: %d\n but failed!"
+                                % (N, res, res_n,)
                             )
 
     def factorization(self, N, min_accept, xdiff):
         phi_guess = self.get_period_bigint(N, min_accept, xdiff)
         if phi_guess is not None:
             return trivial_factorization_with_n_phi(N, phi_guess)
-            
-            
+
+
 def hart(N):
     """
     Hart's one line attack
@@ -384,7 +394,7 @@ def lehman(n):
                 q = gcd(a - b, n)
                 return p, q
     return []
-    
+
 
 def lehmer_machine(n):
     """
@@ -397,12 +407,12 @@ def lehmer_machine(n):
         y += 1
     x = isqrt(n + y ** 2)
     return x - y, x + y
-        
+
 
 def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
     """Search for partial q.
     Tunable to search longer.
-    
+
     Source:
     https://0day.work/0ctf-2016-quals-writeups/
 
@@ -455,7 +465,7 @@ def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
 
     Additionally the following paper details an algorithm to generate
     p and q prime candidates with just the CRT components
-    
+
     https://eprint.iacr.org/2004/147.pdf
     """
 
@@ -518,7 +528,7 @@ def shor(n):
     """
     for a in range(2, n):
         # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g:=gcd(n,a)) != 1: return g, n // g
+        if (g := gcd(n, a)) != 1: return g, n // g
         for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
             if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
@@ -526,8 +536,8 @@ def shor(n):
                     if (n > g1 > 1) or (n > g2 > 1):
                         p = max(max(min(n, g1), 1), max(min(n, g2), 1))
                         return (p, n // p)
-                        
-                        
+
+
 def SQUFOF(N):
     """
     Code borrowed and adapted from the wikipedia: https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
@@ -591,8 +601,8 @@ def SQUFOF(N):
         if 1 < r < N:
             return r, N // r
     return None
-    
-    
+
+
 def wiener(n, e, progress=True):
     convergents = convergents_from_contfrac(rational_to_contfrac(e, n))
 

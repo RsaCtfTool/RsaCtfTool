@@ -28,7 +28,7 @@ jobs:
       with:
         path: /var/cache/apt/
         key: ${{ runner.os }}-apt-get-
-        restore-keys: | 
+        restore-keys: |
           ${{ runner.os }}-apt-get-
 
     - name: Cache pip
