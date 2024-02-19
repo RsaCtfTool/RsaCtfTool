@@ -549,7 +549,7 @@ def tonelli(n, p):
 
 def is_cube(n):
     b = False
-    if (i := n % 9) in [0, 1, 8]:
+    if (n % 9) in [0, 1, 8]:
         a, b = iroot(n, 3)
     return b
 
