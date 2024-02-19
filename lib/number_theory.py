@@ -147,7 +147,8 @@ def _invmod(a, m):
 def _is_square(n):
     if (h := n & 0xF) > 9 or h in [2, 3, 5, 6, 7, 8]:
         return False
-    return (t := _isqrt(n) * t) == n
+    t = _isqrt(n)
+    return t*t == n
 
 
 def _powmod_base_list(base_lst, exp, mod):
