@@ -413,24 +413,21 @@ def factor_ned_probabilistic(n, e, d):
     n1, k = n - 1, d * e - 1
     if k & 1 == 1:
         return
-    # t, r = 0, k
-    # while r & 1 == 0:
-    #    r >>= 1
-    #    t += 1
-    r = A000265(k)
+    t, r = 0, k
+    while r & 1 == 0:
+        r >>= 1
+        t += 1
     for _ in range(1, 101):
         g = random.randint(0, n1)
         if (y := pow(g, r, n)) == 1 or y == n1:
             continue
-        # Also commenting out this section which wouldn't run since
-        #   before commenting-out t = 0, and was only incremented in a loop (also previously commented out)
-        # for _ in range(1, t):
-        #     if (x := pow(y, 2, n)) == 1:
-        #         p = gcd(y - 1, n)
-        #         return p, n // p
-        #     if x == n1:
-        #         continue
-        #     y = x
+        for _ in range(1, t):
+            if (x := pow(y, 2, n)) == 1:
+                p = gcd(y - 1, n)
+                return p, n // p
+            if x == n1:
+                continue
+            y = x
         if (x := pow(y, 2, n)) == 1:
             p = gcd(x - 1, n)
             return p, n // p
