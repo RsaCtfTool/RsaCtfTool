@@ -7,7 +7,7 @@ import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas #, is_prime, invert, contfrac_to_rational
+from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas  # , is_prime, invert, contfrac_to_rational
 from tqdm import tqdm
 from lib.number_theory import invmod, introot
 

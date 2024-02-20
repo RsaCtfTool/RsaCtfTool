@@ -5,7 +5,6 @@ from functools import reduce, cache
 import math
 import logging
 import random
-from lib.number_theory import ilog10
 
 logger = logging.getLogger("global_logger")
 
@@ -148,7 +147,7 @@ def _is_square(n):
     if (h := n & 0xF) > 9 or h in [2, 3, 5, 6, 7, 8]:
         return False
     t = _isqrt(n)
-    return t*t == n
+    return t * t == n
 
 
 def _powmod_base_list(base_lst, exp, mod):

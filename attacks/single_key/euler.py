@@ -7,6 +7,7 @@ from lib.keys_wrapper import PrivateKey
 from lib.algos import euler
 from lib.number_theory import is_congruent
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
