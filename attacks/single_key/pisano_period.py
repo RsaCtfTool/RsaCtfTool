@@ -13,6 +13,7 @@ from attacks.abstract_attack import AbstractAttack
 from lib.algos import Fibonacci
 from lib.number_theory import ilog10
 
+
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
