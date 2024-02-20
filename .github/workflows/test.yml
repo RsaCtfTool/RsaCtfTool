@@ -17,14 +17,14 @@ jobs:
     steps:
     - name: Cache
       id: cache-packages
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ${{ runner.temp }}/cache-linux
         key: cache-packages-v2.2
 
     - name: Cache apt
       id: cache-apt
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: /var/cache/apt/
         key: ${{ runner.os }}-apt-get-
@@ -33,16 +33,16 @@ jobs:
 
     - name: Cache pip
       id: cache-pip
-      uses: actions/cache@v2
+      uses: actions/cache@v4
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
 
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v4
     - name: Setup python
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python.version }}
         architecture: x64
