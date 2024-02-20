@@ -5,7 +5,6 @@ from functools import reduce, cache
 import math
 import logging
 import random
-from lib.number_theory import ilog10
 
 logger = logging.getLogger("global_logger")
 
