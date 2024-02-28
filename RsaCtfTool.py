@@ -353,34 +353,41 @@ def dump_key_parameters(args):
 
 def decrypt_file(args, logger):
     """
-    Decrypts files specified in args.decryptfile using the provided private key.
+    Decrypts files specified in args.decryptfile using the provided private key, or prepares files for decryption with a public key.
+    Note: Currently, decryption with a private key may not work correctly.
 
     Args:
         args (Namespace): Command-line arguments.
         logger (Logger): Logger object for logging messages.
 
     Returns:
-        bool: True if decryption is successful, False otherwise.
+        bool: True if decryption is successful with a private key, or if files are prepared for decryption with a public key; False otherwise.
     """
     decrypt_array = []
     for decrypt in args.decryptfile.split(","):
         try:
             with open(decrypt, "rb") as cipherfile_fd:
-                decrypt = get_base64_value(cipherfile_fd.read())
-                decrypt_array.append(decrypt)
+                decrypt_value = get_base64_value(cipherfile_fd.read())
+                decrypt_array.append(decrypt_value)
         except OSError:
             logger.info("--decryptfile : file not found or not readable.")
             return False
     args.decrypt = decrypt_array
-    # If we have a private key in input and decrypt in args (or decryptfile)
+
+    # Check if a private key is provided and there's something to decrypt
     if args.key and args.decrypt:
         priv_key = PrivateKey(filename=args.key, password=args.password)
         decrypts = priv_key.decrypt(args.decrypt)
         print_results(args, None, priv_key, decrypts)
         return True
-    logger.error("Private key and decrypted data are required.")
-    return False
 
+    # Check if a public key is provided
+    if args.publickey:
+        return True
+
+    # No private key or public key provided
+    logger.error("Private key or public key and decrypted data are required.")
+    return False
 
 def pubkey_detail(args, logger):
     for publickey in args.publickey:
