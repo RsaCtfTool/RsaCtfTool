@@ -1,3 +1,3 @@
 wolframalpha
 SageMath
-gmpy==2.1.15
+gmpy2==2.1.5
