@@ -359,17 +359,16 @@ def hart(N):
 def kraitchik(n):
     x = isqrt(n)
     while True:
-        k = 1
-        s = x * x - k * n
-        while s >= 0:
-            if is_square(s):
-                y = isqrt(s)
-                z = x + y
-                w = x - y
+        k, x2 = 1, x * x
+        y2 = x2 - n
+        while y2 >= 0:
+            if is_square(y2):
+                y = isqrt(y2)
+                z, w = x + y, x - y
                 if z % n != 0 and w % n != 0:
                     return gcd(z, n), gcd(w, n)
             k += 1
-            s = x * x - k * n
+            y2 = x2 - k * n
         x += 1
 
 
