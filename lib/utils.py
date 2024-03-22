@@ -28,8 +28,8 @@ def get_numeric_value(value):
 def get_base64_value(value):
     """Parse input (hex or numerical)"""
     try:
-        if base64.b64encode(base64.b64decode(value)) == value:
-            return base64.b64decode(value)
+        if (base64.b64encode(d := base64.b64decode(value)) == value):
+            return d
         else:
             return value
     except:
