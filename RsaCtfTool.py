@@ -472,8 +472,10 @@ def main():
     if args.decrypt is not None:
         decrypt_array = []
         for decrypt in args.decrypt.split(","):
-            decrypt = get_numeric_value(decrypt)
-            decrypt = get_base64_value(decrypt)
+            try:
+                decrypt = get_numeric_value(decrypt)
+            except:
+                decrypt = get_base64_value(decrypt)
             decrypt_array.append(n2s(decrypt))
         args.decrypt = decrypt_array
 
