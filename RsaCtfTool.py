@@ -389,6 +389,7 @@ def decrypt_file(args, logger):
     logger.error("Private key or public key and decrypted data are required.")
     return False
 
+
 def pubkey_detail(args, logger):
     for publickey in args.publickey:
         logger.info(f"Details for {publickey}:")
