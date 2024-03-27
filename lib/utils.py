@@ -217,7 +217,7 @@ def binary_search(L, n):
     left = 0
     right = len(L) - 1
     while left <= right:
-        mid = (left + right) >> 1
+        mid = ((right - left) >> 1) + left
         if n == L[mid]:
             return mid
         elif n < L[mid]:
