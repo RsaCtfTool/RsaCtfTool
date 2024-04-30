@@ -207,7 +207,7 @@ def factor_XYXZ(n, base=3):
 
 
 def fermat(n):
-    if is_congruent(n, 2, 4):
+    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
         raise FactorizationError
     a, rem = isqrt_rem(n)
     b2 = -rem
@@ -399,7 +399,7 @@ def lehmer_machine(n):
     """
     fermat based integer factorization
     """
-    if is_congruent(n, 2, 4):
+    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
         raise FactorizationError
     y = 1
     while not is_square(n + y ** 2):
@@ -562,7 +562,7 @@ def SQUFOF(N):
         3 * 5 * 7 * 11,
     ]
 
-    if is_congruent(N, 2, 4):
+    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
         raise FactorizationError
 
     s = isqrt(N)
