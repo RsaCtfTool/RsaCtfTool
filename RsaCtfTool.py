@@ -445,6 +445,9 @@ def main():
     if args.d is not None:
         args.d = get_numeric_value(args.d)
 
+    if args.n is not None:
+        args.n = get_numeric_value(args.n)
+
     if args.e is not None:
         e_array = []
         for e in args.e.split(","):
@@ -454,16 +457,14 @@ def main():
     elif args.n is not None:
         args.e = 65537
 
-    # get n if we can
-    if args.n is not None:
-        args.n = get_numeric_value(args.n)
-    elif args.p is not None and args.q is not None:
-        args.n = args.p * args.q
-
     if args.n is not None and (args.p is not None or args.q is not None):
         logger.warning(
             "[!] It seems you already provided one of the prime factors, nothing to do here..."
         )
+
+    # get n from p and q
+    if args.n is None and args.p is not None and args.q is not None:
+        args.n = args.p * args.q
 
     # get p and q from n, e and d
     if args.n is not None and args.e is not None and args.d is not None and args.p is None and args.q is None:
