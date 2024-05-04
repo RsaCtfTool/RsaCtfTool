@@ -385,6 +385,10 @@ def decrypt_file(args, logger):
     if args.publickey:
         return True
 
+    # Check if n and e are provided
+    if args.n and args.e:
+        return True
+
     # No private key or public key provided
     logger.error("Private key or public key and decrypted data are required.")
     return False
