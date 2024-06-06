@@ -7,7 +7,7 @@ import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas  # , is_prime, invert, contfrac_to_rational
+from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas, iroot  # , is_prime, invert, contfrac_to_rational
 from tqdm import tqdm
 from lib.number_theory import invmod, introot
 
@@ -600,6 +600,21 @@ def SQUFOF(N):
         if 1 < r < N:
             return r, N // r
     return None
+
+
+def pollard_strassen(n):
+  """
+  https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
+  """
+  f,c =[], iroot(n,4)[0]
+  for i in range(0, c):
+    f.append(1)
+    jmin = i * c + 1
+    jmax = jmin + c - 1
+    for j in range(jmin, jmax + 1):
+      f[i] = (f[i] * j) % n
+      if (g:=gcd(f[i], n))>1:
+        return g, n//g
 
 
 def wiener(n, e, progress=True):
