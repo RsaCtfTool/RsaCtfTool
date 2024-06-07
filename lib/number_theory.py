@@ -617,6 +617,20 @@ def mlucas(v, a, n):
     return v1
 
 
+def is_lucas(n):
+    """
+    True if n is a Lucas number (A000032).
+    """
+    sign = lambda n: 1 if n > 0 else -1
+    u1,u2,1,3
+    if n<=2: return sign(n)
+    else:
+        while(n>u2):
+            old_u1,u1=u1,u2
+            u2=old_u1+u2
+    return u2==n
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -668,4 +682,5 @@ __all__ = [
     powmod_base_list,
     powmod_exp_list,
     is_pow2,
+    is_lucas,
 ]
