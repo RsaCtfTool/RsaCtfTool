@@ -177,7 +177,7 @@ For more examples, look at the test.sh file
 ### Docker run ###
 
 ```bash
-docker pull rsactftool/rsactftool
+docker build -t rsactftool/rsactftool .
 docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 ```
 
