@@ -1,7 +1,7 @@
 # HIGHLY RECOMENDED TO BUILD LOCALLY, paramers for the gmp-ecm tool will be optimised on local hardware
 
 # Base upon sagemath so that we don't have to deal with that dependency
-FROM ubuntu:20.04
+FROM python:3-slim
 ENV DEBIAN_FRONTEND=noninteractive
 
 # apt-fast
@@ -10,7 +10,7 @@ RUN wget https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast -O 
 wget https://raw.githubusercontent.com/ilikenwf/apt-fast/master/apt-fast.conf -O /etc/apt-fast.conf &&\
 chmod +x /usr/local/sbin/apt-fast
 
-RUN apt-fast install -y libgmp3-dev libmpc-dev  python3-pip sagemath build-essential libgmp-dev libmpfr-dev \
+RUN apt-fast install -y libgmp3-dev libmpc-dev sagemath build-essential libgmp-dev libmpfr-dev \
     gcc musl-dev libssl-dev libffi-dev git gcc g++ make cmake git autoconf \
     libtool zlib1g-dev
 WORKDIR /opt
@@ -78,11 +78,10 @@ RUN git clone https://github.com/bbuhrow/yafu.git && \
 RUN sed -i "s/% threads=1/threads=$(nproc --all)/g" /usr/bin/yafu.ini && \
     sed -i 's/ecm_path=\.\.\\gmp-ecm\\bin\\x64\\Release\\ecm.exe/ecm_path=\/usr\/bin\/ecm/g' /usr/bin/yafu.ini
 
-WORKDIR /opt
-RUN git clone https://github.com/Ganapati/RsaCtfTool.git
-WORKDIR /opt/RsaCtfTool
-RUN python3 -m pip install -r "requirements.txt"
-RUN python3 -m pip install -r "optional-requirements.txt"
+WORKDIR /app
+COPY . .
+RUN python -m pip install -r "requirements.txt"
+RUN python -m pip install -r "optional-requirements.txt"
 WORKDIR /data
-ENTRYPOINT ["/opt/RsaCtfTool/RsaCtfTool.py"]
+ENTRYPOINT ["/app/RsaCtfTool.py"]
 CMD ["-h"]
