@@ -184,7 +184,7 @@ def parse_args():
 
     parser.add_argument(
         "--partial",
-        help="work with partial priate keys",
+        help="work with partial private keys",
         action="store_true",
     )
 
