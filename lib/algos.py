@@ -223,40 +223,43 @@ def fermat(n):
 
 def InverseInverseSqrt2exp(n, k):
     """
-    it does not contemplate k<3
+    Computes an approximation to the modular inverse square root of `n` with `k` bits.
     """
     a = 1
     t = 3
     while t < k:
         t = min(k, (t << 1) - 2)
+        # Update `a` using a Newton-Raphson-like iteration for inverse square roots.
         a = (a * (3 - (a * a) * n) >> 1) & ((1 << t) - 1)
     return inv_mod_pow_of_2(a, k)
 
 
-def FactorHighAndLowBitsEqual(n, middle_bits=3):
+def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
     """
     Code taken and heavy modified from https://github.com/google/paranoid_crypto/blob/main/paranoid_crypto/lib/rsa_util.py
     Licensed under open source Apache License Version 2.0, January 2004.
     """
-    if (n.bit_length() < 6) or (n % 8 != 1):
+    if ((n_size:=n.bit_length()) < 6) or (n & 7 != 1):
         return None
-    k = (n.bit_length() + 1) >> 1
+    k = (n_size + 1) >> 1
     r0 = InverseInverseSqrt2exp(n, k + 1)
     if r0 is None:
         raise ArithmeticError("expecting that square root exists")
     a = isqrt(n - 1) + 1
-    for r in [r0, (1 << k) - r0]:
-        s = a
-        for i in range(k):
-            if ((s ^ r) >> i) & 1:
-                m = min(middle_bits, i)
-                for _ in range(1 << m):
-                    s += 1 << (i - m)
-                    d = (s * s) - n
-                    if is_square(d):
-                        d_sqrt = isqrt(d)
-                        return (s - d_sqrt, s + d_sqrt)
-    return None
+
+    for middle_bits in range(1, max_middle_bits+1):
+        print(f"middle bits: {middle_bits} of {n_size}/2")
+        for r in [r0, (1 << k) - r0]:
+            s = a
+            for i in range(k):
+                if ((s ^ r) >> i) & 1:
+                    m = min(middle_bits, i)
+                    for _ in range(1 << m):
+                        s += 1 << (i - m)
+                        d = (s * s) - n
+                        if is_square(d):
+                            d_sqrt = isqrt(d)
+                            return (s - d_sqrt, s + d_sqrt)
 
 
 class Fibonacci:
