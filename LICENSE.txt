@@ -1,7 +1,7 @@
                    MIT License
 
-Copyright (c) 2020 [Ganapati]
-Copyright (c) 2025 [Darío Clavijo]
+Copyright (c) 2020 Ganapati
+Copyright (c) 2025 Darío Clavijo
 
 This project is licensed under the MIT License (see LICENSE file).
 
