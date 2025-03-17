@@ -257,6 +257,11 @@ You can follow the instructions at : `https://www.mersenneforum.org/showthread.p
 - Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guideline for the bare minimum acceptable PRs.
 - Also please read the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), any contribution of any user not honoring it will ignored and the user blocked, good manners are paramount.
 
+## Licensing
+
+ - The original project was released under the GPLv3 license. This code has been relicensed under the MIT License.
+
+
 ## Thanks to all our Contributors
 
 <a href="https://github.com/RsaCtfTool/RsaCtfTool/graphs/contributors">
