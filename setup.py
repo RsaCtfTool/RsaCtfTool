@@ -7,9 +7,10 @@ setup(
     name="RsaCtfTool",
     packages=[
         "attacks",
+        "lib",
     ],
     py_modules=[
-        "lib",
+        "RsaCtfTool",
     ],
     version=VERSION,
     author="Ganapati", # Original author
