@@ -15,9 +15,6 @@ setup(
     install_requires=[x.strip() for x in open("requirements.txt").readlines()],
     url=BASE_CVS_URL,
     download_url=f"{BASE_CVS_URL}/tarball/{VERSION}",
-    keywords=[],
-    scripts=["RsaCtfTool.py"],
-    
     entry_points={
         'console_scripts': [
             'rsa = RsaCtfTool:main',
