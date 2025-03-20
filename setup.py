@@ -5,8 +5,10 @@ BASE_CVS_URL = "https://github.com/RsaCtfTool/RsaCtfTool"
 
 setup(
     name="RsaCtfTool",
-    py_modules=[
+    packages=[
         "attacks",
+    ],
+    py_modules=[
         "lib",
     ],
     version=VERSION,
