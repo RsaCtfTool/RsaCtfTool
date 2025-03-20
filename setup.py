@@ -1,12 +1,13 @@
 from setuptools import setup
 
-VERSION = "0.0.01"
+VERSION = "0.1.0"
 BASE_CVS_URL = "https://github.com/RsaCtfTool/RsaCtfTool"
 
 setup(
     name="RsaCtfTool",
     packages=[
-        "RsaCtfTool",
+        "attacks",
+        "lib",
     ],
     version=VERSION,
     author="Ganapati",
@@ -22,7 +23,6 @@ setup(
         "Intended Audience :: Developers",
         "Programming Language :: Python",
         "Operating System :: OS Independent",
-        "License :: THE BEER-WARE LICENSE",
         "Topic :: Security :: Cryptography",
     ],
     description="RSA multi attacks tool",
