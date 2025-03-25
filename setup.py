@@ -17,8 +17,8 @@ setup(
     download_url=f"{BASE_CVS_URL}/tarball/{VERSION}",
     entry_points={
         'console_scripts': [
-            'rsacrack = RsaCtfTool:main',
-            'RsaCtfTool = RsaCtfTool:main',
+            'rsacrack = RsaCtfTool.main:main',
+            'RsaCtfTool = RsaCtfTool.main:main',
         ],
     },
     include_package_data=True,
