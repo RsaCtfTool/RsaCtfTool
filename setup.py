@@ -1,14 +1,11 @@
-from setuptools import setup
+from setuptools import setup, find_packages
 
 VERSION = "0.1.0"
 BASE_CVS_URL = "https://github.com/RsaCtfTool/RsaCtfTool"
 
 setup(
     name="RsaCtfTool",
-    packages=[
-        "attacks",
-        "lib",
-    ],
+    packages=find_packages(),
     py_modules=[
         "RsaCtfTool",
     ],
@@ -25,7 +22,9 @@ setup(
         ],
     },
     include_package_data=True,
+    license="MIT",
     classifiers=[
+        "License :: OSI Approved :: MIT License",
         "Development Status :: 1 - Planning",
         "Intended Audience :: Developers",
         "Programming Language :: Python",
