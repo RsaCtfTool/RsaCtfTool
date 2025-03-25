@@ -18,7 +18,7 @@ setup(
     entry_points={
         'console_scripts': [
             'rsa = RsaCtfTool:main',
-            'rsaCtfTool = RsaCtfTool:main',
+            'RsaCtfTool = RsaCtfTool:main',
         ],
     },
     include_package_data=True,
