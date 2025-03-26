@@ -654,3 +654,23 @@ def williams_pp1(n):
                 break
             p = next_prime(p)
     return None
+
+
+def difference_of_powers_factor(n):
+    """
+    Idea based on: https://github.com/trizen/perl-scripts/blob/master/Math/difference_of_powers_factorization_method.pl
+    """
+    F = set()
+    for a in range(2, isqrt(n) + 1):
+        a_k = a
+        for k in range(1, int(log(n)/log(a)) + 1):
+            if (1 << k) > n: break
+            a_k *= a
+            if a_k > n: break  
+            for sign in [-1, 1]:
+                if (b_k := a_k + sign * n) > 0:
+                    b, e = iroot(b_k, k)
+                    if e and b > 1:
+                        if 1 < (f1 := gcd(a - b, n)) < n: F.add(f1)
+                        if 1 < (f2 := gcd(a + b, n)) < n: F.add(f2)
+    return sorted(F)
