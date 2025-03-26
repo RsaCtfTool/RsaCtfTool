@@ -110,10 +110,11 @@ usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout T
 
 
 ## Installation ##
-### Virtual environment run ###
+### Virtual environment run (Preferred method) ###
 
 Setup the venv
 ```bash
+apt install python3-virtualenv
 virtualenv venv
 source venv/bin/activate
 pip install git+https://github.com/RsaCtfTool/RsaCtfTool
@@ -123,7 +124,9 @@ Run
 ```bash
 source venv/bin/activate
 ./RsaCtfTool.py <arguments>
+# See running section for examples.
 ```
+
 
 ## Requirements
 
