@@ -5,10 +5,11 @@ BASE_CVS_URL = "https://github.com/RsaCtfTool/RsaCtfTool"
 
 setup(
     name="RsaCtfTool",
-    packages=find_packages(),
-    py_modules=[
-        "RsaCtfTool",
-    ],
+    packages=find_packages(where="src"),
+    package_dir={"": "src"},
+    package_data={
+        "RsaCtfTool": ["data/*"],  # Include all files inside RsaCtfTool/data/
+    },
     version=VERSION,
     author="Ganapati", # Original author
     author_email="something",
