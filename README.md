@@ -123,7 +123,7 @@ pip install git+https://github.com/RsaCtfTool/RsaCtfTool
 Run
 ```bash
 source venv/bin/activate
-./RsaCtfTool.py <arguments>
+RsaCtfTool <arguments>
 # See running section for examples.
 ```
 
@@ -151,7 +151,7 @@ docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 ```bash
 git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo apt-get install libgmp3-dev libmpc-dev
-cd RsaCtfTool
+cd RsaCtfTool/src/RsaCtfTool
 pip3 install -r "requirements.txt"
 ./RsaCtfTool.py
 ```
@@ -161,7 +161,7 @@ pip3 install -r "requirements.txt"
 ```bash
 git clone https://github.com/RsaCtfTool/RsaCtfTool.git
 sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
-cd RsaCtfTool
+cd RsaCtfTool/src/RsaCtfTool
 pip3 install -r "requirements.txt"
 ./RsaCtfTool.py
 ```
