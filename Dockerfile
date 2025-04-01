@@ -6,4 +6,4 @@ WORKDIR /app
 COPY . .
 RUN pip install -r "requirements.txt"
 WORKDIR /data
-ENTRYPOINT ["/app/RsaCtfTool.py"]
+ENTRYPOINT ["/app/src/RsaCtfTool/main.py"]
