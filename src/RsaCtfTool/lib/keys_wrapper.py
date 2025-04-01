@@ -5,12 +5,12 @@ import logging
 import tempfile
 import binascii
 import subprocess
-from lib.crypto_wrapper import RSA
-from lib.crypto_wrapper import PKCS1_OAEP
+from .crypto_wrapper import RSA
+from .crypto_wrapper import PKCS1_OAEP
 from cryptography.hazmat.primitives import serialization
 from cryptography.hazmat.backends import default_backend
-from lib.conspicuous_check import privatekey_check
-from lib.number_theory import powmod, invert
+from .conspicuous_check import privatekey_check
+from .number_theory import powmod, invert
 
 
 logger = logging.getLogger("global_logger")
