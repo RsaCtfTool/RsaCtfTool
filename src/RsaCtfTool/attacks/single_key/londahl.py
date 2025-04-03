@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.algos import close_factor
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.algos import close_factor
 
 
 class Attack(AbstractAttack):
@@ -27,7 +27,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgAOBxiQviVpL4G5d0TmVmjDn51zu

@@ -4,14 +4,15 @@
 import time
 import logging
 import importlib
-from .keys_wrapper import PublicKey, PrivateKey
-from .exceptions import FactorizationError
-from .utils import print_results
-from .fdb import send2fdb
-from .crypto_wrapper import bytes_to_long, long_to_bytes
 import inspect
-from .number_theory import is_prime, isqrt, gcd
 import traceback
+import os
+from RsaCtfTool.lib.keys_wrapper import PublicKey, PrivateKey
+from RsaCtfTool.lib.exceptions import FactorizationError
+from RsaCtfTool.lib.utils import print_results
+from RsaCtfTool.lib.fdb import send2fdb
+from RsaCtfTool.lib.crypto_wrapper import bytes_to_long, long_to_bytes
+from RsaCtfTool.lib.number_theory import is_prime, isqrt, gcd
 
 
 class RSAAttack(object):
@@ -131,6 +132,15 @@ class RSAAttack(object):
                 ok = False
         return (tmp, ok)
 
+    
+    def get_attack(self, attack, multikeys):
+        if multikeys:
+            import_path = f"RsaCtfTool.attacks.multi_keys.{attack}"
+        else:
+            import_path = f"RsaCtfTool.attacks.single_key.{attack}"
+        return importlib.import_module(import_path, package="RsaCtfTool")
+
+
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
         try:
@@ -145,12 +155,9 @@ class RSAAttack(object):
 
         for attack in attacks_list:
             if attack in self.args.attack or "all" in self.args.attack:
-                try:
-                    if multikeys:
-                        attack_module = importlib.import_module(f"attacks.multi_keys.{attack}")
-                    else:
-                        attack_module = importlib.import_module(f"attacks.single_key.{attack}")
 
+                try:
+                    attack_module =self.get_attack(attack, multikeys)
                     # Dynamically add named-arguments to constructor if same sys.argv exists
                     expected_args = list(
                         inspect.getfullargspec(attack_module.Attack.__init__).args
@@ -173,6 +180,7 @@ class RSAAttack(object):
                         attack_module.Attack(**constructor_args)
                     )
                 except ModuleNotFoundError:
+                    #print(f"[-] Attack {attack} not found...")
                     pass
         self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 

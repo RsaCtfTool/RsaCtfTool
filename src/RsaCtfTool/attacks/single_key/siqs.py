@@ -11,11 +11,11 @@
 # @CTFKris - https://github.com/sourcekris/RsaCtfTool/
 #
 
+import subprocess
 import re
 import logging
-from attacks.abstract_attack import AbstractAttack
-import subprocess
-from lib.keys_wrapper import PrivateKey
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 
 class SiqsAttack(object):
@@ -97,7 +97,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MDwwDQYJKoZIhvcNAQEBBQADKwAwKAIhAM7gDElzPMzEU1htubZ8KvfHomChbmwN

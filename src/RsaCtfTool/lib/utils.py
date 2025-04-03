@@ -11,8 +11,8 @@ import contextlib
 import binascii
 import psutil
 from threading import Timer
-from .keys_wrapper import PublicKey
-from .number_theory import invmod
+from RsaCtfTool.lib.keys_wrapper import PublicKey
+from RsaCtfTool.lib.number_theory import invmod
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from lib.crypto_wrapper import number
-from lib.number_theory import gcdext, powmod
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.crypto_wrapper import number
+from RsaCtfTool.lib.number_theory import gcdext, powmod
 
 
 class Attack(AbstractAttack):
@@ -40,7 +40,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key1_data = """-----BEGIN PUBLIC KEY-----
         MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQCenPk2Mrwap7Du5QA+ikywFpd+

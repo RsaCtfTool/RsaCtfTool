@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
 import os
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath, TimeoutError, terminate_proc_tree
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.utils import rootpath, TimeoutError, terminate_proc_tree
 
 
 class Attack(AbstractAttack):
@@ -72,7 +72,7 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgRBNZTe9G/tNqNNwNZz4JDgmOVmk

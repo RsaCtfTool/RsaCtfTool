@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.number_theory import gcd, next_prime
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import gcd, next_prime
 
 
 class Attack(AbstractAttack):
@@ -40,7 +40,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MHUwDQYJKoZIhvcNAQEBBQADZAAwYQJaATHFe5J2n1H2ehgo6XUD2H8f+a2zitXH

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.utils import rootpath
 
 
 class Attack(AbstractAttack):
@@ -14,7 +14,7 @@ class Attack(AbstractAttack):
         self.required_binaries = ["sage"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Code/idea from Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
+        """Code/idea from RsaCtfTool.Renaud Lifchitz's talk 15 ways to break RSA security @ OPCDE17
         only works if the sageworks() function returned True
         """
         try:
@@ -39,7 +39,7 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MGYwDQYJKoZIhvcNAQEBBQADVQAwUgJLAi7v97hPb80NkMELBLYGAGEeDOdFAiW6

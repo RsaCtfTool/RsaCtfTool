@@ -5,13 +5,11 @@ Integer factorization with pisano period
 Heavily based on original repo https://github.com/wuliangshun/IntegerFactorizationWithPisanoPeriod/
 White paper: https://ieeexplore.ieee.org/stamp/stamp.jsp?tp=&arnumber=8901977
 """
-# import random
-# import time
-# from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from attacks.abstract_attack import AbstractAttack
-from lib.algos import Fibonacci
-from lib.number_theory import ilog10
+
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.algos import Fibonacci
+from RsaCtfTool.lib.number_theory import ilog10
 
 
 class Attack(AbstractAttack):
@@ -45,7 +43,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MCQwDQYJKoZIhvcNAQEBBQADEwAwEAIJVqCE2raBvB+lAgMBAAE=

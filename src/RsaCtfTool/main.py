@@ -17,20 +17,20 @@ import argparse
 import urllib3
 import tempfile
 from glob import glob
-from .lib.crypto_wrapper import RSA
-from .lib.rsa_attack import RSAAttack
-from .lib.number_theory import invmod, factor_ned
-from .lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from os.path import dirname, basename, isfile, join
 from urllib3.exceptions import InsecureRequestWarning
-from .lib.customlogger import CustomFormatter, logger_levels
-from .lib.keys_wrapper import (
+from RsaCtfTool.lib.crypto_wrapper import RSA
+from RsaCtfTool.lib.rsa_attack import RSAAttack
+from RsaCtfTool.lib.number_theory import invmod, factor_ned
+from RsaCtfTool.lib.utils import get_numeric_value, print_results, get_base64_value, n2s
+from RsaCtfTool.lib.customlogger import CustomFormatter, logger_levels
+from RsaCtfTool.lib.keys_wrapper import (
     generate_pq_from_n_and_p_or_q,
     generate_keys_from_p_q_e_n,
     PrivateKey,
 )
-from .lib.idrsa_pub_disector import disect_idrsa_pub
-from .lib.is_roca_test import is_roca_vulnerable
+from RsaCtfTool.lib.idrsa_pub_disector import disect_idrsa_pub
+from RsaCtfTool.lib.is_roca_test import is_roca_vulnerable
 
 # Remove insecure warning for factordb.com
 urllib3.disable_warnings(InsecureRequestWarning)

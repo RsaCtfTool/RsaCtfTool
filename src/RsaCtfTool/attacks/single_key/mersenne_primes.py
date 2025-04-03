@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.number_theory import getpubkeysz, is_divisible
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import getpubkeysz, is_divisible
 
 
 class Attack(AbstractAttack):
@@ -84,7 +84,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIIB3zANBgkqhkiG9w0BAQEFAAOCAcwAMIIBxwKCAb4A////////////////////
