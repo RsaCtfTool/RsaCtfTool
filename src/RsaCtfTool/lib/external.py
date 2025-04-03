@@ -18,7 +18,7 @@ def msieve_factor_driver(n):
     print(f"[*] Factoring {n} with msieve...")
     tmp = []
     proc = subprocess.Popen(
-        [MSIEVE_BIN, f"-s", "/tmp/{n}.dat", "-t", "8", "-v", str(n)],
+        [MSIEVE_BIN, "-s", f"/tmp/{n}.dat", "-t", "8", "-v", str(n)],
         stdout=subprocess.PIPE,
     )
     for line in proc.stdout:
