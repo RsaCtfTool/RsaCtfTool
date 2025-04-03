@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
-from lib.algos import factor_XYXZ
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.exceptions import FactorizationError
+from RsaCtfTool.lib.algos import factor_XYXZ
 
 
 class Attack(AbstractAttack):
@@ -38,7 +38,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIGBMA0GCSqGSIb3DQEBAQUAA3AAMG0CZgtR6qd1mkWTV8BvZUh84Y8jzytSu6s0

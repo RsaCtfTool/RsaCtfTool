@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 
 
 class Attack(AbstractAttack):

@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath
-from lib.is_roca_test import is_roca_vulnerable
 import logging
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.utils import rootpath
+from RsaCtfTool.lib.is_roca_test import is_roca_vulnerable
 
 
 class Attack(AbstractAttack):
@@ -42,7 +42,7 @@ class Attack(AbstractAttack):
             return (None, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAar8f96eVg1jBUt7IlYJk89ksQxJSdIjC

@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from z3 import Solver, Int, set_param, sat
-from attacks.abstract_attack import AbstractAttack
-from lib.number_theory import isqrt, next_prime
-from lib.keys_wrapper import PrivateKey
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.number_theory import isqrt, next_prime
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 set_param("parallel.enable", True)
 
@@ -89,7 +89,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         # The complexity of the problem grows exponential with every bit set.
         # p=0b10000000000001111, q=0b10000000000000011

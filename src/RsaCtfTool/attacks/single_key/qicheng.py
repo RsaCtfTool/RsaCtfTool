@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.utils import rootpath
 
 
 class Attack(AbstractAttack):
@@ -33,7 +33,7 @@ class Attack(AbstractAttack):
         return (priv_key, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIGeMA0GCSqGSIb3DQEBAQUAA4GMADCBiAKBgAf9o7hkl15GaKWJ51ULnccQmgKl

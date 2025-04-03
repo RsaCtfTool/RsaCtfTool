@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.algos import wiener
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.algos import wiener
 
 
 class Attack(AbstractAttack):
@@ -30,7 +30,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIIEIjANBgkqhkiG9w0BAQEFAAOCBA8AMIIECgKCAgEDMXAsX+AfJAHJ5E7Aunnk

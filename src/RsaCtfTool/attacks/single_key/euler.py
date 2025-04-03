@@ -1,11 +1,11 @@
 # /usr/bin/env python
-# code taken from https://maths.dk/teaching/courses/math357-spring2016/projects/factorization.pdf
+# code taken from RsaCtfTool.https://maths.dk/teaching/courses/math357-spring2016/projects/factorization.pdf
 
 import logging
-from attacks.abstract_attack import AbstractAttack
-from lib.keys_wrapper import PrivateKey
-from lib.algos import euler
-from lib.number_theory import is_congruent
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.algos import euler
+from RsaCtfTool.lib.number_theory import is_congruent
 
 
 class Attack(AbstractAttack):
@@ -47,7 +47,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MCIwDQYJKoZIhvcNAQEBBQADEQAwDgIHEAABggAEpQIDAQAB

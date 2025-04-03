@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from lib.keys_wrapper import PrivateKey
-from lib.number_theory import getpubkeysz
-from lib.is_roca_test import is_roca_vulnerable
-from lib.external import neca_factor_driver
 import logging
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import getpubkeysz
+from RsaCtfTool.lib.is_roca_test import is_roca_vulnerable
+from RsaCtfTool.lib.external import neca_factor_driver
 
 
 class Attack(AbstractAttack):
@@ -37,7 +37,7 @@ class Attack(AbstractAttack):
             return (None, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAIAce1LytE5hd6Kl8yUMSo9BSfvjgW9W

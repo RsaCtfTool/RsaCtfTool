@@ -6,7 +6,7 @@ from pathlib import Path
 import sys
 from typing import List, Any, Optional, Tuple
 import shutil
-from lib.utils import timeout
+from RsaCtfTool.lib.utils import timeout
 
 
 class AbstractAttack(object):

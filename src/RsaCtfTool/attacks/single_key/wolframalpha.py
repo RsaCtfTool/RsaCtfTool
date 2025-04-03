@@ -3,8 +3,8 @@
 
 import json
 import os
-from attacks.abstract_attack import AbstractAttack
-from lib.keys_wrapper import PrivateKey
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 
 class Attack(AbstractAttack):
@@ -40,7 +40,7 @@ class Attack(AbstractAttack):
                         tmp = tmp.split(" ")[0]
                         return list(map(int, tmp.split("×")))
             else:
-                self.logger.error("[!] Could not get factorization from wolfram alpha")
+                self.logger.error("[!] Could not get factorization from RsaCtfTool.wolfram alpha")
 
     def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""
