@@ -99,7 +99,7 @@ __Attacks provided:__
 ## Usage
 
 ```bash
-usage: RsaCtfTool.py [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--decryptfile DECRYPTFILE] [--decrypt DECRYPT]
+usage: RsaCtfTool [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--decryptfile DECRYPTFILE] [--decrypt DECRYPT]
                      [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}] [--private] [--tests] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E] [--key KEY]
                      [--password PASSWORD] [--show-factors SHOW_FACTORS]
                      [--attack {SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,all} [{SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,factorial_pm1_gcd,lucas_gcd,all} ...]]
@@ -146,25 +146,7 @@ docker build -t rsactftool/rsactftool .
 docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 ```
 
-### Ubuntu 18.04 and Kali specific Instructions
-
-```bash
-git clone https://github.com/RsaCtfTool/RsaCtfTool.git
-sudo apt-get install libgmp3-dev libmpc-dev
-cd RsaCtfTool/src/RsaCtfTool
-pip3 install -r "requirements.txt"
-./RsaCtfTool.py
-```
-
-
-### Fedora (33 and above) specific Instructions
-```bash
-git clone https://github.com/RsaCtfTool/RsaCtfTool.git
-sudo dnf install gcc python3-devel python3-pip python3-wheel gmp-devel mpfr-devel libmpc-devel
-cd RsaCtfTool/src/RsaCtfTool
-pip3 install -r "requirements.txt"
-./RsaCtfTool.py
-```
+### Sagemath installing ###
 
 If you also want the optional SageMath , you need to do
 ```bash
@@ -203,55 +185,55 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 ### Decrypt file
 
-`./RsaCtfTool.py --publickey ./key.pub --decryptfile ./ciphered\_file`
+`RsaCtfTool --publickey ./key.pub --decryptfile ./ciphered\_file`
 
 ### Print private key
 
-`./RsaCtfTool.py --publickey ./key.pub --private`
+`RsaCtfTool --publickey ./key.pub --private`
 
 ### Attempt to break multiple public keys with common factor attacks or individually- use quotes around wildcards to stop bash expansion
 
-`./RsaCtfTool.py --publickey "*.pub" --private`
+`RsaCtfTool --publickey "*.pub" --private`
 
 
 ### Optionally send the results back to factordb
 
-`./RsaCtfTool.py --publickey "*.pub" --private --sendtofdb`
+`RsaCtfTool --publickey "*.pub" --private --sendtofdb`
 
 ### Generate a public key
 
-`./RsaCtfTool.py --createpub -n 7828374823761928712873129873981723...12837182 -e 65537`
+`RsaCtfTool --createpub -n 7828374823761928712873129873981723...12837182 -e 65537`
 
 ### Dump the parameters from a key
 
-`./RsaCtfTool.py --dumpkey --key ./key.pub`
+`RsaCtfTool --dumpkey --key ./key.pub`
 
 ### Check a given private key for conspicuousness
 
-`./RsaCtfTool.py --key examples/conspicuous.priv --isconspicuous`
+`RsaCtfTool --key examples/conspicuous.priv --isconspicuous`
 
 ### Factor with ECM when you know the approximate length in digits of a prime
 
-`./RsaCtfTool.py --publickey key.pub --ecmdigits 25 --verbose --private`
+`RsaCtfTool --publickey key.pub --ecmdigits 25 --verbose --private`
 
 For more examples, look at the test.sh file
 
 ### Attack private keys with partial bits of Q known ###
 
-`./RsaCtfTool.py --attack partial_q --key examples/masked.pem`
+`RsaCtfTool --attack partial_q --key examples/masked.pem`
 
 ### Attack private keys with partial bits of D known ###
 
-`./RsaCtfTool.py --attack partial_d --key examples/partial_d.pem`
+`RsaCtfTool --attack partial_d --key examples/partial_d.pem`
 
 ### Convert idrsa.pub to pem format
 
-`./RsaCtfTool.py  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
+`RsaCtfTool  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
 
 
 ### Check if a given key or keys are roca ###
 
-`./RsaCtfTool.py --isroca --publickey "examples/*.pub"`
+`RsaCtfTool --isroca --publickey "examples/*.pub"`
 
 
 ## TODO (aka. Help wanted !)
