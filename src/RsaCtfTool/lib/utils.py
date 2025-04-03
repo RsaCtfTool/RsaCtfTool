@@ -9,10 +9,11 @@ import logging
 import subprocess
 import contextlib
 import binascii
-import psutil
 from threading import Timer
+import psutil
 from lib.keys_wrapper import PublicKey
 from lib.number_theory import invmod
+
 
 # used to track the location of RsaCtfTool
 # allows sage scripts to be launched anywhere in the fs
@@ -29,7 +30,7 @@ def get_numeric_value(value):
 def get_base64_value(value):
     """Parse input (hex or numerical)"""
     try:
-        if (base64.b64encode(d := base64.b64decode(value)) == value):
+        if base64.b64encode(d := base64.b64decode(value)) == value:
             return d
         else:
             return value
@@ -126,7 +127,9 @@ def print_results(args, publickey, private_key, decrypt):
                 for public_key in args.publickey:
                     with open(public_key, "rb") as pubkey_fd:
                         publickey_obj = PublicKey(pubkey_fd.read(), publickey)
-                        logger.info("\nPublic key details for %s" % publickey_obj.filename)
+                        logger.info(
+                            "\nPublic key details for %s" % publickey_obj.filename
+                        )
                         logger.info(f"n: {str(publickey_obj.n)}")
                         logger.info(f"e: {str(publickey_obj.e)}")
 
@@ -185,12 +188,15 @@ class timeout(contextlib.ContextDecorator):
         self.logger.warning("[!] Timeout.")
         raise TimeoutError(self.timeout_message)
 
-    def __enter__(self):        
-        signal.signal(signal.SIGTERM, self._timeout_handler)        
-        def alarm_func():#send signal
+    def __enter__(self):
+        signal.signal(signal.SIGTERM, self._timeout_handler)
+
+        def alarm_func():  # send signal
             signal.raise_signal(signal.SIGTERM)
 
-        self.timer = Timer(self.seconds, alarm_func)#this thread will send signal when timeout
+        self.timer = Timer(
+            self.seconds, alarm_func
+        )  # this thread will send signal when timeout
         self.timer.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

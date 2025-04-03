@@ -26,14 +26,16 @@ except ImportError:
         mpz = int
         gmpy = None
         logger.warning(
-            "[!] Using native python functions for math, which is slow. install gmpy2 with: 'python3 -m pip install <module>'."
+            "[!] Using native python functions for math, which is slow."
+            + " install gmpy2 with: 'python3 -m pip install <module>'."
         )
 
 
 @cache
 def list_prod(list_):
-    if (l := len(list_)) == 0: return 1
-    return list_prod(list_[:l - 1]) * list_[-1]
+    if (ll := len(list_)) == 0:
+        return 1
+    return list_prod(list_[: ll - 1]) * list_[-1]
 
 
 digit_sum = lambda n: sum(int(d) for d in str(n))
@@ -44,10 +46,14 @@ A000265 = lambda n: n // (A135481(n) + 1)
 
 @cache
 def mulmod(a, b, m):
-    if b == 0: return 0
-    if b == 1: return a % m
-    if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
-    else: return (a + mulmod(a, b - 1, m)) % m
+    if b == 0:
+        return 0
+    if b == 1:
+        return a % m
+    if b & 1 == 0:
+        return mulmod((a << 1) % m, b >> 1, m)
+    else:
+        return (a + mulmod(a, b - 1, m)) % m
 
 
 def getpubkeysz(n):
@@ -167,20 +173,24 @@ def miller_rabin(n, k=40):
     for justification
     """
 
-    if n == 2: return True
-    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]): return False
+    if n == 2:
+        return True
+    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]):
+        return False
 
     r, s = 0, n - 1
-    while (s & 1 == 0):
+    while s & 1 == 0:
         r += 1
         s >>= 1
     i = 0
     for _ in range(0, k):
         a = random.randrange(2, n - 1)
-        if (x := pow(a, s, n)) in [1, n - 1]: continue
+        if (x := pow(a, s, n)) in [1, n - 1]:
+            continue
         j = 0
-        while (j <= r - 1):
-            if (x := pow(x, 2, n)) == (n - 1): break
+        while j <= r - 1:
+            if (x := pow(x, 2, n)) == (n - 1):
+                break
             j += 1
         else:
             return False
@@ -309,8 +319,10 @@ def _fac(n):
 
 @cache
 def _lucas(n):
-    if n == 0: return 2
-    if n == 1: return 1
+    if n == 0:
+        return 2
+    if n == 1:
+        return 1
     return _lucas(n - 1) + _lucas(n - 2)
 
 
@@ -617,18 +629,20 @@ def mlucas(v, a, n):
     return v1
 
 
-def is_lucas(n):
-    """
-    True if n is a Lucas number (A000032).
-    """
-    sign = lambda n: 1 if n > 0 else -1
-    u1,u2,1,3
-    if n<=2: return sign(n)
-    else:
-        while(n>u2):
-            old_u1,u1=u1,u2
-            u2=old_u1+u2
-    return u2==n
+# Commenting out since unused and `u1, u2, 1, 3` fails the flake8 linter test
+# def is_lucas(n):
+#     """
+#     True if n is a Lucas number (A000032).
+#     """
+#     sign = lambda n: 1 if n > 0 else -1
+#     u1, u2, 1, 3
+#     if n <= 2:
+#         return sign(n)
+#     else:
+#         while n > u2:
+#             old_u1, u1 = u1, u2
+#             u2 = old_u1 + u2
+#     return u2 == n
 
 
 __all__ = [
@@ -682,5 +696,5 @@ __all__ = [
     powmod_base_list,
     powmod_exp_list,
     is_pow2,
-    is_lucas,
+    # is_lucas,
 ]

@@ -7,7 +7,33 @@ import bitarray
 from random import randint
 from itertools import count
 from lib.exceptions import FactorizationError
-from lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas, iroot  # , is_prime, invert, contfrac_to_rational
+from lib.number_theory import (
+    isqrt,
+    gcd,
+    primes,
+    powmod,
+    is_square,
+    powmod_base_list,
+    next_prime,
+    A000265,
+    isqrt_rem,
+    inv_mod_pow_of_2,
+    trivial_factorization_with_n_phi,
+    cuberoot,
+    mod,
+    log,
+    ilog10,
+    ilog2,
+    fib,
+    rational_to_contfrac,
+    convergents_from_contfrac,
+    fdivmod,
+    is_congruent,
+    is_divisible,
+    ilogb,
+    mlucas,
+    iroot,
+)  # , is_prime, invert, contfrac_to_rational
 from tqdm import tqdm
 from lib.number_theory import invmod, introot
 
@@ -105,7 +131,8 @@ def dixon(N, B=7):
     QBF = bitarray.bitarray(lqbf)  # This is our quasi-bloom-filter
 
     basej2N = powmod_base_list(base, 2, N)
-    for p in basej2N: QBF[p] = 1
+    for p in basej2N:
+        QBF[p] = 1
 
     for i in range(isqrt(N), N):
         i2N = powmod(i, 2, N)
@@ -200,14 +227,14 @@ def factor_XYXZ(n, base=3):
     power = 1
     max_power = (int(log(n) / log(base)) + 1) >> 1
     while power <= max_power:
-        p = next_prime(base ** power)
+        p = next_prime(base**power)
         if is_divisible(n, p):
             return p, n // p
         power += 1
 
 
 def fermat(n):
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
     a, rem = isqrt_rem(n)
     b2 = -rem
@@ -239,7 +266,7 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
     Code taken and heavy modified from https://github.com/google/paranoid_crypto/blob/main/paranoid_crypto/lib/rsa_util.py
     Licensed under open source Apache License Version 2.0, January 2004.
     """
-    if ((n_size:=n.bit_length()) < 6) or (n & 7 != 1):
+    if ((n_size := n.bit_length()) < 6) or (n & 7 != 1):
         return None
     k = (n_size + 1) >> 1
     r0 = InverseInverseSqrt2exp(n, k + 1)
@@ -247,7 +274,7 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
         raise ArithmeticError("expecting that square root exists")
     a = isqrt(n - 1) + 1
 
-    for middle_bits in range(1, max_middle_bits+1):
+    for middle_bits in range(1, max_middle_bits + 1):
         print(f"middle bits: {middle_bits} of {n_size}/2")
         for r in [r0, (1 << k) - r0]:
             s = a
@@ -334,7 +361,11 @@ class Fibonacci:
                             # )
                             print(
                                 "For N = %d\n Found res: %d, res_n: %d\n but failed!"
-                                % (N, res, res_n,)
+                                % (
+                                    N,
+                                    res,
+                                    res_n,
+                                )
                             )
 
     def factorization(self, N, min_accept, xdiff):
@@ -402,12 +433,12 @@ def lehmer_machine(n):
     """
     fermat based integer factorization
     """
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
     y = 1
-    while not is_square(n + y ** 2):
+    while not is_square(n + y**2):
         y += 1
-    x = isqrt(n + y ** 2)
+    x = isqrt(n + y**2)
     return x - y, x + y
 
 
@@ -530,19 +561,25 @@ def shor(n):
     """
     for a in range(2, n):
         # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g := gcd(n, a)) != 1: return g, n // g
-        for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
-            if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
+        if (g := gcd(n, a)) != 1:
+            return g, n // g
+        for r in range(
+            2, n, 2
+        ):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
+            if (
+                ar := powmod(a, r, n)
+            ) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
                     g1, g2 = gcd(ar2 - 1, n), gcd(ar2 + 1, n)
                     if (n > g1 > 1) or (n > g2 > 1):
-                        p = max(max(min(n, g1), 1), max(min(n, g2), 1))
+                        p = max(min(n, g1), 1), max(min(n, g2), 1)
                         return (p, n // p)
 
 
 def SQUFOF(N):
     """
-    Code borrowed and adapted from the wikipedia: https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
+    Code borrowed and adapted from the wikipedia:
+    https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization
     It may contain bugs
     """
 
@@ -565,7 +602,7 @@ def SQUFOF(N):
         3 * 5 * 7 * 11,
     ]
 
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (N - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
 
     s = isqrt(N)
@@ -606,18 +643,18 @@ def SQUFOF(N):
 
 
 def pollard_strassen(n):
-  """
-  https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
-  """
-  f,c =[], iroot(n,4)[0]
-  for i in range(0, c):
-    f.append(1)
-    jmin = i * c + 1
-    jmax = jmin + c - 1
-    for j in range(jmin, jmax + 1):
-      f[i] = (f[i] * j) % n
-      if (g:=gcd(f[i], n))>1:
-        return g, n//g
+    """
+    https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
+    """
+    f, c = [], iroot(n, 4)[0]
+    for i in range(0, c):
+        f.append(1)
+        jmin = i * c + 1
+        jmax = jmin + c - 1
+        for j in range(jmin, jmax + 1):
+            f[i] = (f[i] * j) % n
+            if (g := gcd(f[i], n)) > 1:
+                return g, n // g
 
 
 def wiener(n, e, progress=True):
@@ -658,19 +695,24 @@ def williams_pp1(n):
 
 def difference_of_powers_factor(n):
     """
-    Idea based on: https://github.com/trizen/perl-scripts/blob/master/Math/difference_of_powers_factorization_method.pl
+    Idea based on:
+    https://github.com/trizen/perl-scripts/blob/master/Math/difference_of_powers_factorization_method.pl
     """
     F = set()
     for a in range(2, isqrt(n) + 1):
         a_k = a
-        for k in range(1, int(log(n)/log(a)) + 1):
-            if (1 << k) > n: break
+        for k in range(1, int(log(n) / log(a)) + 1):
+            if (1 << k) > n:
+                break
             a_k *= a
-            if a_k > n: break  
+            if a_k > n:
+                break
             for sign in [-1, 1]:
                 if (b_k := a_k + sign * n) > 0:
                     b, e = iroot(b_k, k)
                     if e and b > 1:
-                        if 1 < (f1 := gcd(a - b, n)) < n: F.add(f1)
-                        if 1 < (f2 := gcd(a + b, n)) < n: F.add(f2)
+                        if 1 < (f1 := gcd(a - b, n)) < n:
+                            F.add(f1)
+                        if 1 < (f2 := gcd(a + b, n)) < n:
+                            F.add(f2)
     return sorted(F)

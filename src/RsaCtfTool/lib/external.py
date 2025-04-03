@@ -14,11 +14,11 @@ def ifferm(fname):
 
 
 def msieve_factor_driver(n):
-    global MSIEVE_BIN
-    print("[*] Factoring %d with msieve..." % n)
+    # global MSIEVE_BIN  # not required for read-only use of globals
+    print(f"[*] Factoring {n} with msieve...")
     tmp = []
     proc = subprocess.Popen(
-        [MSIEVE_BIN, "-s", "/tmp/%d.dat" % n, "-t", "8", "-v", str(n)],
+        [MSIEVE_BIN, f"-s", "/tmp/{n}.dat", "-t", "8", "-v", str(n)],
         stdout=subprocess.PIPE,
     )
     for line in proc.stdout:
@@ -30,8 +30,8 @@ def msieve_factor_driver(n):
 
 
 def yafu_factor_driver(n):
-    global YAFU_BIN, TIMEOUT
-    print("[*] Factoring %d with yafu..." % n)
+    # global YAFU_BIN, TIMEOUT  # not required for read-only use of globals
+    print(f"[*] Factoring {n} with yafu...")
     tmp = []
     proc = subprocess.Popen(
         [
@@ -50,12 +50,12 @@ def yafu_factor_driver(n):
         line = line.rstrip().decode("utf8")
         if re.search(r"P\d+ = \d+", line):
             tmp += [int(line.split("=")[1])]
-    ifferm("/tmp/qs_%d.dat" % n)
+    ifferm(f"/tmp/qs_{n}.dat")
     return tmp
 
 
 def neca_factor_driver(n, timeout=None):
-    print("[*] Factoring %d with neca..." % n)
+    print(f"[*] Factoring {n} with neca...")
     necaresult = subprocess.check_output(
         [NECA_BIN, f"{n}"], timeout=timeout, stderr=subprocess.DEVNULL
     )
@@ -68,8 +68,9 @@ def neca_factor_driver(n, timeout=None):
                 return list(map(int, line.split("=")[1].split("*")))
 
 
-def cado_factor_driver(n):
-    return
+# comment-out unused function
+# def cado_factor_driver(n):
+#     return
 
 
 def external_factorization(n):
