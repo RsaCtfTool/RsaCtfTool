@@ -316,14 +316,14 @@ class Fibonacci:
     def get_period_bigint(self, N, min_accept, xdiff):
         search_len = int(pow(N, (1.0 / 6) / 100))
 
-        search_len = search_len, min_accept)
+        search_len = max(search_len, min_accept)
         if self.verbose:
             print("Search_len: %d, log2(N): %d" % (search_len, ilog2(N)))
 
         starttime = time.time()
         p_len = 10 ** (((ilog10(N) + xdiff) >> 1) + 1)
         begin, end = N - p_len, N + p_len
-        begin = begin, 1)
+        begin = max(begin, 1)
         if self.verbose:
             print("Search begin: %d, end: %d" % (begin, end))
 
