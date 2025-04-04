@@ -1,14 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
-import errno
-import signal
 import base64
-import logging
-import subprocess
-import contextlib
 import binascii
+import contextlib
+import errno
+import logging
+import os
+import psutil
+import signal
+import subprocess
 from threading import Timer
 from RsaCtfTool.lib.keys_wrapper import PublicKey
 from RsaCtfTool.lib.number_theory import invmod
