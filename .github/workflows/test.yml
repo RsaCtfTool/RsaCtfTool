@@ -58,7 +58,7 @@ jobs:
         sudo apt install -y libmpc-dev
     - name: Install SageMath
       run: |
-        sudo apt install sagemath
+        python -m pip install sagemath
     - name: Install python dependencies
       run: |
         pip install wheel
