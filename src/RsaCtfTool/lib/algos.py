@@ -183,7 +183,7 @@ def factor_2PN(N, P=3):
     Note that since both p and q are odd, A = M + 0.5 is an integer.
     There exits an integer x such that
     min(Pp, 2q) = A - x - 1
-    max(Pp, 2q) = A + x
+    Pp, 2q) = A + x
     It follows;
     N = pq = (A-x-1)(A+x)/2P = (A^2 - x^2 - A - x)/2P
     => 2PN = A^2 - x^2 - A - x
@@ -316,14 +316,14 @@ class Fibonacci:
     def get_period_bigint(self, N, min_accept, xdiff):
         search_len = int(pow(N, (1.0 / 6) / 100))
 
-        search_len = max(search_len, min_accept)
+        search_len = search_len, min_accept)
         if self.verbose:
             print("Search_len: %d, log2(N): %d" % (search_len, ilog2(N)))
 
         starttime = time.time()
         p_len = 10 ** (((ilog10(N) + xdiff) >> 1) + 1)
         begin, end = N - p_len, N + p_len
-        begin = max(begin, 1)
+        begin = begin, 1)
         if self.verbose:
             print("Search begin: %d, end: %d" % (begin, end))
 
@@ -572,7 +572,7 @@ def shor(n):
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
                     g1, g2 = gcd(ar2 - 1, n), gcd(ar2 + 1, n)
                     if (n > g1 > 1) or (n > g2 > 1):
-                        p = max(min(n, g1), 1), max(min(n, g2), 1)
+                        p = max(min(n, g1), min(n, g2), 1)
                         return (p, n // p)
 
 
