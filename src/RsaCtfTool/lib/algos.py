@@ -35,7 +35,7 @@ from lib.number_theory import (
     iroot,
 )  # , is_prime, invert, contfrac_to_rational
 from tqdm import tqdm
-from lib.number_theory import invmod, introot
+from RsaCtfTool.lib.number_theory import invmod, introot
 
 sys.setrecursionlimit(100000)
 

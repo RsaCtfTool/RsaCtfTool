@@ -1,9 +1,9 @@
 #!/usr/bin/python3
 
-from attacks.abstract_attack import AbstractAttack
 import subprocess
-from lib.keys_wrapper import PrivateKey
-from lib.utils import rootpath
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.utils import rootpath
 
 
 class Attack(AbstractAttack):

@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import signal
-from lib.exceptions import FactorizationError
+from RsaCtfTool.lib.exceptions import FactorizationError
 
 
 # source http://stackoverflow.com/a/22348885

@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from lib.number_theory import gcd, common_modulus_related_message
-from lib.crypto_wrapper import long_to_bytes, bytes_to_long
 import itertools
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.number_theory import gcd, common_modulus_related_message
+from RsaCtfTool.lib.crypto_wrapper import long_to_bytes, bytes_to_long
 
 
 class Attack(AbstractAttack):
@@ -41,7 +41,7 @@ class Attack(AbstractAttack):
         return (None, plains)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
         import base64
 
         key1_data = """-----BEGIN PUBLIC KEY-----

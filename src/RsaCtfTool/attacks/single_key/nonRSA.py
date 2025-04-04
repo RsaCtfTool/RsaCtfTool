@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from lib.keys_wrapper import PrivateKey
-from lib.number_theory import is_prime, invmod, ilog2, introot, iroot, powmod
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import is_prime, invmod, ilog2, introot, iroot, powmod
 
 
 class Attack(AbstractAttack):
@@ -44,7 +44,7 @@ class Attack(AbstractAttack):
         return (None, None)
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIIBIzANBgkqhkiG9w0BAQEFAAOCARAAMIIBCwKCAQILdjaT+X2D8Er2cSNPoG6k

@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 
-from lib.number_theory import invmod
-from attacks.abstract_attack import AbstractAttack
 from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.exceptions import FactorizationError
-from lib.algos import solve_partial_q
+from RsaCtfTool.lib.number_theory import invmod
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.exceptions import FactorizationError
+from RsaCtfTool.lib.algos import solve_partial_q
 
 
 class Attack(AbstractAttack):

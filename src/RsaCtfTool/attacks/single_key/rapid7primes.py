@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from attacks.abstract_attack import AbstractAttack
-from tqdm import tqdm
-from lib.keys_wrapper import PrivateKey
-from lib.number_theory import is_divisible
-from lib.pickling import decompress_pickle
 import glob
+from tqdm import tqdm
+from RsaCtfTool.attacks.abstract_attack import AbstractAttack
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import is_divisible
+from RsaCtfTool.lib.pickling import decompress_pickle
 
 
 class Attack(AbstractAttack):
@@ -34,7 +34,7 @@ class Attack(AbstractAttack):
         return None, None
 
     def test(self):
-        from lib.keys_wrapper import PublicKey
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
 MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDEUCMPvSGioBgCAD3j1ZTNOiHQ

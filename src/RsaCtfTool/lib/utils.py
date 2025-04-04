@@ -10,9 +10,8 @@ import subprocess
 import contextlib
 import binascii
 from threading import Timer
-import psutil
-from lib.keys_wrapper import PublicKey
-from lib.number_theory import invmod
+from RsaCtfTool.lib.keys_wrapper import PublicKey
+from RsaCtfTool.lib.number_theory import invmod
 
 
 # used to track the location of RsaCtfTool

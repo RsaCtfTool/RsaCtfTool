@@ -1,4 +1,4 @@
-from lib.number_theory import is_prime, gcd, lcm, getpubkeysz, invert
+from RsaCtfTool.lib.number_theory import is_prime, gcd, lcm, getpubkeysz, invert
 
 
 def privatekey_check(N, p, q, d, e):
