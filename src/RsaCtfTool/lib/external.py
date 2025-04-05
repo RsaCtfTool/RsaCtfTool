@@ -14,7 +14,7 @@ def ifferm(fname):
 
 
 def msieve_factor_driver(n):
-    global MSIEVE_BIN
+    # global MSIEVE_BIN  # `global` not required for read-only use (F824)
     print("[*] Factoring %d with msieve..." % n)
     tmp = []
     proc = subprocess.Popen(
@@ -30,7 +30,7 @@ def msieve_factor_driver(n):
 
 
 def yafu_factor_driver(n):
-    global YAFU_BIN, TIMEOUT
+    # global YAFU_BIN, TIMEOUT # `global` not required for read-only use (F824)
     print("[*] Factoring %d with yafu..." % n)
     tmp = []
     proc = subprocess.Popen(
