@@ -601,7 +601,7 @@ def SQUFOF(N):
         3 * 5 * 7 * 11,
     ]
 
-    if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
+    if (N - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
 
     s = isqrt(N)
