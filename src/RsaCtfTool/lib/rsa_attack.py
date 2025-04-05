@@ -132,14 +132,12 @@ class RSAAttack(object):
                 ok = False
         return (tmp, ok)
 
-    
     def get_attack(self, attack, multikeys):
         if multikeys:
             import_path = f"RsaCtfTool.attacks.multi_keys.{attack}"
         else:
             import_path = f"RsaCtfTool.attacks.single_key.{attack}"
         return importlib.import_module(import_path, package="RsaCtfTool")
-
 
     def load_attacks(self, attacks_list, multikeys=False):
         """Dynamic load attacks according to context (single key or multiple keys)"""
@@ -157,7 +155,7 @@ class RSAAttack(object):
             if attack in self.args.attack or "all" in self.args.attack:
 
                 try:
-                    attack_module =self.get_attack(attack, multikeys)
+                    attack_module = self.get_attack(attack, multikeys)
                     # Dynamically add named-arguments to constructor if same sys.argv exists
                     expected_args = list(
                         inspect.getfullargspec(attack_module.Attack.__init__).args
@@ -180,7 +178,7 @@ class RSAAttack(object):
                         attack_module.Attack(**constructor_args)
                     )
                 except ModuleNotFoundError:
-                    #print(f"[-] Attack {attack} not found...")
+                    # print(f"[-] Attack {attack} not found...")
                     pass
         self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 

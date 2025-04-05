@@ -11,15 +11,15 @@ setup(
         "RsaCtfTool": ["data/*"],  # Include all files inside RsaCtfTool/data/
     },
     version=VERSION,
-    author="Ganapati", # Original author
+    author="Ganapati",  # Original author
     author_email="something",
     install_requires=[x.strip() for x in open("requirements.txt").readlines()],
     url=BASE_CVS_URL,
     download_url=f"{BASE_CVS_URL}/tarball/{VERSION}",
     entry_points={
-        'console_scripts': [
-            'rsacrack = RsaCtfTool.main:main',
-            'RsaCtfTool = RsaCtfTool.main:main',
+        "console_scripts": [
+            "rsacrack = RsaCtfTool.main:main",
+            "RsaCtfTool = RsaCtfTool.main:main",
         ],
     },
     include_package_data=True,
