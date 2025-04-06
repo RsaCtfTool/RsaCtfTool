@@ -60,6 +60,9 @@ jobs:
       run: |
         pip install wheel
         pip install -r "requirements.txt"
+    - name: Install self (required for `import RsaCtfTool.`)
+      run: |
+        pip install -e .
     - name: Run tests
       run: |
-        ./RsaCtfTool.py --tests
+        ./src/RsaCtfTool/main.py --tests
