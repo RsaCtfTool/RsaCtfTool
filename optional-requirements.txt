@@ -1,3 +1,2 @@
 wolframalpha
-SageMath
 gmpy==2.1.15
