@@ -115,6 +115,8 @@ usage: RsaCtfTool [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIME
 Setup the venv
 ```bash
 apt install python3-virtualenv
+# or for other debian based distros
+apt install python3-venv
 virtualenv venv
 source venv/bin/activate
 pip install git+https://github.com/RsaCtfTool/RsaCtfTool
