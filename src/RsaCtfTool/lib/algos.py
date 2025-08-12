@@ -9,7 +9,7 @@ from tqdm import tqdm
 from itertools import count
 from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas, iroot  # , is_prime, invert, contfrac_to_rational
-from RsaCtfTool.lib.number_theory import invmod, introot
+from RsaCtfTool.lib.number_theory import invmod, introot, find_period
 
 sys.setrecursionlimit(100000)
 
@@ -673,7 +673,7 @@ def difference_of_powers_factor(n):
 
 
 def repunit_factor(n):
-    z = minimal_period_bits(n)
+    z = find_period(n)
     if z == -1:
         return None
     l = n.bit_length()
