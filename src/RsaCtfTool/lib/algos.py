@@ -670,3 +670,15 @@ def difference_of_powers_factor(n):
                         if 1 < (f1 := gcd(a - b, n)) < n: F.add(f1)
                         if 1 < (f2 := gcd(a + b, n)) < n: F.add(f2)
     return sorted(F)
+
+
+def repunit_factor(n):
+    z = minimal_period_bits(n)
+    if z == -1:
+        return None
+    l = n.bit_length()
+    k = l // z
+    R = (1 << (k*z)) - 1
+    R //= (1 << z) - 1
+    p = math.gcd(n, R)
+    return p, n // p
