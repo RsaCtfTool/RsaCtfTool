@@ -631,6 +631,18 @@ def is_lucas(n):
     return u2==n
 
 
+def find_period(n):
+    shifted = n
+    l = n.bit_length()
+    mask = (1 << l) - 1
+    for period in range(1, l):
+        shifted >>= 1
+        mask >>= 1
+        if ((n ^ shifted) & mask) == 0:
+            return period
+    return -1
+
+
 __all__ = [
     getpubkeysz,
     gcd,
@@ -683,4 +695,5 @@ __all__ = [
     powmod_exp_list,
     is_pow2,
     is_lucas,
+    find_period,
 ]
