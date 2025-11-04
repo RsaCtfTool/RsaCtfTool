@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.algos import dixon
 
@@ -24,19 +23,7 @@ class Attack(AbstractAttack):
         except FactorizationError:
             return None, None
 
-        if publickey.p is not None and publickey.q is not None:
-            try:
-                priv_key = PrivateKey(
-                    n=publickey.n,
-                    p=int(publickey.p),
-                    q=int(publickey.q),
-                    e=int(publickey.e),
-                )
-                return priv_key, None
-            except ValueError:
-                return None, None
-
-        return None, None
+        return self.create_private_key(publickey)
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
