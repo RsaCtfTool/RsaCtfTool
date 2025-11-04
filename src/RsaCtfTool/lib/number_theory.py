@@ -523,9 +523,9 @@ def phi(n, factors):
 def chinese_remainder(m, a):
     S = 0
     N = list_prod(m)
-    for i in range(0, len(m)):
-        Ni = N // m[i]
-        S += Ni * invert(Ni, m[i]) * a[i]
+    for mi, ai in zip(m, a):
+        Ni = N // mi
+        S += Ni * invert(Ni, mi) * ai
     return S % N
 
 
