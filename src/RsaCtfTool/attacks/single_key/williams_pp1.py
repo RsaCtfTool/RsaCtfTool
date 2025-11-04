@@ -32,8 +32,6 @@ class Attack(AbstractAttack):
         except TypeError:
             return None, None
 
-        return None, None
-
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
 
