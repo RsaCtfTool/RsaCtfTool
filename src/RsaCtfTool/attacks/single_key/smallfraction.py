@@ -3,7 +3,6 @@
 
 import subprocess
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.utils import rootpath
 
 
@@ -27,13 +26,7 @@ class Attack(AbstractAttack):
             if sageresult > 0:
                 publickey.p = sageresult
                 publickey.q = publickey.n // publickey.p
-                priv_key = PrivateKey(
-                    publickey.p,
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return (priv_key, None)
+                return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return (None, None)
         return (None, None)

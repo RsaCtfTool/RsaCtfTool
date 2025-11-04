@@ -4,7 +4,6 @@
 import subprocess
 import os
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.utils import rootpath, TimeoutError, terminate_proc_tree
 
 
@@ -56,16 +55,7 @@ class Attack(AbstractAttack):
             if sageresult > 0:
                 publickey.p = sageresult
                 publickey.q = publickey.n // publickey.p
-                try:
-                    priv_key = PrivateKey(
-                        publickey.p,
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return (priv_key, None)
-                except NotImplementedError:
-                    return (None, None)
+                return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
             return (None, None)
         except KeyboardInterrupt:
             pass

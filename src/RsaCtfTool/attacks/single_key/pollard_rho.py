@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.algos import pollard_rho
 
 
@@ -18,14 +17,7 @@ class Attack(AbstractAttack):
             p = pollard_rho(publickey.n)
             publickey.p = p
             publickey.q = publickey.n // publickey.p
-
-            priv_key = PrivateKey(
-                int(publickey.p),
-                int(publickey.q),
-                int(publickey.e),
-                int(publickey.n),
-            )
-            return priv_key, None
+            return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
         except TypeError:
             return None, None
 
