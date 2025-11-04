@@ -3,7 +3,6 @@
 
 from tqdm import tqdm
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.algos import pollard_P_1
 
 
@@ -24,16 +23,7 @@ class Attack(AbstractAttack):
         if poll_res and len(poll_res) > 1:
             publickey.p, publickey.q = poll_res
 
-        if publickey.q is not None:
-            priv_key = PrivateKey(
-                int(publickey.p),
-                int(publickey.q),
-                int(publickey.e),
-                int(publickey.n),
-            )
-            return priv_key, None
-
-        return None, None
+        return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey

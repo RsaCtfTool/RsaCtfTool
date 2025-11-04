@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.number_theory import primes, is_divisible
 
 
@@ -17,13 +16,7 @@ class Attack(AbstractAttack):
             if is_divisible(publickey.n, prime):
                 publickey.q = prime
                 publickey.p = publickey.n // publickey.q
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return priv_key, None
+                return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
 
         return None, None
 
