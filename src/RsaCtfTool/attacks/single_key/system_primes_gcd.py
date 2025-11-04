@@ -3,7 +3,6 @@
 
 from tqdm import tqdm
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.system_primes import load_system_consts
 from RsaCtfTool.lib.number_theory import gcd, is_prime
 
@@ -24,13 +23,7 @@ class Attack(AbstractAttack):
                 if is_prime(q):
                     publickey.p = p
                     publickey.q = q
-                    priv_key = PrivateKey(
-                        int(publickey.p),
-                        int(publickey.q),
-                        int(publickey.e),
-                        int(publickey.n),
-                    )
-                    return priv_key, None
+                    return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
                 else:
                     self.logger.error(
                         "[!] Currently this tool only supports RSA textbook semiprime modulus, your p and q are: (%d,%d)"
