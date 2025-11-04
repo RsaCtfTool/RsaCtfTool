@@ -91,7 +91,7 @@ class AbstractAttack(object):
         
         if p is not None and q is not None:
             try:
-                priv_key = PrivateKey(int(p), int(q), int(e), int(n))
+                priv_key = PrivateKey(p=int(p), q=int(q), e=int(e), n=int(n))
                 return priv_key, None
             except (ValueError, TypeError):
                 return None, None
