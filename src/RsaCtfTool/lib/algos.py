@@ -242,16 +242,18 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
     if r0 is None:
         raise ArithmeticError("expecting that square root exists")
     a = isqrt(n - 1) + 1
+    k_shift = 1 << k  # Pre-compute the shift value
 
     for middle_bits in range(1, max_middle_bits+1):
         print(f"middle bits: {middle_bits} of {n_size}/2")
-        for r in [r0, (1 << k) - r0]:
+        for r in [r0, k_shift - r0]:
             s = a
             for i in range(k):
                 if ((s ^ r) >> i) & 1:
                     m = min(middle_bits, i)
+                    shift_val = 1 << (i - m)  # Pre-compute shift value
                     for _ in range(1 << m):
-                        s += 1 << (i - m)
+                        s += shift_val
                         d = (s * s) - n
                         if is_square(d):
                             d_sqrt = isqrt(d)
@@ -358,7 +360,7 @@ def hart(N):
 def kraitchik(n):
     x = isqrt(n)
     while True:
-        k, x2 = 1, x * x
+        x2 = x * x
         y2 = x2 - n
         while y2 >= 0:
             if is_square(y2):
@@ -366,8 +368,7 @@ def kraitchik(n):
                 z, w = x + y, x - y
                 if z % n != 0 and w % n != 0:
                     return gcd(z, n), gcd(w, n)
-            k += 1
-            y2 = x2 - k * n
+            y2 -= n  # Subtract n instead of recalculating k * n
         x += 1
 
 

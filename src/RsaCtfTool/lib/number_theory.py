@@ -306,12 +306,9 @@ def _powmod(b, e, m):
 
 def _fac(n):
     """
-    Factorial
+    Factorial - use built-in math.factorial for better performance
     """
-    tmp = 1
-    for m in range(n, 1, -1):
-        tmp *= m
-    return tmp
+    return math.factorial(n)
 
 
 @cache
