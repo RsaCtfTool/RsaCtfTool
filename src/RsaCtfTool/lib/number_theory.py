@@ -30,11 +30,11 @@ except ImportError:
         )
 
 
-@cache
 def list_prod(list_):
-    if (l := len(list_)) == 0: return 1
-    return list_prod(list_[:l - 1]) * list_[-1]
-
+    if not list_:
+        return 1
+    return reduce(lambda x, y: x * y, list_, 1)
+    
 
 digit_sum = lambda n: sum(int(d) for d in str(n))
 A007814 = lambda n: (~n & n - 1).bit_length()
