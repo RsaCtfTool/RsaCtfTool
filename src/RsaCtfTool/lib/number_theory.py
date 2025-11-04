@@ -30,10 +30,11 @@ except ImportError:
         )
 
 
-@cache
 def list_prod(list_):
-    if (l := len(list_)) == 0: return 1
-    return list_prod(list_[:l - 1]) * list_[-1]
+    """Compute product of all elements in a list efficiently using reduce."""
+    if not list_:
+        return 1
+    return reduce(lambda x, y: x * y, list_, 1)
 
 
 digit_sum = lambda n: sum(int(d) for d in str(n))
@@ -42,12 +43,9 @@ A135481 = lambda n: (~n & n - 1)
 A000265 = lambda n: n // (A135481(n) + 1)
 
 
-@cache
 def mulmod(a, b, m):
-    if b == 0: return 0
-    if b == 1: return a % m
-    if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
-    else: return (a + mulmod(a, b - 1, m)) % m
+    """Efficient modular multiplication - use built-in when possible."""
+    return (a * b) % m
 
 
 def getpubkeysz(n):

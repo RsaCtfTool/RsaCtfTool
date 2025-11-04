@@ -100,17 +100,17 @@ def close_factor(n, b, progress=True):
 
 
 def dixon(N):
-    start, basej2N, base = isqrt(n), [4 % n], [2]
+    start, basej2N, base = isqrt(N), [4 % N], [2]
     while True:
         lp = base[-1]
-        for i in range(start,n):
-            i2N = pow(i,2,n)
+        for i in range(start, N):
+            i2N = pow(i, 2, N)
             if i2N == basej2N[-1]:
-                p = gcd(i-lp,n)
-                if 1 < p < n:
-                  return p, n//p
+                p = gcd(i - lp, N)
+                if 1 < p < N:
+                    return p, N // p
         base.append(next_prime(lp))
-        basej2N.append(pow(base[-1],2,n))
+        basej2N.append(pow(base[-1], 2, N))
 
 def euler(n):
     """
