@@ -37,7 +37,16 @@ def list_prod(list_):
     return reduce(lambda x, y: x * y, list_, 1)
 
 
-digit_sum = lambda n: sum(int(d) for d in str(n))
+def digit_sum(n):
+    """Compute sum of digits efficiently without string conversion."""
+    if n == 0:
+        return 0
+    total = 0
+    n = abs(n)
+    while n:
+        total += n % 10
+        n //= 10
+    return total
 A007814 = lambda n: (~n & n - 1).bit_length()
 A135481 = lambda n: (~n & n - 1)
 A000265 = lambda n: n // (A135481(n) + 1)
@@ -510,9 +519,9 @@ def phi(n, factors):
 def chinese_remainder(m, a):
     S = 0
     N = list_prod(m)
-    for i in range(0, len(m)):
-        Ni = N // m[i]
-        S += Ni * invert(Ni, m[i]) * a[i]
+    for mi, ai in zip(m, a):
+        Ni = N // mi
+        S += Ni * invert(Ni, mi) * ai
     return S % N
 
 

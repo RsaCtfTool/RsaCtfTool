@@ -80,7 +80,7 @@ def close_factor(n, b, progress=True):
     look_up = {}
     z = 1
     parity = phi_approx & 1
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
+    for i in tqdm(range(b + 1), disable=(not progress)):
         if i & 1 == parity:
             look_up[z] = i
         z <<= 1
@@ -90,7 +90,7 @@ def close_factor(n, b, progress=True):
     mu = invmod(powmod(2, phi_approx, n), n)
     fac = powmod(2, b, n)
 
-    for i in tqdm(range(0, (b * b) + 1), disable=(not progress)):
+    for i in tqdm(range((b * b) + 1), disable=(not progress)):
         if mu in look_up:
             phi = phi_approx + look_up[mu] - (i * b)
             r = trivial_factorization_with_n_phi(n, phi)
@@ -494,13 +494,12 @@ def pollard_P_1(n, progress=True):
     logn = log(isqrt(n))
     prime = primes(997)
 
-    for j in range(0, len(prime)):
-        primej = prime[j]
+    for primej in prime:
         logp = log(primej)
         z.extend(primej for _ in range(1, int(logn / logp) + 1))
 
     for pp in tqdm(prime, disable=(not progress)):
-        for i in range(0, len(z)):
+        for i in range(len(z)):
             pp = powmod(pp, z[i], n)
             p = gcd(n, pp - 1)
             if n > p > 1:
@@ -568,7 +567,7 @@ def SQUFOF(N):
     L = isqrt(s << 1) << 1
     B = 3 * L
 
-    for k in range(0, len(multiplier)):
+    for k in range(len(multiplier)):
         D = multiplier[k] * N
         Po = Pprev = P = isqrt(D)
         Qprev = 1
@@ -606,7 +605,7 @@ def pollard_strassen(n):
   https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
   """
   f,c =[], iroot(n,4)[0]
-  for i in range(0, c):
+  for i in range(c):
     f.append(1)
     jmin = i * c + 1
     jmax = jmin + c - 1
