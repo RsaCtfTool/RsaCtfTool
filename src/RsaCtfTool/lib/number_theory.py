@@ -36,7 +36,18 @@ def list_prod(list_):
     return reduce(lambda x, y: x * y, list_, 1)
     
 
-digit_sum = lambda n: sum(int(d) for d in str(n))
+def digit_sum(n):
+    """Compute sum of digits efficiently without string conversion."""
+    if n == 0:
+        return 0
+    total = 0
+    n = abs(n)
+    while n:
+        total += n % 10
+        n //= 10
+    return total
+
+
 A007814 = lambda n: (~n & n - 1).bit_length()
 A135481 = lambda n: (~n & n - 1)
 A000265 = lambda n: n // (A135481(n) + 1)
