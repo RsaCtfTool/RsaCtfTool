@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.algos import williams_pp1
 
 
@@ -29,18 +28,9 @@ class Attack(AbstractAttack):
                 publickey.q = publickey.n // publickey.p
                 print(publickey.p, publickey.q)
 
-            if publickey.q is not None:
-                priv_key = PrivateKey(
-                    int(publickey.p),
-                    int(publickey.q),
-                    int(publickey.e),
-                    int(publickey.n),
-                )
-                return priv_key, None
+            return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
         except TypeError:
             return None, None
-
-        return None, None
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey

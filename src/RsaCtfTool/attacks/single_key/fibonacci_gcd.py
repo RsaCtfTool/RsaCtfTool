@@ -3,7 +3,6 @@
 
 from tqdm import tqdm
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.number_theory import gcd, fib
 
 
@@ -22,10 +21,7 @@ class Attack(AbstractAttack):
                 p = publickey.n // f
                 q = f
                 break
-        if p is not None and q is not None:
-            priv_key = PrivateKey(int(p), int(q), int(publickey.e), int(publickey.n))
-            return priv_key, None
-        return None, None
+        return self.create_private_key_from_pqe(p, q, publickey.e, publickey.n)
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
