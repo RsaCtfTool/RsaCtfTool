@@ -51,6 +51,52 @@ class AbstractAttack(object):
         """Attack test case"""
         raise NotImplementedError
 
+    def create_private_key(self, publickey) -> Tuple[Optional[Any], Optional[Any]]:
+        """Helper method to create a private key from publickey with p and q
+        
+        Args:
+            publickey: PublicKey object with n, e, p, q attributes
+            
+        Returns:
+            Tuple of (PrivateKey, None) on success or (None, None) on failure
+        """
+        from RsaCtfTool.lib.keys_wrapper import PrivateKey
+        
+        if publickey.p is not None and publickey.q is not None:
+            try:
+                priv_key = PrivateKey(
+                    n=publickey.n,
+                    p=int(publickey.p),
+                    q=int(publickey.q),
+                    e=int(publickey.e),
+                )
+                return priv_key, None
+            except ValueError:
+                return None, None
+        return None, None
+
+    def create_private_key_from_pqe(self, p, q, e, n) -> Tuple[Optional[Any], Optional[Any]]:
+        """Helper method to create a private key from p, q, e, n values
+        
+        Args:
+            p: prime factor p
+            q: prime factor q
+            e: public exponent e
+            n: modulus n
+            
+        Returns:
+            Tuple of (PrivateKey, None) on success or (None, None) on failure
+        """
+        from RsaCtfTool.lib.keys_wrapper import PrivateKey
+        
+        if p is not None and q is not None:
+            try:
+                priv_key = PrivateKey(int(p), int(q), int(e), int(n))
+                return priv_key, None
+            except (ValueError, TypeError):
+                return None, None
+        return None, None
+
 
 # Configure logger
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
