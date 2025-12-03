@@ -238,6 +238,12 @@ For more examples, look at the test.sh file
 `RsaCtfTool --isroca --publickey "examples/*.pub"`
 
 
+## CAVEAT ##
+
+Since this tool uses python's cryptography lib it does not support non RSA textbook keys.
+It may find factors for non RSA textbook keys but it will not be able to export the private key.
+E.g.: private keys in format p*q*r and p^k.
+
 ## TODO (aka. Help wanted !)
 
 - Implement a test method for each attack.
