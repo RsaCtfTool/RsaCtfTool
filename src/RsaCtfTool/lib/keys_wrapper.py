@@ -213,10 +213,10 @@ class PrivateKey(object):
             if self.n is not None and self.d is not None:
                 try:
                     cipher_int = int.from_bytes(c, "big")
-                    m_int = hex(powmod(cipher_int, self.d, self.n))
-                    if len(m_int) % 2 == 1:
-                        m_int = f"0{m_int}"
-                    m = binascii.unhexlify(hex(m_int)[2:])
+                    m_hex = hex(powmod(cipher_int, self.d, self.n))[2:]
+                    if len(m_hex) % 2 == 1:
+                        m_hex = f"0{m_hex}"
+                    m = binascii.unhexlify(m_hex)
                     plain.append(m)
                 except:
                     pass
@@ -287,5 +287,4 @@ class PrivateKey(object):
         """Print armored private key"""
         if self.key is not None:
             return self.key.exportKey().decode("utf-8")
-        # else:
-        #    return "partial key:\nn: %d\ne: %d\nd: %d\np: %d\nq: %d\ndp: %d\ndq: %d\ndi: %d\n%s\n" % (self.n, self.e, self.d, self.p, self.q,self.dp,self.dq,self.di,self.filename)
+        return ""
