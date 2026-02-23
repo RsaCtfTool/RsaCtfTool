@@ -92,6 +92,12 @@ def print_results(args, publickey, private_key, decrypt):
                         logger.warning(
                             "Key format seems wrong, check input data to solve this."
                         )
+                        if priv_key.n is not None:
+                            logger.info(f"n: {priv_key.n}")
+                        if priv_key.e is not None:
+                            logger.info(f"e: {priv_key.e}")
+                        if priv_key.d is not None:
+                            logger.info(f"d: {priv_key.d}")
 
                     else:
                         logger.info(priv_key)

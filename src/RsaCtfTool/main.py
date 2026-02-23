@@ -523,8 +523,6 @@ def main():
         else:
             args.publickey = [args.publickey]
 
-    print(args.publickey)
-
     # If we already have all informations
     if (
         args.p is not None
