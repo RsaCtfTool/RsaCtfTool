@@ -18,17 +18,42 @@ def find_p_Coppersmith(n, pLow, lowerBitsNum, beta=0.5):
         return [int(r) for r in [ ZZ(gcd(l * x0 + pLow, n)) for x0 in roots ] if n > r > 1]
 
 
+def hensel_lift(a, b, c, bits):
+    """
+    Solve a*X^2 + b*X + c == 0 (mod 2^bits) using Hensel's lemma lifting.
+    Returns a list of integer solutions in [0, 2^bits).
+    """
+    # Seed: solutions mod 2
+    roots = [r for r in range(2) if (a * r * r + b * r + c) % 2 == 0]
+
+    for k in range(1, bits):
+        mod = 1 << k          # 2^k
+        next_mod = mod << 1   # 2^(k+1)
+        new_roots = []
+        for r in roots:
+            for delta in (0, mod):   # try r and r + 2^k
+                candidate = r + delta
+                val = a * candidate * candidate + b * candidate + c
+                if val % next_mod == 0:
+                    new_roots.append(candidate)
+        roots = new_roots
+
+    mod_final = 1 << bits
+    return [r % mod_final for r in roots]
+
+
 def find_p(n, e, dLow, beta=0.5):
-    X = var('X')
     lowerBitsNum = dLow.bit_length()
 
-    edX = e * dLow * X
-    XnX1 = X * (n - X + 1)
     for k in range(1, e + 1):
-        results = solve_mod([edX - (k * XnX1) + (k * n) == X], (1 << lowerBitsNum))
-        for x in results:
-            pLow = ZZ(x[0])
-            if (roots := find_p_Coppersmith(n, pLow, lowerBitsNum)):
+        # Quadratic: k*X^2 + (e*dLow - k*(n+1) - 1)*X + k*n == 0 (mod 2^lowerBitsNum)
+        a = k
+        b = e * dLow - k * (n + 1) - 1
+        c = k * n
+
+        for pLow in hensel_lift(a, b, c, lowerBitsNum):
+            pLow = ZZ(pLow)
+            if (roots := find_p_Coppersmith(n, pLow, lowerBitsNum, beta)):
                 return roots[0]
 
 
