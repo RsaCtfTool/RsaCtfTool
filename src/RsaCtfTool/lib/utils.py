@@ -193,10 +193,11 @@ class timeout(contextlib.ContextDecorator):
 
     def __enter__(self):
         signal.signal(signal.SIGTERM, self._timeout_handler)
-        def alarm_func():#send signal
+
+        def alarm_func():  # send signal
             signal.raise_signal(signal.SIGTERM)
 
-        self.timer = Timer(self.seconds, alarm_func)#this thread will send signal when timeout
+        self.timer = Timer(self.seconds, alarm_func)  # this thread will send signal when timeout
         self.timer.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):

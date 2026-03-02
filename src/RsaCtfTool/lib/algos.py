@@ -108,9 +108,10 @@ def dixon(n):
             if i2N == basej2N[-1]:
                 p = gcd(i - lp, n)
                 if 1 < p < n:
-                  return p, n // p
+                    return p, n // p
         base.append(next_prime(lp))
         basej2N.append(pow(base[-1], 2, n))
+
 
 def euler(n):
     """
@@ -203,7 +204,7 @@ def factor_XYXZ(n, base=3):
 
 
 def fermat(n):
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
     a, rem = isqrt_rem(n)
     b2 = -rem
@@ -235,7 +236,7 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
     Code taken and heavy modified from https://github.com/google/paranoid_crypto/blob/main/paranoid_crypto/lib/rsa_util.py
     Licensed under open source Apache License Version 2.0, January 2004.
     """
-    if ((n_size:=n.bit_length()) < 6) or (n & 7 != 1):
+    if ((n_size := n.bit_length()) < 6) or (n & 7 != 1):
         return None
     k = (n_size + 1) >> 1
     r0 = InverseInverseSqrt2exp(n, k + 1)
@@ -244,7 +245,7 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
     a = isqrt(n - 1) + 1
     k_shift = 1 << k
 
-    for middle_bits in range(1, max_middle_bits+1):
+    for middle_bits in range(1, max_middle_bits + 1):
         print(f"middle bits: {middle_bits} of {n_size}/2")
         for r in [r0, k_shift - r0]:
             s = a
@@ -399,7 +400,7 @@ def lehmer_machine(n):
     """
     fermat based integer factorization
     """
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
     y = 1
     while not is_square(n + y ** 2):
@@ -562,7 +563,7 @@ def SQUFOF(N):
         3 * 5 * 7 * 11,
     ]
 
-    if (N-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (N - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
 
     s = isqrt(N)
@@ -603,18 +604,18 @@ def SQUFOF(N):
 
 
 def pollard_strassen(n):
-  """
-  https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
-  """
-  f,c =[], iroot(n,4)[0]
-  for i in range(0, c):
-    f.append(1)
-    jmin = i * c + 1
-    jmax = jmin + c - 1
-    for j in range(jmin, jmax + 1):
-      f[i] = (f[i] * j) % n
-      if (g:=gcd(f[i], n))>1:
-        return g, n//g
+    """
+    https://math.stackexchange.com/questions/185524/pollard-strassen-algorithm
+    """
+    f, c = [], iroot(n, 4)[0]
+    for i in range(0, c):
+        f.append(1)
+        jmin = i * c + 1
+        jmax = jmin + c - 1
+        for j in range(jmin, jmax + 1):
+            f[i] = (f[i] * j) % n
+            if (g := gcd(f[i], n)) > 1:
+                return g, n // g
 
 
 def wiener(n, e, progress=True):
@@ -660,7 +661,7 @@ def difference_of_powers_factor(n):
     F = set()
     for a in range(2, isqrt(n) + 1):
         a_k = a
-        for k in range(1, int(log(n)/log(a)) + 1):
+        for k in range(1, int(log(n) / log(a)) + 1):
             if (1 << k) > n: break
             a_k *= a
             if a_k > n: break  
@@ -679,7 +680,7 @@ def repunit_factor(n):
         return None
     l = n.bit_length()
     k = l // z
-    R = (1 << (k*z)) - 1
+    R = (1 << (k * z)) - 1
     R //= (1 << z) - 1
     p = gcd(n, R)
     return p, n // p
