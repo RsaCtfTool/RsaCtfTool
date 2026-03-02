@@ -6,13 +6,14 @@ from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.number_theory import gcd
 
 a = lambda n: int(str(n)[::-1])
-b = lambda n: int(bin(n)[2:][::-1],2)
-c = lambda n: int(oct(n)[2:][::-1],8)
-d = lambda n: int(hex(n)[2:][::-1],16)
+b = lambda n: int(bin(n)[2:][::-1], 2)
+c = lambda n: int(oct(n)[2:][::-1], 8)
+d = lambda n: int(hex(n)[2:][::-1], 16)
+
 
 def FF(n):
     F = []
-    for p in range(1,6):   
+    for p in range(1, 6):
         np = pow(n, p)
 
         F.append(gcd(n, a(np)))
@@ -25,7 +26,8 @@ def FF(n):
         F.append(gcd(n, n ^ c(np)))
         F.append(gcd(n, n ^ d(np)))
 
-    return list(set(filter(lambda x: n>x>1, F)))
+    return list(set(filter(lambda x: n > x > 1, F)))
+
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
