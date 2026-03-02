@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "RsaCtfTool"
+version = "0.1.0"
+description = "RSA multi attacks tool"
+readme = {file = "README.md", content-type = "text/markdown"}
+license = {text = "MIT"}
+authors = [
+    {name = "Ganapati", email = "something"},
+]
+classifiers = [
+    "License :: OSI Approved :: MIT License",
+    "Development Status :: 1 - Planning",
+    "Intended Audience :: Developers",
+    "Programming Language :: Python",
+    "Operating System :: OS Independent",
+    "Topic :: Security :: Cryptography",
+]
+dependencies = [
+    "six",
+    "cryptography==39.0.1",
+    "urllib3==1.26.5",
+    "requests==2.25.1",
+    "gmpy2==2.2.1",
+    "pycryptodome==3.10.4",
+    "tqdm",
+    "z3-solver",
+    "bitarray",
+    "psutil==5.9.4",
+    "factordb-pycli",
+]
+
+[project.urls]
+Homepage = "https://github.com/RsaCtfTool/RsaCtfTool"
+Download = "https://github.com/RsaCtfTool/RsaCtfTool/tarball/0.1.0"
+
+[project.optional-dependencies]
+# SageMath is not pip-installable; install it separately if needed
+optional = ["wolframalpha", "gmpy2>=2.1.15"]
+
+[project.scripts]
+rsacrack = "RsaCtfTool.main:main"
+RsaCtfTool = "RsaCtfTool.main:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+RsaCtfTool = ["data/*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
