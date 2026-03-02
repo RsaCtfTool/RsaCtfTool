@@ -53,15 +53,15 @@ class AbstractAttack(object):
 
     def create_private_key(self, publickey) -> Tuple[Optional[Any], Optional[Any]]:
         """Helper method to create a private key from publickey with p and q
-        
+
         Args:
             publickey: PublicKey object with n, e, p, q attributes
-            
+
         Returns:
             Tuple of (PrivateKey, None) on success or (None, None) on failure
         """
         from RsaCtfTool.lib.keys_wrapper import PrivateKey
-        
+
         if publickey.p is not None and publickey.q is not None:
             try:
                 priv_key = PrivateKey(
@@ -77,18 +77,18 @@ class AbstractAttack(object):
 
     def create_private_key_from_pqe(self, p, q, e, n) -> Tuple[Optional[Any], Optional[Any]]:
         """Helper method to create a private key from p, q, e, n values
-        
+
         Args:
             p: prime factor p
             q: prime factor q
             e: public exponent e
             n: modulus n
-            
+
         Returns:
             Tuple of (PrivateKey, None) on success or (None, None) on failure
         """
         from RsaCtfTool.lib.keys_wrapper import PrivateKey
-        
+
         if p is not None and q is not None:
             try:
                 priv_key = PrivateKey(p=int(p), q=int(q), e=int(e), n=int(n))
