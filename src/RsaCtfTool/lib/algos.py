@@ -562,7 +562,7 @@ def SQUFOF(N):
         3 * 5 * 7 * 11,
     ]
 
-    if (n-2) & 3 == 0: # Congruence n = 2 (mod 4).
+    if (N-2) & 3 == 0: # Congruence n = 2 (mod 4).
         raise FactorizationError
 
     s = isqrt(N)
@@ -681,5 +681,5 @@ def repunit_factor(n):
     k = l // z
     R = (1 << (k*z)) - 1
     R //= (1 << z) - 1
-    p = math.gcd(n, R)
+    p = gcd(n, R)
     return p, n // p

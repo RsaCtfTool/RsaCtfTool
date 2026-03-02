@@ -34,7 +34,7 @@ def list_prod(list_):
     if not list_:
         return 1
     return reduce(lambda x, y: x * y, list_, 1)
-    
+
 
 def digit_sum(n):
     """Compute sum of digits efficiently without string conversion."""
