@@ -8,7 +8,6 @@ from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.number_theory import is_divisible
 
 
-
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
         super().__init__(timeout)
