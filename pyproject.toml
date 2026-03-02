@@ -9,7 +9,7 @@ description = "RSA multi attacks tool"
 readme = {file = "README.md", content-type = "text/markdown"}
 license = {text = "MIT"}
 authors = [
-    {name = "Ganapati", email = "something"},
+    {name = "Ganapati and contributors", email = "clavijodario@gmail.com"},
 ]
 classifiers = [
     "License :: OSI Approved :: MIT License",
