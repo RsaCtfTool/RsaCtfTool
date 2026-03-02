@@ -14,7 +14,6 @@ def ifferm(fname):
 
 
 def msieve_factor_driver(n):
-    global MSIEVE_BIN
     print("[*] Factoring %d with msieve..." % n)
     tmp = []
     proc = subprocess.Popen(
@@ -30,7 +29,6 @@ def msieve_factor_driver(n):
 
 
 def yafu_factor_driver(n):
-    global YAFU_BIN, TIMEOUT
     print("[*] Factoring %d with yafu..." % n)
     tmp = []
     proc = subprocess.Popen(

@@ -191,8 +191,8 @@ class timeout(contextlib.ContextDecorator):
         self.logger.warning("[!] Timeout.")
         raise TimeoutError(self.timeout_message)
 
-    def __enter__(self):        
-        signal.signal(signal.SIGTERM, self._timeout_handler)        
+    def __enter__(self):
+        signal.signal(signal.SIGTERM, self._timeout_handler)
         def alarm_func():#send signal
             signal.raise_signal(signal.SIGTERM)
 

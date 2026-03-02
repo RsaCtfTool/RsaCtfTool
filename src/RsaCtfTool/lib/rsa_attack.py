@@ -132,7 +132,7 @@ class RSAAttack(object):
                 ok = False
         return (tmp, ok)
 
-    
+
     def get_attack(self, attack, multikeys):
         if multikeys:
             import_path = f"RsaCtfTool.attacks.multi_keys.{attack}"
