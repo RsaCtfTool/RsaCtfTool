@@ -6,14 +6,13 @@ Regression tests for:
 """
 
 import os
-import sys
 import subprocess
+import sys
+
 import pytest
 
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
-
-from RsaCtfTool.lib.keys_wrapper import PrivateKey  # noqa: E402
-from RsaCtfTool.lib.number_theory import invmod, powmod  # noqa: E402
+from RsaCtfTool.lib.keys_wrapper import PrivateKey
+from RsaCtfTool.lib.number_theory import invmod, powmod
 
 
 # ---------------------------------------------------------------------------
