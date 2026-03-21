@@ -218,7 +218,7 @@ Mode 3 : Dump the public and/or private numbers (optionally including CRT parame
 
 `RsaCtfTool --publickey key.pub --ecmdigits 25 --verbose --private`
 
-For more examples, look at the test.sh file
+For more examples, see the `tests/` directory and run `pytest tests/ --collect-only` to see all available tests.
 
 ### Attack private keys with partial bits of Q known ###
 
@@ -243,6 +243,41 @@ For more examples, look at the test.sh file
 Since this tool uses python's cryptography lib it does not support non RSA textbook keys.
 It may find factors for non RSA textbook keys but it will not be able to export the private key.
 E.g.: private keys in format p*q*r and p^k.
+
+## Testing
+
+This project uses **pytest** for all tests. Tests are located in the `tests/` directory.
+
+### Running Tests
+
+```bash
+pytest tests/                 # Run all tests
+pytest tests/ -m "not slow"    # Skip slow tests
+pytest tests/ -v              # Verbose mode
+pytest tests/ -k "fermat"     # Run tests matching "fermat"
+```
+
+### Test Markers
+
+- `@pytest.mark.slow` - marks tests as slow (factorization algorithms, etc.)
+- `@pytest.mark.network` - marks tests requiring network access (Factordb, etc.)
+- `@pytest.mark.attack` - marks integration tests for specific attacks
+
+### Test Structure
+
+- `test_number_theory.py` - Unit tests for number theory functions (gcd, is_prime, phi, etc.)
+- `test_algos.py` - Unit tests for factorization algorithms (fermat, brent, pollard_rho, etc.)
+- `test_keys_wrapper.py` - Unit tests for PublicKey/PrivateKey classes
+- `test_utils.py` - Unit tests for utility functions
+- `test_pubkey_decode.py` - RSA public key decoding tests
+- `test_attacks.py` - Functional integration tests for attack methods
+- `test_regression.py` - Regression tests for bug fixes
+- `test_exceptions.py` - Tests for custom exceptions
+- `conftest.py` - pytest configuration and shared fixtures
+
+### Adding Tests
+
+When adding new functionality, please include corresponding tests in the appropriate test file.
 
 ## TODO (aka. Help wanted !)
 

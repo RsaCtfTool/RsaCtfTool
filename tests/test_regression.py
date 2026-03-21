@@ -33,9 +33,9 @@ def test_private_key_str_never_returns_none():
 
     priv_key = PrivateKey(n=n, e=e, d=d)
     result = str(priv_key)
-    assert isinstance(result, str), (
-        "PrivateKey.__str__ must return a str, not %r" % type(result)
-    )
+    assert isinstance(
+        result, str
+    ), "PrivateKey.__str__ must return a str, not %r" % type(result)
 
 
 def test_private_key_str_empty_when_no_pem():
@@ -194,10 +194,9 @@ def test_cli_private_n_eq_p_squared_no_crash():
     )
     # Should produce some private key output (even if only n/e/d)
     combined = result.stdout + result.stderr
-    assert "Private key" in combined or "Key format seems wrong" in combined, (
-        "No private key section found.\nSTDERR:\n%s\nSTDOUT:\n%s"
-        % (
-            result.stderr,
-            result.stdout,
-        )
+    assert (
+        "Private key" in combined or "Key format seems wrong" in combined
+    ), "No private key section found.\nSTDERR:\n%s\nSTDOUT:\n%s" % (
+        result.stderr,
+        result.stdout,
     )
