@@ -1,20 +1,11 @@
-<div id="top"></div>
-<div align="center">
-
 # RsaCtfTool
 
-</div>
-
-<div align=center>
+<div align="center">
 
 [![Test](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/test.yml/badge.svg)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/test.yml)
-![lint_python](https://github.com/RsaCtfTool/RsaCtfTool/workflows/lint_python/badge.svg)
-![CodeQL](https://github.com/RsaCtfTool/RsaCtfTool/workflows/CodeQL/badge.svg)
+[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/RsaCtfTool/RsaCtfTool/master/.github/badges/ruff.json)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/lint_python.yml)
+[![CodeQL](https://github.com/RsaCtfTool/RsaCtfTool/workflows/CodeQL/badge.svg)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/CodeQL)
 [![GitHub issues](https://img.shields.io/github/issues/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/issues)
-
-</div>
-<div align=center>
-
 [![GitHub forks](https://img.shields.io/github/forks/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/network)
 [![GitHub stars](https://img.shields.io/github/stars/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/stargazers)
 [![GitHub license](https://img.shields.io/github/license/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool)
@@ -22,284 +13,197 @@
 
 </div>
 
-This tool is an utility designed to decrypt data from weak public keys and attempt to recover the corresponding private key. Also this tool offers a comprehensive range of attack options, enabling users to apply various strategies to crack the encryption.
-The RSA security, at its core, relies on the complexity of the integer factorization problem. This project serves as a valuable resource by combining multiple integer factorization algorithms, effectively enhancing the overall decryption capabilities.
-Please note that this tool is primarily intended for educational purposes. It is essential to manage your expectations, as not every key can be broken within a reasonable timeframe. The complexity of the encryption algorithm may present significant challenges.
-It is essential to highlight that the tool, exclusively supports the RSA textbook semiprime composite modulus rather than composite multiprimes. This constraint is embedded upstream in the pycrypto library (see TODO). While this limitation exists, the tool still offers a powerful set of features for attacking RSA keys with semiprime composite modulus.
+RSA multi-attack tool that decrypts data from weak public keys and recovers private keys.
 
-For an advanced integer factorization tool please use [msieve](https://github.com/RsaCtfTool/msieve), [yafu](https://github.com/bbuhrow/yafu), or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
+## Overview
 
-This tool is meant for educational purposes. For those participating in CTFs, please do the following first:
-* Learn the basics of RSA math and understand number theory, modular arithmetic, integer factorization and the fundamental theorem of arithmetic.
-* Read the code in this repository to understand what it does and how it works and suggest improvements by sending pull requests.
-* Avoid copy-pasting and running the tool without understanding the underlying math, as knowing the math is more valuable than knowing how to run the tool.
+This tool is an utility designed to decrypt data from weak public keys and attempt to recover the corresponding private key. It offers a comprehensive range of attack options for cracking RSA encryption.
 
-We hope this tool enhances your understanding of RSA encryption and serves as a valuable resource for exploring the intricacies of integer factorization. Use it responsibly and within the bounds of applicable laws and regulations.
+RSA security relies on the complexity of integer factorization. This project combines multiple factorization algorithms to enhance decryption capabilities.
 
-__Attacks provided:__
+> **Note:** This tool is primarily intended for **educational purposes**. Not every key can be broken in a reasonable timeframe. The tool only supports RSA textbook semiprime composite modulus (not multiprimes).
 
-- Attacks that don't depend on the factorization of integers (may depend on knowing n,e,ciphertext,etc...):
-  - [Wiener's attack](https://en.wikipedia.org/wiki/Wiener%27s_attack)
-  - Hastad's attack (Small public exponent)
-  - [Boneh Durfee Method when the private exponent d is too small compared to the modulus (i.e., d < n^0.292)](https://staff.emu.edu.tr/alexanderchefranov/Documents/CMSE491/Fall2019/BonehIEEETIT2000%20Cryptanalysis%20of%20RSA.pdf)
-  - Same n, huge e
-  - [Small CRT exponent](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
-  - Common factor between ciphertext and modulus
-  - Partial q
-  - Partial d
-  - [Simple lattice reduction](https://en.wikipedia.org/wiki/Lattice_reduction)
-
-- Strict Integer factorization methods (only depends on knowing n):
-  - Weak public key factorization
-  - Small q (q < 100,000)
-  - [Fermat's factorization for close p and q](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
-  - Gimmicky Primes method
-  - Past CTF Primes method
-  - Non-RSA key in the form b^x, where b is the prime
-  - Common factor attacks across multiple keys
-  - Small fractions method when p/q is close to a small fraction
-  - [Elliptic Curve Method](https://en.wikipedia.org/wiki/Lenstra_elliptic-curve_factorization)
-  - [Pollards p-1 for relatively smooth numbers](https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm)
-  - Mersenne primes factorization
-  - [Factordb](http://factordb.com/)
-  - [Londahl](https://web.archive.org/web/20220525193825/https://grocid.net/2017/09/16/finding-close-prime-factorizations/)
-  - Noveltyprimes
-  - [Qicheng](https://www.cs.ou.edu/~qcheng/paper/speint.pdf)
-  - binary polynomial factoring
-  - [Euler method](https://en.wikipedia.org/wiki/Euler_method)
-  - [Pollard Rho](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm)
-  - [Wolfram alpha](https://www.wolframalpha.com/)
-  - [Z3 theorem prover](https://en.wikipedia.org/wiki/Z3_Theorem_Prover)
-  - [Primorial pm1 gcd](https://en.wikipedia.org/wiki/Primorial)
-  - [Mersenne Numbers pm1 gcd](https://en.wikipedia.org/wiki/Mersenne_prime)
-  - [Factorial pm1 gcd](https://en.wikipedia.org/wiki/Factorial)
-  - [Compositorial pm1 gcd](https://oeis.org/wiki/Compositorial)
-  - [Fermat Numbers gcd](https://en.wikipedia.org/wiki/Fermat_number)
-  - [Fibonacci Numbers gcd](https://en.wikipedia.org/wiki/Fibonacci_sequence)
-  - System primes gcd
-  - [Shanks's square forms factorization (SQUFOF)](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization)
-  - [Return of Coppersmith's Attack (ROCA) with NECA variant](https://en.wikipedia.org/wiki/ROCA_vulnerability)
-  - [Dixon](https://en.wikipedia.org/wiki/Dixon%27s_factorization_method)
-  - brent (Pollard rho variant)
-  - [Pisano Period](https://en.wikipedia.org/wiki/Pisano_period)
-  - XYXZ form integer factorization where P prime > X^Y and Q prime > X^Z
-  - High and Low Bits Equal
-  - [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm)
-  - [Hart algorithm (similar to Fermat)](http://wrap.warwick.ac.uk/54707/1/WRAP_Hart_S1446788712000146a.pdf)
-  - [Lehmer machine (similar to Fermat)](https://en.wikipedia.org/wiki/Lehmer_sieve)
-  - 2PN special form where P is prime > 2 and sqrt(2PN) is close to (Pp + 2q)/2
-  - [Kraitchik algorithm (an improvement over Fermat)](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method)
-  - Lehman algorithm improvement over Fermat
-  - Carmichael algorithm
-  - [Quadratic sieve](https://en.wikipedia.org/wiki/Quadratic_sieve)
-  - [Classical part of Shor algorithm](https://en.wikipedia.org/wiki/Shor%27s_algorithm)
-  - [Lucas Numbers gcd](https://en.wikipedia.org/wiki/Lucas_number)
-  - [Rapid7 gcd prime dataset](https://opendata.rapid7.com/sonar.ssl/)
+For advanced factorization, consider [msieve](https://github.com/RsaCtfTool/msieve), [yafu](https://github.com/bbuhrow/yafu), or [cado-nfs](https://gitlab.inria.fr/cado-nfs/cado-nfs).
 
 ## Usage
 
 ```bash
-usage: RsaCtfTool [-h] [--publickey PUBLICKEY] [--output OUTPUT] [--timeout TIMEOUT] [--createpub] [--dumpkey] [--ext] [--decryptfile DECRYPTFILE] [--decrypt DECRYPT]
-                     [--verbosity {CRITICAL,ERROR,WARNING,DEBUG,INFO}] [--private] [--tests] [--ecmdigits ECMDIGITS] [-n N] [-p P] [-q Q] [-e E] [--key KEY]
-                     [--password PASSWORD] [--show-factors SHOW_FACTORS]
-                     [--attack {SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,all} [{SQUFOF,XYXZ,binary_polinomial_factoring,brent,comfact_cn,cube_root,ecm,ecm2,factordb,fermat_numbers_gcd,fibonacci_gcd,highandlowbitsequal,mersenne_pm1_gcd,mersenne_primes,neca,nonRSA,noveltyprimes,pastctfprimes,pisano_period,pollard_p_1,primorial_pm1_gcd,qicheng,roca,siqs,small_crt_exp,smallfraction,smallq,system_primes_gcd,wolframalpha,wiener,boneh_durfee,euler,pollard_rho,williams_pp1,partial_q,partial_d,londahl,z3_solver,dixon,lehmer,fermat,hart,common_factors,common_modulus,same_n_huge_e,hastads,lattice,lehman,carmichael,qs,classical_shor,factorial_pm1_gcd,lucas_gcd,all} ...]]
-                     [--sendtofdb] [--isconspicuous] [--isroca] [--convert_idrsa_pub] [--check_publickey] [--partial]
+RsaCtfTool --publickey key.pub --private                    # Recover private key
+RsaCtfTool --publickey key.pub --decryptfile ciphertext    # Decrypt file
+RsaCtfTool --publickey key.pub --attack wiener             # Use specific attack
 ```
 
+For complete usage, run: `RsaCtfTool --help`
 
+## Installation
 
+### Prerequisites
 
-## Installation ##
-### Virtual environment run (Preferred method) ###
+- Python 3.9+
+- [SageMath](https://www.sagemath.org/) (optional but recommended)
 
-Setup the venv
+### Virtual Environment (Recommended)
+
 ```bash
-apt install python3-virtualenv
-# or for other debian based distros
-apt install python3-venv
-virtualenv venv
+python3 -m venv venv
 source venv/bin/activate
-pip install git+https://github.com/RsaCtfTool/RsaCtfTool
+pip install -e .
 ```
 
-Run
-```bash
-source venv/bin/activate
-RsaCtfTool <arguments>
-# See running section for examples.
-```
-
-
-## Requirements
-
-- python3.9
-- GMPY2
-- PyCrypto
-- Requests
-- Libnum
-- SageMath : optional but advisable
-- Sage binaries
-
-
-### Docker run ###
+### Docker
 
 ```bash
 docker build -t rsactftool/rsactftool .
 docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 ```
 
-### Sagemath installing ###
+## Attacks
 
-If you also want the optional SageMath , you need to do
+### Non-Factorization Attacks
+
+- [Wiener's attack](https://en.wikipedia.org/wiki/Wiener%27s_attack)
+- [Hastad's attack](https://en.wikipedia.org/wiki/Hastad%27s_broadcasting_attack) (small public exponent)
+- [Boneh-Durfee](https://staff.emu.edu.tr/alexanderchefranov/Documents/CMSE491/Fall2019/BonehIEEETIT2000%20Cryptanalysis%20of%20RSA.pdf) (small private exponent d < n^0.292)
+- Same n, huge e
+- [Small CRT exponent](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
+- Partial q / Partial d
+- [Lattice reduction](https://en.wikipedia.org/wiki/Lattice_reduction)
+
+### Integer Factorization Methods
+
+| Method | Description |
+|--------|-------------|
+| [Fermat](https://en.wikipedia.org/wiki/Fermat%27s_factorization_method) | Close p and q |
+| [Pollard Rho](https://en.wikipedia.org/wiki/Pollard%27s_rho_algorithm) | General factorization |
+| [Elliptic Curve (ECM)](https://en.wikipedia.org/wiki/Lenstra_elliptic-curve_factorization) | Smooth numbers |
+| [Pollard p-1](https://en.wikipedia.org/wiki/Pollard%27s_p_%E2%88%92_1_algorithm) | Smooth numbers |
+| [Williams p+1](https://en.wikipedia.org/wiki/Williams%27s_p_%2B_1_algorithm) | Smooth numbers |
+| [ROCA](https://en.wikipedia.org/wiki/ROCA_vulnerability) | Vulnerable key generation |
+| [SQUFOF](https://en.wikipedia.org/wiki/Shanks%27s_square_forms_factorization) | Square forms |
+| [Quadratic Sieve](https://en.wikipedia.org/wiki/Quadratic_sieve) | General factorization |
+| [Dixon](https://en.wikipedia.org/wiki/Dixon%27s_factorization_method) | Random squares |
+| [Factordb](http://factordb.com/) | Online factorization database |
+| Common factor attacks | Keys sharing factors |
+| GCD attacks | Mersenne, Primorial, Fibonacci, etc. |
+
+### CTF-Specific Methods
+
+- Noveltyprimes
+- Past CTF Primes
+- Gimmicky Primes
+- Non-RSA (b^x form)
+- [Z3 Theorem Prover](https://en.wikipedia.org/wiki/Z3_Theorem_Prover)
+- [Wolfram Alpha](https://www.wolframalpha.com/)
+
+## Examples
+
+### Recover Private Key
+
 ```bash
-sudo dnf install sagemath
-pip3 install -r "optional-requirements.txt"
+RsaCtfTool --publickey key.pub --private
 ```
 
-### MacOS-specific Instructions
+### Decrypt a File
 
-If `pip3 install -r "requirements.txt"` fails to install requirements accessible within the environment, the following command may work.
+```bash
+RsaCtfTool --publickey key.pub --decryptfile ciphertext
+```
 
-``easy_install `cat requirements.txt` ``
+### Attack Multiple Keys
 
-If you installed gmpy2 with homebrew(`brew install gmp`), you might have to point clang towards the header files with this command:
-``CFLAGS=-I/opt/homebrew/include LDFLAGS=-L/opt/homebrew/lib pip3 install -r requirements.txt``
+```bash
+RsaCtfTool --publickey "*.pub" --private
+```
 
-### Optional to factor roca keys upto 512 bits, Install neca:
-You can follow the instructions at : `https://www.mersenneforum.org/showthread.php?t=23087`
+### Create Public Key from n and e
 
-## Runing ##
+```bash
+RsaCtfTool --createpub -n 7828374823761928712873... -e 65537
+```
 
-Mode 1 : Attack RSA (specify --publickey or n and e)
+### Dump Key Parameters
 
-- publickey : public rsa key to crack. You can import multiple public keys with wildcards.
-- decrypt : cipher message to decrypt
-- private : display private rsa key if recovered
+```bash
+RsaCtfTool --dumpkey --key key.pub
+RsaCtfTool --dumpkey --ext --key key.pub  # Include CRT parameters
+```
 
-Mode 2 : Create a Public Key File Given n and e (specify --createpub)
+### Factor with ECM
 
-- n : modulus
-- e : public exponent
+```bash
+RsaCtfTool --publickey key.pub --ecmdigits 25 --private
+```
 
-Mode 3 : Dump the public and/or private numbers (optionally including CRT parameters in extended mode) from a PEM/DER format public or private key (specify --dumpkey)
+### Use Specific Attack
 
-- key : the public or private key in PEM or DER format
+```bash
+RsaCtfTool --publickey key.pub --attack wiener --private
+RsaCtfTool --publickey key.pub --attack factordb --private
+```
 
-### Decrypt file
+### Send Results to Factordb
 
-`RsaCtfTool --publickey ./key.pub --decryptfile ./ciphered\_file`
+```bash
+RsaCtfTool --publickey "*.pub" --private --sendtofdb
+```
 
-### Print private key
+### Check for ROCA Vulnerability
 
-`RsaCtfTool --publickey ./key.pub --private`
+```bash
+RsaCtfTool --isroca --publickey "examples/*.pub"
+```
 
-### Attempt to break multiple public keys with common factor attacks or individually- use quotes around wildcards to stop bash expansion
+### Convert SSH Key to PEM
 
-`RsaCtfTool --publickey "*.pub" --private`
+```bash
+RsaCtfTool --convert_idrsa_pub --publickey ~/.ssh/id_rsa.pub
+```
 
-
-### Optionally send the results back to factordb
-
-`RsaCtfTool --publickey "*.pub" --private --sendtofdb`
-
-### Generate a public key
-
-`RsaCtfTool --createpub -n 7828374823761928712873129873981723...12837182 -e 65537`
-
-### Dump the parameters from a key
-
-`RsaCtfTool --dumpkey --key ./key.pub`
-
-### Check a given private key for conspicuousness
-
-`RsaCtfTool --key examples/conspicuous.priv --isconspicuous`
-
-### Factor with ECM when you know the approximate length in digits of a prime
-
-`RsaCtfTool --publickey key.pub --ecmdigits 25 --verbose --private`
-
-For more examples, see the `tests/` directory and run `pytest tests/ --collect-only` to see all available tests.
-
-### Attack private keys with partial bits of Q known ###
-
-`RsaCtfTool --attack partial_q --key examples/masked.pem`
-
-### Attack private keys with partial bits of D known ###
-
-`RsaCtfTool --attack partial_d --key examples/partial_d.pem`
-
-### Convert idrsa.pub to pem format
-
-`RsaCtfTool  --convert_idrsa_pub --publickey $HOME/.ssh/id_rsa.pub`
-
-
-### Check if a given key or keys are roca ###
-
-`RsaCtfTool --isroca --publickey "examples/*.pub"`
-
-
-## CAVEAT ##
-
-Since this tool uses python's cryptography lib it does not support non RSA textbook keys.
-It may find factors for non RSA textbook keys but it will not be able to export the private key.
-E.g.: private keys in format p*q*r and p^k.
+For more examples, run `pytest tests/ --collect-only` to see available tests.
 
 ## Testing
 
-This project uses **pytest** for all tests. Tests are located in the `tests/` directory.
+Tests use **pytest** and are located in `tests/`.
 
 ### Running Tests
 
 ```bash
 pytest tests/                 # Run all tests
-pytest tests/ -m "not slow"    # Skip slow tests
+pytest tests/ -m "not slow"   # Skip slow tests
 pytest tests/ -v              # Verbose mode
 pytest tests/ -k "fermat"     # Run tests matching "fermat"
 ```
 
 ### Test Markers
 
-- `@pytest.mark.slow` - marks tests as slow (factorization algorithms, etc.)
-- `@pytest.mark.network` - marks tests requiring network access (Factordb, etc.)
-- `@pytest.mark.attack` - marks integration tests for specific attacks
+- `@pytest.mark.slow` - Slow factorization tests
+- `@pytest.mark.network` - Tests requiring network (Factordb)
+- `@pytest.mark.attack` - Attack integration tests
 
-### Test Structure
+### Test Files
 
-- `test_number_theory.py` - Unit tests for number theory functions (gcd, is_prime, phi, etc.)
-- `test_algos.py` - Unit tests for factorization algorithms (fermat, brent, pollard_rho, etc.)
-- `test_keys_wrapper.py` - Unit tests for PublicKey/PrivateKey classes
-- `test_utils.py` - Unit tests for utility functions
-- `test_pubkey_decode.py` - RSA public key decoding tests
-- `test_attacks.py` - Functional integration tests for attack methods
-- `test_regression.py` - Regression tests for bug fixes
-- `test_exceptions.py` - Tests for custom exceptions
-- `conftest.py` - pytest configuration and shared fixtures
-
-### Adding Tests
-
-When adding new functionality, please include corresponding tests in the appropriate test file.
-
-## TODO (aka. Help wanted !)
-
-- Implement a test method for each attack.
-- Assign the correct algorithm complexity in **Big O** notation for each attack.
-- Support multiprime RSA, the project currently supports textbook RSA.
-- Wanted feature: Ransomware decrypter.
+| File | Description |
+|------|-------------|
+| `test_number_theory.py` | Number theory functions (gcd, is_prime, phi, etc.) |
+| `test_algos.py` | Factorization algorithms (fermat, brent, pollard_rho, etc.) |
+| `test_keys_wrapper.py` | PublicKey/PrivateKey classes |
+| `test_utils.py` | Utility functions |
+| `test_pubkey_decode.py` | RSA public key decoding |
+| `test_attacks.py` | Attack integration tests |
+| `test_regression.py` | Bug fix regression tests |
+| `test_exceptions.py` | Custom exceptions |
+| `conftest.py` | pytest configuration and fixtures |
 
 ## Contributing
 
-- Please read the [CONTRIBUTING.md](CONTRIBUTING.md) guideline for the bare minimum acceptable PRs.
-- Also please read the [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md), any contribution of any user not honoring it will ignored and the user blocked, good manners are paramount.
+Please read [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines and [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) before contributing.
 
-## Licensing
+## License
 
- - The original project was released under the GPLv3 license. This code has been relicensed under the MIT License.
+The original project was released under GPLv3. This code has been relicensed under the MIT License.
 
-
-## Thanks to all our Contributors
+## Thanks
 
 <a href="https://github.com/RsaCtfTool/RsaCtfTool/graphs/contributors">
   <img src="https://contrib.rocks/image?repo=RsaCtfTool/RsaCtfTool" />
 </a>
-
-<p align="right"><a href="#top">🔼 Back to top</a></p>
