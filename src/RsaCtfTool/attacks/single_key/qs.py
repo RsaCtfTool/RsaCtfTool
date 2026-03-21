@@ -3,7 +3,6 @@
 
 import subprocess
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.crypto_wrapper import RSA
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.utils import rootpath
 

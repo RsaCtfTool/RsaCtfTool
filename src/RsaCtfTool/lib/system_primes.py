@@ -1298,7 +1298,9 @@ a0e03b4dae2af5b0c8ebbb3c83539961
 
 
 def load_system_consts():
-    addpm1 = lambda n: [n - 1, n, n + 1] if n > 2 else [n, n + 1]
+    def addpm1(n):
+        return [n - 1, n, n + 1] if n > 2 else [n, n + 1]
+
     global primes_int
     primes_tmp0 = primes_txt
     primes_tmp0 = map(lambda x: x.replace("\n", ""), primes_tmp0)

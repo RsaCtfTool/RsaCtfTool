@@ -48,17 +48,28 @@ def digit_sum(n):
     return total
 
 
-A007814 = lambda n: (~n & n - 1).bit_length()
-A135481 = lambda n: (~n & n - 1)
-A000265 = lambda n: n // (A135481(n) + 1)
+def A007814(n):
+    return (~n & n - 1).bit_length()
+
+
+def A135481(n):
+    return ~n & n - 1
+
+
+def A000265(n):
+    return n // (A135481(n) + 1)
 
 
 @cache
 def mulmod(a, b, m):
-    if b == 0: return 0
-    if b == 1: return a % m
-    if b & 1 == 0: return mulmod((a << 1) % m, b >> 1, m)
-    else: return (a + mulmod(a, b - 1, m)) % m
+    if b == 0:
+        return 0
+    if b == 1:
+        return a % m
+    if b & 1 == 0:
+        return mulmod((a << 1) % m, b >> 1, m)
+    else:
+        return (a + mulmod(a, b - 1, m)) % m
 
 
 def getpubkeysz(n):
@@ -67,7 +78,8 @@ def getpubkeysz(n):
     return size
 
 
-is_pow2 = lambda n: n & (n - 1) == 0
+def is_pow2(n):
+    return n & (n - 1) == 0
 
 
 def _gcdext(a, b):
@@ -178,20 +190,23 @@ def miller_rabin(n, k=40):
     for justification
     """
 
-    if n == 2: return True
-    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]): return False
+    if n == 2:
+        return True
+    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]):
+        return False
 
     r, s = 0, n - 1
-    while (s & 1 == 0):
+    while s & 1 == 0:
         r += 1
         s >>= 1
-    i = 0
     for _ in range(0, k):
         a = random.randrange(2, n - 1)
-        if (x := pow(a, s, n)) in [1, n - 1]: continue
+        if (x := pow(a, s, n)) in [1, n - 1]:
+            continue
         j = 0
-        while (j <= r - 1):
-            if (x := pow(x, 2, n)) == (n - 1): break
+        while j <= r - 1:
+            if (x := pow(x, 2, n)) == (n - 1):
+                break
             j += 1
         else:
             return False
@@ -275,27 +290,67 @@ def ilogb(x, b):
     """
     greatest integer l such that b**l  < = x.
     """
-    l = 0
+    log_count = 0
     while x >= b:
         x /= b
-        l += 1
-    return l
+        log_count += 1
+    return log_count
 
 
-_primes_gmpy = lambda n: list(_primes_yield_gmpy(n))
-_isqrt_gmpy = lambda n: int(gmpy.sqrt(n))
-_invert = lambda a, b: pow(a, b - 2, b)
-_lcm = lambda x, y: (x * y) // _gcd(x, y)
-_ilog2_gmpy = lambda n: int(gmpy.log2(n))
-_ilog_gmpy = lambda n: int(gmpy.log(n))
-_ilog2_math = lambda n: int(math.log2(n))
-_ilog_math = lambda n: int(math.log(n))
-_ilog10_math = lambda n: int(math.log10(n))
-_ilog10_gmpy = lambda n: int(gmpy.log10(n))
-_mod = lambda a, b: a % b
-_mul = lambda a, b: a * b
-_is_divisible = lambda n, p: n % p == 0
-_is_congruent = lambda a, b, m: (a - b) % m == 0
+def _primes_gmpy(n):
+    return list(_primes_yield_gmpy(n))
+
+
+def _isqrt_gmpy(n):
+    return int(gmpy.sqrt(n))
+
+
+def _invert(a, b):
+    return pow(a, b - 2, b)
+
+
+def _lcm(x, y):
+    return (x * y) // _gcd(x, y)
+
+
+def _ilog2_gmpy(n):
+    return int(gmpy.log2(n))
+
+
+def _ilog_gmpy(n):
+    return int(gmpy.log(n))
+
+
+def _ilog2_math(n):
+    return int(math.log2(n))
+
+
+def _ilog_math(n):
+    return int(math.log(n))
+
+
+def _ilog10_math(n):
+    return int(math.log10(n))
+
+
+def _ilog10_gmpy(n):
+    return int(gmpy.log10(n))
+
+
+def _mod(a, b):
+    return a % b
+
+
+def _mul(a, b):
+    return a * b
+
+
+def _is_divisible(n, p):
+    return n % p == 0
+
+
+def _is_congruent(a, b, m):
+    return (a - b) % m == 0
 
 
 def _powmod(b, e, m):
@@ -320,8 +375,10 @@ def _fac(n):
 
 @cache
 def _lucas(n):
-    if n == 0: return 2
-    if n == 1: return 1
+    if n == 0:
+        return 2
+    if n == 1:
+        return 1
     return _lucas(n - 1) + _lucas(n - 2)
 
 
@@ -413,8 +470,13 @@ else:
     powmod_base_list = _powmod_base_list
     powmod_exp_list = _powmod_exp_list
 
-legendre = lambda a, p: powmod(a, (p - 1) >> 1, p)
-cuberoot = lambda n: introot(n, 3)
+
+def legendre(a, p):
+    return powmod(a, (p - 1) >> 1, p)
+
+
+def cuberoot(n):
+    return introot(n, 3)
 
 
 def factor_ned_probabilistic(n, e, d):
@@ -464,9 +526,8 @@ def factor_ned_deterministic(n, e, d):
 factor_ned = factor_ned_deterministic
 
 
-trivial_factorization_with_n_phi = lambda n, phi: trivial_factorization_with_n_b(
-    n, n - phi + 1
-)
+def trivial_factorization_with_n_phi(n, phi):
+    return trivial_factorization_with_n_b(n, n - phi + 1)
 
 
 def neg_pow(a, b, n):
@@ -632,7 +693,10 @@ def is_lucas(n):
     """
     True if n is a Lucas number (A000032).
     """
-    sign = lambda n: 1 if n > 0 else -1
+
+    def sign(n):
+        return 1 if n > 0 else -1
+
     u1, u2 = 1, 3
     if n <= 2:
         return sign(n)
@@ -645,9 +709,9 @@ def is_lucas(n):
 
 def find_period(n):
     shifted = n
-    l = n.bit_length()
-    mask = (1 << l) - 1
-    for period in range(1, l):
+    num_bits = n.bit_length()
+    mask = (1 << num_bits) - 1
+    for period in range(1, num_bits):
         shifted >>= 1
         mask >>= 1
         if ((n ^ shifted) & mask) == 0:

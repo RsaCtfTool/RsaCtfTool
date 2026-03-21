@@ -28,15 +28,12 @@ class Attack(AbstractAttack):
                 publickey.q = publickey.n // publickey.p
                 print(publickey.p, publickey.q)
 
-            return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
+            return self.create_private_key_from_pqe(
+                publickey.p, publickey.q, publickey.e, publickey.n
+            )
         except TypeError:
             return None, None
 
     def test(self):
-        from RsaCtfTool.lib.keys_wrapper import PublicKey
-
-        key_data = """-----BEGIN PUBLIC KEY-----
-MCowDQYJKoZIhvcNAQEBBQADGQAwFgIPPNmaqiPnbwxXooFxLcTXAgMBAAE=
------END PUBLIC KEY-----"""
         self.timeout = 180
         return None, None

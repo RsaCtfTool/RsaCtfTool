@@ -493,4 +493,4 @@ tests = [
 
 
 def is_roca_vulnerable(modulus):
-    return all(modulus % p in l for p, l in tests)
+    return all(modulus % p in lst for p, lst in tests)

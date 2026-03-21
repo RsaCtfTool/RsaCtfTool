@@ -47,7 +47,7 @@ class Attack(AbstractAttack):
                     "publickey.n size should be less than 10000000 digits..."
                 )
                 return None, None
-        except:
+        except Exception:
             self.logger.error("[!] internal error :-(")
             return None, None
 

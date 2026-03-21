@@ -51,11 +51,7 @@ __________               R_______________________________E __                .__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E
 
-""".replace(
-            "R", cRED
-        ).replace(
-            "E", cEND
-        )
+""".replace("R", cRED).replace("E", cEND)
         + """
 Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
 
@@ -227,7 +223,6 @@ def run_conspicuous_check(args, logger):
 
 def run_attacks(args, logger):
     # Run attacks
-    found = False
     attackobj = RSAAttack(args)
     selected_attacks = args.attacks_list
 
@@ -248,7 +243,7 @@ def run_attacks(args, logger):
 
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:
-        found = attackobj.attack_multiple_keys(args.publickey, selected_attacks)
+        attackobj.attack_multiple_keys(args.publickey, selected_attacks)
 
     # Attack key
     if args.publickey is not None:
@@ -306,7 +301,7 @@ def check_is_roca(args, logger):
         with open(publickey, "rb") as key_data_fd:
             try:
                 key = RSA.importKey(key_data_fd.read())
-            except Exception as e:
+            except Exception:
                 key = None
                 logger.error(f"[!] Error file format: {publickey}")
             if key is not None:
@@ -314,7 +309,9 @@ def check_is_roca(args, logger):
                     vuln = True
                     logger.warning(f"[!] Public key {publickey}: is roca!!!")
                 else:
-                    logger.info(f"[-] Public key {publickey}: is not roca, you are safe")
+                    logger.info(
+                        f"[-] Public key {publickey}: is not roca, you are safe"
+                    )
     return vuln
 
 
@@ -409,7 +406,7 @@ def cleanup(args):
             try:
                 if "tmp" in pub and "tmp/" not in pub:
                     os.remove(pub)
-            except:
+            except Exception:
                 continue
 
 
@@ -467,7 +464,13 @@ def main():
         args.n = args.p * args.q
 
     # get p and q from n, e and d
-    if args.n is not None and args.e is not None and args.d is not None and args.p is None and args.q is None:
+    if (
+        args.n is not None
+        and args.e is not None
+        and args.d is not None
+        and args.p is None
+        and args.q is None
+    ):
         pq = factor_ned(args.n, args.e, args.d)
         if pq is not None:
             args.p, args.q = pq
@@ -480,7 +483,7 @@ def main():
         for decrypt in args.decrypt.split(","):
             try:
                 decrypt = get_numeric_value(decrypt)
-            except:
+            except Exception:
                 decrypt = get_base64_value(decrypt)
             decrypt_array.append(n2s(decrypt))
         args.decrypt = decrypt_array

@@ -33,13 +33,23 @@ class AbstractAttack(object):
                 return False
         return True
 
-    def attack(self, publickeys: List[Any], cipher: Optional[List[Any]] = None, progress: bool = True) -> Tuple[Optional[Any], Optional[Any]]:
+    def attack(
+        self,
+        publickeys: List[Any],
+        cipher: Optional[List[Any]] = None,
+        progress: bool = True,
+    ) -> Tuple[Optional[Any], Optional[Any]]:
         """Attack implementation"""
         if cipher is None:
             cipher = []
         raise NotImplementedError
 
-    def attack_wrapper(self, publickeys: List[Any], cipher: Optional[List[Any]] = None, progress: bool = True) -> Tuple[Optional[Any], Optional[Any]]:
+    def attack_wrapper(
+        self,
+        publickeys: List[Any],
+        cipher: Optional[List[Any]] = None,
+        progress: bool = True,
+    ) -> Tuple[Optional[Any], Optional[Any]]:
         """Attack wrapper to include timer in all attacks"""
         with timeout(self.timeout):
             try:
@@ -75,7 +85,9 @@ class AbstractAttack(object):
                 return None, None
         return None, None
 
-    def create_private_key_from_pqe(self, p, q, e, n) -> Tuple[Optional[Any], Optional[Any]]:
+    def create_private_key_from_pqe(
+        self, p, q, e, n
+    ) -> Tuple[Optional[Any], Optional[Any]]:
         """Helper method to create a private key from p, q, e, n values
 
         Args:
@@ -99,4 +111,6 @@ class AbstractAttack(object):
 
 
 # Configure logger
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logging.basicConfig(
+    level=logging.INFO, format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)

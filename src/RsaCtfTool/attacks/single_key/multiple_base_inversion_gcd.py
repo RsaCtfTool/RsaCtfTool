@@ -2,13 +2,23 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.number_theory import gcd
 
-a = lambda n: int(str(n)[::-1])
-b = lambda n: int(bin(n)[2:][::-1], 2)
-c = lambda n: int(oct(n)[2:][::-1], 8)
-d = lambda n: int(hex(n)[2:][::-1], 16)
+
+def a(n):
+    return int(str(n)[::-1])
+
+
+def b(n):
+    return int(bin(n)[2:][::-1], 2)
+
+
+def c(n):
+    return int(oct(n)[2:][::-1], 8)
+
+
+def d(n):
+    return int(hex(n)[2:][::-1], 16)
 
 
 def FF(n):
@@ -43,12 +53,12 @@ class Attack(AbstractAttack):
             elif len(pq) == 1:
                 publickey.p = pq[0]
                 publickey.q = publickey.n // pq[0]
-            elif len(pq) > 2 :
-                self.logger.error("Multiprime RSA not supported...")       
+            elif len(pq) > 2:
+                self.logger.error("Multiprime RSA not supported...")
             else:
-                self.logger.error("No factors found...")  
+                self.logger.error("No factors found...")
                 return None, None
-        except:
+        except Exception:
             self.logger.error("Factorization error...")
             return None, None
 

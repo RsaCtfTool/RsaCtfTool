@@ -16,7 +16,7 @@ class Attack(AbstractAttack):
         try:
             publickey.p, publickey.q = SQUFOF(publickey.n)
             return self.create_private_key(publickey)
-        except:
+        except Exception:
             return None, None
 
     def test(self):

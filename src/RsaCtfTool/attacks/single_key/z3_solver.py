@@ -54,7 +54,7 @@ class Attack(AbstractAttack):
                 return P, Q
             else:
                 return None, None
-        except:
+        except Exception:
             return None, None
 
     def attack(self, publickey, cipher=[], progress=True):
@@ -66,7 +66,7 @@ class Attack(AbstractAttack):
         # solve with z3 theorem prover
         try:
             z3_res = self.z3_solve(publickey.n, self.timeout)
-        except:
+        except Exception:
             self.logger.warning("[!] z3: Internal Error.")
             return (None, None)
 

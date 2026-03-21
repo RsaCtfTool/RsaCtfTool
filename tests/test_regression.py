@@ -33,7 +33,9 @@ def test_private_key_str_never_returns_none():
 
     priv_key = PrivateKey(n=n, e=e, d=d)
     result = str(priv_key)
-    assert isinstance(result, str), "PrivateKey.__str__ must return a str, not %r" % type(result)
+    assert isinstance(result, str), (
+        "PrivateKey.__str__ must return a str, not %r" % type(result)
+    )
 
 
 def test_private_key_str_empty_when_no_pem():
@@ -57,8 +59,6 @@ def test_private_key_str_normal_case():
     q = 53
     n = p * q
     e = 17
-    phi = (p - 1) * (q - 1)
-    d = invmod(e, phi)
 
     priv_key = PrivateKey(p=p, q=q, e=e, n=n)
     pem = str(priv_key)
@@ -142,10 +142,15 @@ def test_cli_decryptfile_shows_output():
 
     result = subprocess.run(
         [
-            sys.executable, "-m", "RsaCtfTool.main",
-            "--publickey", pub,
-            "--decryptfile", cipher,
-            "--attack", "smallq",
+            sys.executable,
+            "-m",
+            "RsaCtfTool.main",
+            "--publickey",
+            pub,
+            "--decryptfile",
+            cipher,
+            "--attack",
+            "smallq",
         ],
         capture_output=True,
         text=True,
@@ -164,11 +169,16 @@ def test_cli_private_n_eq_p_squared_no_crash():
     # p=1000000007, n=p^2
     result = subprocess.run(
         [
-            sys.executable, "-m", "RsaCtfTool.main",
-            "-n", "1000000014000000049",
-            "-e", "65537",
+            sys.executable,
+            "-m",
+            "RsaCtfTool.main",
+            "-n",
+            "1000000014000000049",
+            "-e",
+            "65537",
             "--private",
-            "--attack", "nonRSA",
+            "--attack",
+            "nonRSA",
         ],
         capture_output=True,
         text=True,
@@ -186,5 +196,8 @@ def test_cli_private_n_eq_p_squared_no_crash():
     combined = result.stdout + result.stderr
     assert "Private key" in combined or "Key format seems wrong" in combined, (
         "No private key section found.\nSTDERR:\n%s\nSTDOUT:\n%s"
-        % (result.stderr, result.stdout)
+        % (
+            result.stderr,
+            result.stdout,
+        )
     )

@@ -45,7 +45,7 @@ class Attack(AbstractAttack):
             publickey.p = p
             publickey.q = q
 
-        except:
+        except Exception:
             self.logger.error("[!] partial_d internal error...")
             return None, None
 

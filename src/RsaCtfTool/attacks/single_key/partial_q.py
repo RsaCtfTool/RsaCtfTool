@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-from tqdm import tqdm
-from RsaCtfTool.lib.number_theory import invmod
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.exceptions import FactorizationError

@@ -16,7 +16,9 @@ class Attack(AbstractAttack):
             if is_divisible(publickey.n, prime):
                 publickey.q = prime
                 publickey.p = publickey.n // publickey.q
-                return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
+                return self.create_private_key_from_pqe(
+                    publickey.p, publickey.q, publickey.e, publickey.n
+                )
 
         return None, None
 

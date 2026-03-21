@@ -26,7 +26,9 @@ class Attack(AbstractAttack):
             if sageresult > 0:
                 publickey.p = sageresult
                 publickey.q = publickey.n // publickey.p
-                return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
+                return self.create_private_key_from_pqe(
+                    publickey.p, publickey.q, publickey.e, publickey.n
+                )
         except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return (None, None)
         return (None, None)

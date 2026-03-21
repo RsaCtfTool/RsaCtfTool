@@ -17,7 +17,9 @@ class Attack(AbstractAttack):
         """Search for previously used primes in CTFs"""
         for txtfile in glob.glob("data/*.txt"):
             self.logger.info(f"[+] loading prime list file {txtfile}...")
-            primes = sorted([int(l.rstrip()) for l in open(txtfile, "r").readlines()])
+            primes = sorted(
+                [int(line.rstrip()) for line in open(txtfile, "r").readlines()]
+            )
             for prime in tqdm(primes, disable=(not progress)):
                 if is_divisible(publickey.n, prime):
                     publickey.q = prime

@@ -23,7 +23,9 @@ class Attack(AbstractAttack):
                 if is_prime(q):
                     publickey.p = p
                     publickey.q = q
-                    return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
+                    return self.create_private_key_from_pqe(
+                        publickey.p, publickey.q, publickey.e, publickey.n
+                    )
                 else:
                     self.logger.error(
                         "[!] Currently this tool only supports RSA textbook semiprime modulus, your p and q are: (%d,%d)"

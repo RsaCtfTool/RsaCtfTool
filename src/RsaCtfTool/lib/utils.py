@@ -29,11 +29,11 @@ def get_numeric_value(value):
 def get_base64_value(value):
     """Parse input (hex or numerical)"""
     try:
-        if (base64.b64encode(d := base64.b64decode(value)) == value):
+        if base64.b64encode(d := base64.b64decode(value)) == value:
             return d
         else:
             return value
-    except:
+    except Exception:
         return value
 
 
@@ -86,7 +86,7 @@ def print_results(args, publickey, private_key, decrypt):
                         try:
                             with open(args.output, "a") as output_fd:
                                 output_fd.write("%s\n" % str(priv_key))
-                        except:
+                        except Exception:
                             logger.error(f"Can't write output file : {args.output}")
                     if not str(priv_key):
                         logger.warning(
@@ -132,7 +132,9 @@ def print_results(args, publickey, private_key, decrypt):
                 for public_key in args.publickey:
                     with open(public_key, "rb") as pubkey_fd:
                         publickey_obj = PublicKey(pubkey_fd.read(), publickey)
-                        logger.info("\nPublic key details for %s" % publickey_obj.filename)
+                        logger.info(
+                            "\nPublic key details for %s" % publickey_obj.filename
+                        )
                         logger.info(f"n: {str(publickey_obj.n)}")
                         logger.info(f"e: {str(publickey_obj.e)}")
 
@@ -151,7 +153,7 @@ def print_results(args, publickey, private_key, decrypt):
                             try:
                                 with open(args.output, "ab") as output_fd:
                                     output_fd.write(c)
-                            except:
+                            except Exception:
                                 logger.error(f"Can't write output file : {args.output}")
                         print_decrypted_res(c, logger)
                         if len(c) > 3 and c[0] == 0 and c[1] == 2:
@@ -197,7 +199,9 @@ class timeout(contextlib.ContextDecorator):
         def alarm_func():  # send signal
             signal.raise_signal(signal.SIGTERM)
 
-        self.timer = Timer(self.seconds, alarm_func)  # this thread will send signal when timeout
+        self.timer = Timer(
+            self.seconds, alarm_func
+        )  # this thread will send signal when timeout
         self.timer.start()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
