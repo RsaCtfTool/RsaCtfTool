@@ -16,7 +16,7 @@ class Attack(AbstractAttack):
 
         try:
             pq = FactorHighAndLowBitsEqual(publickey.n)
-        except:
+        except Exception:
             pq = None
 
         if pq is not None:

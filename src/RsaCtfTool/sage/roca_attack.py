@@ -94,5 +94,5 @@ if __name__ == "__main__":
     # For the test values chosen, a is quite close to the minimal value so the search is not too long
     try:
         roca(n)
-    except:
+    except Exception:
         print("FAIL")

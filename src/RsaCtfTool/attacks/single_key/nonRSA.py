@@ -3,7 +3,7 @@
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
-from RsaCtfTool.lib.number_theory import is_prime, invmod, ilog2, introot, iroot, powmod
+from RsaCtfTool.lib.number_theory import is_prime, invmod, ilog2, iroot, powmod
 
 
 class Attack(AbstractAttack):

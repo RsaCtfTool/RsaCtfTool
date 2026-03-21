@@ -3,7 +3,7 @@
 
 import itertools
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.number_theory import gcd, common_modulus_related_message
+from RsaCtfTool.lib.number_theory import common_modulus_related_message
 from RsaCtfTool.lib.crypto_wrapper import long_to_bytes, bytes_to_long
 
 

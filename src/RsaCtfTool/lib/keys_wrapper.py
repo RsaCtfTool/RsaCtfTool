@@ -69,7 +69,7 @@ class PublicKey(object):
         """
         try:
             pub = RSA.importKey(key)
-        except:
+        except Exception:
             if filename:
                 raise Exception(f"Key format not supported : {filename}.")
             else:
@@ -163,7 +163,7 @@ class PrivateKey(object):
                     )
                     private_numbers = self.key.private_numbers()
                     loadok = True
-                except:
+                except Exception:
                     loadok = False
 
                 if loadok:
@@ -218,14 +218,14 @@ class PrivateKey(object):
                         m_hex = f"0{m_hex}"
                     m = binascii.unhexlify(m_hex)
                     plain.append(m)
-                except:
+                except Exception:
                     pass
 
             try:
                 rsakey = RSA.importKey(str(self))
                 rsakey = PKCS1_OAEP.new(rsakey)
                 plain.append(rsakey.decrypt(c))
-            except:
+            except Exception:
                 pass
 
             try:
@@ -257,7 +257,7 @@ class PrivateKey(object):
                             timeout=30,
                         )
                         plain.append(openssl_result)
-                    except:
+                    except Exception:
                         pass
 
                     try:
@@ -276,9 +276,9 @@ class PrivateKey(object):
                             timeout=30,
                         )
                         plain.append(openssl_result)
-                    except:
+                    except Exception:
                         pass
-            except:
+            except Exception:
                 plain.append(cipher)
         return plain
 

@@ -30,7 +30,7 @@ class Attack(AbstractAttack):
                     "[!] Public key modulus must be congruent 1 mod 4 to work with euler method."
                 )
                 return None, None
-        except:
+        except Exception:
             return None, None
         if euler_res and len(euler_res) > 1:
             publickey.p, publickey.q = euler_res

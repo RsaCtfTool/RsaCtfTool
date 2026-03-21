@@ -20,7 +20,7 @@ class Attack(AbstractAttack):
                     publickey.p, publickey.q = pq
                     break
 
-        except:
+        except Exception:
             self.logger.error("Internal factorization error...")
             return None, None
 

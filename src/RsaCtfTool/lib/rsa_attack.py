@@ -6,7 +6,6 @@ import logging
 import importlib
 import inspect
 import traceback
-import os
 from RsaCtfTool.lib.keys_wrapper import PublicKey, PrivateKey
 from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.utils import print_results
@@ -45,10 +44,10 @@ class RSAAttack(object):
         if self.args.private is not None and self.priv_key is not None:
             if self.args.decrypt is None:
                 return True
-            if self.decrypted is not []:
+            if self.decrypted != []:
                 return True
 
-        if self.args.decrypt is not None and self.decrypted is not []:
+        if self.args.decrypt is not None and self.decrypted != []:
             if self.args.private is None:
                 return True
             if self.priv_key is not None:
@@ -153,7 +152,6 @@ class RSAAttack(object):
 
         for attack in attacks_list:
             if attack in self.args.attack or "all" in self.args.attack:
-
                 try:
                     attack_module = self.get_attack(attack, multikeys)
                     # Dynamically add named-arguments to constructor if same sys.argv exists
@@ -229,7 +227,7 @@ class RSAAttack(object):
                         self.publickey, self.cipher
                     )
 
-                    if decrypted is not None and decrypted is not []:
+                    if decrypted is not None and decrypted != []:
                         if isinstance(decrypted, list):
                             self.decrypted = self.decrypted + decrypted
                         else:
@@ -250,8 +248,8 @@ class RSAAttack(object):
     def attack_single_key(self, publickey, attacks_list=[], test=False):
         """Run attacks on single keys"""
 
-        l = len(attacks_list)
-        if l == 0:
+        num_attacks = len(attacks_list)
+        if num_attacks == 0:
             self.args.attack = "all"
 
         self.load_attacks(attacks_list)
@@ -262,7 +260,8 @@ class RSAAttack(object):
                 t0 = time.time()
                 if attack.can_run():
                     self.logger.info(
-                        "[*] %d of %d, Testing: %s" % (c, l, attack.get_name())
+                        "[*] %d of %d, Testing: %s"
+                        % (c, num_attacks, attack.get_name())
                     )
                     try:
                         try:
@@ -320,7 +319,7 @@ class RSAAttack(object):
 
         self.need_run = self.args.p is None or self.args.q is None
 
-        if self.args.show_modulus is not None and self.args.show_modulus == True:
+        if self.args.show_modulus is not None and self.args.show_modulus:
             print("modulus:", self.args.n)
 
         T = []
@@ -344,11 +343,11 @@ class RSAAttack(object):
                         "[!] No need to factorize since you provided a prime factor..."
                     )
                     decrypted = None
-                    self.priv_key = priv_key = PrivateKey(
+                    self.priv_key = PrivateKey(
                         self.args.p, self.args.q, self.args.e, self.args.n
                     )
 
-                if decrypted is not None and decrypted is not []:
+                if decrypted is not None and decrypted != []:
                     if isinstance(decrypted, list):
                         self.decrypted = self.decrypted + decrypted
                     else:

@@ -15,7 +15,6 @@ class Attack(AbstractAttack):
 
     def can_run(self):
         try:
-            import wolframalpha
 
             app_id = os.environ.get("WA_API_KEY")
             assert app_id is not None
@@ -40,7 +39,9 @@ class Attack(AbstractAttack):
                         tmp = tmp.split(" ")[0]
                         return list(map(int, tmp.split("×")))
             else:
-                self.logger.error("[!] Could not get factorization from RsaCtfTool.wolfram alpha")
+                self.logger.error(
+                    "[!] Could not get factorization from RsaCtfTool.wolfram alpha"
+                )
 
     def attack(self, publickey, cipher=[], progress=True):
         """Factors available online?"""

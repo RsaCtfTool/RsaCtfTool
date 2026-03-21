@@ -2,14 +2,13 @@ import bz2
 import pickle
 import _pickle as cPickle
 import sys
-import io
 
 
 class SafeUnpickler(cPickle.Unpickler):
     def find_class(self, module, name):
         # Only allow safe built-in types
         safe_builtins = {
-            'builtins': {'dict', 'list', 'str', 'int', 'float', 'set', 'tuple'}
+            "builtins": {"dict", "list", "str", "int", "float", "set", "tuple"}
         }
         if module in safe_builtins and name in safe_builtins[module]:
             return super().find_class(module, name)
@@ -30,5 +29,5 @@ def compress_pickle(filename, data):
 # Load any compressed pickle file
 def decompress_pickle(filename):
     sys.stderr.write("loading pickle %s...\n" % filename)
-    with bz2.BZ2File(filename, 'rb') as f:
+    with bz2.BZ2File(filename, "rb") as f:
         return safe_load(f)  # from SafeUnpickler above

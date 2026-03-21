@@ -17,7 +17,9 @@ class Attack(AbstractAttack):
             p = pollard_rho(publickey.n)
             publickey.p = p
             publickey.q = publickey.n // publickey.p
-            return self.create_private_key_from_pqe(publickey.p, publickey.q, publickey.e, publickey.n)
+            return self.create_private_key_from_pqe(
+                publickey.p, publickey.q, publickey.e, publickey.n
+            )
         except TypeError:
             return None, None
 

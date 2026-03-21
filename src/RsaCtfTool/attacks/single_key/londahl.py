@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from tqdm import tqdm
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 from RsaCtfTool.lib.algos import close_factor

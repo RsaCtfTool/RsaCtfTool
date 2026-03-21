@@ -3,12 +3,36 @@
 
 import sys
 import time
-import bitarray
 from random import randint
 from tqdm import tqdm
 from itertools import count
 from RsaCtfTool.lib.exceptions import FactorizationError
-from RsaCtfTool.lib.number_theory import isqrt, gcd, primes, powmod, is_square, powmod_base_list, next_prime, A000265, isqrt_rem, inv_mod_pow_of_2, trivial_factorization_with_n_phi, cuberoot, mod, log, ilog10, ilog2, fib, rational_to_contfrac, convergents_from_contfrac, fdivmod, is_congruent, is_divisible, ilogb, mlucas, iroot  # , is_prime, invert, contfrac_to_rational
+from RsaCtfTool.lib.number_theory import (
+    isqrt,
+    gcd,
+    primes,
+    powmod,
+    is_square,
+    next_prime,
+    A000265,
+    isqrt_rem,
+    inv_mod_pow_of_2,
+    trivial_factorization_with_n_phi,
+    cuberoot,
+    mod,
+    log,
+    ilog10,
+    ilog2,
+    fib,
+    rational_to_contfrac,
+    convergents_from_contfrac,
+    fdivmod,
+    is_congruent,
+    is_divisible,
+    ilogb,
+    mlucas,
+    iroot,
+)  # , is_prime, invert, contfrac_to_rational
 from RsaCtfTool.lib.number_theory import invmod, introot, find_period
 
 sys.setrecursionlimit(100000)
@@ -58,7 +82,7 @@ def carmichael(N):
     f = A000265(f)
     a = 2
     while a <= N1:
-        if (r1 := powmod(a, f << 1, N)) == 1:
+        if powmod(a, f << 1, N) == 1:
             r = powmod(a, f, N)
             p = gcd(r - 1, N)
             q = gcd(r + 1, N)
@@ -140,9 +164,9 @@ def euler(n):
     k = pow(gcd(a - c, d - b), 2)
     h = pow(gcd(a + c, d + b), 2)
     m = pow(gcd(a + c, d - b), 2)
-    l = pow(gcd(a - c, d + b), 2)
+    lev = pow(gcd(a - c, d + b), 2)
 
-    return gcd(k + h, n), gcd(l + m, n)
+    return gcd(k + h, n), gcd(lev + m, n)
 
 
 def factor_2PN(N, P=3):
@@ -197,7 +221,7 @@ def factor_XYXZ(n, base=3):
     power = 1
     max_power = (int(log(n) / log(base)) + 1) >> 1
     while power <= max_power:
-        p = next_prime(base ** power)
+        p = next_prime(base**power)
         if is_divisible(n, p):
             return p, n // p
         power += 1
@@ -333,7 +357,11 @@ class Fibonacci:
                             # )
                             print(
                                 "For N = %d\n Found res: %d, res_n: %d\n but failed!"
-                                % (N, res, res_n,)
+                                % (
+                                    N,
+                                    res,
+                                    res_n,
+                                )
                             )
 
     def factorization(self, N, min_accept, xdiff):
@@ -403,9 +431,9 @@ def lehmer_machine(n):
     if (n - 2) & 3 == 0:  # Congruence n = 2 (mod 4).
         raise FactorizationError
     y = 1
-    while not is_square(n + y ** 2):
+    while not is_square(n + y**2):
         y += 1
-    x = isqrt(n + y ** 2)
+    x = isqrt(n + y**2)
     return x - y, x + y
 
 
@@ -528,9 +556,12 @@ def shor(n):
     """
     for a in range(2, n):
         # a should be coprime of n otherwise it is a trivial factor of n.
-        if (g := gcd(n, a)) != 1: return g, n // g
-        for r in range(2, n, 2):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
-            if (ar := powmod(a, r, n)) == 1:  # ar is the period returned by the quantum computer, we are just bruteforcing it.
+        if (g := gcd(n, a)) != 1:
+            return g, n // g
+        for r in range(
+            2, n, 2
+        ):  # from this step is that it shoul be run in a quantum computer, but we are doing a linear search.
+            if powmod(a, r, n) == 1:
                 if (ar2 := powmod(a, r >> 1, n)) != -1:
                     g1, g2 = gcd(ar2 - 1, n), gcd(ar2 + 1, n)
                     if (n > g1 > 1) or (n > g2 > 1):
@@ -662,15 +693,19 @@ def difference_of_powers_factor(n):
     for a in range(2, isqrt(n) + 1):
         a_k = a
         for k in range(1, int(log(n) / log(a)) + 1):
-            if (1 << k) > n: break
+            if (1 << k) > n:
+                break
             a_k *= a
-            if a_k > n: break  
+            if a_k > n:
+                break
             for sign in [-1, 1]:
                 if (b_k := a_k + sign * n) > 0:
                     b, e = iroot(b_k, k)
                     if e and b > 1:
-                        if 1 < (f1 := gcd(a - b, n)) < n: F.add(f1)
-                        if 1 < (f2 := gcd(a + b, n)) < n: F.add(f2)
+                        if 1 < (f1 := gcd(a - b, n)) < n:
+                            F.add(f1)
+                        if 1 < (f2 := gcd(a + b, n)) < n:
+                            F.add(f2)
     return sorted(F)
 
 
@@ -678,8 +713,8 @@ def repunit_factor(n):
     z = find_period(n)
     if z == -1:
         return None
-    l = n.bit_length()
-    k = l // z
+    num_bits = n.bit_length()
+    k = num_bits // z
     R = (1 << (k * z)) - 1
     R //= (1 << z) - 1
     p = gcd(n, R)
