@@ -9,7 +9,6 @@ from RsaCtfTool.lib.exceptions import FactorizationError
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60):
-        print("attack initialized...")
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
 

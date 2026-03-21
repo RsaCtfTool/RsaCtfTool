@@ -24,7 +24,7 @@ class RSAAttack(object):
         self.cipher = args.decrypt if args.decrypt is not None else None
         self.priv_key = None
         self.priv_keys = []
-        self.partitial_priv_key = None
+        self.partial_priv_key = None
         self.decrypted = []
         self.implemented_attacks = []
 
@@ -60,10 +60,10 @@ class RSAAttack(object):
         Decrypt data if needed.
         """
         # check and print resulting private key
-        if self.partitial_priv_key is not None and self.args.private:
-            self.logger.info("d: %i" % self.partitial_priv_key.key.d)
-            self.logger.info("e: %i" % self.partitial_priv_key.key.e)
-            self.logger.info("n: %i" % self.partitial_priv_key.key.n)
+        if self.partial_priv_key is not None and self.args.private:
+            self.logger.info("d: %i" % self.partial_priv_key.key.d)
+            self.logger.info("e: %i" % self.partial_priv_key.key.e)
+            self.logger.info("n: %i" % self.partial_priv_key.key.n)
 
         # If we wanted to decrypt, do it now
         if self.cipher:
@@ -85,10 +85,10 @@ class RSAAttack(object):
                             decrypted = [decrypted]
 
                     self.decrypted = self.decrypted + decrypted
-            elif self.partitial_priv_key is not None:
+            elif self.partial_priv_key is not None:
                 # needed, if n is prime and so we cant calc p and q
                 enc_msg = bytes_to_long(self.cipher)
-                dec_msg = self.partitial_priv_key.key._decrypt(enc_msg)
+                dec_msg = self.partial_priv_key.key._decrypt(enc_msg)
                 self.decrypted.append(long_to_bytes(dec_msg))
 
         print_results(self.args, publickeyname, self.priv_key, self.decrypted)
