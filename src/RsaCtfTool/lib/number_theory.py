@@ -447,10 +447,7 @@ else:
     is_square = _is_square
     next_prime = _next_prime
     fib = _fib
-    primes = erathostenes_sieve
     is_prime = _is_prime
-    fib = _fib
-    primes = _primes
     lcm = _lcm
     invert = _invmod
     powmod = _powmod
@@ -554,7 +551,7 @@ def common_modulus_related_message(e1, e2, n, c1, c2):
         return None
 
     c1 = neg_pow(c1, a, n) if a < 0 else powmod(c1, a, n)
-    c2 = neg_pow(c2, b, n) if a < 0 else powmod(c2, b, n)
+    c2 = neg_pow(c2, b, n) if b < 0 else powmod(c2, b, n)
     ct = c1 * c2 % n
     return int(introot(ct, g))
 

@@ -51,7 +51,11 @@ __________               R_______________________________E __                .__
  |____|_  /____  >(____  /R\______  /|____|    \___  /E   |__|  \____/ \____/|____/
         \/     \/      \/        R\/E               R\/E
 
-""".replace("R", cRED).replace("E", cEND)
+""".replace(
+            "R", cRED
+        ).replace(
+            "E", cEND
+        )
         + """
 Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
 
