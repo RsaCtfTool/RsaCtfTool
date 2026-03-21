@@ -50,7 +50,7 @@ class TestFermat:
         assert f1 * f2 == n
 
     def test_fermat_invalid_congruence(self):
-        n = 15  # 15 % 4 == 3, which is invalid
+        n = 6  # 6 % 4 == 2, which is invalid for fermat
         with pytest.raises(FactorizationError):
             fermat(n)
 
