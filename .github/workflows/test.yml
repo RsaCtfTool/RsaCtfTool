@@ -58,7 +58,10 @@ jobs:
         sudo apt install -y libmpc-dev
     - name: Install SageMath
       run: |
-        sudo apt install sagemath
+        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
+        bash miniconda.sh -b -p /opt/conda
+        source /opt/conda/bin/activate
+        conda install -c conda-forge sagemath -y
     - name: Install python dependencies
       run: |
         pip install wheel

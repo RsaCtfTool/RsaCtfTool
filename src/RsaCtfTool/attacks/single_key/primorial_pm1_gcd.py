@@ -21,8 +21,9 @@ class Attack(AbstractAttack):
             prime = next_prime(prime)
             primorial *= prime
             primorial_p1 = [primorial - 1, primorial + 1]
-            g0, g1 = gcd(primorial_p1[0], publickey.n), gcd(
-                primorial_p1[1], publickey.n
+            g0, g1 = (
+                gcd(primorial_p1[0], publickey.n),
+                gcd(primorial_p1[1], publickey.n),
             )
             if 1 < g0 < publickey.n:
                 p = publickey.n // g0

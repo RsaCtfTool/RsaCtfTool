@@ -22,7 +22,9 @@ class Attack(AbstractAttack):
             priv_key = PrivateKey(n=n, e=e, d=d)
             return (priv_key, None)
 
-        for i in range(2, ilog2(n) + 1)[
+        for i in range(
+            2, ilog2(n) + 1
+        )[
             ::-1
         ]:  # we need to find the largest power first, otherwise, it would never be prime
             root, f = iroot(n, i)
