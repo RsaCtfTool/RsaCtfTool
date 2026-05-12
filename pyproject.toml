@@ -40,6 +40,7 @@ Download = "https://github.com/RsaCtfTool/RsaCtfTool/tarball/0.1.0"
 [project.optional-dependencies]
 # SageMath is not pip-installable; install it separately if needed
 optional = ["wolframalpha", "gmpy2>=2.1.15"]
+dev = ["impactguard"]
 
 [project.scripts]
 rsacrack = "RsaCtfTool.main:main"
