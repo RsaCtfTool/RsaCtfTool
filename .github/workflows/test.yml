@@ -4,7 +4,7 @@ on: [push, pull_request]
 
 jobs:
   test:
-    name: test (${{ matrix.python.id }},${{ matrix.sage.id }})
+    name: test (${{ matrix.python.id }})
     runs-on: ubuntu-latest
     continue-on-error: true
 
@@ -12,60 +12,33 @@ jobs:
       matrix:
         python:
           - { id: "python3.9", version: "3.9" }
+          - { id: "python3.10", version: "3.10" }
       fail-fast: false
 
     steps:
-    - name: Cache
-      id: cache-packages
-      uses: actions/cache@v4
-      with:
-        path: ${{ runner.temp }}/cache-linux
-        key: cache-packages-v2.2
-
-    - name: Cache apt
-      id: cache-apt
-      uses: actions/cache@v4
-      with:
-        path: /var/cache/apt/
-        key: ${{ runner.os }}-apt-get-
-        restore-keys: |
-          ${{ runner.os }}-apt-get-
-
-    - name: Cache pip
-      id: cache-pip
-      uses: actions/cache@v4
-      with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-
     - uses: actions/checkout@v4
+
     - name: Setup python
       uses: actions/setup-python@v5
       with:
         python-version: ${{ matrix.python.version }}
         architecture: x64
-    - name: Update package lists of apt
+
+    - name: Cache pip
+      uses: actions/cache@v4
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-${{ matrix.python.id }}-pip-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-${{ matrix.python.id }}-pip-
+
+    - name: Install system dependencies
+      run: sudo apt update && sudo apt install -y libgmp3-dev libmpc-dev
+
+    - name: Install project
       run: |
-        sudo apt update
-        sudo apt upgrade -y
-    - name: Install GNU GMP3
-      run: |
-        sudo apt install -y libgmp3-dev
-    - name: Install GNU MPC
-      run: |
-        sudo apt install -y libmpc-dev
-    - name: Install SageMath
-      run: |
-        wget -q https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O miniconda.sh
-        bash miniconda.sh -b -p /opt/conda
-        source /opt/conda/bin/activate
-        conda install -c conda-forge sagemath -y
-    - name: Install python dependencies
-      run: |
-        pip install wheel
-        pip install -r "requirements.txt"
+        pip install wheel sagemath
+        pip install -e .
+
     - name: Run tests
-      run: |
-        ./RsaCtfTool.py --tests
+      run: RsaCtfTool --tests
