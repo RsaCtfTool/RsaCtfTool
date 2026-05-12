@@ -74,7 +74,7 @@ class Attack(AbstractAttack):
             if factors is not None and len(factors) > 1:
                 publickey.q = factors[
                     -1
-                ]  # Let it be the last prime wich is the bigger one
+                ]  # Let it be the last prime which is the bigger one
                 publickey.p = publickey.n // publickey.q
                 priv_key = PrivateKey(
                     p=int(publickey.p),

@@ -55,9 +55,9 @@ __________               R_______________________________E __                .__
         + """
 Disclaimer: this tool is meant for educational purposes, for those doing CTF's first try:
 
-Learning the basis of RSA math, undrestand number theory, modular arithmetric, integer factorization, fundamental theorem of arithmetic.
+Learning the basis of RSA math, understand number theory, modular arithmetic, integer factorization, fundamental theorem of arithmetic.
 Read the code in this repo to see what and how it does and how to improve it, send PR's.
-Avoid copy-paste-run and at last run this tool (knowking the math is more valuable than knowking how to run this tool).
+Avoid copy-paste-run and at last run this tool (knowing the math is more valuable than knowing how to run this tool).
 
 """
     )
@@ -70,7 +70,7 @@ def parse_args():
         "--publickey", help="public key file. You can use wildcards for multiple keys."
     )
     parser.add_argument(
-        "--output", help="output file for results (privates keys, plaintext data)."
+        "--output", help="output file for results (private keys, plaintext data)."
     )
     parser.add_argument(
         "--timeout",
@@ -526,7 +526,7 @@ def main():
         else:
             args.publickey = [args.publickey]
 
-    # If we already have all informations
+    # If we already have all information
     if (
         args.p is not None
         and args.q is not None
@@ -561,7 +561,7 @@ def main():
         print_results(args, args.publickey[0], priv_key, decrypts)
         sys.exit(0)
 
-    # Dump public key informations
+    # Dump public key information
     if (
         args.dumpkey
         and not args.private

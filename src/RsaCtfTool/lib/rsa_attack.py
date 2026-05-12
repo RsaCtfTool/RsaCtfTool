@@ -86,7 +86,7 @@ class RSAAttack(object):
 
                     self.decrypted = self.decrypted + decrypted
             elif self.partial_priv_key is not None:
-                # needed, if n is prime and so we cant calc p and q
+                # needed, if n is prime and so we can't calc p and q
                 enc_msg = bytes_to_long(self.cipher)
                 dec_msg = self.partial_priv_key.key._decrypt(enc_msg)
                 self.decrypted.append(long_to_bytes(dec_msg))

@@ -16,7 +16,7 @@ class Attack(AbstractAttack):
         plain = []
         if (cipher is None) or (len(cipher) < 1):
             self.logger.info(
-                "[-] No ciphertexts specified, skiping the cube_root test..."
+                "[-] No ciphertexts specified, skipping the cube_root test..."
             )
             return None, None
         for c in cipher:

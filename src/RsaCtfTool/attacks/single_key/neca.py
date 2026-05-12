@@ -33,7 +33,7 @@ class Attack(AbstractAttack):
                 )
                 return (None, None)
         else:
-            self.logger.error("[-] This key is not roca, skiping test...")
+            self.logger.error("[-] This key is not roca, skipping test...")
             return (None, None)
 
     def test(self):

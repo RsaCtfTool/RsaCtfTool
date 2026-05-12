@@ -22,7 +22,7 @@ class Attack(AbstractAttack):
             e_array = [k.e for k in publickey]
             if (cipher is None) or (len(cipher) < 2):
                 self.logger.info(
-                    "[-] Lack of ciphertexts, skiping the same_n_huge_e test..."
+                    "[-] Lack of ciphertexts, skipping the same_n_huge_e test..."
                 )
                 return (None, None)
 

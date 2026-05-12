@@ -162,7 +162,7 @@ def print_results(args, publickey, private_key, decrypt):
                             print_decrypted_res(nc, logger)
 
         else:
-            logger.critical("Sorry, decrypteding failed.")
+            logger.critical("Sorry, decrypting failed.")
 
 
 class TimeoutError(Exception):
