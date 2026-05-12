@@ -69,3 +69,5 @@ target/
 
 # python virtual environment
 .venv
+venv
+env

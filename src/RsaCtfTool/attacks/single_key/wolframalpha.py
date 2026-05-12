@@ -15,7 +15,6 @@ class Attack(AbstractAttack):
 
     def can_run(self):
         try:
-
             app_id = os.environ.get("WA_API_KEY")
             assert app_id is not None
             return True
