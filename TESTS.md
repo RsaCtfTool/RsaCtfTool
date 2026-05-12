@@ -14,7 +14,7 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 
 ## Single Key Attacks
 
-- [ ] binary_polinomial_factoring.py
+- [ ] binary_polynomial_factoring.py
 - [x] boneh_durfee.py (via wiener)
 - [ ] brent.py
 - [ ] carmichael.py

@@ -17,7 +17,7 @@ RSA multi-attack tool that decrypts data from weak public keys and recovers priv
 
 ## Overview
 
-This tool is an utility designed to decrypt data from weak public keys and attempt to recover the corresponding private key. It offers a comprehensive range of attack options for cracking RSA encryption.
+This tool is a utility designed to decrypt data from weak public keys and attempt to recover the corresponding private key. It offers a comprehensive range of attack options for cracking RSA encryption.
 
 RSA security relies on the complexity of integer factorization. This project combines multiple factorization algorithms to enhance decryption capabilities.
 

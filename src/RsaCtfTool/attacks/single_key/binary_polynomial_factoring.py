@@ -14,13 +14,13 @@ class Attack(AbstractAttack):
         self.required_binaries = ["sage"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """binary polinomial factoring"""
+        """binary polynomial factoring"""
         try:
             sageresult = str(
                 subprocess.check_output(
                     [
                         "sage",
-                        f"{rootpath}/sage/binary_polinomial_factoring.sage",
+                        f"{rootpath}/sage/binary_polynomial_factoring.sage",
                         str(publickey.n),
                     ],
                     timeout=self.timeout,

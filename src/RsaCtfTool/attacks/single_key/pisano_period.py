@@ -26,7 +26,7 @@ class Attack(AbstractAttack):
         B1, B2 = (
             pow(10, (ilog10(publickey.n) // 2) - 4),
             0,
-        )  # Arbitrary selected bounds, biger b2 is more faster but more failed factorizations.
+        )  # Arbitrary selected bounds, bigger b2 is more faster but more failed factorizations.
         try:
             r = Fib.factorization(publickey.n, B1, B2)
         except OverflowError:

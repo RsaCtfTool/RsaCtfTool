@@ -221,9 +221,9 @@ def _fermat_prime_criterion(n, b=2):
 
 def _is_prime(n):
     """
-    If fermats prime criterion is false by short circuit we dont need to keep testing bases, so we return false for a guaranteed composite.
-    Otherwise we keep trying with primes 3 and 5 as base. The sweet spot is primes 2,3,5, it doesn't improvee the runing time adding more primes to test as base.
-    If all the previus tests pass then we try with rabin miller.
+    If Fermat's prime criterion is false by short circuit we don't need to keep testing bases, so we return false for a guaranteed composite.
+    Otherwise we keep trying with primes 3 and 5 as base. The sweet spot is primes 2,3,5, it doesn't improve the running time adding more primes to test as base.
+    If all the previous tests pass then we try with Rabin-Miller.
     All the tests are probabilistic.
     """
     if all(
@@ -589,7 +589,7 @@ def chinese_remainder(m, a):
 
 def tonelli(n, p):
     """
-    tonelli-shanks modular squareroot algorithm
+    Tonelli-Shanks modular squareroot algorithm
     """
     assert legendre(n, p) == 1, "not a square (mod p)"
     q = p - 1

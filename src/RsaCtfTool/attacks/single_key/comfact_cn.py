@@ -33,5 +33,5 @@ class Attack(AbstractAttack):
         return self.comfact(cipher, publickey) if cipher is not None else (None, None)
 
     def test(self):
-        """FIXME: Implment testcase"""
+        """FIXME: Implement testcase"""
         raise NotImplementedError

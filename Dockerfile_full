@@ -1,4 +1,4 @@
-# HIGHLY RECOMENDED TO BUILD LOCALLY, paramers for the gmp-ecm tool will be optimised on local hardware
+# HIGHLY RECOMMENDED TO BUILD LOCALLY, parameters for the gmp-ecm tool will be optimised on local hardware
 
 # Base upon sagemath so that we don't have to deal with that dependency
 FROM python:3-slim

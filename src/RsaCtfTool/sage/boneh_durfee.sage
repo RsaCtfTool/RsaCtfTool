@@ -10,7 +10,7 @@ import time
 ##########################################
 
 """
-Setting debug to true will display more informations
+Setting debug to true will display more information
 about the lattice, the bounds, the vectors...
 """
 debug = False
@@ -19,9 +19,9 @@ debug = False
 Setting strict to true will stop the algorithm (and
 return (-1, -1)) if we don't have a correct
 upperbound on the determinant. Note that this
-doesn't necesseraly mean that no solutions
+doesn't necessarily mean that no solutions
 will be found since the theoretical upperbound is
-usualy far away from actual results. That is why
+usually far away from actual results. That is why
 you should probably use `strict = False`
 """
 strict = False
@@ -231,7 +231,7 @@ def boneh_durfee(pol, modulus, mm, tt, XX, YY):
     rr = pol1.resultant(pol2)
 
     if rr.is_zero() or rr.monomials() == [1]:
-        # print "the two first vectors are not independant"
+        # print "the two first vectors are not independent"
         return 0, 0
 
     rr = rr(q, q)

@@ -16,12 +16,12 @@ class Attack(AbstractAttack):
 
     def z3_solve(self, n, timeout_amount):
         """Integer factorization using z3 theorem prover implementation:
-        We can factor composite integers by SAT solving the model N=PQ directly using the clasuse (n==p*q),
-        wich gives a lot of degree of freedom to z3, so we want to contraint the search space.
+        We can factor composite integers by SAT solving the model N=PQ directly using the clause (n==p*q),
+        which gives a lot of degree of freedom to z3, so we want to constrain the search space.
         Since every composite number n=pq, there always exists some p>sqrt(n) and q<sqrt(n).
-        We can safely asume the divisor p is in the range n > p >= next_prime(sqrt(n))
+        We can safely assume the divisor p is in the range n > p >= next_prime(sqrt(n))
         if this later clause doesn't hold and sqrt(p) is prime the number is a perfect square.
-        We can also asume that p and q are alyaws odd otherwise our whole composite is even.
+        We can also assume that p and q are always odd otherwise our whole composite is even.
         Not all composite numbers generate a valid model that z3 can SAT.
         SAT solving is efficient with low bit count set in the factors,
         the complexity of the algorithm grows exponential with every bit set.
