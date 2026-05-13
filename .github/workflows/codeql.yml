@@ -17,8 +17,8 @@ jobs:
       contents: read
       security-events: write
     # Uncomment for local runs
-    env: 
-      CODEQL_ACTION_DISABLE_TELEMETRY: true 
+    # env: 
+    #   CODEQL_ACTION_DISABLE_TELEMETRY: true 
 
     strategy:
       fail-fast: false
@@ -46,5 +46,5 @@ jobs:
       uses: github/codeql-action/analyze@v4
       with:
         category: "/language:python/python:${{ matrix.python-version }}"
-        upload: false # Uncomment for local runs
-        output: 'sarif-results'
+        # upload: false # Uncomment for local runs
+        # output: 'sarif-results'
