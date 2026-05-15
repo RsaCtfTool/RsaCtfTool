@@ -3,8 +3,9 @@
 <div align="center">
 
 [![Test](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/test.yml/badge.svg)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/test.yml)
-[![Ruff](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/RsaCtfTool/RsaCtfTool/master/.github/badges/ruff.json)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/lint_python.yml)
+[![Ruff](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/lint_python.yml/badge.svg)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/lint_python.yml)
 [![CodeQL](https://github.com/RsaCtfTool/RsaCtfTool/workflows/CodeQL/badge.svg)](https://github.com/RsaCtfTool/RsaCtfTool/actions/workflows/CodeQL)
+<br>
 [![GitHub issues](https://img.shields.io/github/issues/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/issues)
 [![GitHub forks](https://img.shields.io/github/forks/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/network)
 [![GitHub stars](https://img.shields.io/github/stars/RsaCtfTool/RsaCtfTool.svg)](https://github.com/RsaCtfTool/RsaCtfTool/stargazers)
@@ -28,7 +29,7 @@ For advanced factorization, consider [msieve](https://github.com/RsaCtfTool/msie
 ## Usage
 
 ```bash
-RsaCtfTool --publickey key.pub --private                    # Recover private key
+RsaCtfTool --publickey key.pub --private                   # Recover private key
 RsaCtfTool --publickey key.pub --decryptfile ciphertext    # Decrypt file
 RsaCtfTool --publickey key.pub --attack wiener             # Use specific attack
 ```
