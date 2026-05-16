@@ -37,8 +37,12 @@ jobs:
 
     - name: Install project
       run: |
-        pip install wheel sagemath
+        pip install wheel sagemath pytest
         pip install -e .
 
     - name: Run tests
-      run: RsaCtfTool --tests
+      run: RsaCtfTool --tests --attack all
+
+    - name: Run attack tests with pytest
+      # Ignore slow and network based tests
+      run: pytest tests/test_attacks.py -v -m "not slow and not network"

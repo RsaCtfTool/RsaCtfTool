@@ -7,8 +7,8 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 | Category | Total | With Tests | Without Tests |
 |----------|-------|------------|---------------|
 | Single Key | 56 | 17 | 39 |
-| Multi Keys | 4 | 3 | 1 |
-| **Total** | **60** | **20** | **40** |
+| Multi Keys | 4 | 4 | 0 |
+| **Total** | **60** | **21** | **39** |
 
 ---
 
@@ -76,7 +76,7 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 ## Multi Keys Attacks
 
 - [x] common_factors.py
-- [ ] common_modulus_related_message.py
+- [x] common_modulus_related_message.py
 - [x] hastads.py
 - [x] same_n_huge_e.py
 

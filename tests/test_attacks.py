@@ -108,9 +108,24 @@ class TestCommonFactorsAttack:
             "examples/commonfactor?.pub",
             "--private",
             "--attack",
-            "commonfactors",
+            "common_factors",
         )
         assert result.returncode == 0
+
+
+class TestCommonModulusRelatedMessageAttack:
+    def test_common_modulus_related_message_attack(self):
+        result = _run(
+            "--publickey",
+            "examples/common_modulus1.pub,examples/common_modulus2.pub",
+            "--decrypt",
+            "1925,2876",
+            "--attack",
+            "common_modulus_related_message",
+            "--private",
+        )
+        assert result.returncode == 0
+        assert "0x0c" in result.stderr
 
 
 class TestFermatAttack:
@@ -150,6 +165,7 @@ class TestCreatePub:
         result = _run("--createpub", "-n", "8616460799", "-e", "65537")
         assert result.returncode == 0
 
+    @pytest.mark.slow
     def test_createpub_and_crack(self):
         n = "163325259729739139586456854939342071588766536976661696628405612100543978684304953042431845499808366612030757037530278155957389217094639917994417350499882225626580260012564702898468467277918937337494297292631474713546289580689715170963879872522418640251986734692138838546500522994170062961577034037699354013013"
         with tempfile.NamedTemporaryFile(suffix=".pub", delete=False) as tmp:
@@ -158,7 +174,9 @@ class TestCreatePub:
             create_result = _run("--createpub", "-n", n, "-e", "65537")
             assert create_result.returncode == 0
             Path(tmp_path).write_text(create_result.stdout)
-            crack_result = _run("--publickey", tmp_path, "--private")
+            crack_result = _run(
+                "--publickey", tmp_path, "--private", "--timeout", "120", timeout=180
+            )
             assert crack_result.returncode == 0
         finally:
             os.unlink(tmp_path)
@@ -242,6 +260,7 @@ class TestCubeRootAttack:
 
 
 class TestDumpKey:
+    @pytest.mark.slow
     def test_dumpkey_extended(self):
         result = _run(
             "--publickey",
@@ -251,26 +270,40 @@ class TestDumpKey:
             "factordb",
             "--dumpkey",
             "--ext",
+            "--timeout",
+            "120",
+            timeout=180,
         )
         assert result.returncode == 0
 
 
 class TestDecryptFile:
+    @pytest.mark.network
+    @pytest.mark.slow
     def test_decrypt_multiple_files(self):
         result = _run(
             "--publickey",
             "examples/primefac.pub",
             "--decryptfile",
             "examples/cipher1,examples/cipher2,examples/cipher3",
+            "--private",
+            "--timeout",
+            "120",
+            timeout=300,
         )
         assert result.returncode == 0
 
+    @pytest.mark.network
     def test_decrypt_multiple_keys(self):
         result = _run(
             "--publickey",
             "examples/boneh_durfee.pub,examples/primefac.pub",
             "--decryptfile",
             "examples/cipher1",
+            "--private",
+            "--timeout",
+            "120",
+            timeout=180,
         )
         assert result.returncode == 0
 

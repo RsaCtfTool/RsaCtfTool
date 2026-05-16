@@ -31,6 +31,7 @@ dependencies = [
     "bitarray",
     "psutil==5.9.4",
     "factordb-pycli",
+    "pytest"
 ]
 
 [project.urls]
