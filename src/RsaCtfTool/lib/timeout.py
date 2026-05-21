@@ -13,7 +13,7 @@ class timeout:
         self.seconds = seconds
         self.error_message = error_message
 
-    def handle_timeout(self, signum, frame):
+    def handle_timeout(self, _signum, _frame):
         raise FactorizationError(self.error_message)
 
     def __enter__(self):

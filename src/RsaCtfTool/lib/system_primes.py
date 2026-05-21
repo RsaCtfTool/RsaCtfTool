@@ -1,7 +1,6 @@
 primes_txt = []
 notprimes_txt = []
 primes_int = []
-notprimes_int = []
 primes_txt_arry = []
 
 # SRP rfc5054

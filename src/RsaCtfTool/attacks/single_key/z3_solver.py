@@ -86,8 +86,6 @@ class Attack(AbstractAttack):
         else:
             return None, None
 
-        return None, None
-
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
 

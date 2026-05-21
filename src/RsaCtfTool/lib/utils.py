@@ -6,9 +6,7 @@ import errno
 import signal
 import base64
 import logging
-import subprocess
 import contextlib
-import binascii
 import psutil
 from threading import Timer
 from RsaCtfTool.lib.keys_wrapper import PublicKey
@@ -37,16 +35,6 @@ def get_base64_value(value):
         return value
 
 
-def sageworks():
-    """Check if sage is installed and working"""
-    try:
-        sageversion = subprocess.check_output(["sage", "-v"], timeout=10)
-    except OSError:
-        return False
-
-    return "SageMath version" in sageversion.decode("utf-8")
-
-
 def print_decrypted_res(c, logger):
     logger.info(f"HEX : 0x{c.hex()}")
 
@@ -64,6 +52,88 @@ def print_decrypted_res(c, logger):
     logger.info(f"STR : {repr(c)}")
 
 
+def _print_private_key(args, private_keys, logger):
+    logger.info("\nPrivate key :")
+    for priv_key in private_keys:
+        if priv_key is None:
+            continue
+        if args.output:
+            try:
+                with open(args.output, "a") as output_fd:
+                    output_fd.write("%s\n" % str(priv_key))
+            except Exception:
+                logger.error(f"Can't write output file : {args.output}")
+        if not str(priv_key):
+            logger.warning("Key format seems wrong, check input data to solve this.")
+            if priv_key.n is not None:
+                logger.info(f"n: {priv_key.n}")
+            if priv_key.e is not None:
+                logger.info(f"e: {priv_key.e}")
+            if priv_key.d is not None:
+                logger.info(f"d: {priv_key.d}")
+        else:
+            logger.info(priv_key)
+
+
+def _print_dumpkey_private(args, private_keys, logger):
+    logger.info("\nPrivate key details:")
+    for priv_key in private_keys:
+        if priv_key.n is not None:
+            logger.info(f"n: {str(priv_key.n)}")
+        if priv_key.e is not None:
+            logger.info(f"e: {str(priv_key.e)}")
+        if priv_key.d is not None:
+            logger.info(f"d: {str(priv_key.d)}")
+        if priv_key.p is not None:
+            logger.info(f"p: {str(priv_key.p)}")
+        if priv_key.q is not None:
+            logger.info(f"q: {str(priv_key.q)}")
+        if args.ext:
+            dp = priv_key.d % (priv_key.p - 1)
+            dq = priv_key.d % (priv_key.q - 1)
+            pinv = invmod(priv_key.p, priv_key.q)
+            qinv = invmod(priv_key.q, priv_key.p)
+            logger.info(f"dp: {str(dp)}")
+            logger.info(f"dq: {str(dq)}")
+            logger.info(f"pinv: {str(pinv)}")
+            logger.info(f"qinv: {str(qinv)}")
+
+
+def _print_dumpkey_public(args, publickey, logger):
+    for public_key in args.publickey:
+        with open(public_key, "rb") as pubkey_fd:
+            publickey_obj = PublicKey(pubkey_fd.read(), publickey)
+            logger.info("\nPublic key details for %s" % publickey_obj.filename)
+            logger.info(f"n: {str(publickey_obj.n)}")
+            logger.info(f"e: {str(publickey_obj.e)}")
+
+
+def _print_decrypt_results(args, decrypt, logger):
+    if decrypt is None:
+        logger.critical("Sorry, decrypting failed.")
+        return
+    if not isinstance(decrypt, list):
+        decrypt = [decrypt]
+    if len(decrypt) == 0:
+        return
+    logger.info("\nDecrypted data :")
+    for decrypted_ in decrypt:
+        if not isinstance(decrypted_, list):
+            decrypted_ = [decrypted_]
+        for c in decrypted_:
+            if args.output:
+                try:
+                    with open(args.output, "ab") as output_fd:
+                        output_fd.write(c)
+                except Exception:
+                    logger.error(f"Can't write output file : {args.output}")
+            print_decrypted_res(c, logger)
+            if len(c) > 3 and c[0] == 0 and c[1] == 2:
+                nc = c[c[2:].index(0) + 2:]
+                logger.info("\nPKCS#1.5 padding decoded!")
+                print_decrypted_res(nc, logger)
+
+
 def print_results(args, publickey, private_key, decrypt):
     """Print results to output"""
     logger = logging.getLogger("global_logger")
@@ -79,90 +149,17 @@ def print_results(args, publickey, private_key, decrypt):
     if private_key is not None:
         private_keys = private_key if isinstance(private_key, list) else [private_key]
         if args.private:
-            logger.info("\nPrivate key :")
-            for priv_key in private_keys:
-                if priv_key is not None:
-                    if args.output:
-                        try:
-                            with open(args.output, "a") as output_fd:
-                                output_fd.write("%s\n" % str(priv_key))
-                        except Exception:
-                            logger.error(f"Can't write output file : {args.output}")
-                    if not str(priv_key):
-                        logger.warning(
-                            "Key format seems wrong, check input data to solve this."
-                        )
-                        if priv_key.n is not None:
-                            logger.info(f"n: {priv_key.n}")
-                        if priv_key.e is not None:
-                            logger.info(f"e: {priv_key.e}")
-                        if priv_key.d is not None:
-                            logger.info(f"d: {priv_key.d}")
-
-                    else:
-                        logger.info(priv_key)
+            _print_private_key(args, private_keys, logger)
         if args.dumpkey:
-            logger.info("\nPrivate key details:")
-            for priv_key in private_keys:
-                if priv_key.n is not None:
-                    logger.info(f"n: {str(priv_key.n)}")
-                if priv_key.e is not None:
-                    logger.info(f"e: {str(priv_key.e)}")
-                if priv_key.d is not None:
-                    logger.info(f"d: {str(priv_key.d)}")
-                if priv_key.p is not None:
-                    logger.info(f"p: {str(priv_key.p)}")
-                if priv_key.q is not None:
-                    logger.info(f"q: {str(priv_key.q)}")
-                if args.ext:
-                    dp = priv_key.d % (priv_key.p - 1)
-                    dq = priv_key.d % (priv_key.q - 1)
-                    pinv = invmod(priv_key.p, priv_key.q)
-                    qinv = invmod(priv_key.q, priv_key.p)
-                    logger.info(f"dp: {str(dp)}")
-                    logger.info(f"dq: {str(dq)}")
-                    logger.info(f"pinv: {str(pinv)}")
-                    logger.info(f"qinv: {str(qinv)}")
+            _print_dumpkey_private(args, private_keys, logger)
     else:
         if args.private:
             logger.critical("Sorry, cracking failed.")
-
         if args.dumpkey:
-            if args.publickey is not None:
-                for public_key in args.publickey:
-                    with open(public_key, "rb") as pubkey_fd:
-                        publickey_obj = PublicKey(pubkey_fd.read(), publickey)
-                        logger.info(
-                            "\nPublic key details for %s" % publickey_obj.filename
-                        )
-                        logger.info(f"n: {str(publickey_obj.n)}")
-                        logger.info(f"e: {str(publickey_obj.e)}")
+            _print_dumpkey_public(args, publickey, logger)
 
     if args.decrypt:
-        if decrypt is not None:
-            if not isinstance(decrypt, list):
-                decrypt = [decrypt]
-            if len(decrypt) > 0:
-                logger.info("\nDecrypted data :")
-                for decrypted_ in decrypt:
-                    if not isinstance(decrypted_, list):
-                        decrypted_ = [decrypted_]
-
-                    for c in decrypted_:
-                        if args.output:
-                            try:
-                                with open(args.output, "ab") as output_fd:
-                                    output_fd.write(c)
-                            except Exception:
-                                logger.error(f"Can't write output file : {args.output}")
-                        print_decrypted_res(c, logger)
-                        if len(c) > 3 and c[0] == 0 and c[1] == 2:
-                            nc = c[c[2:].index(0) + 2 :]
-                            logger.info("\nPKCS#1.5 padding decoded!")
-                            print_decrypted_res(nc, logger)
-
-        else:
-            logger.critical("Sorry, decrypting failed.")
+        _print_decrypt_results(args, decrypt, logger)
 
 
 class TimeoutError(Exception):
@@ -189,7 +186,7 @@ class timeout(contextlib.ContextDecorator):
         self.suppress = bool(suppress_timeout_errors)
         self.logger = logging.getLogger("global_logger")
 
-    def _timeout_handler(self, signum, frame):
+    def _timeout_handler(self, _signum, _frame):
         self.logger.warning("[!] Timeout.")
         raise TimeoutError(self.timeout_message)
 
@@ -204,7 +201,7 @@ class timeout(contextlib.ContextDecorator):
         )  # this thread will send signal when timeout
         self.timer.start()
 
-    def __exit__(self, exc_type, exc_val, exc_tb):
+    def __exit__(self, exc_type, _exc_val, _exc_tb):
         self.timer.cancel()
         if self.suppress and exc_type is TimeoutError:
             return True
