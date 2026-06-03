@@ -1,3 +1,4 @@
+import os
 import subprocess
 
 NECA_BIN = os.environ.get("NECA_BIN", "NONE")
