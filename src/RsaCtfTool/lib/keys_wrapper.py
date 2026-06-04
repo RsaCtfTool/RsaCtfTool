@@ -86,84 +86,6 @@ class PublicKey(object):
 
 
 class PrivateKey(object):
-    def _init_fields(self, p, q, e, n, d, phi):
-        self.p = p
-        self.q = q
-        self.e = e
-        self.n = n
-        self.d = d
-        self.phi = phi
-
-    def _compute_phi(self):
-        if self.p is not None and self.q is not None and self.phi is None:
-            if self.p != self.q:
-                self.phi = (self.p - 1) * (self.q - 1)
-            else:
-                self.phi = (self.p ** 2) - self.p
-
-    def _compute_d(self, e):
-        if self.d is not None:
-            return
-        if self.phi is not None and self.e is not None:
-            try:
-                self.d = int(invert(e, self.phi))
-            except ValueError:
-                logger.error("[!] e^d==1 inversion error, check your math.")
-
-    def _construct_key_from_components(self):
-        if self.p is not None and self.q is not None and self.d is not None:
-            try:
-                self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
-            except ValueError:
-                logger.error("[!] Can't construct RSA PEM, internal error....")
-            return True
-        if self.n is not None and self.e is not None and self.d is not None:
-            try:
-                self.key = RSA.construct((self.n, self.e, self.d))
-            except NotImplementedError:
-                logger.error("[!] Unable to create PEM private key...")
-                logger.info(
-                    "n:%s\ne:%s\nd:%s\n" % (hex(self.n), hex(self.e), hex(self.d))
-                )
-            except ValueError:
-                logger.error("[!] Unable to compute factors p and q from exponent d")
-                logger.info("[+] n=%d,e=%d,d=%d" % (self.n, self.e, self.d))
-            return True
-        return False
-
-    def _load_key_from_file(self, filename, password, p, q, d):
-        with open(filename, "rb") as key_data_fd:
-            try:
-                self.key = serialization.load_pem_private_key(
-                    key_data_fd.read(), password=password, backend=default_backend()
-                )
-                private_numbers = self.key.private_numbers()
-                loadok = True
-            except Exception:
-                loadok = False
-
-            if loadok:
-                if p is None:
-                    self.p = private_numbers.p
-                if q is None:
-                    self.q = private_numbers.q
-                if d is None:
-                    self.d = private_numbers.d
-                if self.p and self.q:
-                    self.n = self.p * self.q
-                self._compute_phi()
-            else:
-                tmp = load_partial_privkey(filename)
-                self.n = tmp[1]
-                self.e = tmp[2]
-                self.d = tmp[3]
-                self.p = tmp[4]
-                self.q = tmp[5]
-                self.dp = tmp[6]
-                self.dq = tmp[7]
-                self.di = tmp[8]
-                self.filename = filename
-
     def __init__(
         self,
         p=None,
@@ -181,12 +103,94 @@ class PrivateKey(object):
         :param e: exponent
         :param n: n from public key
         """
+        self.p = None
+        if p is not None:
+            self.p = p
+
+        self.q = None
+        if q is not None:
+            self.q = q
+
+        self.e = None
+        if e is not None:
+            self.e = e
+
+        self.n = None
+        if n is not None:
+            self.n = n
+
+        self.phi = None
+        if phi is not None:
+            self.phi = phi
+
+        if self.p is not None and self.q is not None and self.phi is None:
+            if self.p != self.q:
+                self.phi = (self.p - 1) * (self.q - 1)
+            else:
+                self.phi = (self.p**2) - self.p
+
+        if d is not None:
+            self.d = d
+        elif self.phi is not None and self.e is not None:
+            try:
+                self.d = int(invert(e, self.phi))
+            except ValueError:
+                # invmod failure
+                logger.error("[!] e^d==1 inversion error, check your math.")
         self.key = None
-        self._init_fields(p, q, e, n, d, phi)
-        self._compute_phi()
-        self._compute_d(e)
-        if not self._construct_key_from_components() and filename is not None:
-            self._load_key_from_file(filename, password, p, q, d)
+        if self.p is not None and self.q is not None and self.d is not None:
+            try:
+                # There is no CRT coefficient to construct a key if p equals q
+                self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
+            except ValueError:
+                logger.error("[!] Can't construct RSA PEM, internal error....")
+        elif n is not None and e is not None and d is not None:
+            try:
+                self.key = RSA.construct((self.n, self.e, self.d))
+            except NotImplementedError:
+                logger.error("[!] Unable to create PEM private key...")
+                logger.info(
+                    "n:%s\ne:%s\nd:%s\n" % (hex(self.n), hex(self.e), hex(self.d))
+                )
+            except ValueError:
+                logger.error("[!] Unable to compute factors p and q from exponent d")
+                logger.info("[+] n=%d,e=%d,d=%d" % (self.n, self.e, self.d))
+        elif filename is not None:
+            with open(filename, "rb") as key_data_fd:
+                try:
+                    self.key = serialization.load_pem_private_key(
+                        key_data_fd.read(), password=password, backend=default_backend()
+                    )
+                    private_numbers = self.key.private_numbers()
+                    loadok = True
+                except Exception:
+                    loadok = False
+
+                if loadok:
+                    if p is None:
+                        self.p = private_numbers.p
+                    if q is None:
+                        self.q = private_numbers.q
+                    if d is None:
+                        self.d = private_numbers.d
+                    if self.p and self.q:
+                        self.n = self.p * self.q
+                    if self.phi is None:
+                        if self.p != self.q:
+                            self.phi = (self.p - 1) * (self.q - 1)
+                        else:
+                            self.phi = (self.p**2) - self.p
+                else:
+                    tmp = load_partial_privkey(filename)
+                    self.n = tmp[1]
+                    self.e = tmp[2]
+                    self.d = tmp[3]
+                    self.p = tmp[4]
+                    self.q = tmp[5]
+                    self.dp = tmp[6]
+                    self.dq = tmp[7]
+                    self.di = tmp[8]
+                    self.filename = filename
 
     def is_conspicuous(self):
         is_con, txt = privatekey_check(self.n, self.p, self.q, self.d, self.e)

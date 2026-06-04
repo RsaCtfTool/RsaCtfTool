@@ -410,77 +410,74 @@ def cleanup(args):
                 continue
 
 
-def _setup_logging(args):
-    logging.basicConfig(level=logger_levels[args.verbosity])
+def main():
+    logger = logging.getLogger("global_logger")
+    args = parse_args()
+
+    decrypts = []
+
+    # Set logger level
+    logging.basicConfig(
+        level=logger_levels[args.verbosity],
+    )
     ch = logging.StreamHandler(sys.stderr)
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
     logger.propagate = False
     logger.addHandler(ch)
+
+    # Add information
     if not args.private and not args.tests:
         logger.warning(
             "private argument is not set, the private key will not be displayed, even if recovered."
         )
-    return logger
 
-
-def _parse_numeric_args(args):
+    # Parse longs if exists
     if args.p is not None:
         args.p = get_numeric_value(args.p)
+
     if args.q is not None:
         args.q = get_numeric_value(args.q)
+
     if args.d is not None:
         args.d = get_numeric_value(args.d)
+
     if args.n is not None:
         args.n = get_numeric_value(args.n)
+
     if args.e is not None:
-        e_array = [get_numeric_value(e) for e in args.e.split(",")]
+        e_array = []
+        for e in args.e.split(","):
+            e_int = get_numeric_value(e)
+            e_array.append(e_int)
         args.e = e_array if len(e_array) > 1 else e_array[0]
     elif args.n is not None:
         args.e = 65537
-    return args
 
-
-def _warn_if_extra_primes(args, logger):
     if args.n is not None and (args.p is not None or args.q is not None):
         logger.warning(
             "[!] It seems you already provided one of the prime factors, nothing to do here..."
         )
 
-
-def _compute_n_from_pq(args):
+    # get n from p and q
     if args.n is None and args.p is not None and args.q is not None:
         args.n = args.p * args.q
 
+    # get p and q from n, e and d
+    if (
+        args.n is not None
+        and args.e is not None
+        and args.d is not None
+        and args.p is None
+        and args.q is None
+    ):
+        pq = factor_ned(args.n, args.e, args.d)
+        if pq is not None:
+            args.p, args.q = pq
+        else:
+            logger.warning("[!] Impossible to recover p and q from d")
 
-def _recover_pq_from_ned(args, logger):
-    if not (args.n is not None
-            and args.e is not None
-            and args.d is not None
-            and args.p is None
-            and args.q is None):
-        return
-    pq = factor_ned(args.n, args.e, args.d)
-    if pq is not None:
-        args.p, args.q = pq
-    else:
-        logger.warning("[!] Impossible to recover p and q from d")
-
-
-def _compute_other_prime(args):
-    if args.n and (args.p or args.q):
-        args.p, args.q = generate_pq_from_n_and_p_or_q(args.n, args.p, args.q)
-
-
-def _compute_missing_values(args, logger):
-    _warn_if_extra_primes(args, logger)
-    _compute_n_from_pq(args)
-    _recover_pq_from_ned(args, logger)
-    _compute_other_prime(args)
-    return args
-
-
-def _handle_decrypt_input(args, logger):
+    # if we have decrypt but no decryptfile
     if args.decrypt is not None:
         decrypt_array = []
         for decrypt in args.decrypt.split(","):
@@ -490,23 +487,81 @@ def _handle_decrypt_input(args, logger):
                 decrypt = get_base64_value(decrypt)
             decrypt_array.append(n2s(decrypt))
         args.decrypt = decrypt_array
+
+    # if we have decryptfile
     if args.decryptfile is not None:
         if not decrypt_file(args, logger):
             sys.exit(-1)
-    return args
 
+    # If we have n and one of p and q, calculated the other
+    if args.n and (args.p or args.q):
+        args.p, args.q = generate_pq_from_n_and_p_or_q(args.n, args.p, args.q)
 
-def _handle_early_exit_modes(args, logger):
+    # convert a idrsa.pub file to a pem format
     if args.convert_idrsa_pub:
         convert_idrsa_pub(args, logger)
         sys.exit(0)
+
     if args.isroca:
         check_is_roca(args, logger)
         sys.exit(0)
+
+    # Create pubkey if requested
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
         print(pub_key.decode("utf-8"))
         sys.exit(0)
+
+    # Load keys
+    if args.publickey is None and args.e is not None and args.n is not None:
+        args = load_keys(args, logger)
+
+    elif args.publickey is not None:
+        if "*" in args.publickey or "?" in args.publickey:
+            pubkeyfilelist = glob(args.publickey)
+            args.publickey = pubkeyfilelist
+
+        elif "," in args.publickey:
+            args.publickey = args.publickey.split(",")
+        else:
+            args.publickey = [args.publickey]
+
+    # If we already have all information
+    if (
+        args.p is not None
+        and args.q is not None
+        and args.e is not None
+        and args.n is not None
+    ):
+        try:
+            pub_key, priv_key = generate_keys_from_p_q_e_n(
+                args.p, args.q, args.e, args.n
+            )
+        except ValueError:
+            logger.error(
+                "Looks like the values for generating key are not ok... (no invmod)"
+            )
+            sys.exit(1)
+
+        if args.createpub:
+            pub_key, priv_key = generate_keys_from_p_q_e_n(
+                args.p, args.q, args.e, args.n
+            )
+            print(pub_key.decode("utf-8"))
+
+        if args.decrypt is not None:
+            for u in args.decrypt:
+                if priv_key is not None:
+                    decrypts.append(priv_key.decrypt(args.decrypt))
+                else:
+                    logger.error(
+                        "Looks like the values for generating key are not ok... (no invmod)"
+                    )
+                    sys.exit(1)
+        print_results(args, args.publickey[0], priv_key, decrypts)
+        sys.exit(0)
+
+    # Dump public key information
     if (
         args.dumpkey
         and not args.private
@@ -516,79 +571,21 @@ def _handle_early_exit_modes(args, logger):
     ):
         pubkey_detail(args, logger)
         sys.exit(0)
+
+    # if dumpkey mode dump the key components then quit
     if args.key is not None and args.dumpkey:
         dump_key_parameters(args)
         sys.exit(0)
+
     if args.key is not None and args.isconspicuous:
         if run_conspicuous_check(args, logger):
             sys.exit(-1)
-        sys.exit(0)
-    return False
-
-
-def _load_public_keys(args):
-    if args.publickey is None and args.e is not None and args.n is not None:
-        args = load_keys(args, logging.getLogger("global_logger"))
-    elif args.publickey is not None:
-        if "*" in args.publickey or "?" in args.publickey:
-            args.publickey = glob(args.publickey)
-        elif "," in args.publickey:
-            args.publickey = args.publickey.split(",")
         else:
-            args.publickey = [args.publickey]
-    return args
+            sys.exit(0)
 
-
-def _handle_fully_specified_key(args, logger):
-    decrypts = []
-    if not (
-        args.p is not None
-        and args.q is not None
-        and args.e is not None
-        and args.n is not None
-    ):
-        return None
-
-    try:
-        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
-    except ValueError:
-        logger.error(
-            "Looks like the values for generating key are not ok... (no invmod)"
-        )
-        sys.exit(1)
-
-    if args.createpub:
-        pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
-        print(pub_key.decode("utf-8"))
-
-    if args.decrypt is not None:
-        for u in args.decrypt:
-            if priv_key is not None:
-                decrypts.append(priv_key.decrypt(args.decrypt))
-            else:
-                logger.error(
-                    "Looks like the values for generating key are not ok... (no invmod)"
-                )
-                sys.exit(1)
-    print_results(args, args.publickey[0], priv_key, decrypts)
-    sys.exit(0)
-    return decrypts
-
-
-def main():
-    args = parse_args()
-    logger = _setup_logging(args)
-    args = _parse_numeric_args(args)
-    args = _compute_missing_values(args, logger)
-    args = _handle_decrypt_input(args, logger)
-
-    if _handle_early_exit_modes(args, logger):
-        return
-
-    args = _load_public_keys(args)
-    _handle_fully_specified_key(args, logger)
     args = run_attacks(args, logger)
 
+    # Finish and cleanup
     if args.cleanup:
         cleanup(args)
 

@@ -104,6 +104,11 @@ def _isqrt_rem(n):
     return i2, n - (i2 * i2)
 
 
+def _isqrt_rem_gmpy(n):
+    i2 = _isqrt_gmpy(n)
+    return i2, n - (i2 * i2)
+
+
 def _gcd(a, b):
     while b:
         a, b = b, a % b
@@ -256,6 +261,14 @@ def erathostenes_sieve(n):
 _primes = erathostenes_sieve
 
 
+def _primes_yield(n):
+    p = i = 1
+    while i <= n:
+        p = next_prime(p)
+        yield p
+        i += 1
+
+
 def _primes_yield_gmpy(n):
     p = i = 1
     while i <= n:
@@ -286,6 +299,14 @@ def ilogb(x, b):
 
 def _primes_gmpy(n):
     return list(_primes_yield_gmpy(n))
+
+
+def _isqrt_gmpy(n):
+    return int(gmpy.sqrt(n))
+
+
+def _invert(a, b):
+    return pow(a, b - 2, b)
 
 
 def _lcm(x, y):
@@ -453,6 +474,33 @@ def legendre(a, p):
 
 def cuberoot(n):
     return introot(n, 3)
+
+
+def factor_ned_probabilistic(n, e, d):
+    """
+    800-56B R1 Recommendation for Pair-Wise Key Establishment Schemes Using Integer Factorization Cryptography in Appendix C.
+    """
+    n1, k = n - 1, d * e - 1
+    if k & 1 == 1:
+        return
+    t, r = 0, k
+    while r & 1 == 0:
+        r >>= 1
+        t += 1
+    for _ in range(1, 101):
+        g = random.randint(0, n1)
+        if (y := pow(g, r, n)) == 1 or y == n1:
+            continue
+        for _ in range(1, t):
+            if (x := pow(y, 2, n)) == 1:
+                p = gcd(y - 1, n)
+                return p, n // p
+            if x == n1:
+                continue
+            y = x
+        if (x := pow(y, 2, n)) == 1:
+            p = gcd(x - 1, n)
+            return p, n // p
 
 
 def trivial_factorization_with_n_b(n, b):
