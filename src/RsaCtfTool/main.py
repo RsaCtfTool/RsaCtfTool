@@ -233,7 +233,7 @@ def run_attacks(args, logger):
                 selected_attacks = args.attack
         if "all" in selected_attacks:
             selected_attacks = args.attacks_list
-        logger.info("Testing attacks: %d" % len(selected_attacks))
+        logger.info("Testing attacks: %d" % (len(selected_attacks)-1)) # Exclude "all"
 
         tmpfile = tempfile.NamedTemporaryFile()
         with open(tmpfile.name, "wb") as tmpfd:
