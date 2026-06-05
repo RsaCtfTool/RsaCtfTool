@@ -254,7 +254,7 @@ class RSAAttack(object):
             if attack.can_run():
                 self.logger.info(
                     "[*] %d of %d, Testing: %s"
-                    % (c, num_attacks, attack.get_name())
+                    % (c, (num_attacks-1), attack.get_name()) # Exclude "all"
                 )
                 try:
                     try:
