@@ -6,13 +6,13 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 
 | Category | Total | With Tests | Without Tests |
 |----------|-------|------------|---------------|
-| Single Key | 56 | 17 | 39 |
+| Single Key | 55 | 17 | 38 |
 | Multi Keys | 4 | 4 | 0 |
-| **Total** | **60** | **21** | **39** |
+| **Total** | **59** | **21** | **38** |
 
 ---
 
-## Single Key Attacks
+## Single Key Attacks (55)
 
 - [ ] binary_polynomial_factoring.py
 - [x] boneh_durfee.py (via wiener)
@@ -73,7 +73,7 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 
 ---
 
-## Multi Keys Attacks
+## Multi Keys Attacks (4)
 
 - [x] common_factors.py
 - [x] common_modulus_related_message.py
