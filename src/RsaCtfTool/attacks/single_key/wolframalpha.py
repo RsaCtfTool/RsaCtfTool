@@ -12,6 +12,8 @@ class Attack(AbstractAttack):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["medium"]
         self.wa_client = None
+        self.required_binaries = ["wolframalpha"]
+
 
     def can_run(self):
         try:
