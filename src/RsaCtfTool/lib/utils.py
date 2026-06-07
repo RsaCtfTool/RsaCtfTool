@@ -8,6 +8,7 @@ import base64
 import logging
 import contextlib
 import psutil
+import binascii
 from threading import Timer
 from RsaCtfTool.lib.keys_wrapper import PublicKey
 from RsaCtfTool.lib.number_theory import invmod
