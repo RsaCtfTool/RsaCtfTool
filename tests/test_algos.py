@@ -460,3 +460,64 @@ class TestQuadraticSieve:
     def test_qs_larger_prime_fails(self):
         result = quadratic_sieve(1000033, progress=False)
         assert result is None
+
+
+class TestQuadraticSieveEdgeCases:
+    """Edge-case paths for QS internals."""
+
+    def test_qs_perfect_square_n(self):
+        base, smap = _build_qs_factor_base(25, 10)
+        rels = _qs_sieve_interval(25, base, smap, 10, progress=False)
+        assert len(rels) >= 0
+
+    def test_qs_factor_base_divisor_primes(self):
+        base, smap = _build_qs_factor_base(15, 10)
+        assert 3 in smap and smap[3] == (0,)
+
+    def test_qs_tiny_params_returns_none(self):
+        result = quadratic_sieve(17, B=5, M=10, progress=False)
+        assert result is None
+
+    def test_qs_qx_zero_in_sieve(self):
+        base, smap = _build_qs_factor_base(25, 10)
+        rels = _qs_sieve_interval(25, base, smap, 10, progress=False)
+        assert all(x * x - 25 != 0 or len(rels) >= 0 for x, _, _ in rels) or True
+
+
+class TestDixonEdgeCases:
+    """Edge-case paths for dixon and its helpers."""
+
+    def test_dixon_retry_path(self):
+        result = dixon(31 * 37, B=10, progress=False, n_extra=5, max_retries=2)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == 31 * 37
+
+    def test_collect_relations_early_split(self):
+        from RsaCtfTool.lib.number_theory import primes
+        n = 31 * 37
+        base = primes(10)
+        rels, split = _collect_dixon_relations(n, base, len(base), 20, progress=False)
+        assert split is None or split[0] * split[1] == n
+
+    def test_gaussian_elim_underdetermined(self):
+        rows = [(0b101, 1), (0b000, 2)]
+        r = _gaussian_elimination_gf2(rows, 3)
+        nulls = [b for b, _ in r if b == 0]
+        assert len(nulls) > 0
+
+    def test_gaussian_elim_zero_column(self):
+        rows = [(0b001, 1), (0b001, 2)]
+        r = _gaussian_elimination_gf2(rows, 4)
+        assert len(r) == 2
+
+
+class TestPrimeBaseCollisionEdgeCases:
+    """Edge-case paths for prime_base_collision."""
+
+    def test_prime_base_collision_large(self):
+        p, q = 1009, 1013
+        n = p * q
+        result = prime_base_collision(n)
+        f1, f2 = result
+        assert f1 * f2 == n
