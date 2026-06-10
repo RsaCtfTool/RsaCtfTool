@@ -7,7 +7,7 @@ import pytest
 
 from RsaCtfTool.lib.algos import (
     brent,
-    carmichael,
+    strong_pseudoprime,
     fermat,
     kraitchik,
     lehman,
@@ -141,20 +141,29 @@ class TestLehman:
             lehman(n)
 
 
-class TestCarmichael:
-    """Tests for carmichael factorization."""
+class TestStrongPseudoprime:
+    """Tests for strong_pseudoprime factorization."""
 
-    def test_carmichael_basic(self):
+    def test_strong_pseudoprime_basic(self):
         p, q = 13, 31
         n = p * q
-        result = carmichael(n)
+        result = strong_pseudoprime(n)
         assert result is not None
         f1, f2 = result
         assert f1 * f2 == n
 
-    def test_carmichael_returns_empty(self):
-        result = carmichael(15)
+    def test_strong_pseudoprime_returns_empty(self):
+        result = strong_pseudoprime(15)
         assert result == []
+
+    def test_strong_pseudoprime_carmichael_example(self):
+        """Factor the Carmichael number from Wagstaff Example 10.5."""
+        N = 23224518901
+        result = strong_pseudoprime(N)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == N
+        assert f1 > 1 and f2 > 1
 
 
 class TestSQUFOF:

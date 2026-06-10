@@ -3,7 +3,7 @@
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 from RsaCtfTool.lib.exceptions import FactorizationError
-from RsaCtfTool.lib.algos import carmichael
+from RsaCtfTool.lib.algos import strong_pseudoprime
 
 
 class Attack(AbstractAttack):
@@ -12,9 +12,9 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["medium"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Run carmichael attack with a timeout"""
+        """Run strong_pseudoprime attack with a timeout"""
         try:
-            r = carmichael(publickey.n)
+            r = strong_pseudoprime(publickey.n)
             publickey.p, publickey.q = r
 
         except FactorizationError:
@@ -27,7 +27,7 @@ class Attack(AbstractAttack):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
 
         key_data = """-----BEGIN PUBLIC KEY-----
-MB8wDQYJKoZIhvcNAQEBBQADDgAwCwIEALpqqQIDAQAB
+MB8wDQYJKoZIhvcNAQEBBQADDgCwCwIEALpqqQIDAQAB
 -----END PUBLIC KEY-----"""
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

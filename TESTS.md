@@ -17,7 +17,7 @@ This document tracks which attacks have test coverage in `tests/test_attacks.py`
 - [ ] binary_polynomial_factoring.py
 - [x] boneh_durfee.py (via wiener)
 - [ ] brent.py
-- [ ] carmichael.py
+- [ ] strong_pseudoprime.py
 - [ ] classical_shor.py
 - [ ] comfact_cn.py
 - [ ] compositorial_pm1_gcd.py

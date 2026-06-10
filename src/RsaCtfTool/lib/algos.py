@@ -75,24 +75,33 @@ def brent(N):
                     return g
 
 
-def carmichael(N):
-    """Wagstaff's order-based factoring method (not Carmichael λ(n)).
-    Finds a factor by searching for a base a such that a^{2·f} ≡ 1 (mod N)
-    but a^f ≢ ±1 (mod N), where f = A000265(N-1) (N-1 with factors of 2 removed).
-    Ref: Wagstaff, "The Joy of Factoring", §5.3.
+def strong_pseudoprime(N):
+    """Find a factor of N using the strong pseudoprime (Miller-Rabin) test.
+    Iterates prime bases a, climbs the ladder a^f, a^{2f}, a^{4f}, ..., a^{N-1},
+    and returns a factor when a nontrivial square root of 1 is found.
+    Ref: Wagstaff, "The Joy of Factoring", §3.7 (strong pseudoprime test),
+    and §10.4 (factoring Carmichael numbers).
     """
     f = N1 = N - 1
-    # while f & 1 == 0:
-    #    f >>= 1
-    f = A000265(f)
+    e = 0
+    while f & 1 == 0:
+        f >>= 1
+        e += 1
     a = 2
     while a <= N1:
-        if powmod(a, f << 1, N) == 1:
-            r = powmod(a, f, N)
-            p = gcd(r - 1, N)
-            q = gcd(r + 1, N)
-            if q > p > 1:  # and (p * q == N):
-                return p, q
+        b = powmod(a, f, N)
+        if b == 1 or b == N1:
+            a = next_prime(a)
+            continue
+        for _ in range(e):
+            prev = b
+            b = (b * b) % N
+            if b == 1:
+                p = gcd(prev - 1, N)
+                q = gcd(prev + 1, N)
+                if 1 < p < q:
+                    return p, q
+                break
         a = next_prime(a)
     return []
 
