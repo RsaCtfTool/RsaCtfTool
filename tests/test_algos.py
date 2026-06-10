@@ -26,6 +26,14 @@ from RsaCtfTool.lib.algos import (
     repunit_factor,
     FactorHighAndLowBitsEqual,
     Fibonacci,
+    dixon,
+    prime_base_collision,
+    quadratic_sieve,
+    _gaussian_elimination_gf2,
+    _try_smooth_dependency,
+    _collect_dixon_relations,
+    _build_qs_factor_base,
+    _qs_sieve_interval,
 )
 from RsaCtfTool.lib.exceptions import FactorizationError
 
@@ -291,3 +299,164 @@ class TestFibonacci:
         if result is not None:
             f1, f2 = result
             assert f1 * f2 == N
+
+
+class TestGaussianEliminationGF2:
+    """Tests for _gaussian_elimination_gf2."""
+
+    def test_trivial_3x3(self):
+        rows = [(0b110, 0b001), (0b000, 0b010)]
+        result = _gaussian_elimination_gf2(rows, 3)
+        assert len(result) == 2
+
+    def test_full_rank_elimination(self):
+        rows = [
+            (0b100, 0b001),
+            (0b010, 0b010),
+            (0b001, 0b100),
+        ]
+        result = _gaussian_elimination_gf2(rows, 3)
+        nullspaces = [b for b, _ in result if b == 0]
+        assert len(nullspaces) == 0  # full rank → no nullspace row
+
+
+class TestTrySmoothDependency:
+    """Tests for _try_smooth_dependency."""
+
+    def test_nontrivial_split(self):
+        n = 77
+        base = [2, 3, 5, 7, 11]
+        t = len(base)
+        relations = [
+            (14, 0b00011, [0, 1, 0, 1, 0]),
+            (28, 0b00011, [0, 1, 0, 1, 0]),
+        ]
+        rows = [(relations[i][1], 1 << i) for i in range(len(relations))]
+        rows = _gaussian_elimination_gf2(rows, t)
+        split = _try_smooth_dependency(rows, relations, base, t, n)
+        assert split is not None
+        a, b = split
+        assert a * b == n
+
+
+class TestDixon:
+    """Tests for dixon factorization."""
+
+    def test_dixon_small_semiprime(self):
+        p, q = 31, 37
+        n = p * q
+        result = dixon(n, progress=False)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == n
+
+    def test_dixon_medium_semiprime(self):
+        p, q = 101, 103
+        n = p * q
+        result = dixon(n, progress=False)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == n
+
+    def test_dixon_even_n(self):
+        result = dixon(12, progress=False)
+        assert result == (2, 6)
+
+    def test_dixon_prime(self):
+        result = dixon(17, progress=False)
+        assert result is None
+
+    def test_dixon_with_custom_B(self):
+        p, q = 1009, 1013
+        n = p * q
+        result = dixon(n, B=20, progress=False)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == n
+
+
+class TestPrimeBaseCollision:
+    """Tests for prime_base_collision."""
+
+    def test_prime_base_collision_small(self):
+        p, q = 19, 23
+        n = p * q
+        result = prime_base_collision(n)
+        f1, f2 = result
+        assert f1 * f2 == n
+
+    def test_prime_base_collision_larger(self):
+        p, q = 101, 103
+        n = p * q
+        result = prime_base_collision(n)
+        f1, f2 = result
+        assert f1 * f2 == n
+
+
+class TestQSFactorBase:
+    """Tests for _build_qs_factor_base."""
+
+    def test_factor_base_basic(self):
+        n = 31 * 37
+        base, sqrt_map = _build_qs_factor_base(n, 10)
+        assert -1 in base
+        assert 2 in base
+        assert len(base) >= 3  # at least -1, 2, and some QR primes
+
+    def test_factor_base_includes_divisor_primes(self):
+        n = 31 * 37
+        base, sqrt_map = _build_qs_factor_base(n, 15)
+        for p, roots in sqrt_map.items():
+            assert len(roots) >= 1
+
+
+class TestQSSieveInterval:
+    """Tests for _qs_sieve_interval."""
+
+    def test_sieve_returns_relations(self):
+        n = 31 * 37
+        base, sqrt_map = _build_qs_factor_base(n, 10)
+        relations = _qs_sieve_interval(n, base, sqrt_map, 20, progress=False)
+        assert len(relations) > 0
+        for x, parity, exp in relations:
+            assert len(exp) == len(base)
+
+    def test_sieve_sign_handling(self):
+        n = 31 * 37
+        base, sqrt_map = _build_qs_factor_base(n, 10)
+        relations = _qs_sieve_interval(n, base, sqrt_map, 50, progress=False)
+        found_negative = any(x * x - n < 0 for x, _, _ in relations)
+        found_positive = any(x * x - n > 0 for x, _, _ in relations)
+        assert found_negative or found_positive
+
+
+class TestQuadraticSieve:
+    """Tests for quadratic_sieve."""
+
+    def test_qs_small_semiprime(self):
+        p, q = 31, 37
+        n = p * q
+        result = quadratic_sieve(n, progress=False)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == n
+
+    def test_qs_40bit_semiprime(self):
+        p, q = 1000003, 1000033
+        n = p * q
+        result = quadratic_sieve(n, progress=False)
+        assert result is not None
+        f1, f2 = result
+        assert f1 * f2 == n
+
+    def test_qs_even_n(self):
+        result = quadratic_sieve(12, progress=False)
+        assert result == (2, 6)
+
+    def test_qs_prime_n(self):
+        result = quadratic_sieve(17, progress=False)
+        assert result is None
+
+    def test_qs_larger_prime_fails(self):
+        result = quadratic_sieve(1000033, progress=False)
+        assert result is None
