@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.algos import dixon
+from RsaCtfTool.lib.algos import quadratic_sieve
 
 
 class Attack(AbstractAttack):
@@ -11,14 +11,14 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Run Dixon's smooth-number factorisation attack"""
+        """Run the Quadratic Sieve factorisation attack"""
         try:
             if not hasattr(publickey, "p"):
                 publickey.p = None
             if not hasattr(publickey, "q"):
                 publickey.q = None
 
-            poll_res = dixon(publickey.n, progress=progress)
+            poll_res = quadratic_sieve(publickey.n, progress=progress)
 
             if poll_res is not None:
                 publickey.p, publickey.q = poll_res

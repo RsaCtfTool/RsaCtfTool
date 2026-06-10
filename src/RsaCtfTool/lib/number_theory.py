@@ -187,7 +187,7 @@ def miller_rabin(n, k=40):
 
     if n == 2:
         return True
-    if (n & 1 == 0) or (digit_sum(n) % 9 in [0, 3, 6]):
+    if (n & 1 == 0) or n % 3 == 0:
         return False
 
     r, s = 0, n - 1
@@ -448,6 +448,13 @@ else:
 
 
 def legendre(a, p):
+    """Legendre symbol (a/p) for odd prime p.
+    Returns 0 if p|a, 1 if a is a quadratic residue mod p, p-1 (≡ -1) if QNR.
+    Uses Euler's criterion: a^((p-1)/2) ≡ (a|p) (mod p).
+    Not Jacobi — do NOT use this as a compositeness test.
+    """
+    if a % p == 0:
+        return 0
     return powmod(a, (p - 1) >> 1, p)
 
 
@@ -509,25 +516,21 @@ def common_modulus_related_message(e1, e2, n, c1, c2):
 
 
 def phi(n, factors):
+    """Euler totient φ(n).
+    Computed from the prime factorisation of n via:
+      φ(n) = n ∏_{p|n} (1 − 1/p).
+    The `factors` argument must contain every distinct prime divisor of n.
     """
-    Euler totient function
-    """
-    if is_prime(n):
-        return n - 1
-    elif is_square(n):
-        i2 = isqrt(n)
-        return phi(i2, factors) * i2
-    else:
-        y = n
-        for p in factors:
-            if n % p == 0:
-                y //= p
-                y *= p - 1
-                n, _ = remove(n, p)
-        if n > 1:
-            y //= n
-            y *= n - 1
-        return y
+    y = n
+    for p in factors:
+        if n % p == 0:
+            y //= p
+            y *= p - 1
+            n, _ = remove(n, p)
+    if n > 1:
+        y //= n
+        y *= n - 1
+    return y
 
 
 def chinese_remainder(m, a):
@@ -552,7 +555,7 @@ def tonelli(n, p):
         if p - 1 == legendre(z, p):
             break
     c, r, t, m = powmod(z, q, p), powmod(n, (q + 1) >> 1, p), powmod(n, q, p), s
-    while (t - 1) % p != 0:
+    while t != 1:
         t2 = powmod(t, 2, p)
         for i in range(1, m):
             if (t2 - 1) % p == 0:

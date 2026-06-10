@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.algos import dixon
+from RsaCtfTool.lib.exceptions import FactorizationError
+from RsaCtfTool.lib.algos import prime_base_collision
 
 
 class Attack(AbstractAttack):
@@ -11,23 +12,18 @@ class Attack(AbstractAttack):
         self.speed = AbstractAttack.speed_enum["slow"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Run Dixon's smooth-number factorisation attack"""
+        """Run prime_base_collision attack with a timeout"""
         try:
-            if not hasattr(publickey, "p"):
-                publickey.p = None
-            if not hasattr(publickey, "q"):
-                publickey.q = None
+            if publickey.n <= 10_000_000_000:
+                publickey.p, publickey.q = prime_base_collision(publickey.n)
+            else:
+                self.logger.error("[-] prime_base_collision is too slow for pubkeys > 10^10...")
+                return None, None
 
-            poll_res = dixon(publickey.n, progress=progress)
-
-            if poll_res is not None:
-                publickey.p, publickey.q = poll_res
-
-            return self.create_private_key_from_pqe(
-                publickey.p, publickey.q, publickey.e, publickey.n
-            )
-        except TypeError:
+        except FactorizationError:
             return None, None
+
+        return self.create_private_key(publickey)
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
@@ -35,6 +31,5 @@ class Attack(AbstractAttack):
         key_data = """-----BEGIN PUBLIC KEY-----
 MCAwDQYJKoZIhvcNAQEBBQADDwAwDAIFAQAwAjcCAwEAAQ==
 -----END PUBLIC KEY-----"""
-        self.timeout = 180
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)

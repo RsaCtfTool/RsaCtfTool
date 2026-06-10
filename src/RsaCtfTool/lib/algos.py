@@ -3,6 +3,7 @@
 
 import sys
 import time
+import math
 from random import randint
 from tqdm import tqdm
 from itertools import count
@@ -32,8 +33,8 @@ from RsaCtfTool.lib.number_theory import (
     ilogb,
     mlucas,
     iroot,
-)  # , is_prime, invert, contfrac_to_rational
-from RsaCtfTool.lib.number_theory import invmod, introot, find_period
+)
+from RsaCtfTool.lib.number_theory import invmod, introot, find_period, is_prime, legendre, tonelli
 
 sys.setrecursionlimit(100000)
 
@@ -73,8 +74,10 @@ def brent(N):
 
 
 def carmichael(N):
-    """
-    Algorithm described in the Wagstaf's joy of factoring book.
+    """Wagstaff's order-based factoring method (not Carmichael λ(n)).
+    Finds a factor by searching for a base a such that a^{2·f} ≡ 1 (mod N)
+    but a^f ≢ ±1 (mod N), where f = A000265(N-1) (N-1 with factors of 2 removed).
+    Ref: Wagstaff, "The Joy of Factoring", §5.3.
     """
     f = N1 = N - 1
     # while f & 1 == 0:
@@ -123,7 +126,13 @@ def close_factor(n, b, progress=True):
         mu = (mu * fac) % n
 
 
-def dixon(n):
+def prime_base_collision(n):
+    """Prime-base square-collision factoring.
+    Iterates i from ⌊√n⌋ upward computing i² mod n.  When i² ≡ p² (mod n)
+    for the current prime p, returns gcd(i−p, n).  Falls back to the next
+    prime if no collision is found in the full range.
+    Note: this is NOT Dixon's smooth-number factorisation.
+    """
     start, basej2N, base = isqrt(n), [4 % n], [2]
     while True:
         lp = base[-1]
@@ -137,9 +146,254 @@ def dixon(n):
         basej2N.append(pow(base[-1], 2, n))
 
 
-def euler(n):
+def _collect_dixon_relations(n, base, t, n_needed, progress):
+    """Collect B-smooth relations a² ≡ ∏ pⱼ^{eⱼ} (mod n).
+
+    Returns (relations, split) where *split* is (p, q) if an immediate
+    factor was found (a² ≡ 0 or a² ≡ 1 with a ≢ ±1), else (list, None).
     """
-    Euler factorization method is very much like fermat's
+    relations = []
+    with tqdm(total=n_needed, disable=not progress, desc="Dixon relations") as pbar:
+        while len(relations) < n_needed:
+            a = randint(2, n - 1)
+            a2 = powmod(a, 2, n)
+
+            if a2 == 0:
+                g = gcd(a, n)
+                if 1 < g < n:
+                    return relations, (g, n // g)
+
+            if a2 == 1 and a != 1 and a != n - 1:
+                g = gcd(a - 1, n)
+                if 1 < g < n:
+                    return relations, (g, n // g)
+
+            temp = a2
+            full_exp = [0] * t
+            for idx, p in enumerate(base):
+                while temp % p == 0:
+                    temp //= p
+                    full_exp[idx] += 1
+            if temp == 1:
+                parity = 0
+                for idx in range(t):
+                    if full_exp[idx] & 1:
+                        parity |= 1 << idx
+                relations.append((a, parity, full_exp))
+                pbar.update(1)
+    return relations, None
+
+
+def _gaussian_elimination_gf2(rows, t):
+    """Gaussian elimination over GF(2) with pivot tracking.
+
+    Each element of *rows* is (bitmask, relation_mask).  Returns the
+    transformed list in reduced row-echelon form.
+    """
+    m = len(rows)
+    pivot_row = 0
+    for col in range(t):
+        found = -1
+        for i in range(pivot_row, m):
+            if (rows[i][0] >> col) & 1:
+                found = i
+                break
+        if found == -1:
+            continue
+        rows[pivot_row], rows[found] = rows[found], rows[pivot_row]
+        for i in range(m):
+            if i != pivot_row and (rows[i][0] >> col) & 1:
+                rows[i] = (
+                    rows[i][0] ^ rows[pivot_row][0],
+                    rows[i][1] ^ rows[pivot_row][1],
+                )
+        pivot_row += 1
+    return rows
+
+
+def _try_smooth_dependency(rows, relations, base, t, n):
+    """Try each null-space vector for a nontrivial split x² ≡ y² (mod n).
+
+    Returns (p, q) on success, None if every dependency gives x ≡ ±y.
+    """
+    m = len(relations)
+    for bits, rel_mask in rows:
+        if bits == 0 and rel_mask & (rel_mask - 1):
+            x = 1
+            total_exp = [0] * t
+            for i in range(m):
+                if (rel_mask >> i) & 1:
+                    x = (x * relations[i][0]) % n
+                    for j in range(t):
+                        total_exp[j] += relations[i][2][j]
+            y = 1
+            for j, p in enumerate(base):
+                if total_exp[j]:
+                    y = (y * pow(p, total_exp[j] // 2, n)) % n
+            if x != y and x != n - y:
+                g = gcd(x - y, n)
+                if 1 < g < n:
+                    return g, n // g
+    return None
+
+
+def dixon(n, B=None, progress=True, n_extra=40, max_retries=3):
+    """Dixon's smooth-number factorisation (Dixon, Math. Comp. 36, 1981).
+    Collects relations a_i² ≡ ∏ pⱼ^{e_{ij}} (mod n) that are B-smooth,
+    solves a linear dependency over GF(2) to obtain x² ≡ y² (mod n),
+    and returns gcd(x−y, n).
+
+    Heuristic complexity: L[1/2, √2] = exp(√(2 log n log log n)).
+    In practice superseded by QS/NFS, but included for pedagogical completeness.
+    """
+    if n & 1 == 0:
+        return 2, n // 2
+
+    if B is None:
+        ln = log(n)
+        B = max(10, int(math.exp((ln * math.log(ln) / 2) ** 0.5)) + 1)
+
+    base = primes(B)
+    t = len(base)
+    n_needed = t + n_extra
+
+    for _attempt in range(max_retries):
+        relations, split = _collect_dixon_relations(n, base, t, n_needed, progress)
+        if split is not None:
+            return split
+        if len(relations) < t + 5:
+            continue
+
+        rows = [(relations[i][1], 1 << i) for i in range(len(relations))]
+        rows = _gaussian_elimination_gf2(rows, t)
+        split = _try_smooth_dependency(rows, relations, base, t, n)
+        if split is not None:
+            return split
+
+    return None
+
+
+def _build_qs_factor_base(n, B):
+    """Build QS factor base: -1 + primes (from first B primes).
+
+    Every prime p <= the B-th prime is included. Sieving roots:
+      - p = 2              → root x ≡ n mod 2 (odd n → every other x)
+      - (n|p) = 1          → Tonelli-Shanks gives two roots
+      - (n|p) = 0          → p divides n, root 0 (x ≡ 0 mod p ⇒ p|Q(x))
+      - otherwise (QNR)    → Q(x) mod p is never 0 for any x (skip)
+
+    Returns (base, sqrt_map) where base has -1 at index 0.
+    """
+    base = [-1]
+    sqrt_map = {}
+    for p in primes(B):
+        if p == 2:
+            sqrt_map[2] = (n & 1,)  # odd n → Q(x) even when x odd
+            base.append(2)
+            continue
+        ls = legendre(n % p, p)
+        if ls == 1:
+            r = tonelli(n % p, p)
+            sqrt_map[p] = (r, p - r)
+            base.append(p)
+        elif ls == 0:
+            sqrt_map[p] = (0,)
+            base.append(p)
+    return base, sqrt_map
+
+
+def _qs_sieve_interval(n, base, sqrt_map, M, progress=True):
+    """Sieve Q(x) = x^2 - n over x in [sqrt(n)-M, sqrt(n)+M].
+
+    Returns list of (x, parity_mask, full_exp) relations compatible
+    with _try_smooth_dependency / _gaussian_elimination_gf2.
+    """
+    t = len(base)
+    X = isqrt(n)
+    relations = []
+
+    with tqdm(total=2 * M + 1, disable=not progress, desc="QS trial") as pbar:
+        for off in range(-M, M + 1):
+            x = X + off
+            q_val = x * x - n
+            if q_val == 0:
+                pbar.update(1)
+                continue
+
+            abs_q = abs(q_val)
+            temp = abs_q
+            full_exp = [0] * t
+            if q_val < 0:
+                full_exp[0] = 1
+
+            for p_idx in range(1, t):
+                p = base[p_idx]
+                while temp % p == 0:
+                    temp //= p
+                    full_exp[p_idx] += 1
+
+            if temp == 1:
+                parity = 0
+                for idx in range(t):
+                    if full_exp[idx] & 1:
+                        parity |= 1 << idx
+                relations.append((x, parity, full_exp))
+            pbar.update(1)
+
+    return relations
+
+
+def quadratic_sieve(n, B=None, M=None, progress=True, n_extra=10, max_retries=6):
+    """Quadratic Sieve factorisation.
+
+    Complexity: L[1/2, 1] = exp(sqrt(log n log log n)).
+
+    Sieves Q(x) = x^2 - n for B-smooth values, then reuses the same
+    GF(2) linear algebra and dependency-checking as Dixon.
+    """
+    if n & 1 == 0:
+        return 2, n // 2
+
+    if B is None:
+        ln_n = log(n)
+        ln_ln_n = math.log(ln_n)
+        B_opt = int(math.exp(0.5 * (ln_n * ln_ln_n) ** 0.5))
+        if B_opt > 10:
+            B = max(10, int(B_opt / math.log(B_opt)))
+        else:
+            B = max(10, B_opt)
+
+    if M is None:
+        M = max(B * 300, 200000)
+
+    base, sqrt_map = _build_qs_factor_base(n, B)
+    t = len(base)
+    if t < 2:
+        return None
+
+    n_needed = t + n_extra
+    for _attempt in range(max_retries):
+        relations = _qs_sieve_interval(n, base, sqrt_map, M, progress)
+
+        if len(relations) < n_needed:
+            M = min(M * 2, 5000000)
+            continue
+
+        rows = [(relations[i][1], 1 << i) for i in range(len(relations))]
+        rows = _gaussian_elimination_gf2(rows, t)
+        split = _try_smooth_dependency(rows, relations, base, t, n)
+        if split is not None:
+            return split
+        M = min(M * 2, 5000000)
+
+    return None
+
+
+def euler(n):
+    """Euler's factorisation method.
+    Finds two distinct representations of n as a sum of two squares,
+    then recovers factors via GCD of the mixed sums/differences.
+    Returns None if fewer than two representations are found.
     """
     end, a, b, solutionsFound, firstb, lf = isqrt(n), 0, 0, [], -1, 0
 
@@ -161,12 +415,12 @@ def euler(n):
     c = solutionsFound[1][0]
     d = solutionsFound[1][1]
 
-    k = pow(gcd(a - c, d - b), 2)
-    h = pow(gcd(a + c, d + b), 2)
-    m = pow(gcd(a + c, d - b), 2)
-    lev = pow(gcd(a - c, d + b), 2)
+    k = gcd(a - c, d - b) ** 2
+    h = gcd(a + c, d + b) ** 2
+    m_val = gcd(a + c, d - b) ** 2
+    lev = gcd(a - c, d + b) ** 2
 
-    return gcd(k + h, n), gcd(lev + m, n)
+    return gcd(k + h, n), gcd(lev + m_val, n)
 
 
 def factor_2PN(N, P=3):
@@ -215,16 +469,15 @@ def factor_2PN(N, P=3):
 
 
 def factor_XYXZ(n, base=3):
+    """Factor n of the form x^y · x^z = x^{y+z} where x is prime.
+    Uses integer root extraction: for each exponent k ≥ 2, compute
+    the k-th root r = floor(n^{1/k}); if r^k = n and r is prime, return (r, r^{k-1}).
     """
-    Factor a x^y*x^z form integer with x prime.
-    """
-    power = 1
-    max_power = (int(log(n) / log(base)) + 1) >> 1
-    while power <= max_power:
-        p = next_prime(base**power)
-        if is_divisible(n, p):
-            return p, n // p
-        power += 1
+    max_power = int(log(n) / log(base))
+    for k in range(2, max_power + 1):
+        r, exact = iroot(n, k)
+        if exact and is_prime(r):
+            return r, n // r
 
 
 def fermat(n):
@@ -500,21 +753,29 @@ def solve_partial_q(n, e, dp, dq, qi, part_q, progress=True, Limit=100000):
     edqm1 = e * dq - 1
     edpm1 = e * dp - 1
 
+    found_q = False
     for j in tqdm(range(Limit, 1, -1), disable=(not progress)):
         q = edqm1 // j + 1
         if q & part_q == part_q:
+            found_q = True
             break
+
+    if not found_q:
+        raise FactorizationError("partial q not found")
 
     if n > q and n % q == 0:
         return q, n // q
 
+    found_p = False
     for k in tqdm(range(1, Limit, 1), disable=(not progress)):
         p = edpm1 // k + 1
         if gcd(p, q) == 1 and invmod(q, p) == qi:
+            found_p = True
             break
 
-    print(f"p = {str(p)}", k)
-    print(f"q = {str(q)}", j)
+    if not found_p or p * q != n:
+        raise FactorizationError("partial p not found")
+
     return p, q
 
 
