@@ -481,6 +481,7 @@ class TestZ3SolverAttack:
         )
         assert result.returncode == 0
 
+
 class TestSameNHugeEAttack:
     def test_same_n_huge_e_attack(self):
         n = "111381961169589927896512557754289420474877632607334685306667977794938824018345795836303161492076539375959731633270626091498843936401996648820451019811592594528673182109109991384472979198906744569181673282663323892346854520052840694924830064546269187849702880332522636682366270177489467478933966884097824069977"
@@ -561,3 +562,81 @@ class TestAdditionalSingleKeyAttacks:
         result = _run("--publickey", "examples/strong_pseudoprime.pub",
                       "--private", "--attack", "strong_pseudoprime")
         assert result.returncode == 0
+
+
+class TestFranklinReiterAttack:
+    def test_fr_attack_both_params(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-a", "7",
+            "--fr-b", "42",
+        )
+        assert result.returncode == 0
+        assert "Franklin-Reiter attack recovered related messages" in result.stderr
+
+    def test_fr_attack_no_a(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-b", "42",
+        )
+        assert result.returncode != 0
+        assert "--fr-a and --fr-b are mandatory and must not be zero" in result.stderr
+
+    def test_fr_attack_a_is_zero(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-a", "0",
+            "--fr-b", "42",
+        )
+        assert result.returncode != 0
+        assert "--fr-a and --fr-b are mandatory and must not be zero" in result.stderr
+
+    def test_fr_attack_no_b(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-a", "7",
+        )
+        assert result.returncode != 0
+        assert "--fr-a and --fr-b are mandatory and must not be zero" in result.stderr
+
+    def test_fr_attack_b_is_zero(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-a", "7",
+            "--fr-b", "0",
+        )
+        assert result.returncode != 0
+        assert "--fr-a and --fr-b are mandatory and must not be zero" in result.stderr
+
+    def test_fr_attack_wrong_relation(self):
+        result = _run(
+            "--publickey", "examples/franklin_reiter.pub",
+            "--decryptfile",
+            "examples/franklin_reiter1.cipher,"
+            "examples/franklin_reiter2.cipher",
+            "--attack", "franklin_reiter",
+            "--fr-a", "7",
+            "--fr-b", "43",
+        )
+        assert result.returncode == 0
+        assert "Franklin-Reiter attack found no solution" in result.stderr
