@@ -133,6 +133,14 @@ def parse_args():
     )
     parser.add_argument("--key", help="Specify the private key file.")
     parser.add_argument("--password", help="Private key password if needed.")
+    parser.add_argument(
+        "--fr-a",
+        help="Franklin-Reiter attack: 'a' parameter in m1 = a*m2 + b. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--fr-b",
+        help="Franklin-Reiter attack: 'b' parameter in m1 = a*m2 + b. format : int or 0xhex",
+    )
 
     # If no arguments, display help and exit
     if len(sys.argv) == 1:
@@ -467,6 +475,12 @@ def _parse_numeric_args(args):
         # here too; otherwise a bare "-p ... -q ..." invocation reaches
         # key generation with e=None and crashes in RSA.construct.
         args.e = 65537
+
+    if args.fr_a is not None:
+        args.fr_a = get_numeric_value(args.fr_a)
+    if args.fr_b is not None:
+        args.fr_b = get_numeric_value(args.fr_b)
+
     return args
 
 
@@ -622,6 +636,11 @@ def main():
 
     if _handle_early_exit_modes(args, logger):
         return
+
+    if args.attack is not None and "franklin_reiter" in args.attack and "all" not in args.attack:
+        if args.fr_a is None or args.fr_a == 0 or args.fr_b is None or args.fr_b == 0:
+            logger.error("[!] --fr-a and --fr-b are mandatory and must not be zero when using --attack franklin_reiter")
+            sys.exit(1)
 
     # Fully specified p/q/e/n short-circuits before any key files are
     # generated, so an invalid combination (e.g. e > n on toy moduli)

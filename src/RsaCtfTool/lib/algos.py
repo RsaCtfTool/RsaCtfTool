@@ -36,6 +36,7 @@ from RsaCtfTool.lib.number_theory import (
     gmpy_version,
 )
 from RsaCtfTool.lib.number_theory import invmod, introot, is_prime, legendre, tonelli
+from RsaCtfTool.lib.polynomial import Polynomial, PolynomialDivisionError
 
 sys.setrecursionlimit(100000)
 
@@ -1139,3 +1140,44 @@ def difference_of_powers_factor(n):
             if a_k > n:
                 break
     return sorted(F)
+
+def franklin_reiter(n, e, c1, c2, a, b):
+    """
+    Ref: https://en.wikipedia.org/wiki/Coppersmith%27s_attack#Franklin%E2%80%93Reiter_related-message_attack
+    """
+    if n <= 1:
+        raise ValueError("modulus must be greater than 1")
+
+    if e <= 0:
+        raise ValueError("exponent must be positive")
+
+    if e < 2:
+        raise ValueError("Franklin-Reiter requires e >= 2")
+
+    x = Polynomial([0, 1], n)
+
+    f = x**e - c1
+    g = (a * x + b)**e - c2
+
+    try:
+        common = f.gcd(g)
+    except PolynomialDivisionError:
+        return None
+
+    if common.degree != 1:
+        return None
+
+    try:
+        m1 = (-common.coefficients[0]) % n
+        m2 = (a * m1 + b) % n
+    except (IndexError, TypeError):
+        return None
+
+    # Verify the recovered messages against both ciphertexts.
+    if pow(m1, e, n) != c1 % n:
+        return None
+
+    if pow(m2, e, n) != c2 % n:
+        return None
+
+    return m1, m2
