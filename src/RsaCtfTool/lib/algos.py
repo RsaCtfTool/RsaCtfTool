@@ -1086,6 +1086,13 @@ def wiener(n, e, progress=True):
                     pq = trivial_factorization_with_n_phi(n, phi)
                     if pq is not None:
                         return pq
+                # Universal verification for candidate d (supports Multi-Prime RSA)
+                if powmod(2, e * d, n) == 2 and powmod(3, e * d, n) == 3:
+                    from RsaCtfTool.lib.number_theory import factor_ned_universal
+                    split_factors = factor_ned_universal(n, e, d)
+                    if split_factors:
+                        return split_factors
+                    return (d, None)
 
 
 def williams_pp1(n, max_v=100, stage1_bound=100000):

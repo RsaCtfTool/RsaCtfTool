@@ -15,11 +15,24 @@ class Attack(AbstractAttack):
         # pollard Rho attack
         try:
             p = pollard_rho(publickey.n)
-            publickey.p = p
-            publickey.q = publickey.n // publickey.p
-            return self.create_private_key_from_pqe(
-                publickey.p, publickey.q, publickey.e, publickey.n
-            )
+            if p is not None and 1 < p < publickey.n:
+                from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+                rem = publickey.n // p
+                if is_prime(rem):
+                    publickey.p = p
+                    publickey.q = rem
+                    return self.create_private_key_from_pqe(
+                        publickey.p, publickey.q, publickey.e, publickey.n
+                    )
+                else:
+                    sub_primes = recursive_factorize(rem)
+                    all_primes = [p] + sub_primes
+                    import functools
+                    if functools.reduce(lambda x, y: x * y, all_primes, 1) == publickey.n:
+                        return self.create_private_key_from_primes(
+                            all_primes, publickey.e, publickey.n
+                        )
+            return None, None
         except TypeError:
             return None, None
 

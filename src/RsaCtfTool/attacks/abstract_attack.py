@@ -87,15 +87,20 @@ class AbstractAttack(object):
         raise NotImplementedError
 
     def create_private_key(self, publickey) -> Tuple[Optional[Any], Optional[Any]]:
-        """Helper method to create a private key from publickey with p and q
+        """Helper method to create a private key from publickey with p, q, or primes
 
         Args:
-            publickey: PublicKey object with n, e, p, q attributes
+            publickey: PublicKey object with n, e, p, q (or primes) attributes
 
         Returns:
             Tuple of (PrivateKey, None) on success or (None, None) on failure
         """
         from RsaCtfTool.lib.keys_wrapper import PrivateKey
+
+        if hasattr(publickey, "primes") and publickey.primes and len(publickey.primes) > 2:
+            return self.create_private_key_from_primes(
+                publickey.primes, publickey.e, publickey.n
+            )
 
         if publickey.p is not None and publickey.q is not None:
             try:
@@ -105,9 +110,7 @@ class AbstractAttack(object):
                     q=int(publickey.q),
                     e=int(publickey.e),
                 )
-                if priv_key.key is None:
-                    # RSA.construct failed inside PrivateKey; the factors
-                    # are not a valid split of n - do not hand back a key.
+                if priv_key.key is None and priv_key.d is None:
                     return None, None
                 return priv_key, None
             except (ValueError, TypeError):
@@ -133,7 +136,32 @@ class AbstractAttack(object):
         if p is not None and q is not None:
             try:
                 priv_key = PrivateKey(p=int(p), q=int(q), e=int(e), n=int(n))
-                if priv_key.key is None:
+                if priv_key.key is None and priv_key.d is None:
+                    return None, None
+                return priv_key, None
+            except (ValueError, TypeError):
+                return None, None
+        return None, None
+
+    def create_private_key_from_primes(
+        self, primes, e, n
+    ) -> Tuple[Optional[Any], Optional[Any]]:
+        """Helper method to create a private key from an arbitrary list of prime factors
+
+        Args:
+            primes: list of prime factors (e.g. [p1, p2, p3, p4])
+            e: public exponent e
+            n: modulus n
+
+        Returns:
+            Tuple of (PrivateKey, None) on success or (None, None) on failure
+        """
+        from RsaCtfTool.lib.keys_wrapper import PrivateKey
+
+        if primes and len(primes) >= 2:
+            try:
+                priv_key = PrivateKey(primes=primes, e=int(e), n=int(n))
+                if priv_key.key is None and priv_key.d is None:
                     return None, None
                 return priv_key, None
             except (ValueError, TypeError):

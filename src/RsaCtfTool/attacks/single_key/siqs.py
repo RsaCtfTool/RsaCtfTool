@@ -55,13 +55,14 @@ class SiqsAttack(object):
             for line in yafurun.splitlines()
             if re.search(b"^P[0-9]+ = [0-9]+$", line)
         ]
+        self.primes = primesfound
 
         if len(primesfound) == 2:
             self.p = primesfound[0]
             self.q = primesfound[1]
 
         if len(primesfound) > 2:
-            self.logger.warning("[*] > 2 primes found. Is key multiprime?")
+            self.logger.info(f"[*] {len(primesfound)} primes found (Multi-Prime RSA).")
 
         if len(primesfound) < 2:
             self.logger.error("[*] SIQS did not factor modulus.")
@@ -97,16 +98,20 @@ class Attack(AbstractAttack):
             # can_run preflight - all of these are a plain miss.
             return None, None
 
+        if hasattr(siqsobj, "primes") and len(siqsobj.primes) > 2:
+            import functools
+            prod = functools.reduce(lambda x, y: x * y, siqsobj.primes, 1)
+            if prod == publickey.n:
+                return self.create_private_key_from_primes(
+                    siqsobj.primes, publickey.e, publickey.n
+                )
+
         if siqsobj.p and siqsobj.q:
             publickey.q = siqsobj.q
             publickey.p = siqsobj.p
-            priv_key = PrivateKey(
-                int(publickey.p),
-                int(publickey.q),
-                int(publickey.e),
-                int(publickey.n),
+            return self.create_private_key_from_pqe(
+                publickey.p, publickey.q, publickey.e, publickey.n
             )
-            return priv_key, None
 
         return None, None
 

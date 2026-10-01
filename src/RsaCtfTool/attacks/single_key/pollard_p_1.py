@@ -20,11 +20,23 @@ class Attack(AbstractAttack):
         # Pollard P-1 attack
         poll_res = pollard_P_1(publickey.n, progress)
         if poll_res and len(poll_res) > 1:
-            publickey.p, publickey.q = poll_res
+            p, rem = poll_res[0], poll_res[1]
+            from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+            if is_prime(rem):
+                publickey.p, publickey.q = p, rem
+                return self.create_private_key_from_pqe(
+                    publickey.p, publickey.q, publickey.e, publickey.n
+                )
+            else:
+                sub_primes = recursive_factorize(rem)
+                all_primes = [p] + sub_primes
+                import functools
+                if functools.reduce(lambda x, y: x * y, all_primes, 1) == publickey.n:
+                    return self.create_private_key_from_primes(
+                        all_primes, publickey.e, publickey.n
+                    )
 
-        return self.create_private_key_from_pqe(
-            publickey.p, publickey.q, publickey.e, publickey.n
-        )
+        return None, None
 
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
