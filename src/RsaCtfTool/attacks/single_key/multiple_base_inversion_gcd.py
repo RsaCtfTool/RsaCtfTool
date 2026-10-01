@@ -55,8 +55,11 @@ class Attack(AbstractAttack):
                 publickey.q = publickey.n // pq[0]
             elif len(pq) > 2:
                 import functools
+
                 if functools.reduce(lambda x, y: x * y, pq, 1) == publickey.n:
-                    return self.create_private_key_from_primes(pq, publickey.e, publickey.n)
+                    return self.create_private_key_from_primes(
+                        pq, publickey.e, publickey.n
+                    )
                 publickey.primes = pq
             else:
                 self.logger.error("No factors found...")

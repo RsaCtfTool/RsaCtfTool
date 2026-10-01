@@ -33,9 +33,7 @@ def load_partial_privkey(keyfile):
                 # Non-INTEGER lines (OCTET STRING headers etc.) carry no key
                 # field; padding them with 0 used to shift every later field.
                 if "BAD INTEGER" in line:
-                    val = int(
-                        line.split(":")[4].replace("[", "").replace("]", ""), 16
-                    )
+                    val = int(line.split(":")[4].replace("[", "").replace("]", ""), 16)
                 else:
                     val = int(line.split(":")[3], 16)
                 fields.append(val)
@@ -130,12 +128,13 @@ class PrivateKey(object):
             return
         if self.primes and len(self.primes) > 2:
             import functools
+
             self.phi = functools.reduce(lambda acc, p: acc * (p - 1), self.primes, 1)
         elif self.p is not None and self.q is not None and self.phi is None:
             if self.p != self.q:
                 self.phi = (self.p - 1) * (self.q - 1)
             else:
-                self.phi = (self.p ** 2) - self.p
+                self.phi = (self.p**2) - self.p
 
     def _compute_d(self, e):
         if self.d is not None:
@@ -207,9 +206,7 @@ class PrivateKey(object):
                 # __str__/decrypt see the same uniform RSA object interface
                 # instead of a cryptography-library key without exportKey().
                 try:
-                    self.key = RSA.construct(
-                        (self.n, self.e, self.d, self.p, self.q)
-                    )
+                    self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
                 except (ValueError, IndexError, NotImplementedError, TypeError):
                     self._pem_bytes = pem_bytes
             else:
@@ -290,11 +287,19 @@ class PrivateKey(object):
                     pass
 
             # Multi-prime CRT decryption if all primes are known
-            if self.primes and len(self.primes) > 2 and self.d is not None and self.n is not None:
+            if (
+                self.primes
+                and len(self.primes) > 2
+                and self.d is not None
+                and self.n is not None
+            ):
                 try:
                     from RsaCtfTool.lib.number_theory import chinese_remainder
+
                     cipher_int = int.from_bytes(c, "big")
-                    residues = [powmod(cipher_int, self.d % (p - 1), p) for p in self.primes]
+                    residues = [
+                        powmod(cipher_int, self.d % (p - 1), p) for p in self.primes
+                    ]
                     m_int = chinese_remainder(self.primes, residues)
                     m_hex = hex(m_int)[2:]
                     if len(m_hex) % 2 == 1:

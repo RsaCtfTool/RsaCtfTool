@@ -22,6 +22,7 @@ class Attack(AbstractAttack):
         if poll_res and len(poll_res) > 1:
             p, rem = poll_res[0], poll_res[1]
             from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+
             if is_prime(rem):
                 publickey.p, publickey.q = p, rem
                 return self.create_private_key_from_pqe(
@@ -31,6 +32,7 @@ class Attack(AbstractAttack):
                 sub_primes = recursive_factorize(rem)
                 all_primes = [p] + sub_primes
                 import functools
+
                 if functools.reduce(lambda x, y: x * y, all_primes, 1) == publickey.n:
                     return self.create_private_key_from_primes(
                         all_primes, publickey.e, publickey.n

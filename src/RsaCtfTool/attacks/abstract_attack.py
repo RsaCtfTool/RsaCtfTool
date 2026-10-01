@@ -77,9 +77,7 @@ class AbstractAttack(object):
             try:
                 return self.attack(publickeys, cipher, progress)
             except TimeoutError:
-                self.logger.warning(
-                    f"[!] Timeout during {self.get_name()} attack."
-                )
+                self.logger.warning(f"[!] Timeout during {self.get_name()} attack.")
                 return None, None
 
     def test(self) -> None:
@@ -97,7 +95,11 @@ class AbstractAttack(object):
         """
         from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
-        if hasattr(publickey, "primes") and publickey.primes and len(publickey.primes) > 2:
+        if (
+            hasattr(publickey, "primes")
+            and publickey.primes
+            and len(publickey.primes) > 2
+        ):
             return self.create_private_key_from_primes(
                 publickey.primes, publickey.e, publickey.n
             )

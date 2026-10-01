@@ -9,6 +9,7 @@ from RsaCtfTool.attacks.single_key.fermat import Attack as FermatAttack
 
 def test_multiprime_private_key():
     from RsaCtfTool.lib.number_theory import next_prime
+
     p1 = int(next_prime(10**25))
     p2 = int(next_prime(p1 + 100))
     p3 = int(next_prime(p2 + 100))
@@ -55,6 +56,7 @@ def test_miller_rabin_factor_from_ed():
     e = 65537
 
     import functools
+
     phi = functools.reduce(lambda acc, p: acc * (p - 1), primes, 1)
     d = pow(e, -1, phi)
 

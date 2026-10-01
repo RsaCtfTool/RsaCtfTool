@@ -19,6 +19,7 @@ class Attack(AbstractAttack):
                 return None, None
             p1, p2 = r
             from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+
             if is_prime(p1) and is_prime(p2):
                 publickey.p, publickey.q = p1, p2
                 return self.create_private_key(publickey)
@@ -31,6 +32,7 @@ class Attack(AbstractAttack):
                     else:
                         all_primes.extend(recursive_factorize(factor))
                 import functools
+
                 if functools.reduce(lambda x, y: x * y, all_primes, 1) == publickey.n:
                     return self.create_private_key_from_primes(
                         all_primes, publickey.e, publickey.n

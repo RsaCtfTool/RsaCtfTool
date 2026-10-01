@@ -100,6 +100,7 @@ class Attack(AbstractAttack):
 
         if hasattr(siqsobj, "primes") and len(siqsobj.primes) > 2:
             import functools
+
             prod = functools.reduce(lambda x, y: x * y, siqsobj.primes, 1)
             if prod == publickey.n:
                 return self.create_private_key_from_primes(

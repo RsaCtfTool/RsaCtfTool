@@ -518,6 +518,7 @@ def factor_ned_universal(n, e, d, max_trials=100):
     Works for any modulus with 2 or more prime factors (including Multi-Prime RSA).
     """
     import random
+
     k = d * e - 1
     if k <= 0 or k % 2 != 0:
         return None
@@ -574,9 +575,52 @@ def recursive_factorize(n, timeout=10):
 
     # 1. Trial division for small primes
     small_primes = [
-        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61,
-        67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137,
-        139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19,
+        23,
+        29,
+        31,
+        37,
+        41,
+        43,
+        47,
+        53,
+        59,
+        61,
+        67,
+        71,
+        73,
+        79,
+        83,
+        89,
+        97,
+        101,
+        103,
+        107,
+        109,
+        113,
+        127,
+        131,
+        137,
+        139,
+        149,
+        151,
+        157,
+        163,
+        167,
+        173,
+        179,
+        181,
+        191,
+        193,
+        197,
+        199,
     ]
     for p in small_primes:
         while n % p == 0:
@@ -591,20 +635,26 @@ def recursive_factorize(n, timeout=10):
     # 2. Fermat factorization if close
     try:
         from RsaCtfTool.lib.algos import fermat
+
         f_res = fermat(n)
         if f_res is not None:
             p1, p2 = f_res
             if 1 < p1 < n and 1 < p2 < n:
-                return sorted(factors + recursive_factorize(p1) + recursive_factorize(p2))
+                return sorted(
+                    factors + recursive_factorize(p1) + recursive_factorize(p2)
+                )
     except Exception:
         pass
 
     # 3. Brent Pollard Rho
     try:
         from RsaCtfTool.lib.algos import brent
+
         b_res = brent(n)
         if b_res is not None and 1 < b_res < n:
-            return sorted(factors + recursive_factorize(b_res) + recursive_factorize(n // b_res))
+            return sorted(
+                factors + recursive_factorize(b_res) + recursive_factorize(n // b_res)
+            )
     except Exception:
         pass
 
@@ -680,11 +730,9 @@ def chinese_remainder(m, a):
     # gmpy a non-invertible Ni silently becomes 0 and yields a wrong
     # residue, so reject the input instead.
     for i, mi in enumerate(m):
-        for mj in m[i + 1:]:
+        for mj in m[i + 1 :]:
             if gcd(mi, mj) != 1:
-                raise ValueError(
-                    "chinese_remainder: moduli must be pairwise coprime"
-                )
+                raise ValueError("chinese_remainder: moduli must be pairwise coprime")
     S = 0
     N = list_prod(m)
     for mi, ai in zip(m, a):
@@ -778,6 +826,7 @@ def convergents_from_contfrac(frac, progress=False):
         convergents.append((num, denom))
 
     return convergents
+
 
 def inv_mod_pow_of_2(factor, bit_count):
     """

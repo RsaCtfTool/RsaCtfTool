@@ -18,9 +18,7 @@ class Attack(AbstractAttack):
             self.logger.warning("[*] Cracking failed...")
         else:
             if isinstance(pq, (list, tuple)) and len(pq) > 2:
-                return self.create_private_key_from_primes(
-                    pq, publickey.e, publickey.n
-                )
+                return self.create_private_key_from_primes(pq, publickey.e, publickey.n)
             elif isinstance(pq, (list, tuple)) and len(pq) == 2:
                 if pq[1] is None:
                     # Single exponent d recovered

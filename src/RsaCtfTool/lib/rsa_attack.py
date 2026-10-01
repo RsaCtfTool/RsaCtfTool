@@ -260,8 +260,7 @@ class RSAAttack(object):
             t0 = time.time()
             if attack.can_run():
                 self.logger.info(
-                    "[*] %d of %d, Testing: %s"
-                    % (c, num_attacks, attack.get_name())
+                    "[*] %d of %d, Testing: %s" % (c, num_attacks, attack.get_name())
                 )
                 try:
                     try:
@@ -328,7 +327,9 @@ class RSAAttack(object):
             if hasattr(self.args, "primes") and self.args.primes:
                 pass
             elif self.args.n % self.args.p == 0 and self.args.n % self.args.q == 0:
-                self.logger.info("[*] Multiple prime factors provided for multi-prime modulus.")
+                self.logger.info(
+                    "[*] Multiple prime factors provided for multi-prime modulus."
+                )
             else:
                 self.logger.error(
                     "[!] Provided p and q do not multiply to n; ignoring them."

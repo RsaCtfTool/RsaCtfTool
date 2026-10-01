@@ -27,6 +27,7 @@ class Attack(AbstractAttack):
                 x = publickeys[i]
                 rem = pub // p
                 from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+
                 if is_prime(rem):
                     x.p = p
                     x.q = rem

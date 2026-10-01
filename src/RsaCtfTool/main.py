@@ -216,9 +216,7 @@ def run_conspicuous_check(args, logger):
         if args.key is not None:
             priv_key = PrivateKey(filename=args.key, password=args.password)
         else:
-            _, priv_key = generate_keys_from_p_q_e_n(
-                args.p, args.q, args.e, args.n
-            )
+            _, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
     except Exception as exc:
         logger.error("Unable to load the private key: %s", exc)
         return False
@@ -459,6 +457,7 @@ def _parse_numeric_args(args):
         args.primes = [get_numeric_value(p.strip()) for p in args.primes.split(",")]
         if args.n is None:
             import functools
+
             args.n = functools.reduce(lambda x, y: x * y, args.primes, 1)
         if args.e is None:
             args.e = 65537
@@ -494,11 +493,13 @@ def _compute_n_from_pq(args):
 
 
 def _recover_pq_from_ned(args, logger):
-    if not (args.n is not None
-            and args.e is not None
-            and args.d is not None
-            and args.p is None
-            and args.q is None):
+    if not (
+        args.n is not None
+        and args.e is not None
+        and args.d is not None
+        and args.p is None
+        and args.q is None
+    ):
         return
     pq = factor_ned(args.n, args.e, args.d)
     if pq is not None:
@@ -588,13 +589,22 @@ def _load_public_keys(args):
 
 def _handle_fully_specified_key(args, logger):
     decrypts = []
-    if getattr(args, "primes", None) and len(args.primes) > 2 and args.e is not None and args.n is not None:
+    if (
+        getattr(args, "primes", None)
+        and len(args.primes) > 2
+        and args.e is not None
+        and args.n is not None
+    ):
         priv_key = PrivateKey(primes=args.primes, e=args.e, n=args.n)
         if args.decrypt is not None:
             decrypts = priv_key.decrypt(args.decrypt)
             if not isinstance(decrypts, list):
                 decrypts = [decrypts]
-        pubkey_name = args.publickey[0] if isinstance(args.publickey, list) and args.publickey else args.publickey
+        pubkey_name = (
+            args.publickey[0]
+            if isinstance(args.publickey, list) and args.publickey
+            else args.publickey
+        )
         print_results(args, pubkey_name or "multi_prime_key", priv_key, decrypts)
         sys.exit(0)
 

@@ -95,7 +95,9 @@ def _print_dumpkey_private(args, private_keys, logger):
         if priv_key.d is not None:
             logger.info(f"d: {str(priv_key.d)}")
         if getattr(priv_key, "primes", None) and len(priv_key.primes) > 2:
-            logger.info(f"primes ({len(priv_key.primes)}): {', '.join(str(p) for p in priv_key.primes)}")
+            logger.info(
+                f"primes ({len(priv_key.primes)}): {', '.join(str(p) for p in priv_key.primes)}"
+            )
         else:
             if priv_key.p is not None:
                 logger.info(f"p: {str(priv_key.p)}")
@@ -154,7 +156,7 @@ def _print_decrypt_results(args, decrypt, logger):
                 with contextlib.suppress(ValueError):
                     # Malformed data whose padding never reaches a 0
                     # separator must not crash the result printer.
-                    nc = c[c[2:].index(0) + 2:]
+                    nc = c[c[2:].index(0) + 2 :]
                     logger.info("\nPKCS#1.5 padding decoded!")
                     print_decrypted_res(nc, logger)
 
