@@ -67,11 +67,28 @@ class Attack(AbstractAttack):
             # Accept only a genuine factor split: the script prints 0 on
             # failure and may echo n itself for prime input.
             if 1 < sageresult < publickey.n and publickey.n % sageresult == 0:
-                publickey.p = sageresult
-                publickey.q = publickey.n // publickey.p
-                return self.create_private_key_from_pqe(
-                    publickey.p, publickey.q, publickey.e, publickey.n
-                )
+                p = sageresult
+                rem = publickey.n // p
+                from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+
+                if is_prime(rem):
+                    publickey.p = p
+                    publickey.q = rem
+                    return self.create_private_key_from_pqe(
+                        publickey.p, publickey.q, publickey.e, publickey.n
+                    )
+                else:
+                    sub_primes = recursive_factorize(rem)
+                    all_primes = [p] + sub_primes
+                    import functools
+
+                    if (
+                        functools.reduce(lambda x, y: x * y, all_primes, 1)
+                        == publickey.n
+                    ):
+                        return self.create_private_key_from_primes(
+                            all_primes, publickey.e, publickey.n
+                        )
             return (None, None)
         except KeyboardInterrupt:
             pass

@@ -33,9 +33,7 @@ def load_partial_privkey(keyfile):
                 # Non-INTEGER lines (OCTET STRING headers etc.) carry no key
                 # field; padding them with 0 used to shift every later field.
                 if "BAD INTEGER" in line:
-                    val = int(
-                        line.split(":")[4].replace("[", "").replace("]", ""), 16
-                    )
+                    val = int(line.split(":")[4].replace("[", "").replace("]", ""), 16)
                 else:
                     val = int(line.split(":")[3], 16)
                 fields.append(val)
@@ -106,20 +104,37 @@ class PublicKey(object):
 
 
 class PrivateKey(object):
-    def _init_fields(self, p, q, e, n, d, phi):
-        self.p = p
-        self.q = q
+    def _init_fields(self, p, q, e, n, d, phi, primes=None):
+        if primes is not None:
+            self.primes = [int(x) for x in primes]
+            self.primes.sort()
+            self.p = self.primes[0]
+            self.q = self.primes[1] if len(self.primes) > 1 else None
+        else:
+            self.primes = []
+            if p is not None:
+                self.primes.append(int(p))
+            if q is not None and int(q) not in self.primes:
+                self.primes.append(int(q))
+            self.p = p
+            self.q = q
         self.e = e
         self.n = n
         self.d = d
         self.phi = phi
 
     def _compute_phi(self):
-        if self.p is not None and self.q is not None and self.phi is None:
+        if self.phi is not None:
+            return
+        if self.primes and len(self.primes) > 2:
+            import functools
+
+            self.phi = functools.reduce(lambda acc, p: acc * (p - 1), self.primes, 1)
+        elif self.p is not None and self.q is not None and self.phi is None:
             if self.p != self.q:
                 self.phi = (self.p - 1) * (self.q - 1)
             else:
-                self.phi = (self.p ** 2) - self.p
+                self.phi = (self.p**2) - self.p
 
     def _compute_d(self, e):
         if self.d is not None:
@@ -135,6 +150,10 @@ class PrivateKey(object):
                 logger.error("[!] e^d==1 inversion error, check your math.")
 
     def _construct_key_from_components(self):
+        if self.primes and len(self.primes) > 2:
+            # Multi-prime RSA: standard PyCryptodome construct only accepts 2-prime tuples.
+            # We preserve recovered parameters for direct textbook and CRT decryption.
+            return True
         if self.p is not None and self.q is not None and self.d is not None:
             try:
                 self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
@@ -187,9 +206,7 @@ class PrivateKey(object):
                 # __str__/decrypt see the same uniform RSA object interface
                 # instead of a cryptography-library key without exportKey().
                 try:
-                    self.key = RSA.construct(
-                        (self.n, self.e, self.d, self.p, self.q)
-                    )
+                    self.key = RSA.construct((self.n, self.e, self.d, self.p, self.q))
                 except (ValueError, IndexError, NotImplementedError, TypeError):
                     self._pem_bytes = pem_bytes
             else:
@@ -212,6 +229,7 @@ class PrivateKey(object):
         n=None,
         d=None,
         phi=None,
+        primes=None,
         filename=None,
         password=None,
     ):
@@ -220,11 +238,12 @@ class PrivateKey(object):
         :param q: extracted from n
         :param e: exponent
         :param n: n from public key
+        :param primes: optional list of primes for multi-prime RSA
         """
         self.key = None
         self._pem_bytes = None
         self.filename = filename
-        self._init_fields(p, q, e, n, d, phi)
+        self._init_fields(p, q, e, n, d, phi, primes)
         self._compute_phi()
         self._compute_d(e)
         if not self._construct_key_from_components() and filename is not None:
@@ -267,6 +286,29 @@ class PrivateKey(object):
                 except Exception:
                     pass
 
+            # Multi-prime CRT decryption if all primes are known
+            if (
+                self.primes
+                and len(self.primes) > 2
+                and self.d is not None
+                and self.n is not None
+            ):
+                try:
+                    from RsaCtfTool.lib.number_theory import chinese_remainder
+
+                    cipher_int = int.from_bytes(c, "big")
+                    residues = [
+                        powmod(cipher_int, self.d % (p - 1), p) for p in self.primes
+                    ]
+                    m_int = chinese_remainder(self.primes, residues)
+                    m_hex = hex(m_int)[2:]
+                    if len(m_hex) % 2 == 1:
+                        m_hex = f"0{m_hex}"
+                    plain.append(binascii.unhexlify(m_hex))
+                    continue
+                except Exception:
+                    pass
+
             # Textbook RSA with the recovered exponent.
             if self.n is not None and self.d is not None:
                 try:
@@ -295,4 +337,15 @@ class PrivateKey(object):
                 return out.decode("utf-8") if isinstance(out, bytes) else out
         if self._pem_bytes is not None:
             return self._pem_bytes.decode("utf-8")
+        if self.primes and len(self.primes) > 2 and self.d is not None:
+            lines = [
+                "-----BEGIN MULTI-PRIME RSA PARAMETERS-----",
+                f"Modulus (n): {self.n}",
+                f"Public Exponent (e): {self.e}",
+                f"Private Exponent (d): {self.d}",
+                f"Number of Primes: {len(self.primes)}",
+                f"Primes: {', '.join(str(p) for p in self.primes)}",
+                "-----END MULTI-PRIME RSA PARAMETERS-----",
+            ]
+            return "\n".join(lines)
         return ""

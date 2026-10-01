@@ -260,8 +260,7 @@ class RSAAttack(object):
             t0 = time.time()
             if attack.can_run():
                 self.logger.info(
-                    "[*] %d of %d, Testing: %s"
-                    % (c, num_attacks, attack.get_name())
+                    "[*] %d of %d, Testing: %s" % (c, num_attacks, attack.get_name())
                 )
                 try:
                     try:
@@ -325,12 +324,21 @@ class RSAAttack(object):
             and self.args.n is not None
             and self.args.p * self.args.q != self.args.n
         ):
-            self.logger.error(
-                "[!] Provided p and q do not multiply to n; ignoring them."
-            )
-            self.args.p = None
-            self.args.q = None
-        self.need_run = self.args.p is None or self.args.q is None
+            if hasattr(self.args, "primes") and self.args.primes:
+                pass
+            elif self.args.n % self.args.p == 0 and self.args.n % self.args.q == 0:
+                self.logger.info(
+                    "[*] Multiple prime factors provided for multi-prime modulus."
+                )
+            else:
+                self.logger.error(
+                    "[!] Provided p and q do not multiply to n; ignoring them."
+                )
+                self.args.p = None
+                self.args.q = None
+        self.need_run = (self.args.p is None or self.args.q is None) and (
+            not getattr(self.args, "primes", None)
+        )
         if self.args.show_modulus:
             self.logger.info("modulus: %s", self.args.n)
 
@@ -357,12 +365,17 @@ class RSAAttack(object):
             self._reject_unusable_priv_key()
         else:
             self.logger.warning(
-                "[!] No need to factorize since you provided a prime factor..."
+                "[!] No need to factorize since you provided prime factor(s)..."
             )
             decrypted = None
-            self.priv_key = PrivateKey(
-                self.args.p, self.args.q, self.args.e, self.args.n
-            )
+            if getattr(self.args, "primes", None):
+                self.priv_key = PrivateKey(
+                    primes=self.args.primes, e=self.args.e, n=self.args.n
+                )
+            else:
+                self.priv_key = PrivateKey(
+                    self.args.p, self.args.q, self.args.e, self.args.n
+                )
             # e sharing a factor with phi yields an inert shell key; report
             # failure instead of "success" with an unusable key.
             self._reject_unusable_priv_key()

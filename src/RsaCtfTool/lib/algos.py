@@ -108,7 +108,7 @@ def strong_pseudoprime(N):
             continue
         for _ in range(e):
             prev = b
-            b = powmod(b,2,N)
+            b = powmod(b, 2, N)
             if b == 1:
                 p = gcd(prev - 1, N)
                 q = gcd(prev + 1, N)
@@ -368,9 +368,9 @@ def _qs_sieve_interval(n, base, sqrt_map, M, progress=True, exclude_halfwidth=0)
     # whole range; array('d') keeps it as packed C doubles.
     half = array("d", (math.log2(v) + two_x_bits for v in range(1, M + 1)))
     log_q = array("d")
-    log_q.extend(reversed(half))          # off = -M .. -1
-    log_q.append(float("-inf"))           # off == 0: Q vanishes when X*X == n
-    log_q.extend(half)                    # off = 1 .. M
+    log_q.extend(reversed(half))  # off = -M .. -1
+    log_q.append(float("-inf"))  # off == 0: Q vanishes when X*X == n
+    log_q.extend(half)  # off = 1 .. M
     del half
     logs = array("d", [0.0]) * size
 
@@ -645,8 +645,9 @@ def FactorHighAndLowBitsEqual(n, max_middle_bits=24):
 
     logger = logging.getLogger("global_logger")
     for middle_bits in range(1, max_middle_bits + 1):
-        logger.debug(f"FactorHighAndLowBitsEqual: middle bits: "
-                     f"{middle_bits} of {n_size}/2")
+        logger.debug(
+            f"FactorHighAndLowBitsEqual: middle bits: {middle_bits} of {n_size}/2"
+        )
         for r in [r0, k_shift - r0]:
             s = a
             for i in range(k):
@@ -1086,6 +1087,14 @@ def wiener(n, e, progress=True):
                     pq = trivial_factorization_with_n_phi(n, phi)
                     if pq is not None:
                         return pq
+                # Universal verification for candidate d (supports Multi-Prime RSA)
+                if powmod(2, e * d, n) == 2 and powmod(3, e * d, n) == 3:
+                    from RsaCtfTool.lib.number_theory import factor_ned_universal
+
+                    split_factors = factor_ned_universal(n, e, d)
+                    if split_factors:
+                        return split_factors
+                    return (d, None)
 
 
 def williams_pp1(n, max_v=100, stage1_bound=100000):

@@ -25,11 +25,19 @@ class Attack(AbstractAttack):
             p = gcd(pub, M // pub)
             if pub > p > 1:
                 x = publickeys[i]
-                x.p = p
-                x.q = pub // p
-                # update each attackobj with a private_key
-                priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
-                if priv_key_1.key is not None:
+                rem = pub // p
+                from RsaCtfTool.lib.number_theory import is_prime, recursive_factorize
+
+                if is_prime(rem):
+                    x.p = p
+                    x.q = rem
+                    priv_key_1 = PrivateKey(int(x.p), int(x.q), int(x.e), int(x.n))
+                else:
+                    sub_primes = recursive_factorize(rem)
+                    all_primes = [p] + sub_primes
+                    priv_key_1 = PrivateKey(primes=all_primes, e=int(x.e), n=int(x.n))
+
+                if priv_key_1.key is not None or priv_key_1.d is not None:
                     priv_keys.append(priv_key_1)
                 self.logger.info(f"[*] Found common factor in modulus for {x.filename}")
 

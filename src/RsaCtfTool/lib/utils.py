@@ -22,7 +22,9 @@ rootpath = f"{rootpath}/.."
 
 def get_numeric_value(value):
     """Parse input (hex or numerical)"""
-    return int(value, 16) if value.startswith("0x") else int(value)
+    if isinstance(value, int):
+        return value
+    return int(value, 16) if str(value).startswith("0x") else int(value)
 
 
 def get_base64_value(value):
@@ -92,10 +94,15 @@ def _print_dumpkey_private(args, private_keys, logger):
             logger.info(f"e: {str(priv_key.e)}")
         if priv_key.d is not None:
             logger.info(f"d: {str(priv_key.d)}")
-        if priv_key.p is not None:
-            logger.info(f"p: {str(priv_key.p)}")
-        if priv_key.q is not None:
-            logger.info(f"q: {str(priv_key.q)}")
+        if getattr(priv_key, "primes", None) and len(priv_key.primes) > 2:
+            logger.info(
+                f"primes ({len(priv_key.primes)}): {', '.join(str(p) for p in priv_key.primes)}"
+            )
+        else:
+            if priv_key.p is not None:
+                logger.info(f"p: {str(priv_key.p)}")
+            if priv_key.q is not None:
+                logger.info(f"q: {str(priv_key.q)}")
         if args.ext:
             if (
                 priv_key.d is not None
@@ -149,7 +156,7 @@ def _print_decrypt_results(args, decrypt, logger):
                 with contextlib.suppress(ValueError):
                     # Malformed data whose padding never reaches a 0
                     # separator must not crash the result printer.
-                    nc = c[c[2:].index(0) + 2:]
+                    nc = c[c[2:].index(0) + 2 :]
                     logger.info("\nPKCS#1.5 padding decoded!")
                     print_decrypted_res(nc, logger)
 

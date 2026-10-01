@@ -17,14 +17,25 @@ class Attack(AbstractAttack):
         if pq is None:
             self.logger.warning("[*] Cracking failed...")
         else:
-            publickey.p, publickey.q = pq
-            priv_key = PrivateKey(
-                int(publickey.p),
-                int(publickey.q),
-                int(publickey.e),
-                int(publickey.n),
-            )
-            return priv_key, None
+            if isinstance(pq, (list, tuple)) and len(pq) > 2:
+                return self.create_private_key_from_primes(pq, publickey.e, publickey.n)
+            elif isinstance(pq, (list, tuple)) and len(pq) == 2:
+                if pq[1] is None:
+                    # Single exponent d recovered
+                    priv_key = PrivateKey(
+                        d=int(pq[0]),
+                        e=int(publickey.e),
+                        n=int(publickey.n),
+                    )
+                    return priv_key, None
+                publickey.p, publickey.q = pq
+                priv_key = PrivateKey(
+                    int(publickey.p),
+                    int(publickey.q),
+                    int(publickey.e),
+                    int(publickey.n),
+                )
+                return priv_key, None
         return None, None
 
     def test(self):

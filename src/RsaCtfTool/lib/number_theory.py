@@ -512,6 +512,157 @@ def factor_ned_deterministic(n, e, d):
 factor_ned = factor_ned_deterministic
 
 
+def factor_ned_universal(n, e, d, max_trials=100):
+    """
+    Probabilistic Miller-Rabin factorization of n given public/private exponents e, d.
+    Works for any modulus with 2 or more prime factors (including Multi-Prime RSA).
+    """
+    import random
+
+    k = d * e - 1
+    if k <= 0 or k % 2 != 0:
+        return None
+    # Write k = 2^s * t
+    s = 0
+    t = k
+    while t % 2 == 0:
+        s += 1
+        t //= 2
+
+    factors = set()
+    for _ in range(max_trials):
+        a = random.randint(2, n - 2)
+        g = gcd(a, n)
+        if 1 < g < n:
+            factors.add(int(g))
+            factors.add(int(n // g))
+            break
+
+        v = powmod(a, t, n)
+        if v == 1 or v == n - 1:
+            continue
+
+        for _ in range(s - 1):
+            prev_v = v
+            v = powmod(v, 2, n)
+            if v == n - 1:
+                break
+            if v == 1:
+                g = gcd(prev_v - 1, n)
+                if 1 < g < n:
+                    factors.add(int(g))
+                    factors.add(int(n // g))
+                break
+        if factors:
+            break
+
+    if not factors:
+        return None
+    return sorted(list(factors))
+
+
+def recursive_factorize(n, timeout=10):
+    """
+    Recursively factors a composite integer n into its prime factors.
+    Returns a sorted list of primes whose product is n.
+    """
+    if n <= 1:
+        return []
+    if is_prime(n):
+        return [int(n)]
+
+    factors = []
+
+    # 1. Trial division for small primes
+    small_primes = [
+        2,
+        3,
+        5,
+        7,
+        11,
+        13,
+        17,
+        19,
+        23,
+        29,
+        31,
+        37,
+        41,
+        43,
+        47,
+        53,
+        59,
+        61,
+        67,
+        71,
+        73,
+        79,
+        83,
+        89,
+        97,
+        101,
+        103,
+        107,
+        109,
+        113,
+        127,
+        131,
+        137,
+        139,
+        149,
+        151,
+        157,
+        163,
+        167,
+        173,
+        179,
+        181,
+        191,
+        193,
+        197,
+        199,
+    ]
+    for p in small_primes:
+        while n % p == 0:
+            factors.append(int(p))
+            n //= p
+            if n == 1:
+                return sorted(factors)
+            if is_prime(n):
+                factors.append(int(n))
+                return sorted(factors)
+
+    # 2. Fermat factorization if close
+    try:
+        from RsaCtfTool.lib.algos import fermat
+
+        f_res = fermat(n)
+        if f_res is not None:
+            p1, p2 = f_res
+            if 1 < p1 < n and 1 < p2 < n:
+                return sorted(
+                    factors + recursive_factorize(p1) + recursive_factorize(p2)
+                )
+    except Exception:
+        pass
+
+    # 3. Brent Pollard Rho
+    try:
+        from RsaCtfTool.lib.algos import brent
+
+        b_res = brent(n)
+        if b_res is not None and 1 < b_res < n:
+            return sorted(
+                factors + recursive_factorize(b_res) + recursive_factorize(n // b_res)
+            )
+    except Exception:
+        pass
+
+    if n > 1:
+        factors.append(int(n))
+    return sorted(factors)
+
+
 def trivial_factorization_with_n_phi(n, phi):
     return trivial_factorization_with_n_b(n, n - phi + 1)
 
@@ -579,11 +730,9 @@ def chinese_remainder(m, a):
     # gmpy a non-invertible Ni silently becomes 0 and yields a wrong
     # residue, so reject the input instead.
     for i, mi in enumerate(m):
-        for mj in m[i + 1:]:
+        for mj in m[i + 1 :]:
             if gcd(mi, mj) != 1:
-                raise ValueError(
-                    "chinese_remainder: moduli must be pairwise coprime"
-                )
+                raise ValueError("chinese_remainder: moduli must be pairwise coprime")
     S = 0
     N = list_prod(m)
     for mi, ai in zip(m, a):
@@ -678,6 +827,7 @@ def convergents_from_contfrac(frac, progress=False):
 
     return convergents
 
+
 def inv_mod_pow_of_2(factor, bit_count):
     """
     Inverse of an odd factor modulo 2**bit_count via Newton iteration
@@ -760,6 +910,8 @@ __all__ = [
     "log10",
     "trivial_factorization_with_n_phi",
     "factor_ned",
+    "factor_ned_universal",
+    "recursive_factorize",
     "neg_pow",
     "common_modulus_related_message",
     "phi",
