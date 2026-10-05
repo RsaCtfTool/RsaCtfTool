@@ -34,17 +34,29 @@ def coppersmith_univariate_sage(
     t = parameters.t
     X = ZZ(parameters.X)
     modulus = ZZ(modulus)
-
-    if m is None or t is None:
-        raise ValueError(
-            "m and t must be resolved before calling the Sage backend"
-        )
-
+    
     # Convert pure Python Polynomial to Sage polynomial if necessary
     if not hasattr(polynomial, "is_monic") and hasattr(polynomial, "coefficients"):
         from sage.all_cmdline import PolynomialRing, Zmod
         PR = PolynomialRing(Zmod(modulus), 'x')
         polynomial = PR(polynomial.coefficients)
+        
+    if m is None or t is None:
+        # Fallback to Sage's native small_roots implementation
+        roots = []
+        try:
+            for root in polynomial.small_roots(X=X, beta=beta):
+                root = ZZ(root)
+                # polynomial might be in Zmod, change to ZZ
+                polynomial_z = polynomial.change_ring(ZZ)
+                value = polynomial_z(root)
+                if gcd(modulus, value) > 1 and divisor_bound_holds(
+                    gcd(modulus, value), modulus, beta
+                ):
+                    roots.append(root)
+            return roots
+        except Exception:
+            return []
 
     if not polynomial.is_monic():
         raise ArithmeticError("Polynomial must be monic.")

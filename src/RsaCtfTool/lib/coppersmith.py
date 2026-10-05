@@ -234,8 +234,7 @@ def _select_coppersmith_parameters(
             break
 
     if not candidates:
-        raise CoppersmithError(
-            "No viable Coppersmith parameters found within the search limit"
-        )
+        # Fallback: instruct the Sage backend to use native small_roots
+        candidates.append((None, None))
         
     return candidates

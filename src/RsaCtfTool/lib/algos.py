@@ -5,6 +5,7 @@ import sys
 import time
 import math
 import logging
+import sympy
 from array import array
 from random import randint
 from tqdm import tqdm
@@ -37,7 +38,7 @@ from RsaCtfTool.lib.number_theory import (
 )
 from RsaCtfTool.lib.number_theory import invmod, introot, is_prime, legendre, tonelli
 from RsaCtfTool.lib.polynomial import Polynomial, PolynomialDivisionError
-
+from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
 sys.setrecursionlimit(100000)
 
 
@@ -1188,7 +1189,6 @@ def stereotyped_message(n, e, c, A, B, X):
     Recover x from c = (A * x + B)^e mod n where x < X.
     Uses Coppersmith's univariate method.
     """
-    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
 
     x = Polynomial([0, 1], n)
     f = (x * A + B) ** e - c
@@ -1212,11 +1212,7 @@ def short_pad(n, e, c1, c2):
     Given c1 = m^e mod n and c2 = (m + delta)^e mod n, where delta is unknown but small,
     recovers m1 and m2.
     """
-    import sympy
-    from RsaCtfTool.lib.polynomial import Polynomial
-    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
-    from gmpy2 import iroot
-    
+
     x, y = sympy.symbols('x y')
     g1 = x**e - c1
     g2 = (x + y)**e - c2
@@ -1264,9 +1260,7 @@ def partial_p(n, p_high):
     Given N = p * q and p_high (the known high bits of p),
     recovers p if the unknown bits of p are less than N^0.25 (which means ~50% of p is known).
     """
-    from RsaCtfTool.lib.polynomial import Polynomial
-    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
-    
+
     # Let x be the unknown low bits of p.
     # p = p_high + x
     # We want to find x such that (p_high + x) = 0 mod p.
@@ -1305,12 +1299,10 @@ def lattice_partial_p(n, near_p):
     This works like partial_p, but sweeps bounds exponentially
     so that small errors can be recovered very quickly using smaller lattices.
     """
-    from RsaCtfTool.lib.polynomial import Polynomial
-    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
-    
+
     n, near_p = int(n), int(near_p)
     
-    g = __import__('math').gcd(n, near_p)
+    g = gcd(n, near_p)
     if 1 < g < n:
         return g, n // g
         
@@ -1352,17 +1344,13 @@ def small_fraction(n):
     Sweeps through small fractions num/den and tests if p is near sqrt(N * den / num).
     Uses the lattice_partial_p function under the hood to find the factor with bounded error.
     """
-    import math
-    
+
     depth = 50
     for den in range(2, depth + 1):
         for num in range(1, den):
-            if math.gcd(num, den) == 1:
+            if gcd(num, den) == 1:
                 r = den / num
-                phint = math.isqrt(int(n * r))
-                
-                # We can just use the lattice_partial_p since it exponentially tests bounds
-                # around the hint.
+                phint = isqrt(int(n * r))
                 p, q = lattice_partial_p(n, phint)
                 if p is not None and q is not None:
                     return p, q
@@ -1390,9 +1378,6 @@ def partial_d(n, e, dLow):
         mod_final = 1 << bits
         return [r % mod_final for r in roots]
 
-    from RsaCtfTool.lib.polynomial import Polynomial
-    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
-    
     def find_p_coppersmith(n, p_low, l_bits):
         l = 1 << l_bits
         try:
@@ -1418,7 +1403,7 @@ def partial_d(n, e, dLow):
             try:
                 roots = coppersmith_univariate(f, n, params)
                 for root in roots:
-                    p_cand = __import__('math').gcd(l * root + p_low, n)
+                    p_cand = gcd(l * root + p_low, n)
                     if 1 < p_cand < n:
                         return p_cand
             except Exception:
