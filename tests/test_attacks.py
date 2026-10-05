@@ -640,3 +640,27 @@ class TestFranklinReiterAttack:
         )
         assert result.returncode == 0
         assert "Franklin-Reiter attack found no solution" in result.stderr
+
+
+class TestStereotypedMessageAttack:
+    def test_stereotyped_message_known_prefix(self):
+        result = _run(
+            "--publickey", "examples/stereotyped_message.pub",
+            "--decryptfile", "examples/stereotyped_message_prefix.cipher",
+            "--attack", "stereotyped_message",
+            "--sm-prefix", "41",
+            "--sm-len", "1"
+        )
+        assert result.returncode == 0
+        assert "4142" in result.stdout or "AB" in result.stdout or "AB" in result.stderr
+
+    def test_stereotyped_message_known_suffix(self):
+        result = _run(
+            "--publickey", "examples/stereotyped_message.pub",
+            "--decryptfile", "examples/stereotyped_message_suffix.cipher",
+            "--attack", "stereotyped_message",
+            "--sm-suffix", "43",
+            "--sm-len", "1"
+        )
+        assert result.returncode == 0
+        assert "4243" in result.stdout or "BC" in result.stdout or "BC" in result.stderr
