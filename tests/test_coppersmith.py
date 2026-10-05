@@ -140,17 +140,23 @@ class TestCoppersmithSelector:
     """Tests for automatic (m, t) selection."""
 
     def test_selected_parameters_satisfy_bound(self):
-        m, t = _select_coppersmith_parameters(
+        candidates = _select_coppersmith_parameters(
             degree=1, modulus=2**1024, beta=0.5, X=2**100
         )
-
-        assert _coppersmith_bound_holds(
-            degree=1, modulus=2**1024, beta=0.5, m=m, t=t, X=2**100
+        # Verify that at least one candidate strictly satisfies the bound
+        assert any(
+            _coppersmith_bound_holds(
+                degree=1, modulus=2**1024, beta=0.5, m=m, t=t, X=2**100
+            )
+            for m, t in candidates
         )
 
     def test_selection_is_minimal_dimension(self):
         degree, modulus, beta, X = 3, 2**1024, 0.5, 2**60
-        m, t = _select_coppersmith_parameters(degree, modulus, beta, X)
+        candidates = _select_coppersmith_parameters(degree, modulus, beta, X)
+        
+        # The strict bound candidate is the last one in the list (or the only one)
+        m, t = candidates[-1]
         best = degree * m + t
 
         for mm in range(1, 21):
@@ -161,22 +167,25 @@ class TestCoppersmithSelector:
                     )
 
     def test_t_exceeds_degree_for_small_beta(self):
-        _, t = _select_coppersmith_parameters(
+        candidates = _select_coppersmith_parameters(
             degree=1, modulus=2**1024, beta=0.5, X=2**100
         )
 
-        assert t >= 1
+        assert all(t >= 1 for _, t in candidates)
 
     def test_harder_root_bound_needs_larger_lattice(self):
-        m1, t1 = _select_coppersmith_parameters(1, 2**1024, 0.5, 2**100)
-        m2, t2 = _select_coppersmith_parameters(1, 2**1024, 0.5, 2**200)
+        candidates1 = _select_coppersmith_parameters(1, 2**1024, 0.5, 2**100)
+        candidates2 = _select_coppersmith_parameters(1, 2**1024, 0.5, 2**200)
+
+        m1, t1 = candidates1[-1]
+        m2, t2 = candidates2[-1]
 
         assert m2 + t2 > m1 + t1
 
     def test_no_solution_raises(self):
         with pytest.raises(CoppersmithError):
             _select_coppersmith_parameters(
-                degree=1, modulus=2**1024, beta=0.5, X=2**400
+                degree=1, modulus=2**1024, beta=0.5, X=2**400, max_m=0
             )
 
 
@@ -187,24 +196,24 @@ class TestCoppersmithWiring:
         def degree(self):
             return 1
 
-    def _run(self, monkeypatch, parameters):
+    def _run(self, monkeypatch, parameters, mock_backend=None):
         import sys
         import types
 
         captured = {}
         fake = types.ModuleType("RsaCtfTool.sage.coppersmith")
 
-        def backend(polynomial, modulus, params):
+        def default_backend(polynomial, modulus, params):
             captured["params"] = params
             return [42]
 
-        fake.coppersmith_univariate_sage = backend
+        fake.coppersmith_univariate_sage = mock_backend or default_backend
         monkeypatch.setitem(sys.modules, "RsaCtfTool.sage.coppersmith", fake)
 
         from RsaCtfTool.lib.coppersmith import coppersmith_univariate
 
         result = coppersmith_univariate(self._Poly(), 2**1024, parameters)
-        return result, captured["params"]
+        return result, captured.get("params")
 
     def test_auto_selection_resolves_m_and_t(self, monkeypatch):
         result, params = self._run(
@@ -212,7 +221,46 @@ class TestCoppersmithWiring:
         )
 
         assert result == [42]
-        assert (params.m, params.t) == (1, 2)
+        # The heuristic candidate is chosen first, which is (4, 4) for beta=0.5
+        assert (params.m, params.t) == (4, 4)
+
+    def test_iteration_falls_back_to_strict_candidate(self, monkeypatch):
+        called_params = []
+
+        def failing_backend(polynomial, modulus, params):
+            called_params.append((params.m, params.t))
+            if len(called_params) == 2:
+                # Succeed on the second candidate (the strict one)
+                return [1337]
+            return []  # Fail on the heuristic one
+
+        result, _ = self._run(
+            monkeypatch, 
+            CoppersmithParameters(beta=0.5, X=2**100),
+            mock_backend=failing_backend
+        )
+
+        assert result == [1337]
+        assert len(called_params) == 2
+        assert called_params[0] == (4, 4)  # Heuristic first
+        assert called_params[1] != (4, 4)  # Strict second
+
+    def test_iteration_short_circuits_on_success(self, monkeypatch):
+        called_params = []
+
+        def succeeding_backend(polynomial, modulus, params):
+            called_params.append((params.m, params.t))
+            return [999]  # Succeed immediately
+
+        result, _ = self._run(
+            monkeypatch, 
+            CoppersmithParameters(beta=0.5, X=2**100),
+            mock_backend=succeeding_backend
+        )
+
+        assert result == [999]
+        assert len(called_params) == 1
+        assert called_params[0] == (4, 4)
 
     def test_manual_parameters_pass_through(self, monkeypatch):
         _, params = self._run(

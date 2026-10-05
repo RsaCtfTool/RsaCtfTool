@@ -3,19 +3,11 @@ from sage.all_cmdline import ZZ, Matrix, gcd
 
 def coppersmith_howgrave_univariate(pol, modulus, beta, mm, tt, XX):
     """
-    Taken from https://github.com/mimoo/RSA-and-LLL-attacks/blob/master/coppersmith.sage
     Coppersmith revisited by Howgrave-Graham
 
-    finds a solution if:
-    * b|modulus, b >= modulus^beta , 0 < beta <= 1
-    * |x| < XX
-    More tunable than sage's builtin coppersmith method, pol.small_roots()
+    Delegates to the shared Coppersmith backend, which fixes the silent
+    float overflow of modulus**beta for moduli >= 2**1024.
     """
-    #
-    # init
-    #
-    # Delegates to the shared Coppersmith backend, which fixes the silent
-    # float overflow of modulus**beta for moduli >= 2**1024.
     from types import SimpleNamespace
 
     try:

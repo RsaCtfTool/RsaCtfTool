@@ -88,6 +88,12 @@ def roca(n):
             for a in range(inf_a, inf_a + chunk_size)
         ]
         # the sage builtin multiprocessing stuff
+        import multiprocessing
+        try:
+            multiprocessing.set_start_method("fork", force=True)
+        except Exception:
+            pass
+
         from sage.parallel.multiprocessing_sage import parallel_iter
         from multiprocessing import cpu_count
 

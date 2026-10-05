@@ -99,3 +99,60 @@ def test_ecm2_parses_factor_tuple(monkeypatch):
     private_key, plaintext = ecm2.Attack().attack(key, [b"\x08"])
     assert private_key is None
     assert plaintext == [b"\x02"]
+
+
+def test_sage_functions_delegates_to_shared_backend(monkeypatch):
+    import sys
+    import types
+    from types import SimpleNamespace
+
+    captured = {}
+    fake = types.ModuleType("RsaCtfTool.sage.coppersmith")
+
+    def mock_coppersmith(pol, modulus, params):
+        captured["pol"] = pol
+        captured["modulus"] = modulus
+        captured["params"] = params
+        return [1337]
+
+    fake.coppersmith_univariate_sage = mock_coppersmith
+    monkeypatch.setitem(sys.modules, "coppersmith", fake)
+    monkeypatch.setitem(sys.modules, "RsaCtfTool.sage.coppersmith", fake)
+
+    from RsaCtfTool.sage.sage_functions import coppersmith_howgrave_univariate
+
+    res = coppersmith_howgrave_univariate(
+        pol="fake_poly", modulus=2**512, beta=0.5, mm=4, tt=2, XX=2**100
+    )
+
+    assert res == [1337]
+    assert captured["pol"] == "fake_poly"
+    assert captured["modulus"] == 2**512
+    assert captured["params"].beta == 0.5
+    assert captured["params"].m == 4
+    assert captured["params"].t == 2
+    assert captured["params"].X == 2**100
+
+
+def test_roca_attack_multiprocessing_enforces_fork():
+    """
+    Ensure the ROCA attack sets the multiprocessing start method to 'fork'.
+    This is necessary because Sage's CLI breaks when spawn/forkserver
+    passes internal arguments to the python interpreter.
+    """
+    import ast
+    from RsaCtfTool.lib.utils import rootpath
+    
+    with open(f"{rootpath}/sage/roca_attack.py", "r") as f:
+        tree = ast.parse(f.read())
+        
+    found = False
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            if isinstance(node.func, ast.Attribute) and node.func.attr == "set_start_method":
+                if node.args and isinstance(node.args[0], ast.Constant) and node.args[0].value == "fork":
+                    found = True
+                    break
+    
+    assert found, "roca_attack.py must enforce multiprocessing.set_start_method('fork')"
+

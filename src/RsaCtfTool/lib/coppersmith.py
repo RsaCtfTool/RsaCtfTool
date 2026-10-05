@@ -83,25 +83,16 @@ def coppersmith_univariate(
         )
 
     if parameters.m is None:
-        m, t = _select_coppersmith_parameters(
+        candidates = _select_coppersmith_parameters(
             degree=int(polynomial.degree()),
             modulus=int(modulus),
             beta=parameters.beta,
             X=parameters.X,
         )
-        parameters = CoppersmithParameters(
-            beta=parameters.beta,
-            X=parameters.X,
-            m=m,
-            t=t,
-        )
     elif parameters.t is None:
-        parameters = CoppersmithParameters(
-            beta=parameters.beta,
-            X=parameters.X,
-            m=parameters.m,
-            t=0,
-        )
+        candidates = [(parameters.m, 0)]
+    else:
+        candidates = [(parameters.m, parameters.t)]
 
     try:
         from RsaCtfTool.sage.coppersmith import coppersmith_univariate_sage
@@ -110,11 +101,22 @@ def coppersmith_univariate(
             "Coppersmith requires the optional Sage dependency"
         ) from exc
 
-    return coppersmith_univariate_sage(
-        polynomial,
-        modulus,
-        parameters,
-    )
+    for m, t in candidates:
+        cand_params = CoppersmithParameters(
+            beta=parameters.beta,
+            X=parameters.X,
+            m=m,
+            t=t,
+        )
+        roots = coppersmith_univariate_sage(
+            polynomial,
+            modulus,
+            cand_params,
+        )
+        if roots:
+            return roots
+
+    return []
 
 
 def _coppersmith_bound_holds(
@@ -191,24 +193,33 @@ def _select_coppersmith_parameters(
     max_m=20,
 ):
     """
-    Select a viable (m, t) pair for the univariate Coppersmith lattice.
+    Select viable (m, t) pairs for the univariate Coppersmith lattice.
 
-    Candidates are tested using the Howgrave-Graham determinant bound.
-    Smaller lattice dimensions (d*m + t) are preferred; ties go to
-    smaller m.
-
-    For beta < 1, t must grow like d*m*(1/beta - 1), so t is searched
-    up to d*m*ceil(1/beta).
+    Returns a list of candidates to try, ranked by expected speed/success:
+    1. A heuristic choice matching Sage's small_roots (fast, often succeeds).
+    2. The smallest lattice strictly satisfying the Howgrave-Graham bound
+       (slower, but mathematically guarantees finding the root if it exists).
     """
     candidates = []
+
+    # 1. Sage's heuristic choice
+    epsilon = beta / 8
+    m_heuristic = math.ceil(max(beta**2 / (degree * epsilon), 7 * beta / degree))
+    t_heuristic = math.floor(degree * m_heuristic * (1 / beta - 1))
+    
+    if m_heuristic <= max_m:
+        candidates.append((m_heuristic, t_heuristic))
+
+    # 2. Strict determinant bound
+    strict_candidates = []
     for m in range(1, max_m + 1):
         t_max = degree * m * math.ceil(1 / beta)
         for t in range(t_max + 1):
-            candidates.append((degree * m + t, m, t))
+            strict_candidates.append((degree * m + t, m, t))
 
-    candidates.sort()
+    strict_candidates.sort()
 
-    for _, m, t in candidates:
+    for _, m, t in strict_candidates:
         if _coppersmith_bound_holds(
             degree=degree,
             modulus=modulus,
@@ -217,8 +228,13 @@ def _select_coppersmith_parameters(
             t=t,
             X=X,
         ):
-            return m, t
+            if (m, t) not in candidates:
+                candidates.append((m, t))
+            break
 
-    raise CoppersmithError(
-        "No viable Coppersmith parameters found within the search limit"
-    )
+    if not candidates:
+        raise CoppersmithError(
+            "No viable Coppersmith parameters found within the search limit"
+        )
+        
+    return candidates
