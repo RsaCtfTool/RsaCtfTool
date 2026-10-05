@@ -3,10 +3,7 @@ from types import SimpleNamespace
 
 import pytest
 
-from RsaCtfTool.attacks.single_key import binary_polynomial_factoring
-from RsaCtfTool.attacks.single_key import lattice
-from RsaCtfTool.attacks.single_key import partial_d
-from RsaCtfTool.attacks.single_key import smallfraction
+from RsaCtfTool.attacks.single_key import binary_polynomial_factoring, lattice, partial_d, smallfraction
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 
