@@ -12,6 +12,7 @@ from dataclasses import dataclass
 __all__ = [
     "CoppersmithParameters",
     "CoppersmithError",
+    "coppersmith_univariate",
 ]
 
 
@@ -48,6 +49,7 @@ class CoppersmithParameters:
         if self.m is None and self.t is not None:
             raise ValueError("t cannot be specified when m is None")
 
+
 def coppersmith_univariate(
     polynomial,
     modulus,
@@ -80,6 +82,27 @@ def coppersmith_univariate(
             "parameters must be a CoppersmithParameters instance"
         )
 
+    if parameters.m is None:
+        m, t = _select_coppersmith_parameters(
+            degree=int(polynomial.degree()),
+            modulus=int(modulus),
+            beta=parameters.beta,
+            X=parameters.X,
+        )
+        parameters = CoppersmithParameters(
+            beta=parameters.beta,
+            X=parameters.X,
+            m=m,
+            t=t,
+        )
+    elif parameters.t is None:
+        parameters = CoppersmithParameters(
+            beta=parameters.beta,
+            X=parameters.X,
+            m=parameters.m,
+            t=0,
+        )
+
     try:
         from RsaCtfTool.sage.coppersmith import coppersmith_univariate_sage
     except ImportError as exc:
@@ -92,6 +115,7 @@ def coppersmith_univariate(
         modulus,
         parameters,
     )
+
 
 def _coppersmith_bound_holds(
     degree,
@@ -107,6 +131,7 @@ def _coppersmith_bound_holds(
     Returns True when the standard determinant bound predicts that an
     LLL-reduced vector can satisfy the required small-root condition.
     """
+    degree, modulus, m, t, X = int(degree), int(modulus), int(m), int(t), int(X)
     dimension = degree * m + t
 
     if dimension <= 0:
@@ -126,7 +151,7 @@ def _coppersmith_bound_holds(
     # We compare logarithms to avoid constructing enormous integers.
     d = degree
 
-    log_det_n =  d * m * (m + 1) / 2
+    log_det_n = d * m * (m + 1) / 2
 
     log_det_x = (
         d * m * (m - 1) / 2
@@ -156,3 +181,44 @@ def _coppersmith_bound_holds(
     )
 
     return lhs < rhs
+
+
+def _select_coppersmith_parameters(
+    degree,
+    modulus,
+    beta,
+    X,
+    max_m=20,
+):
+    """
+    Select a viable (m, t) pair for the univariate Coppersmith lattice.
+
+    Candidates are tested using the Howgrave-Graham determinant bound.
+    Smaller lattice dimensions (d*m + t) are preferred; ties go to
+    smaller m.
+
+    For beta < 1, t must grow like d*m*(1/beta - 1), so t is searched
+    up to d*m*ceil(1/beta).
+    """
+    candidates = []
+    for m in range(1, max_m + 1):
+        t_max = degree * m * math.ceil(1 / beta)
+        for t in range(t_max + 1):
+            candidates.append((degree * m + t, m, t))
+
+    candidates.sort()
+
+    for _, m, t in candidates:
+        if _coppersmith_bound_holds(
+            degree=degree,
+            modulus=modulus,
+            beta=beta,
+            m=m,
+            t=t,
+            X=X,
+        ):
+            return m, t
+
+    raise CoppersmithError(
+        "No viable Coppersmith parameters found within the search limit"
+    )

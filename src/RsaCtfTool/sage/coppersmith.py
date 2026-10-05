@@ -1,8 +1,16 @@
-# src/RsaCtfTool/sage/coppersmith.py
-
 #!/usr/bin/env python3
 
-from sage.all import ZZ, Matrix, gcd
+from sage.all import ZZ, Matrix, RealField, gcd
+
+
+def divisor_bound_holds(divisor, modulus, beta):
+    """
+    Test divisor >= modulus**beta in high-precision logs.
+
+    Avoids float overflow of modulus**beta for large (e.g. 1024-bit+) moduli.
+    """
+    field = RealField(256)
+    return field(divisor).log() >= field(beta) * field(modulus).log()
 
 
 def coppersmith_univariate_sage(
@@ -24,7 +32,13 @@ def coppersmith_univariate_sage(
     beta = parameters.beta
     m = parameters.m
     t = parameters.t
-    X = parameters.X
+    X = ZZ(parameters.X)
+    modulus = ZZ(modulus)
+
+    if m is None or t is None:
+        raise ValueError(
+            "m and t must be resolved before calling the Sage backend"
+        )
 
     if not polynomial.is_monic():
         raise ArithmeticError("Polynomial must be monic.")
@@ -79,7 +93,9 @@ def coppersmith_univariate_sage(
         root = ZZ(root)
         value = polynomial_z(root)
 
-        if gcd(modulus, value) >= modulus**beta:
+        if gcd(modulus, value) > 1 and divisor_bound_holds(
+            gcd(modulus, value), modulus, beta
+        ):
             roots.append(root)
 
     return roots

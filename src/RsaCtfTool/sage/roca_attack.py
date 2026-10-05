@@ -16,7 +16,9 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x, beta, sage_dir):
     # I need to import it in the function otherwise multiprocessing doesn't find it in its context
     if sage_dir not in sys.path:
         sys.path.insert(0, sage_dir)
-    from sage_functions import coppersmith_howgrave_univariate
+    from types import SimpleNamespace
+
+    from coppersmith import coppersmith_univariate_sage
 
     base = 65537
     # the known part of p: 65537^a * M^-1 (mod N)
@@ -24,7 +26,10 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x, beta, sage_dir):
     pol = x + known
     t = m + 1
     # Find a small root (x0 = k) using Coppersmith's algorithm
-    roots = coppersmith_howgrave_univariate(pol, n, beta, m, t, XX)
+    # Explicit (m, t): ROCA relies on empirically tuned lattices that the
+    # generic determinant-bound selector would reject (beta = 0.1).
+    parameters = SimpleNamespace(beta=beta, X=XX, m=m, t=t)
+    roots = coppersmith_univariate_sage(pol, n, parameters)
     # There will be no roots for an incorrect guess of a.
     for k in roots:
         # reconstruct p from the recovered k
