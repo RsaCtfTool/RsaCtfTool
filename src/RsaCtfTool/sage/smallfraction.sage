@@ -6,6 +6,15 @@ import sys
 
 
 def factor(n):
+    import os
+    # Add root to sys path so we can import RsaCtfTool
+    rootpath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if rootpath not in sys.path:
+        sys.path.append(rootpath)
+        
+    from RsaCtfTool.lib.coppersmith import CoppersmithParameters, _select_coppersmith_parameters
+    from sage.coppersmith import coppersmith_univariate_sage
+
     depth = 50
     x = PolynomialRing(Zmod(n), "x").gen()
 
@@ -15,13 +24,23 @@ def factor(n):
                 r = den / num
                 phint = isqrt(n * r)
                 f = x - phint
-                sr = f.small_roots(beta=0.5)
-
-                if len(sr) > 0:
-                    p = phint - sr[0]
-                    p = p.lift()
-                    if n % p == 0:
-                        return p
+                
+                # smallfraction originally used small_roots(beta=0.5)
+                # the default X in Sage for beta=0.5 is N^(1/4)
+                X = Integer(n ** 0.25)
+                cands = _select_coppersmith_parameters(f.degree(), n, beta=0.5, X=X)
+                if cands:
+                    m, t = cands[0]
+                    params = CoppersmithParameters(beta=0.5, X=X, m=m, t=t)
+                    try:
+                        sr = coppersmith_univariate_sage(f, n, params)
+                        if len(sr) > 0:
+                            p = phint - sr[0]
+                            p = p.lift()
+                            if n % p == 0:
+                                return p
+                    except Exception:
+                        pass
 
 
 try:

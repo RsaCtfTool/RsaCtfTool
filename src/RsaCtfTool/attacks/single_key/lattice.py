@@ -14,30 +14,39 @@ class Attack(AbstractAttack):
         self.required_scripts = ["sage/lattice.sage"]
 
     def attack(self, publickey, cipher=[], progress=True):
-        """Run simple lattice attack with a timeout"""
         try:
             if getattr(publickey, "p", None) is None:
                 self.logger.error(
                     "[!] simple lattice attack is for partial keys only..."
                 )
                 return None, None
-            sageresult = subprocess.check_output(
-                [
-                    "sage",
-                    f"{rootpath}/sage/lattice.sage",
-                    str(publickey.n),
-                    str(publickey.p),
-                ],
-                timeout=self.timeout,
-                stderr=subprocess.DEVNULL,
-                text=True,
-            )
-            p, q = (int(value) for value in ast.literal_eval(sageresult))
-            if p * q != publickey.n:
-                raise ValueError("Sage returned factors that do not match n")
-            return self.create_private_key_from_pqe(
-                p, q, publickey.e, publickey.n
-            )
+                
+            import shutil
+            if shutil.which("sage"):
+                sageresult = subprocess.check_output(
+                    [
+                        "sage",
+                        f"{rootpath}/sage/lattice.sage",
+                        str(publickey.n),
+                        str(publickey.p),
+                    ],
+                    timeout=self.timeout,
+                    stderr=subprocess.DEVNULL,
+                    text=True,
+                )
+                p, q = (int(value) for value in ast.literal_eval(sageresult))
+                if p * q != publickey.n:
+                    raise ValueError("Sage returned factors that do not match n")
+                return self.create_private_key_from_pqe(p, q, publickey.e, publickey.n)
+            else:
+                from RsaCtfTool.lib.algos import lattice_partial_p
+                p, q = lattice_partial_p(publickey.n, publickey.p)
+                
+                if p is not None and q is not None:
+                    return self.create_private_key_from_pqe(
+                        p, q, publickey.e, publickey.n
+                    )
+                return None, None
 
         except (
             subprocess.CalledProcessError,

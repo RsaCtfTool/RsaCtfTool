@@ -1299,3 +1299,146 @@ def partial_p(n, p_high):
             
     return None, None
 
+def lattice_partial_p(n, near_p):
+    """
+    Coppersmith Factoring with an approximation of p.
+    This works like partial_p, but sweeps bounds exponentially
+    so that small errors can be recovered very quickly using smaller lattices.
+    """
+    from RsaCtfTool.lib.polynomial import Polynomial
+    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+    
+    n, near_p = int(n), int(near_p)
+    
+    g = __import__('math').gcd(n, near_p)
+    if 1 < g < n:
+        return g, n // g
+        
+    n_bits = n.bit_length()
+    p_bits = near_p.bit_length()
+    
+    beta = (p_bits - 1) / n_bits
+    if beta <= 0 or beta >= 1:
+        return None, None
+        
+    # max_bits roughly beta^2 * n_bits
+    max_bits = max(int(beta * beta * n_bits * 0.95), 1)
+    
+    f = Polynomial([near_p, 1], n)
+    bits = min(32, max_bits)
+    
+    while True:
+        X = 1 << bits
+        # Use slightly relaxed beta for bound checks
+        params = CoppersmithParameters(beta=beta * 0.99, X=X)
+        try:
+            roots = coppersmith_univariate(f, n, params)
+            for r in roots:
+                p_cand = near_p + r
+                if p_cand > 1 and n % p_cand == 0:
+                    return p_cand, n // p_cand
+        except Exception:
+            pass
+            
+        if bits >= max_bits:
+            break
+        bits = min(bits * 2, max_bits)
+        
+    return None, None
+
+def small_fraction(n):
+    """
+    Finds a factor of N when p/q is close to a small fraction.
+    Sweeps through small fractions num/den and tests if p is near sqrt(N * den / num).
+    Uses the lattice_partial_p function under the hood to find the factor with bounded error.
+    """
+    import math
+    
+    depth = 50
+    for den in range(2, depth + 1):
+        for num in range(1, den):
+            if math.gcd(num, den) == 1:
+                r = den / num
+                phint = math.isqrt(int(n * r))
+                
+                # We can just use the lattice_partial_p since it exponentially tests bounds
+                # around the hint.
+                p, q = lattice_partial_p(n, phint)
+                if p is not None and q is not None:
+                    return p, q
+                    
+    return None, None
+
+def partial_d(n, e, dLow):
+    """
+    Coppersmith Factoring with partial d (low bits of d known).
+    Recovers p and q from N, e, and the known lower bits of d.
+    """
+    def hensel_lift(a, b, c, bits):
+        roots = [r for r in range(2) if (a * r * r + b * r + c) % 2 == 0]
+        for k in range(1, bits):
+            mod = 1 << k
+            next_mod = mod << 1
+            new_roots = []
+            for r in roots:
+                for delta in (0, mod):
+                    candidate = r + delta
+                    val = a * candidate * candidate + b * candidate + c
+                    if val % next_mod == 0:
+                        new_roots.append(candidate)
+            roots = new_roots
+        mod_final = 1 << bits
+        return [r % mod_final for r in roots]
+
+    from RsaCtfTool.lib.polynomial import Polynomial
+    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+    
+    def find_p_coppersmith(n, p_low, l_bits):
+        l = 1 << l_bits
+        try:
+            l_inv = pow(l, -1, n)
+        except ValueError:
+            return None
+            
+        f = Polynomial([(p_low * l_inv) % n, 1], n)
+        
+        n_bits = n.bit_length()
+        lo = max((n_bits >> 1) - l_bits, 4)
+        hi = min(n_bits - l_bits, (n_bits * 19) // 100)
+        if hi < lo:
+            hi = lo
+            
+        bounds = list(range(lo, hi + 1, 8))
+        if not bounds or bounds[-1] != hi:
+            bounds.append(hi)
+            
+        for ubits in bounds:
+            X = 1 << ubits
+            params = CoppersmithParameters(beta=0.49, X=X)
+            try:
+                roots = coppersmith_univariate(f, n, params)
+                for root in roots:
+                    p_cand = __import__('math').gcd(l * root + p_low, n)
+                    if 1 < p_cand < n:
+                        return p_cand
+            except Exception:
+                pass
+        return None
+
+    lowerBitsNum = dLow.bit_length()
+    
+    for k in range(1, e + 1):
+        a = k
+        b = e * dLow - k * (n + 1) - 1
+        c = k * n
+
+        for pLow in hensel_lift(a, b, c, lowerBitsNum):
+            p = find_p_coppersmith(n, pLow, lowerBitsNum)
+            if p is not None:
+                return p, n // p
+
+    return None, None
+
+
+
+

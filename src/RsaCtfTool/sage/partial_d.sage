@@ -33,14 +33,31 @@ def find_p_Coppersmith(n, pLow, lowerBitsNum, beta=0.5):
     if not bounds or bounds[-1] != hi:
         bounds.append(hi)
 
+    import os, sys
+    # Add root to sys path so we can import RsaCtfTool
+    rootpath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if rootpath not in sys.path:
+        sys.path.append(rootpath)
+        
+    from RsaCtfTool.lib.coppersmith import CoppersmithParameters, _select_coppersmith_parameters
+    from sage.coppersmith import coppersmith_univariate_sage
+
     for ubits in bounds:
-        roots = f.small_roots(X=1 << ubits, beta=beta)
-        if roots:
-            return [
-                int(r)
-                for r in [ZZ(gcd(l * x0 + pLow, n)) for x0 in roots]
-                if n > r > 1
-            ]
+        X = 1 << ubits
+        cands = _select_coppersmith_parameters(f.degree(), n, beta=beta, X=X)
+        if cands:
+            m, t = cands[0]
+            params = CoppersmithParameters(beta=beta, X=X, m=m, t=t)
+            try:
+                roots = coppersmith_univariate_sage(f, n, params)
+                if roots:
+                    return [
+                        int(r)
+                        for r in [ZZ(gcd(l * x0 + pLow, n)) for x0 in roots]
+                        if n > r > 1
+                    ]
+            except Exception:
+                pass
     return None
 
 

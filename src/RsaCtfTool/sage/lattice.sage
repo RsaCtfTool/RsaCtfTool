@@ -38,14 +38,33 @@ def lattice(n, nearp):
     epsilon = beta / 16
     max_bits = max(int((beta * beta - epsilon) * nbits * 0.95), 1)
 
+    import os, sys
+    # Add root to sys path so we can import RsaCtfTool
+    rootpath = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+    if rootpath not in sys.path:
+        sys.path.append(rootpath)
+        
+    from RsaCtfTool.lib.coppersmith import CoppersmithParameters, _select_coppersmith_parameters
+    from sage.coppersmith import coppersmith_univariate_sage
+
     R.<x> = PolynomialRing(Zmod(n))
     f = x + nearp
     bits = min(32, max_bits)
     while True:
-        for r in f.small_roots(X=Integer(2) ** bits, beta=beta, epsilon=epsilon):
-            g = gcd(n, nearp + Integer(r))
-            if 1 < g < n:
-                return [int(g), int(n // g)]
+        X = Integer(2) ** bits
+        cands = _select_coppersmith_parameters(f.degree(), n, beta=beta, X=X, epsilon=epsilon)
+        if cands:
+            m, t = cands[0]
+            params = CoppersmithParameters(beta=beta, X=X, m=m, t=t)
+            try:
+                roots = coppersmith_univariate_sage(f, n, params)
+                for r in roots:
+                    g = gcd(n, nearp + Integer(r))
+                    if 1 < g < n:
+                        return [int(g), int(n // g)]
+            except Exception:
+                pass
+
         if bits >= max_bits:
             break
         bits = min(bits * 2, max_bits)

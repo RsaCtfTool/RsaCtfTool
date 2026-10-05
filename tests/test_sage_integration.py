@@ -6,6 +6,7 @@ import pytest
 from RsaCtfTool.attacks.single_key import binary_polynomial_factoring
 from RsaCtfTool.attacks.single_key import lattice
 from RsaCtfTool.attacks.single_key import partial_d
+from RsaCtfTool.attacks.single_key import smallfraction
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 
@@ -13,7 +14,7 @@ def test_sage_attacks_declare_their_runtime_dependency():
     assert partial_d.Attack().required_binaries == ["sage"]
     assert lattice.Attack().required_binaries == ["sage"]
     assert binary_polynomial_factoring.Attack().required_binaries == ["sage"]
-
+    assert smallfraction.Attack().required_binaries == ["sage"]
 
 def test_partial_d_parses_sage_factors(monkeypatch):
     key = object.__new__(PrivateKey)
@@ -47,6 +48,9 @@ def test_lattice_parses_sage_factor_list(monkeypatch):
 
     assert plaintext is None
     assert private_key.p * private_key.q == key.n
+
+
+
 
 
 def test_binary_polynomial_factoring_parses_sage_factor_list(monkeypatch):

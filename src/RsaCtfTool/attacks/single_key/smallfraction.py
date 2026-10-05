@@ -18,26 +18,37 @@ class Attack(AbstractAttack):
         only works if the sageworks() function returned True
         """
         try:
-            r = subprocess.check_output(
-                ["sage", f"{rootpath}/sage/smallfraction.sage", str(publickey.n)],
-                timeout=self.timeout,
-                stderr=subprocess.DEVNULL,
-            )
-            try:
-                sageresult = int(r)
-            except ValueError:
-                # sage died before printing a factor (empty/garbled stdout).
-                return (None, None)
-            # Accept only a genuine factor split: the script prints 0 on
-            # failure and a value that does not divide n is useless.
-            if 1 < sageresult < publickey.n and publickey.n % sageresult == 0:
-                publickey.p = sageresult
-                publickey.q = publickey.n // publickey.p
-                return self.create_private_key_from_pqe(
-                    publickey.p, publickey.q, publickey.e, publickey.n
+            import shutil
+            if shutil.which("sage"):
+                r = subprocess.check_output(
+                    ["sage", f"{rootpath}/sage/smallfraction.sage", str(publickey.n)],
+                    timeout=self.timeout,
+                    stderr=subprocess.DEVNULL,
                 )
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
-            return (None, None)
+                try:
+                    sageresult = int(r)
+                except ValueError:
+                    sageresult = 0
+                if 1 < sageresult < publickey.n and publickey.n % sageresult == 0:
+                    publickey.p = sageresult
+                    publickey.q = publickey.n // publickey.p
+                    return self.create_private_key_from_pqe(
+                        publickey.p, publickey.q, publickey.e, publickey.n
+                    )
+                return (None, None)
+            else:
+                from RsaCtfTool.lib.algos import small_fraction
+                p, q = small_fraction(publickey.n)
+                
+                if p is not None and q is not None:
+                    publickey.p = p
+                    publickey.q = q
+                    return self.create_private_key_from_pqe(
+                        publickey.p, publickey.q, publickey.e, publickey.n
+                    )
+        except Exception as exc:
+            self.logger.error(f"[!] smallfraction attack failed: {exc}")
+            
         return (None, None)
 
     def test(self):
