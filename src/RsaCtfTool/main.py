@@ -141,6 +141,23 @@ def parse_args():
         "--fr-b",
         help="Franklin-Reiter attack: 'b' parameter in m1 = a*m2 + b. format : int or 0xhex",
     )
+    parser.add_argument(
+        "--sm-prefix",
+        help="Stereotyped message attack: known prefix of the message",
+    )
+    parser.add_argument(
+        "--p-high",
+        help="partial_p attack: known high bits of p. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--sm-suffix",
+        help="Stereotyped message attack: known suffix of the message",
+    )
+    parser.add_argument(
+        "--sm-len",
+        type=int,
+        help="Stereotyped message attack: length in bytes of the unknown part",
+    )
 
     # If no arguments, display help and exit
     if len(sys.argv) == 1:
@@ -480,6 +497,8 @@ def _parse_numeric_args(args):
         args.fr_a = get_numeric_value(args.fr_a)
     if args.fr_b is not None:
         args.fr_b = get_numeric_value(args.fr_b)
+    if args.p_high is not None:
+        args.p_high = get_numeric_value(args.p_high)
 
     return args
 
@@ -640,6 +659,11 @@ def main():
     if args.attack is not None and "franklin_reiter" in args.attack and "all" not in args.attack:
         if args.fr_a is None or args.fr_a == 0 or args.fr_b is None or args.fr_b == 0:
             logger.error("[!] --fr-a and --fr-b are mandatory and must not be zero when using --attack franklin_reiter")
+            sys.exit(1)
+
+    if args.attack is not None and "stereotyped_message" in args.attack and "all" not in args.attack:
+        if args.sm_len is None or (args.sm_prefix is None and args.sm_suffix is None):
+            logger.error("[!] stereotyped_message requires --sm-len and at least one of --sm-prefix or --sm-suffix")
             sys.exit(1)
 
     # Fully specified p/q/e/n short-circuits before any key files are

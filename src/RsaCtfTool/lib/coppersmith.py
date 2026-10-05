@@ -83,8 +83,9 @@ def coppersmith_univariate(
         )
 
     if parameters.m is None:
+        degree = polynomial.degree() if callable(polynomial.degree) else polynomial.degree
         candidates = _select_coppersmith_parameters(
-            degree=int(polynomial.degree()),
+            degree=int(degree),
             modulus=int(modulus),
             beta=parameters.beta,
             X=parameters.X,

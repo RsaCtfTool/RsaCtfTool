@@ -40,6 +40,12 @@ def coppersmith_univariate_sage(
             "m and t must be resolved before calling the Sage backend"
         )
 
+    # Convert pure Python Polynomial to Sage polynomial if necessary
+    if not hasattr(polynomial, "is_monic") and hasattr(polynomial, "coefficients"):
+        from sage.all_cmdline import PolynomialRing, Zmod
+        PR = PolynomialRing(Zmod(modulus), 'x')
+        polynomial = PR(polynomial.coefficients)
+
     if not polynomial.is_monic():
         raise ArithmeticError("Polynomial must be monic.")
 

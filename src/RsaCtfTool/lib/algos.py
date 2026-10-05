@@ -1181,3 +1181,121 @@ def franklin_reiter(n, e, c1, c2, a, b):
         return None
 
     return m1, m2
+
+
+def stereotyped_message(n, e, c, A, B, X):
+    """
+    Recover x from c = (A * x + B)^e mod n where x < X.
+    Uses Coppersmith's univariate method.
+    """
+    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+
+    x = Polynomial([0, 1], n)
+    f = (x * A + B) ** e - c
+
+    # We must make it monic for Coppersmith
+    try:
+        f = f.monic()
+    except ValueError:
+        return None
+
+    params = CoppersmithParameters(beta=1.0, X=X)
+    roots = coppersmith_univariate(f, n, params)
+
+    if roots:
+        return roots[0]
+    return None
+
+def short_pad(n, e, c1, c2):
+    """
+    Coppersmith Short Pad Attack.
+    Given c1 = m^e mod n and c2 = (m + delta)^e mod n, where delta is unknown but small,
+    recovers m1 and m2.
+    """
+    import sympy
+    from RsaCtfTool.lib.polynomial import Polynomial
+    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+    from gmpy2 import iroot
+    
+    x, y = sympy.symbols('x y')
+    g1 = x**e - c1
+    g2 = (x + y)**e - c2
+    
+    res = sympy.resultant(g1, g2, x)
+    res_poly = sympy.Poly(res, y)
+    coeffs = res_poly.all_coeffs()
+    
+    # The resultant is a polynomial in z = y^e
+    z_coeffs = []
+    for i in range(e + 1):
+        z_coeffs.append(coeffs[len(coeffs) - 1 - i * e])
+        
+    coeffs_mod_n = [int(c) % n for c in z_coeffs]
+    
+    f = Polynomial(coeffs_mod_n, n)
+    try:
+        f = f.monic()
+    except ValueError:
+        return None, None
+        
+    # Find z < N^(2 / (e * (e + 1))) to keep m small (m=e suffices)
+    # This covers delta up to N^(2 / (e^2 * (e+1)))
+    X_z = int(n ** (2 / (e * (e + 1))))
+    # If N is small, X_z might be 0, so ensure it's at least 1
+    if X_z < 1:
+        X_z = 1
+        
+    params = CoppersmithParameters(beta=1.0, X=X_z)
+    roots = coppersmith_univariate(f, n, params)
+    
+    for z_val in roots:
+        delta, exact = iroot(z_val, e)
+        if exact:
+            m_tuple = franklin_reiter(n, e, c1, c2, 1, int(delta))
+            if m_tuple is not None:
+                m1, m2 = m_tuple
+                return m1, m2
+            
+    return None, None
+
+def partial_p(n, p_high):
+    """
+    Coppersmith Factoring with high bits of p known.
+    Given N = p * q and p_high (the known high bits of p),
+    recovers p if the unknown bits of p are less than N^0.25 (which means ~50% of p is known).
+    """
+    from RsaCtfTool.lib.polynomial import Polynomial
+    from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+    
+    # Let x be the unknown low bits of p.
+    # p = p_high + x
+    # We want to find x such that (p_high + x) = 0 mod p.
+    # Since p | N, we can use Coppersmith's theorem for divisors.
+    
+    f = Polynomial([p_high, 1], n)
+    
+    # Calculate how many trailing zeros p_high has
+    k = 0
+    temp = p_high
+    while temp > 0 and (temp & 1) == 0:
+        k += 1
+        temp >>= 1
+        
+    if k > 0:
+        X = 1 << k
+    else:
+        X = int(n ** 0.25) + 1
+        
+    # For divisor p, it could be slightly less than N^0.5 if p < q.
+    # We use beta = 0.49 to be safe.
+    params = CoppersmithParameters(beta=0.49, X=X)
+    
+    roots = coppersmith_univariate(f, n, params)
+    
+    for root in roots:
+        p_cand = p_high + root
+        if p_cand > 1 and n % p_cand == 0:
+            return p_cand, n // p_cand
+            
+    return None, None
+

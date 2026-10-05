@@ -664,3 +664,29 @@ class TestStereotypedMessageAttack:
         )
         assert result.returncode == 0
         assert "4243" in result.stdout or "BC" in result.stdout or "BC" in result.stderr
+
+class TestShortPadAttack:
+    def test_short_pad_attack(self):
+        result = _run(
+            "--publickey", "examples/short_pad.pub",
+            "--decryptfile", "examples/short_pad1.cipher,examples/short_pad2.cipher",
+            "--attack", "short_pad",
+        )
+        assert result.returncode == 0
+        assert "123456789" in result.stdout or "123456789" in result.stderr
+
+class TestPartialPAttack:
+    def test_partial_p_attack(self):
+        p = 10103734139880193134105432658825866164227306239169601614210080645607316139414594625574542861614947937397753696147493139818816434444080183149867086884639911
+        mask = (1 << 512) - (1 << 212)
+        p_high = p & mask
+        
+        result = _run(
+            "--publickey", "examples/partial_p.pub",
+            "--attack", "partial_p",
+            "--p-high", str(p_high),
+            "--private"
+        )
+        assert result.returncode == 0
+        assert "partial_p attack found factorization" in result.stdout or "partial_p attack found factorization" in result.stderr
+
