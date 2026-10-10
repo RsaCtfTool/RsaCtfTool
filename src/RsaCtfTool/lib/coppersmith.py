@@ -10,8 +10,8 @@ import math
 from dataclasses import dataclass
 
 __all__ = [
-    "CoppersmithParameters",
     "CoppersmithError",
+    "CoppersmithParameters",
     "coppersmith_univariate",
 ]
 
@@ -48,6 +48,21 @@ class CoppersmithParameters:
 
         if self.m is None and self.t is not None:
             raise ValueError("t cannot be specified when m is None")
+
+
+def _to_sage_polynomial(polynomial, modulus):
+    """Convert input polynomial to a Sage polynomial over Zmod(modulus)."""
+    if hasattr(polynomial, "parent") and hasattr(polynomial, "is_monic"):
+        return polynomial
+    if hasattr(polynomial, "coefficients"):
+        from sage.all import PolynomialRing, Zmod
+
+        coeffs = polynomial.coefficients
+        if callable(coeffs):
+            coeffs = coeffs()
+        PR = PolynomialRing(Zmod(modulus), "x")
+        return PR(coeffs)
+    return polynomial
 
 
 def coppersmith_univariate(
@@ -97,6 +112,8 @@ def coppersmith_univariate(
 
     try:
         from RsaCtfTool.sage.coppersmith import coppersmith_univariate_sage
+
+        sage_poly = _to_sage_polynomial(polynomial, modulus)
     except ImportError as exc:
         raise CoppersmithError(
             "Coppersmith requires the optional Sage dependency"
@@ -110,7 +127,7 @@ def coppersmith_univariate(
             t=t,
         )
         roots = coppersmith_univariate_sage(
-            polynomial,
+            sage_poly,
             modulus,
             cand_params,
         )
@@ -200,6 +217,9 @@ def _select_coppersmith_parameters(
     1. A heuristic choice matching Sage's small_roots (fast, often succeeds).
     2. The smallest lattice strictly satisfying the Howgrave-Graham bound
        (slower, but mathematically guarantees finding the root if it exists).
+
+    Raises:
+        CoppersmithError: If no candidate satisfies the bound within max_m.
     """
     candidates = []
 
@@ -207,34 +227,41 @@ def _select_coppersmith_parameters(
     epsilon = beta / 8
     m_heuristic = math.ceil(max(beta**2 / (degree * epsilon), 7 * beta / degree))
     t_heuristic = math.floor(degree * m_heuristic * (1 / beta - 1))
-    
+
     if m_heuristic <= max_m:
         candidates.append((m_heuristic, t_heuristic))
 
-    # 2. Strict determinant bound
-    strict_candidates = []
+    # 2. Strict determinant bound (minimal dimension)
+    strict_choice = None
+    min_dim = float("inf")
+
     for m in range(1, max_m + 1):
+        if degree * m >= min_dim:
+            break
         t_max = degree * m * math.ceil(1 / beta)
         for t in range(t_max + 1):
-            strict_candidates.append((degree * m + t, m, t))
+            dim = degree * m + t
+            if dim >= min_dim:
+                break
+            if _coppersmith_bound_holds(
+                degree=degree,
+                modulus=modulus,
+                beta=beta,
+                m=m,
+                t=t,
+                X=X,
+            ):
+                min_dim = dim
+                strict_choice = (m, t)
 
-    strict_candidates.sort()
-
-    for _, m, t in strict_candidates:
-        if _coppersmith_bound_holds(
-            degree=degree,
-            modulus=modulus,
-            beta=beta,
-            m=m,
-            t=t,
-            X=X,
-        ):
-            if (m, t) not in candidates:
-                candidates.append((m, t))
-            break
+    if strict_choice is not None:
+        if strict_choice not in candidates:
+            candidates.append(strict_choice)
 
     if not candidates:
-        # Fallback: instruct the Sage backend to use native small_roots
-        candidates.append((None, None))
-        
+        raise CoppersmithError(
+            f"No Coppersmith parameters found satisfying bound within max_m={max_m}"
+        )
+
     return candidates
+

@@ -284,3 +284,24 @@ def terminate_proc_tree(pid, including_parent=False):
         child.kill()
     if including_parent:
         parent.kill()
+
+
+def parse_text_or_hex(val):
+    """Parse text/hex input into (integer_value, byte_length).
+    Strings starting with '0x' or '0X' are parsed as hex; all other strings
+    are encoded as ASCII/UTF-8 bytes.
+    """
+    if not val:
+        return 0, 0
+    if isinstance(val, bytes):
+        return int.from_bytes(val, "big"), len(val)
+    val_str = str(val)
+    if val_str.startswith(("0x", "0X")):
+        hex_str = val_str[2:]
+        if len(hex_str) % 2 != 0:
+            hex_str = "0" + hex_str
+        b = binascii.unhexlify(hex_str)
+    else:
+        b = val_str.encode("utf-8")
+    return int.from_bytes(b, "big"), len(b)
+

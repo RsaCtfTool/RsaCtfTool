@@ -1,14 +1,18 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
+
+import binascii
 
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
-from RsaCtfTool.lib.algos import stereotyped_message
-import binascii
+from RsaCtfTool.lib.algos import STEREOTYPED_MAX_E, stereotyped_message
+from RsaCtfTool.lib.coppersmith import CoppersmithError
+from RsaCtfTool.lib.keys_wrapper import PublicKey
+from RsaCtfTool.lib.utils import parse_text_or_hex
 
 class Attack(AbstractAttack):
     def __init__(self, timeout=60, sm_prefix=None, sm_suffix=None, sm_len=None):
         super().__init__(timeout)
-        self.speed = AbstractAttack.speed_enum["fast"]
+        self.speed = AbstractAttack.speed_enum["slow"]
+        self.required_binaries = ["sage"]
         self.sm_prefix = sm_prefix
         self.sm_suffix = sm_suffix
         self.sm_len = sm_len
@@ -31,41 +35,30 @@ class Attack(AbstractAttack):
             )
             return None, None
 
-        c = int.from_bytes(cipher[0], byteorder="big")
         n = int(publickey.n)
         e = int(publickey.e)
 
-        try:
-            prefix_val = 0
-            prefix_len = 0
-            if self.sm_prefix:
-                if self.sm_prefix.startswith("0x"):
-                    prefix_bytes = binascii.unhexlify(self.sm_prefix[2:])
-                else:
-                    try:
-                        prefix_bytes = binascii.unhexlify(self.sm_prefix)
-                    except binascii.Error:
-                        prefix_bytes = self.sm_prefix.encode()
-                prefix_val = int.from_bytes(prefix_bytes, "big")
-                prefix_len = len(prefix_bytes)
+        if e > STEREOTYPED_MAX_E:
+            self.logger.warning(
+                f"[!] Stereotyped message attack requires e <= {STEREOTYPED_MAX_E}, got e={e}"
+            )
+            return None, None
 
-            suffix_val = 0
-            suffix_len = 0
-            if self.sm_suffix:
-                if self.sm_suffix.startswith("0x"):
-                    suffix_bytes = binascii.unhexlify(self.sm_suffix[2:])
-                else:
-                    try:
-                        suffix_bytes = binascii.unhexlify(self.sm_suffix)
-                    except binascii.Error:
-                        suffix_bytes = self.sm_suffix.encode()
-                suffix_val = int.from_bytes(suffix_bytes, "big")
-                suffix_len = len(suffix_bytes)
+        X = 256 ** self.sm_len
+        if X <= 0 or pow(X, e) >= n:
+            self.logger.warning(
+                f"[!] Stereotyped message search space X={X} violates bound X < N^(1/{e})"
+            )
+            return None, None
+
+        try:
+            c = int.from_bytes(cipher[0], byteorder="big")
+            prefix_val, prefix_len = parse_text_or_hex(self.sm_prefix)
+            suffix_val, suffix_len = parse_text_or_hex(self.sm_suffix)
 
             # Construct A and B for M = A * x + B
             A = 256 ** suffix_len
             B = prefix_val * (256 ** (self.sm_len + suffix_len)) + suffix_val
-            X = 256 ** self.sm_len
 
             self.logger.info(f"[*] Stereotyped message parameters: A={A}, B={B}, X={X}")
 
@@ -78,9 +71,32 @@ class Attack(AbstractAttack):
                 return None, [m_bytes]
                 
             return None, None
-        except Exception as e:
-            self.logger.error(f"[!] Stereotyped message attack failed: {e}")
+        except CoppersmithError as exc:
+            if "Sage" in str(exc):
+                self.logger.info("[!] Stereotyped message attack requires Sage dependency")
+            else:
+                self.logger.error(f"[!] Stereotyped message attack failed: {exc}")
+            return None, None
+        except (ValueError, TypeError, binascii.Error) as exc:
+            self.logger.error(f"[!] Stereotyped message attack failed: {exc}")
             return None, None
 
     def test(self):
-        raise NotImplementedError
+        from RsaCtfTool.lib.crypto_wrapper import RSA
+        p = 1000003
+        q = 1000033
+        n = p * q
+        e = 3
+        pub_pem = RSA.construct((n, e)).publickey().exportKey()
+        key = PublicKey(pub_pem)
+        msg = b"hello!"
+        m = int.from_bytes(msg, "big")
+        c = pow(m, e, n)
+        c_bytes = c.to_bytes((c.bit_length() + 7) // 8 or 1, "big")
+
+        self.sm_prefix = "hello"
+        self.sm_suffix = None
+        self.sm_len = 1
+
+        _, decrypted = self.attack(key, [c_bytes], progress=False)
+        return decrypted is not None and len(decrypted) > 0 and decrypted[0] == msg

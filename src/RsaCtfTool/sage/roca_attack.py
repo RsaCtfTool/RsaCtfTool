@@ -1,24 +1,33 @@
 import sys
 import traceback
 from pathlib import Path
-from sage.all import Integer, inverse_mod, PolynomialRing, floor, Zmod
 
+from sage.all import Integer, PolynomialRing, Zmod, floor, inverse_mod
 
 script_path = Path(sys.argv[0]).resolve()
 if not (script_path.parent / "sage_functions.py").is_file():
     script_path = Path(__file__).resolve()
 script_dir = str(script_path.parent)
+src_dir = str(script_path.parents[2]) if len(script_path.parents) >= 3 else script_dir
 if script_dir not in sys.path:
     sys.path.insert(0, script_dir)
+if src_dir not in sys.path:
+    sys.path.insert(0, src_dir)
 
 
-def solve(M, n, a, m, XX, invmod_Mn, F, x, beta, sage_dir):
+def _solve_args(args):
+    return solve(*args)
+
+
+def solve(M, n, a, m, XX, invmod_Mn, F, x, beta, sage_dir, src_dir):
     # I need to import it in the function otherwise multiprocessing doesn't find it in its context
     if sage_dir not in sys.path:
         sys.path.insert(0, sage_dir)
-    from types import SimpleNamespace
+    if src_dir not in sys.path:
+        sys.path.insert(0, src_dir)
 
-    from coppersmith import coppersmith_univariate_sage
+    from RsaCtfTool.lib.coppersmith import CoppersmithParameters
+    from RsaCtfTool.sage.coppersmith import coppersmith_univariate_sage
 
     base = 65537
     # the known part of p: 65537^a * M^-1 (mod N)
@@ -28,7 +37,7 @@ def solve(M, n, a, m, XX, invmod_Mn, F, x, beta, sage_dir):
     # Find a small root (x0 = k) using Coppersmith's algorithm
     # Explicit (m, t): ROCA relies on empirically tuned lattices that the
     # generic determinant-bound selector would reject (beta = 0.1).
-    parameters = SimpleNamespace(beta=beta, X=XX, m=m, t=t)
+    parameters = CoppersmithParameters(beta=beta, X=XX, m=m, t=t)
     roots = coppersmith_univariate_sage(pol, n, parameters)
     # There will be no roots for an incorrect guess of a.
     for k in roots:
@@ -82,27 +91,24 @@ def roca(n):
     # too big chunks is slower, too small chunks also
     chunk_size = 10000
     for inf_a in range(inf, sup, chunk_size):
-        # create an array with the parameter for the solve function
         inputs = [
-            ((M_prime, n, a, m, XX, invmod_Mn, F, x, beta, script_dir), {})
+            (M_prime, n, a, m, XX, invmod_Mn, F, x, beta, script_dir, src_dir)
             for a in range(inf_a, inf_a + chunk_size)
         ]
-        # the sage builtin multiprocessing stuff
+        # We use multiprocessing.get_context("fork") locally instead of calling
+        # multiprocessing.set_start_method("fork", force=True) globally.
+        # Sage CLI subprocesses fail under spawn/forkserver during process
+        # bootstrapping when attempting to re-import __main__.
         import multiprocessing
-        try:
-            multiprocessing.set_start_method("fork", force=True)
-        except Exception:
-            pass
-
-        from sage.parallel.multiprocessing_sage import parallel_iter
         from multiprocessing import cpu_count
 
-        for k, val in parallel_iter(cpu_count(), solve, inputs):
-            if val:
-                p = val[0]
-                q = val[1]
-                print(f"{p}:{q}")
-                return val
+        ctx = multiprocessing.get_context("fork")
+        with ctx.Pool(cpu_count()) as pool:
+            for val in pool.imap_unordered(_solve_args, inputs, chunksize=100):
+                if val:
+                    p, q = val
+                    print(f"{p}:{q}")
+                    return val
     return "Fail"
 
 

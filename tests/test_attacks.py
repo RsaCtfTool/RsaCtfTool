@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
+import os
+import shutil
 import subprocess
 import sys
 import tempfile
-import os
 from pathlib import Path
 
 import pytest
@@ -19,6 +20,7 @@ def _run(*args, timeout=60):
 
 
 class TestFactordbAttack:
+    @pytest.mark.network
     def test_factordb_attack_succeeds(self):
         result = _run(
             "--publickey",
@@ -642,13 +644,14 @@ class TestFranklinReiterAttack:
         assert "Franklin-Reiter attack found no solution" in result.stderr
 
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestStereotypedMessageAttack:
     def test_stereotyped_message_known_prefix(self):
         result = _run(
             "--publickey", "examples/stereotyped_message.pub",
             "--decryptfile", "examples/stereotyped_message_prefix.cipher",
             "--attack", "stereotyped_message",
-            "--sm-prefix", "41",
+            "--sm-prefix", "0x41",
             "--sm-len", "1"
         )
         assert result.returncode == 0
@@ -659,12 +662,13 @@ class TestStereotypedMessageAttack:
             "--publickey", "examples/stereotyped_message.pub",
             "--decryptfile", "examples/stereotyped_message_suffix.cipher",
             "--attack", "stereotyped_message",
-            "--sm-suffix", "43",
+            "--sm-suffix", "0x43",
             "--sm-len", "1"
         )
         assert result.returncode == 0
         assert "4243" in result.stdout or "BC" in result.stdout or "BC" in result.stderr
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestShortPadAttack:
     def test_short_pad_attack(self):
         result = _run(
@@ -675,6 +679,7 @@ class TestShortPadAttack:
         assert result.returncode == 0
         assert "123456789" in result.stdout or "123456789" in result.stderr
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestPartialPAttack:
     def test_partial_p_attack(self):
         p = 10103734139880193134105432658825866164227306239169601614210080645607316139414594625574542861614947937397753696147493139818816434444080183149867086884639911
@@ -685,6 +690,7 @@ class TestPartialPAttack:
             "--publickey", "examples/partial_p.pub",
             "--attack", "partial_p",
             "--p-high", str(p_high),
+            "--p-unknown-bits", "212",
             "--private"
         )
         assert result.returncode == 0

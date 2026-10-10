@@ -70,6 +70,21 @@ docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 - Partial q / Partial d
 - [Lattice reduction](https://en.wikipedia.org/wiki/Lattice_reduction)
 
+### Coppersmith Attacks
+
+Coppersmith's lattice reduction methods solve for small roots of modular polynomials (requires optional SageMath dependency for lattice LLL reduction).
+
+| Attack | Required Flags | Feasibility Limits | Example Command |
+|--------|----------------|--------------------|-----------------|
+| `stereotyped_message` | `--sm-len` and (`--sm-prefix` or `--sm-suffix`) | $e \le 17$, $X < N^{1/e}$ | `RsaCtfTool --publickey key.pub --decryptfile cipher.bin --attack stereotyped_message --sm-prefix "FLAG:" --sm-len 16` |
+| `short_pad` | `--decryptfile c1,c2` | $e \le 5$, $\Delta < N^{1/e^2}$ | `RsaCtfTool --publickey key.pub --decryptfile c1.bin,c2.bin --attack short_pad` |
+| `partial_p` | `--p-high` and `--p-unknown-bits` | $\text{unknown\_bits} \le \lfloor N/4 \rfloor + 2$ ($\approx N^{0.25}$) | `RsaCtfTool --publickey key.pub --attack partial_p --p-high 0x1234... --p-unknown-bits 212 --private` |
+| `partial_d` | `--key` (partial private key), optional `--d-known-bits` | Low bits of $d$ known | `RsaCtfTool --key key.priv --partial --attack partial_d --d-known-bits 20` |
+| `lattice` | `--key` (partial key with approx of $p$) | Approximation of factor $p$ | `RsaCtfTool --key key.priv --partial --attack lattice` |
+| `smallfraction` | `--publickey` | $p/q$ close to small fraction $a/b$ | `RsaCtfTool --publickey key.pub --attack smallfraction --private` |
+
+> **Note for text parameters (`--sm-prefix`, `--sm-suffix`):** Values starting with `0x` or `0X` are parsed as hex byte strings, while all other string inputs are parsed as UTF-8 / ASCII text bytes.
+
 ### Integer Factorization Methods
 
 | Method | Description |

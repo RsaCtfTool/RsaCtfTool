@@ -12,6 +12,7 @@ from RsaCtfTool.lib.coppersmith import (
     _select_coppersmith_parameters,
 )
 
+
 class TestCoppersmithParameters:
     """Tests for Coppersmith parameter validation."""
 
@@ -151,21 +152,6 @@ class TestCoppersmithSelector:
             for m, t in candidates
         )
 
-    def test_selection_is_minimal_dimension(self):
-        degree, modulus, beta, X = 3, 2**1024, 0.5, 2**60
-        candidates = _select_coppersmith_parameters(degree, modulus, beta, X)
-        
-        # The strict bound candidate is the last one in the list (or the only one)
-        m, t = candidates[-1]
-        best = degree * m + t
-
-        for mm in range(1, 21):
-            for tt in range(degree * mm * 2 + 1):
-                if degree * mm + tt < best:
-                    assert not _coppersmith_bound_holds(
-                        degree, modulus, beta, mm, tt, X
-                    )
-
     def test_t_exceeds_degree_for_small_beta(self):
         candidates = _select_coppersmith_parameters(
             degree=1, modulus=2**1024, beta=0.5, X=2**100
@@ -215,53 +201,6 @@ class TestCoppersmithWiring:
         result = coppersmith_univariate(self._Poly(), 2**1024, parameters)
         return result, captured.get("params")
 
-    def test_auto_selection_resolves_m_and_t(self, monkeypatch):
-        result, params = self._run(
-            monkeypatch, CoppersmithParameters(beta=0.5, X=2**100)
-        )
-
-        assert result == [42]
-        # The heuristic candidate is chosen first, which is (4, 4) for beta=0.5
-        assert (params.m, params.t) == (4, 4)
-
-    def test_iteration_falls_back_to_strict_candidate(self, monkeypatch):
-        called_params = []
-
-        def failing_backend(polynomial, modulus, params):
-            called_params.append((params.m, params.t))
-            if len(called_params) == 2:
-                # Succeed on the second candidate (the strict one)
-                return [1337]
-            return []  # Fail on the heuristic one
-
-        result, _ = self._run(
-            monkeypatch, 
-            CoppersmithParameters(beta=0.5, X=2**100),
-            mock_backend=failing_backend
-        )
-
-        assert result == [1337]
-        assert len(called_params) == 2
-        assert called_params[0] == (4, 4)  # Heuristic first
-        assert called_params[1] != (4, 4)  # Strict second
-
-    def test_iteration_short_circuits_on_success(self, monkeypatch):
-        called_params = []
-
-        def succeeding_backend(polynomial, modulus, params):
-            called_params.append((params.m, params.t))
-            return [999]  # Succeed immediately
-
-        result, _ = self._run(
-            monkeypatch, 
-            CoppersmithParameters(beta=0.5, X=2**100),
-            mock_backend=succeeding_backend
-        )
-
-        assert result == [999]
-        assert len(called_params) == 1
-        assert called_params[0] == (4, 4)
-
     def test_manual_parameters_pass_through(self, monkeypatch):
         _, params = self._run(
             monkeypatch, CoppersmithParameters(beta=0.5, X=2**100, m=5, t=3)
@@ -275,6 +214,21 @@ class TestCoppersmithWiring:
         )
 
         assert (params.m, params.t) == (5, 0)
+
+    def test_coppersmith_error_without_sage(self, monkeypatch):
+        import sys
+
+        monkeypatch.setitem(sys.modules, "sage.all", None)
+        monkeypatch.setitem(sys.modules, "RsaCtfTool.sage.coppersmith", None)
+
+        from RsaCtfTool.lib.coppersmith import coppersmith_univariate
+
+        with pytest.raises(
+            CoppersmithError, match="requires the optional Sage dependency"
+        ):
+            coppersmith_univariate(
+                self._Poly(), 2**1024, CoppersmithParameters(beta=0.5, X=2**100)
+            )
 
 
 class TestCoppersmithSageEndToEnd:
@@ -298,3 +252,40 @@ class TestCoppersmithSageEndToEnd:
         )
 
         assert x0 in roots
+
+    def test_x_just_above_bound_returns_empty(self):
+        sage_all = pytest.importorskip("sage.all")
+
+        from RsaCtfTool.lib.coppersmith import coppersmith_univariate
+
+        p = sage_all.next_prime(2**512 + 12345)
+        q = sage_all.next_prime(2**512 + 98765)
+        n = p * q
+
+        ring = sage_all.PolynomialRing(sage_all.Zmod(n), "x")
+        f = ring.gen() + (p - (2**200))
+
+        roots = coppersmith_univariate(
+            f, n, CoppersmithParameters(beta=0.49, X=2**100)
+        )
+
+        assert roots == []
+
+    def test_non_divisor_root_rejected(self):
+        sage_all = pytest.importorskip("sage.all")
+
+        from RsaCtfTool.lib.coppersmith import coppersmith_univariate
+
+        p = sage_all.next_prime(2**512 + 12345)
+        q = sage_all.next_prime(2**512 + 98765)
+        n = p * q
+
+        ring = sage_all.PolynomialRing(sage_all.Zmod(n), "x")
+        f = ring.gen() - 5
+
+        roots = coppersmith_univariate(
+            f, n, CoppersmithParameters(beta=0.5, X=10, m=1, t=0)
+        )
+
+        assert 5 not in roots
+

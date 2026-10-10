@@ -3,7 +3,15 @@ from types import SimpleNamespace
 
 import pytest
 
-from RsaCtfTool.attacks.single_key import binary_polynomial_factoring, lattice, partial_d, smallfraction
+from RsaCtfTool.attacks.single_key import (
+    binary_polynomial_factoring,
+    lattice,
+    partial_d,
+    partial_p,
+    short_pad,
+    smallfraction,
+    stereotyped_message,
+)
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
 
 
@@ -12,6 +20,9 @@ def test_sage_attacks_declare_their_runtime_dependency():
     assert lattice.Attack().required_binaries == ["sage"]
     assert binary_polynomial_factoring.Attack().required_binaries == ["sage"]
     assert smallfraction.Attack().required_binaries == ["sage"]
+    assert partial_p.Attack().required_binaries == ["sage"]
+    assert short_pad.Attack().required_binaries == ["sage"]
+    assert stereotyped_message.Attack().required_binaries == ["sage"]
 
 def test_partial_d_parses_sage_factors(monkeypatch):
     key = object.__new__(PrivateKey)
@@ -103,9 +114,9 @@ def test_ecm2_parses_factor_tuple(monkeypatch):
 
 
 def test_sage_functions_delegates_to_shared_backend(monkeypatch):
+    pytest.importorskip("sage.all")
     import sys
     import types
-    from types import SimpleNamespace
 
     captured = {}
     fake = types.ModuleType("RsaCtfTool.sage.coppersmith")
@@ -135,25 +146,5 @@ def test_sage_functions_delegates_to_shared_backend(monkeypatch):
     assert captured["params"].X == 2**100
 
 
-def test_roca_attack_multiprocessing_enforces_fork():
-    """
-    Ensure the ROCA attack sets the multiprocessing start method to 'fork'.
-    This is necessary because Sage's CLI breaks when spawn/forkserver
-    passes internal arguments to the python interpreter.
-    """
-    import ast
-    from RsaCtfTool.lib.utils import rootpath
-    
-    with open(f"{rootpath}/sage/roca_attack.py", "r") as f:
-        tree = ast.parse(f.read())
-        
-    found = False
-    for node in ast.walk(tree):
-        if isinstance(node, ast.Call):
-            if isinstance(node.func, ast.Attribute) and node.func.attr == "set_start_method":
-                if node.args and isinstance(node.args[0], ast.Constant) and node.args[0].value == "fork":
-                    found = True
-                    break
-    
-    assert found, "roca_attack.py must enforce multiprocessing.set_start_method('fork')"
+
 

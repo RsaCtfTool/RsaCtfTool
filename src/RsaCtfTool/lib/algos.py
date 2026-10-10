@@ -1,44 +1,54 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
+import logging
+import math
 import sys
 import time
-import math
-import logging
-import sympy
 from array import array
 from random import randint
+
+import sympy
 from tqdm import tqdm
+
+from RsaCtfTool.lib.coppersmith import (
+    CoppersmithError,
+    CoppersmithParameters,
+    coppersmith_univariate,
+)
 from RsaCtfTool.lib.exceptions import FactorizationError
 from RsaCtfTool.lib.number_theory import (
-    isqrt,
-    gcd,
-    primes,
-    powmod,
-    is_square,
-    next_prime,
-    isqrt_rem,
-    inv_mod_pow_of_2,
-    trivial_factorization_with_n_phi,
-    cuberoot,
-    mod,
-    log,
-    ilog10,
-    ilog2,
-    fib,
-    rational_to_contfrac,
     convergents_from_contfrac,
+    cuberoot,
     fdivmod,
-    is_congruent,
-    ilogb,
-    mlucas,
-    iroot,
-    mulmod,
+    fib,
+    gcd,
     gmpy_version,
+    ilog2,
+    ilog10,
+    ilogb,
+    introot,
+    inv_mod_pow_of_2,
+    invmod,
+    iroot,
+    is_congruent,
+    is_prime,
+    is_square,
+    isqrt,
+    isqrt_rem,
+    legendre,
+    log,
+    mlucas,
+    mod,
+    mulmod,
+    next_prime,
+    powmod,
+    primes,
+    rational_to_contfrac,
+    tonelli,
+    trivial_factorization_with_n_phi,
 )
-from RsaCtfTool.lib.number_theory import invmod, introot, is_prime, legendre, tonelli
 from RsaCtfTool.lib.polynomial import Polynomial, PolynomialDivisionError
-from RsaCtfTool.lib.coppersmith import coppersmith_univariate, CoppersmithParameters
+
 sys.setrecursionlimit(100000)
 
 
@@ -138,7 +148,7 @@ def close_factor(n, b, progress=True):
     look_up = {}
     z = 1
     parity = phi_approx & 1
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
+    for i in tqdm(range(b + 1), disable=(not progress)):
         if i & 1 == parity:
             look_up[z] = i
         z <<= 1
@@ -152,7 +162,7 @@ def close_factor(n, b, progress=True):
     # j in [0, b] (the table) and i in [0, b], together covering
     # e in [-b^2, b].  Scanning i past b cannot match any new table
     # entry, so the old b*b iteration bound was unreachable dead range.
-    for i in tqdm(range(0, b + 1), disable=(not progress)):
+    for i in tqdm(range(b + 1), disable=(not progress)):
         if mu in look_up:
             phi = phi_approx + look_up[mu] - (i * b)
             r = trivial_factorization_with_n_phi(n, phi)
@@ -1019,7 +1029,7 @@ def SQUFOF(N):
     L = isqrt(s << 1) << 1
     B = 3 * L
 
-    for k in range(0, len(multiplier)):
+    for k in range(len(multiplier)):
         D = multiplier[k] * N
         Po = Pprev = P = isqrt(D)
         Qprev = 1
@@ -1062,7 +1072,7 @@ def pollard_strassen(n):
     r, exact = iroot(n, 4)
     c = int(r) if exact else int(r) + 1
     f = []
-    for i in range(0, c):
+    for i in range(c):
         f.append(1)
         jmin = i * c + 1
         jmax = jmin + c - 1
@@ -1184,16 +1194,32 @@ def franklin_reiter(n, e, c1, c2, a, b):
     return m1, m2
 
 
+STEREOTYPED_MAX_E = 17
+SHORT_PAD_MAX_E = 5
+
+
 def stereotyped_message(n, e, c, A, B, X):
     """
     Recover x from c = (A * x + B)^e mod n where x < X.
-    Uses Coppersmith's univariate method.
+    Uses Coppersmith's univariate method. Feasible when e <= 17 and X < N^(1/e).
     """
+    if e > STEREOTYPED_MAX_E:
+        logger = logging.getLogger("global_logger")
+        logger.warning(
+            f"[!] stereotyped_message requires e <= {STEREOTYPED_MAX_E}, got e={e}"
+        )
+        return None
+
+    if X <= 0 or pow(X, e) >= n:
+        logger = logging.getLogger("global_logger")
+        logger.warning(
+            f"[!] stereotyped_message search space X={X} violates feasibility bound X < N^(1/{e})"
+        )
+        return None
 
     x = Polynomial([0, 1], n)
     f = (x * A + B) ** e - c
 
-    # We must make it monic for Coppersmith
     try:
         f = f.monic()
     except ValueError:
@@ -1206,12 +1232,21 @@ def stereotyped_message(n, e, c, A, B, X):
         return roots[0]
     return None
 
+
 def short_pad(n, e, c1, c2):
     """
     Coppersmith Short Pad Attack.
     Given c1 = m^e mod n and c2 = (m + delta)^e mod n, where delta is unknown but small,
     recovers m1 and m2.
+    Theoretical bound: delta < N^(1/e^2), feasible for e <= 5.
+    Since z = delta^e < (N^(1/e^2))^e = N^(1/e), the search bound on z is X_z = N^(1/e).
     """
+    if e > SHORT_PAD_MAX_E:
+        logger = logging.getLogger("global_logger")
+        logger.warning(
+            f"[!] short_pad attack requires e <= {SHORT_PAD_MAX_E}, got e={e}"
+        )
+        return None, None
 
     x, y = sympy.symbols('x y')
     g1 = x**e - c1
@@ -1234,12 +1269,10 @@ def short_pad(n, e, c1, c2):
     except ValueError:
         return None, None
         
-    # Find z < N^(2 / (e * (e + 1))) to keep m small (m=e suffices)
-    # This covers delta up to N^(2 / (e^2 * (e+1)))
-    X_z = int(n ** (2 / (e * (e + 1))))
-    # If N is small, X_z might be 0, so ensure it's at least 1
-    if X_z < 1:
-        X_z = 1
+    # Theoretical bound: delta < N^(1/e^2). For z = delta^e, the search bound
+    # for Coppersmith univariate LLL is X_z = N^(2 / (e * (e + 1))).
+    exp_denom = (e * (e + 1)) // 2
+    X_z = max(iroot(n, exp_denom)[0], 1)
         
     params = CoppersmithParameters(beta=1.0, X=X_z)
     roots = coppersmith_univariate(f, n, params)
@@ -1254,115 +1287,138 @@ def short_pad(n, e, c1, c2):
             
     return None, None
 
-def partial_p(n, p_high):
+def partial_p(n, p_high, unknown_bits=None):
     """
     Coppersmith Factoring with high bits of p known.
-    Given N = p * q and p_high (the known high bits of p),
-    recovers p if the unknown bits of p are less than N^0.25 (which means ~50% of p is known).
-    """
+    Given N = p * q, p_high (the known high bits of p), and unknown_bits (the number
+    of unknown low bits of p), recovers p if unknown_bits <= N^0.25 (~25% of N's bit length).
 
-    # Let x be the unknown low bits of p.
-    # p = p_high + x
-    # We want to find x such that (p_high + x) = 0 mod p.
-    # Since p | N, we can use Coppersmith's theorem for divisors.
-    
+    Args:
+        n: RSA modulus N.
+        p_high: High bits of p (shifted so low unknown_bits are 0).
+        unknown_bits: Number of unknown lower bits of p (if None, inferred from p_high trailing zeros).
+
+    Returns:
+        (p, q) tuple if recovered, else (None, None).
+    """
+    if unknown_bits is None:
+        k = (p_high & -p_high).bit_length() - 1 if p_high > 0 else 0
+        unknown_bits = k if k > 0 else (n.bit_length() // 4)
+    n_bits = n.bit_length()
+    max_unknown_bits = (n_bits // 4) + 2
+    if unknown_bits > max_unknown_bits:
+        raise ValueError(
+            f"unknown_bits ({unknown_bits}) exceeds theoretical Coppersmith bound of ~N^0.25 ({n_bits // 4} bits)"
+        )
+
     f = Polynomial([p_high, 1], n)
-    
-    # Calculate how many trailing zeros p_high has
-    k = 0
-    temp = p_high
-    while temp > 0 and (temp & 1) == 0:
-        k += 1
-        temp >>= 1
-        
-    if k > 0:
-        X = 1 << k
-    else:
-        X = int(n ** 0.25) + 1
-        
-    # For divisor p, it could be slightly less than N^0.5 if p < q.
-    # We use beta = 0.49 to be safe.
+    X = 1 << unknown_bits
+
+    # For divisor p, use beta = 0.49 to ensure Coppersmith's condition holds
     params = CoppersmithParameters(beta=0.49, X=X)
-    
     roots = coppersmith_univariate(f, n, params)
-    
+
     for root in roots:
         p_cand = p_high + root
         if p_cand > 1 and n % p_cand == 0:
             return p_cand, n // p_cand
-            
+
     return None, None
 
 def lattice_partial_p(n, near_p):
     """
     Coppersmith Factoring with an approximation of p.
-    This works like partial_p, but sweeps bounds exponentially
-    so that small errors can be recovered very quickly using smaller lattices.
+    Sweeps bounds exponentially up to Coppersmith's theoretical bound X <= N^(beta^2).
+    According to Howgrave-Graham / Coppersmith theorem, a small root x modulo a divisor
+    b >= N^beta can be found when |x| <= X <= N^(beta^2). In bit length, this corresponds to
+    log2(X) <= beta^2 * log2(N).
     """
 
     n, near_p = int(n), int(near_p)
-    
+
     g = gcd(n, near_p)
     if 1 < g < n:
         return g, n // g
-        
+
     n_bits = n.bit_length()
     p_bits = near_p.bit_length()
-    
-    beta = (p_bits - 1) / n_bits
-    if beta <= 0 or beta >= 1:
+
+    raw_beta = (p_bits - 1) / n_bits
+    if raw_beta <= 0 or raw_beta >= 1:
         return None, None
-        
-    # max_bits roughly beta^2 * n_bits
-    max_bits = max(int(beta * beta * n_bits * 0.95), 1)
-    
+
+    # Using beta = 0.49 (or raw_beta if lower) ensures Coppersmith's divisor bound
+    # b >= N^beta holds even if the targeted prime factor is slightly below N^0.5.
+    beta = min(raw_beta, 0.49)
+
+    # Coppersmith bound: X <= N^(beta^2) => log2(X) <= beta^2 * log2(N)
+    max_bits = max(int(beta * beta * n_bits), 1)
+
     f = Polynomial([near_p, 1], n)
     bits = min(32, max_bits)
-    
+
     while True:
         X = 1 << bits
-        # Use slightly relaxed beta for bound checks
-        params = CoppersmithParameters(beta=beta * 0.99, X=X)
+        params = CoppersmithParameters(beta=beta, X=X)
         try:
             roots = coppersmith_univariate(f, n, params)
             for r in roots:
                 p_cand = near_p + r
                 if p_cand > 1 and n % p_cand == 0:
                     return p_cand, n // p_cand
-        except Exception:
-            pass
-            
+        except CoppersmithError as exc:
+            if "Sage" in str(exc):
+                raise
+            # Infeasible bound or no parameters satisfying bound within max_m: break early
+            break
+
         if bits >= max_bits:
             break
         bits = min(bits * 2, max_bits)
-        
+
     return None, None
 
 def small_fraction(n):
     """
-    Finds a factor of N when p/q is close to a small fraction.
-    Sweeps through small fractions num/den and tests if p is near sqrt(N * den / num).
-    Uses the lattice_partial_p function under the hood to find the factor with bounded error.
+    Finds a factor of N when p/q is close to a small fraction num/den (num < den).
+    Sweeps through small fractions num/den and tests if q is near sqrt(N * den / num).
+    Uses exact integer arithmetic isqrt(n * den // num) to avoid floating-point overflow on large N.
+    The hint approximates the larger factor q (assuming q > p).
     """
 
     depth = 50
     for den in range(2, depth + 1):
         for num in range(1, den):
             if gcd(num, den) == 1:
-                r = den / num
-                phint = isqrt(int(n * r))
+                phint = isqrt(n * den // num)
                 p, q = lattice_partial_p(n, phint)
                 if p is not None and q is not None:
                     return p, q
-                    
+
     return None, None
 
-def partial_d(n, e, dLow):
+def partial_d(n, e, dLow, known_bits=None):
     """
     Coppersmith Factoring with partial d (low bits of d known).
     Recovers p and q from N, e, and the known lower bits of d.
+
+    Args:
+        n: RSA modulus N.
+        e: Public exponent e.
+        dLow: Known lower bits of d.
+        known_bits: Explicit number of known low bits in dLow (preserves leading zero bits).
+                    If None, defaults to dLow.bit_length().
     """
-    def hensel_lift(a, b, c, bits):
+    if known_bits is None:
+        lowerBitsNum = dLow.bit_length()
+    else:
+        lowerBitsNum = int(known_bits)
+
+    def hensel_lift(a, b, c, bits, max_roots=256):
+        """
+        Solve a*X^2 + b*X + c == 0 (mod 2^bits) using Hensel's lemma lifting.
+        Caps the number of roots per level to max_roots (default 256) to prevent exponential blow-up.
+        """
         roots = [r for r in range(2) if (a * r * r + b * r + c) % 2 == 0]
         for k in range(1, bits):
             mod = 1 << k
@@ -1374,6 +1430,8 @@ def partial_d(n, e, dLow):
                     val = a * candidate * candidate + b * candidate + c
                     if val % next_mod == 0:
                         new_roots.append(candidate)
+            if len(new_roots) > max_roots:
+                new_roots = new_roots[:max_roots]
             roots = new_roots
         mod_final = 1 << bits
         return [r % mod_final for r in roots]
@@ -1384,19 +1442,18 @@ def partial_d(n, e, dLow):
             l_inv = pow(l, -1, n)
         except ValueError:
             return None
-            
+
         f = Polynomial([(p_low * l_inv) % n, 1], n)
-        
+
         n_bits = n.bit_length()
         lo = max((n_bits >> 1) - l_bits, 4)
         hi = min(n_bits - l_bits, (n_bits * 19) // 100)
-        if hi < lo:
-            hi = lo
-            
+        hi = max(hi, lo)
+
         bounds = list(range(lo, hi + 1, 8))
         if not bounds or bounds[-1] != hi:
             bounds.append(hi)
-            
+
         for ubits in bounds:
             X = 1 << ubits
             params = CoppersmithParameters(beta=0.49, X=X)
@@ -1406,13 +1463,15 @@ def partial_d(n, e, dLow):
                     p_cand = gcd(l * root + p_low, n)
                     if 1 < p_cand < n:
                         return p_cand
-            except Exception:
-                pass
+            except CoppersmithError as exc:
+                if "Sage" in str(exc):
+                    raise
         return None
 
-    lowerBitsNum = dLow.bit_length()
-    
-    for k in range(1, e + 1):
+    # k is bounded to 1..min(e-1, 1000) to prevent infeasible loops when e is large (e.g. e=65537).
+    max_k = min(e, 1000)
+
+    for k in range(1, max_k):
         a = k
         b = e * dLow - k * (n + 1) - 1
         c = k * n
