@@ -281,11 +281,15 @@ def run_attacks(args, logger):
             "Testing attacks: %d" % len([a for a in selected_attacks if a != "all"])
         )
 
-        tmpfile = tempfile.NamedTemporaryFile()
-        with open(tmpfile.name, "wb") as tmpfd:
+        # Write and close before use: Windows can't reopen a file that a
+        # NamedTemporaryFile still holds open.
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfd:
             tmpfd.write(RSA.construct((35, 3)).publickey().exportKey())
-            attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
-            sys.exit(0)
+        try:
+            attackobj.attack_single_key(tmpfd.name, selected_attacks, test=True)
+        finally:
+            os.unlink(tmpfd.name)
+        sys.exit(0)
 
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:
@@ -370,10 +374,9 @@ def load_keys(args, logger):
                 "[!] Cannot build a public key from the given n and e (e must be odd, > 1 and < n)."
             )
             sys.exit(1)
-        tmpfile = tempfile.NamedTemporaryFile(delete=False)
-        with open(tmpfile.name, "wb") as tmpfd:
+        with tempfile.NamedTemporaryFile(delete=False) as tmpfd:
             tmpfd.write(pub_pem)
-        args.publickey.append(tmpfile.name)
+        args.publickey.append(tmpfd.name)
     return args
 
 
