@@ -287,9 +287,13 @@ def run_attacks(args, logger):
             attackobj.attack_single_key(tmpfile.name, selected_attacks, test=True)
             sys.exit(0)
 
+    # Drives the exit code: 0 if anything was recovered, 1 otherwise.
+    args.cracked = False
+
     # Attack multiple keys
     if args.publickey is not None and len(args.publickey) > 1:
-        attackobj.attack_multiple_keys(args.publickey, selected_attacks)
+        result = attackobj.attack_multiple_keys(args.publickey, selected_attacks)
+        args.cracked |= result is True or attackobj.has_results()
 
     # Attack key
     if args.publickey is not None:
@@ -301,11 +305,13 @@ def run_attacks(args, logger):
             # every attack for this key is skipped (can_run preflight).
             attackobj.priv_key = None
             logger.info("\n[*] Testing key %s." % publickey)
-            attackobj.attack_single_key(publickey, selected_attacks)
+            result = attackobj.attack_single_key(publickey, selected_attacks)
+            args.cracked |= result is True or attackobj.has_results()
     if args.publickey is None:
         if args.partial:
             priv_key = PrivateKey(filename=args.key, password=None)
-            attackobj.attack_single_key(priv_key, selected_attacks)
+            result = attackobj.attack_single_key(priv_key, selected_attacks)
+            args.cracked |= result is True or attackobj.has_results()
         else:
             logger.error("No key specified")
     return args
@@ -711,6 +717,9 @@ def main():
 
     if args.cleanup:
         cleanup(args)
+
+    if not args.cracked:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
