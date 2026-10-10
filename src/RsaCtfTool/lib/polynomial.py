@@ -8,7 +8,6 @@ Coefficients are stored in ascending degree order:
 
 from math import gcd
 
-
 __all__ = ["Polynomial", "PolynomialDivisionError"]
 
 
@@ -62,8 +61,10 @@ class Polynomial:
             self._check_modulus(other)
             return other
 
-        if isinstance(other, int):
-            return Polynomial([other], self.modulus)
+        try:
+            return Polynomial([int(other)], self.modulus)
+        except (ValueError, TypeError):
+            pass
 
         raise TypeError(
             f"unsupported operand type: {type(other).__name__}"
@@ -133,7 +134,9 @@ class Polynomial:
         return self * other
 
     def __pow__(self, exponent):
-        if not isinstance(exponent, int):
+        try:
+            exponent = int(exponent)
+        except (ValueError, TypeError):
             raise TypeError("polynomial exponent must be an integer")
 
         if exponent < 0:

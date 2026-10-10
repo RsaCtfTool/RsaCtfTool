@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import subprocess
-from RsaCtfTool.attacks.abstract_attack import AbstractAttack, SAGE_MIN_TIMEOUT
+
+from RsaCtfTool.attacks.abstract_attack import SAGE_MIN_TIMEOUT, AbstractAttack
+from RsaCtfTool.lib.coppersmith import CoppersmithError
+from RsaCtfTool.lib.keys_wrapper import PublicKey
 from RsaCtfTool.lib.utils import rootpath
 
 
@@ -26,23 +28,32 @@ class Attack(AbstractAttack):
             try:
                 sageresult = int(r)
             except ValueError:
-                # sage died before printing a factor (empty/garbled stdout).
-                return (None, None)
-            # Accept only a genuine factor split: the script prints 0 on
-            # failure and a value that does not divide n is useless.
+                sageresult = 0
             if 1 < sageresult < publickey.n and publickey.n % sageresult == 0:
                 publickey.p = sageresult
                 publickey.q = publickey.n // publickey.p
                 return self.create_private_key_from_pqe(
                     publickey.p, publickey.q, publickey.e, publickey.n
                 )
-        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
             return (None, None)
+        except CoppersmithError as exc:
+            if "Sage" in str(exc):
+                self.logger.info("[!] smallfraction attack requires Sage dependency")
+            else:
+                self.logger.error(f"[!] smallfraction attack failed: {exc}")
+            return (None, None)
+        except (
+            subprocess.CalledProcessError,
+            subprocess.TimeoutExpired,
+            TypeError,
+            ValueError,
+            FileNotFoundError,
+        ) as exc:
+            self.logger.error(f"[!] smallfraction attack failed: {exc}")
+            
         return (None, None)
 
     def test(self):
-        from RsaCtfTool.lib.keys_wrapper import PublicKey
-
         key_data = """-----BEGIN PUBLIC KEY-----
 MGYwDQYJKoZIhvcNAQEBBQADVQAwUgJLAi7v97hPb80NkMELBLYGAGEeDOdFAiW6
 5wq4OGN1P6nmUmg5iFRQA6YWU8x1WdQMmVs6KxIUS89W0InUN3JVQ9SzLE32nKXc

@@ -3,41 +3,46 @@
 Unit tests for the algos module.
 """
 
+import shutil
+
 import pytest
 
 from RsaCtfTool.lib.algos import (
+    SQUFOF,
+    FactorHighAndLowBitsEqual,
+    Fibonacci,
+    _build_qs_factor_base,
+    _collect_dixon_relations,
+    _gaussian_elimination_gf2,
+    _qs_sieve_interval,
+    _try_smooth_dependency,
     brent,
-    strong_pseudoprime,
+    difference_of_powers_factor,
+    dixon,
+    euler,
+    factor_2PN,
+    factor_XYXZ,
     fermat,
+    hart,
     kraitchik,
     lehman,
     lehmer_machine,
-    SQUFOF,
-    wiener,
-    factor_2PN,
-    factor_XYXZ,
-    euler,
-    hart,
-    pollard_rho,
+    partial_d,
+    partial_p,
     pollard_P_1,
+    pollard_rho,
     pollard_strassen,
-    williams_pp1,
-    difference_of_powers_factor,
-    FactorHighAndLowBitsEqual,
-    Fibonacci,
-    dixon,
     prime_base_collision,
     quadratic_sieve,
-    _gaussian_elimination_gf2,
-    _try_smooth_dependency,
-    _collect_dixon_relations,
-    _build_qs_factor_base,
-    _qs_sieve_interval,
+    small_fraction,
+    strong_pseudoprime,
+    wiener,
+    williams_pp1,
 )
 from RsaCtfTool.lib.exceptions import FactorizationError
-
+from RsaCtfTool.lib.number_theory import isqrt
 from tests.fixtures.rsa_data import TEST_SMALL_D_RSA
-from RsaCtfTool.lib.keys_wrapper import PublicKey
+
 
 class TestFermat:
     """Tests for fermat factorization."""
@@ -82,7 +87,7 @@ class TestBrent:
         assert result == 2
 
     def test_brent_retries_after_g_equals_n(self, monkeypatch):
-        import RsaCtfTool.lib.algos as algos
+        from RsaCtfTool.lib import algos
 
         n = 15
         params = iter([
@@ -102,7 +107,7 @@ class TestBrent:
         assert n % result == 0
 
     def test_brent_uses_fresh_params_after_g_equals_n(self, monkeypatch):
-        import RsaCtfTool.lib.algos as algos
+        from RsaCtfTool.lib import algos
 
         n = 15
         params = iter([
@@ -610,3 +615,92 @@ class TestPrimeBaseCollisionEdgeCases:
         result = prime_base_collision(n)
         f1, f2 = result
         assert f1 * f2 == n
+
+
+def _has_sage_all():
+    try:
+        import sage.all  # noqa: F401
+        return True
+    except ImportError:
+        return False
+
+
+@pytest.mark.skipif(not _has_sage_all(), reason="SageMath Python module sage.all is not available")
+class TestCoppersmithAlgos:
+    """Sage-gated tests for Coppersmith-based factoring algorithms in algos.py."""
+
+    def test_partial_p_known_high_bits(self):
+        # 120-bit modulus with known high bits of p
+        p = 1152921504606847067
+        q = 1152921504606848411
+        n = p * q
+        unknown_bits = 12
+        mask = ~((1 << unknown_bits) - 1)
+        p_high = p & mask
+
+        res = partial_p(n, p_high, unknown_bits)
+        assert res is not None
+        assert res[0] * res[1] == n
+        assert set(res) == {p, q}
+
+    def test_partial_p_infeasible_bound_raises(self):
+        p = 1152921504606847067
+        q = 1152921504606848411
+        n = p * q
+        with pytest.raises(ValueError, match="exceeds theoretical Coppersmith bound"):
+            partial_p(n, p, 50)
+
+    def test_small_fraction_basic(self):
+        # Construct primes such that q / p is close to 3 / 2 (p < q)
+        p = 1000003
+        q = 1500007
+        n = p * q
+        res = small_fraction(n)
+        assert res is not None
+        assert res[0] * res[1] == n
+        assert set(res) == {p, q}
+
+    def test_small_fraction_2048_bit_no_overflow(self):
+        # 2048-bit N where ratio p/q is close to 2/3
+        # Show that isqrt(n * den // num) handles 2048-bit integers without float overflow
+        import sympy
+        p_base = (1 << 1023) + 1234567
+        q_base = (3 * (1 << 1023)) // 2 + 7654321
+        p = sympy.nextprime(p_base)
+        q = sympy.nextprime(q_base)
+        n = p * q
+        assert n.bit_length() >= 2046
+        hint = isqrt(n * 3 // 2)
+        assert hint > 0
+        assert int(hint) == hint
+
+    def test_partial_d_toy_key_e3(self):
+        p = 1152921504606847067
+        q = 1152921504606848411
+        n = p * q
+        e = 3
+        phi = (p - 1) * (q - 1)
+        d = pow(e, -1, phi)
+        known_bits = 40
+        dLow = d & ((1 << known_bits) - 1)
+
+        res = partial_d(n, e, dLow, known_bits=known_bits)
+        assert res is not None
+        assert res[0] * res[1] == n
+        assert set(res) == {p, q}
+
+    def test_partial_d_toy_key_e17(self):
+        p = 1152921504606847067
+        q = 1152921504606848411
+        n = p * q
+        e = 17
+        phi = (p - 1) * (q - 1)
+        d = pow(e, -1, phi)
+        known_bits = 40
+        dLow = d & ((1 << known_bits) - 1)
+
+        res = partial_d(n, e, dLow, known_bits=known_bits)
+        assert res is not None
+        assert res[0] * res[1] == n
+        assert set(res) == {p, q}
+

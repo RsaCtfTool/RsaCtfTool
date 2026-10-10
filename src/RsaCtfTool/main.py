@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 """
 ----------------------------------------------------------------------------
@@ -10,27 +9,29 @@ this stuff is worth it, you can buy me a beer in return.
 ----------------------------------------------------------------------------
 """
 
+import argparse
+import logging
 import os
 import sys
-import logging
-import argparse
-import urllib3
 import tempfile
 from glob import glob
-from os.path import dirname, basename, isfile, join
+from os.path import basename, dirname, isfile, join
+
+import urllib3
 from urllib3.exceptions import InsecureRequestWarning
+
 from RsaCtfTool.lib.crypto_wrapper import RSA
-from RsaCtfTool.lib.rsa_attack import RSAAttack
-from RsaCtfTool.lib.number_theory import invmod, factor_ned
-from RsaCtfTool.lib.utils import get_numeric_value, print_results, get_base64_value, n2s
 from RsaCtfTool.lib.customlogger import CustomFormatter, logger_levels
-from RsaCtfTool.lib.keys_wrapper import (
-    generate_pq_from_n_and_p_or_q,
-    generate_keys_from_p_q_e_n,
-    PrivateKey,
-)
 from RsaCtfTool.lib.idrsa_pub_disector import disect_idrsa_pub
 from RsaCtfTool.lib.is_roca_test import is_roca_vulnerable
+from RsaCtfTool.lib.keys_wrapper import (
+    PrivateKey,
+    generate_keys_from_p_q_e_n,
+    generate_pq_from_n_and_p_or_q,
+)
+from RsaCtfTool.lib.number_theory import factor_ned, invmod
+from RsaCtfTool.lib.rsa_attack import RSAAttack
+from RsaCtfTool.lib.utils import get_base64_value, get_numeric_value, n2s, print_results
 
 # Remove insecure warning for factordb.com
 urllib3.disable_warnings(InsecureRequestWarning)
@@ -140,6 +141,33 @@ def parse_args():
     parser.add_argument(
         "--fr-b",
         help="Franklin-Reiter attack: 'b' parameter in m1 = a*m2 + b. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--sm-prefix",
+        help="Stereotyped message attack: known prefix of the message (use 0x... for hex, everything else treated as ASCII)",
+    )
+    parser.add_argument(
+        "--sm-suffix",
+        help="Stereotyped message attack: known suffix of the message (use 0x... for hex, everything else treated as ASCII)",
+    )
+    parser.add_argument(
+        "--sm-len",
+        type=int,
+        help="Stereotyped message attack: length in bytes of the unknown part",
+    )
+    parser.add_argument(
+        "--p-high",
+        help="partial_p attack: known high bits of p. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--p-unknown-bits",
+        type=int,
+        help="partial_p attack: number of unknown lower bits of p",
+    )
+    parser.add_argument(
+        "--d-known-bits",
+        type=int,
+        help="partial_d attack: explicit number of known low bits of d",
     )
 
     # If no arguments, display help and exit
@@ -480,6 +508,8 @@ def _parse_numeric_args(args):
         args.fr_a = get_numeric_value(args.fr_a)
     if args.fr_b is not None:
         args.fr_b = get_numeric_value(args.fr_b)
+    if args.p_high is not None:
+        args.p_high = get_numeric_value(args.p_high)
 
     return args
 
@@ -595,7 +625,7 @@ def _handle_fully_specified_key(args, logger):
         and args.e is not None
         and args.n is not None
     ):
-        return None
+        return
 
     try:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
@@ -627,6 +657,39 @@ def _handle_fully_specified_key(args, logger):
     sys.exit(0)
 
 
+def _validate_args(args, logger):
+    """
+    Checks if provided arguments are valid for proper run, i.e., if required args are provided for specific attacks.
+
+    Args:
+        args (Namespace): Command-line arguments.
+        logger (Logger): Logger object for logging messages.
+    """
+    if args.attack is None or args.tests:
+        return
+
+    if "franklin_reiter" in args.attack and "all" not in args.attack:
+        if args.fr_a is None or args.fr_a == 0 or args.fr_b is None or args.fr_b == 0:
+            logger.error(
+                "[!] --fr-a and --fr-b are mandatory and must not be zero when using --attack franklin_reiter"
+            )
+            sys.exit(1)
+
+    if "stereotyped_message" in args.attack and "all" not in args.attack:
+        if args.sm_len is None or (args.sm_prefix is None and args.sm_suffix is None):
+            logger.error(
+                "[!] stereotyped_message requires --sm-len and at least one of --sm-prefix or --sm-suffix"
+            )
+            sys.exit(1)
+
+    if "partial_p" in args.attack and "all" not in args.attack:
+        if args.p_high is None or args.p_unknown_bits is None:
+            logger.error(
+                "[!] partial_p attack requires both --p-high and --p-unknown-bits together"
+            )
+            sys.exit(1)
+
+
 def main():
     args = parse_args()
     logger = _setup_logging(args)
@@ -637,10 +700,7 @@ def main():
     if _handle_early_exit_modes(args, logger):
         return
 
-    if args.attack is not None and "franklin_reiter" in args.attack and "all" not in args.attack:
-        if args.fr_a is None or args.fr_a == 0 or args.fr_b is None or args.fr_b == 0:
-            logger.error("[!] --fr-a and --fr-b are mandatory and must not be zero when using --attack franklin_reiter")
-            sys.exit(1)
+    _validate_args(args, logger)
 
     # Fully specified p/q/e/n short-circuits before any key files are
     # generated, so an invalid combination (e.g. e > n on toy moduli)
