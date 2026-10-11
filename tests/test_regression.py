@@ -261,3 +261,21 @@ def test_private_key_file_load_restores_public_exponent():
     key = PrivateKey(filename=private_key)
     assert key.e is not None
     assert key.n is not None
+
+
+# ---------------------------------------------------------------------------
+# Every attack module must import with only the declared dependencies.
+# A missing requirement (sympy) used to make 28 attacks vanish silently.
+# ---------------------------------------------------------------------------
+
+
+def test_all_attack_modules_import():
+    """Importing an attack must not fail on an undeclared dependency."""
+    import importlib
+    import pkgutil
+
+    from RsaCtfTool.attacks import multi_keys, single_key
+
+    for package in (single_key, multi_keys):
+        for module in pkgutil.iter_modules(package.__path__):
+            importlib.import_module(f"{package.__name__}.{module.name}")
