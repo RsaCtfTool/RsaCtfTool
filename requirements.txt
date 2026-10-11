@@ -8,4 +8,3 @@ tqdm
 z3-solver
 psutil>=5.9
 factordb-pycli
-sympy

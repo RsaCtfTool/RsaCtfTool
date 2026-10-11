@@ -265,7 +265,7 @@ def test_private_key_file_load_restores_public_exponent():
 
 # ---------------------------------------------------------------------------
 # Every attack module must import with only the declared dependencies.
-# A missing requirement (sympy) used to make 28 attacks vanish silently.
+# A missing requirement used to make attacks vanish silently.
 # ---------------------------------------------------------------------------
 
 
