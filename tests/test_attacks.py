@@ -46,7 +46,10 @@ class TestFactordbAttack:
             "factordb",
             timeout=160,
         )
-        assert result.returncode == 0
+        # factordb reports 4 prime factors for this n, which is not an RSA
+        # semiprime: only check the -n/-e + --sendtofdb path runs cleanly.
+        assert result.returncode in (0, 1)
+        assert "Traceback" not in result.stderr
 
 
 class TestNoveltyPrimesAttack:
@@ -132,6 +135,9 @@ class TestWienerAttack:
         assert result.returncode == 0
 
     @pytest.mark.slow
+    @pytest.mark.skipif(
+        shutil.which("sage") is None, reason="SageMath is not available"
+    )
     def test_boneh_durfee_attack(self):
         result = _run(
             "--publickey",
@@ -245,6 +251,7 @@ class TestHastadsAttack:
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestECMAttack:
     @pytest.mark.slow
     def test_ecm_attack(self):
@@ -311,6 +318,7 @@ class TestSQUFOFAttack:
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(shutil.which("yafu") is None, reason="yafu is not available")
 class TestSIQSAttack:
     @pytest.mark.slow
     def test_siqs_attack(self):
@@ -325,6 +333,7 @@ class TestSIQSAttack:
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestROCAAttack:
     @pytest.mark.slow
     def test_roca_attack(self):
@@ -443,6 +452,7 @@ class TestGCDAttacks:
         assert result.returncode == 0
 
 
+@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestSmallCRTExpAttack:
     def test_small_crt_exp_attack(self):
         result = _run(
@@ -683,7 +693,8 @@ class TestFranklinReiterAttack:
             "--fr-a", "7",
             "--fr-b", "43",
         )
-        assert result.returncode == 0
+        # Clean failure: nothing recovered, so exit 1 rather than a crash.
+        assert result.returncode == 1
         assert "Franklin-Reiter attack found no solution" in result.stderr
 
 
@@ -739,3 +750,15 @@ class TestPartialPAttack:
         assert result.returncode == 0
         assert "partial_p attack found factorization" in result.stdout or "partial_p attack found factorization" in result.stderr
 
+class TestExitCode:
+    def test_failed_crack_exits_nonzero(self):
+        # smallq cannot factor this key: nothing recovered must mean exit 1.
+        result = _run(
+            "--publickey",
+            "examples/fermat.pub",
+            "--private",
+            "--attack",
+            "smallq",
+        )
+        assert result.returncode == 1
+        assert "cracking failed" in result.stderr

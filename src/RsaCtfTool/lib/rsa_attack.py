@@ -36,6 +36,11 @@ class RSAAttack(object):
 
         return bool(self.args.decrypt and self.decrypted)
 
+    def has_results(self):
+        """Return True if a private key or plaintext was recovered,
+        whether or not --private/--decrypt asked for it to be shown."""
+        return bool(self.priv_key) or bool(self.decrypted)
+
     def can_stop_tests(self):
         """Return a boolean if requested actions are done
         avoiding running extra attacks
