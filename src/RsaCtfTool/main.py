@@ -169,6 +169,14 @@ def parse_args():
         type=int,
         help="partial_d attack: explicit number of known low bits of d",
     )
+    parser.add_argument(
+        "--dp",
+        help="dp_leak attack: leaked dp = d mod (p-1). format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--dq",
+        help="dp_leak attack: leaked dq = d mod (q-1). format : int or 0xhex",
+    )
 
     # If no arguments, display help and exit
     if len(sys.argv) == 1:
@@ -510,6 +518,10 @@ def _parse_numeric_args(args):
         args.fr_b = get_numeric_value(args.fr_b)
     if args.p_high is not None:
         args.p_high = get_numeric_value(args.p_high)
+    if args.dp is not None:
+        args.dp = get_numeric_value(args.dp)
+    if args.dq is not None:
+        args.dq = get_numeric_value(args.dq)
 
     return args
 
@@ -687,6 +699,11 @@ def _validate_args(args, logger):
             logger.error(
                 "[!] partial_p attack requires both --p-high and --p-unknown-bits together"
             )
+            sys.exit(1)
+
+    if "dp_leak" in args.attack and "all" not in args.attack:
+        if args.dp is None and args.dq is None:
+            logger.error("[!] dp_leak attack requires --dp or --dq")
             sys.exit(1)
 
 

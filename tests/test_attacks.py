@@ -75,6 +75,49 @@ class TestSmallQAttack:
         assert result.returncode == 0
 
 
+class TestDpLeakAttack:
+    # examples/dp_leak.pub: 1024-bit key; dp = d mod (p-1), dq = d mod (q-1)
+    DP = "8562290538065603938159161026859091349656889488147561048630418183030585984147414149924637924621947063376218030671012966992838754344460101283465048649251385"
+    DQ = "8355806015308822662684988228363778038480529783748635524973962637725446153581184255127313874956247554688632409652970333482473851962744369705240526266907201"
+
+    def test_dp_leak_with_dp(self):
+        result = _run(
+            "--publickey",
+            "examples/dp_leak.pub",
+            "--private",
+            "--attack",
+            "dp_leak",
+            "--dp",
+            self.DP,
+        )
+        assert result.returncode == 0
+        assert "BEGIN RSA PRIVATE KEY" in result.stdout + result.stderr
+
+    def test_dp_leak_with_dq_hex(self):
+        result = _run(
+            "--publickey",
+            "examples/dp_leak.pub",
+            "--private",
+            "--attack",
+            "dp_leak",
+            "--dq",
+            hex(int(self.DQ)),
+        )
+        assert result.returncode == 0
+        assert "BEGIN RSA PRIVATE KEY" in result.stdout + result.stderr
+
+    def test_dp_leak_requires_dp_or_dq(self):
+        result = _run(
+            "--publickey",
+            "examples/dp_leak.pub",
+            "--private",
+            "--attack",
+            "dp_leak",
+        )
+        assert result.returncode != 0
+        assert "dp_leak attack requires --dp or --dq" in result.stderr
+
+
 class TestWienerAttack:
     def test_wiener_attack(self):
         result = _run(
