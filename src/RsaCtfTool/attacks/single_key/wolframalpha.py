@@ -17,11 +17,21 @@ class Attack(AbstractAttack):
     def can_run(self):
         # wolframalpha is a Python library, not an executable: check for an
         # importable module plus the API key instead of a PATH binary.
-        return (
-            super().can_run()
-            and importlib.util.find_spec("wolframalpha") is not None
-            and os.environ.get("WA_API_KEY") is not None
-        )
+        if not super().can_run():
+            return False
+        if importlib.util.find_spec("wolframalpha") is None:
+            self.logger.warning(
+                f"Can't load {self.get_name()} because the wolframalpha "
+                "python module is not installed (pip install wolframalpha)"
+            )
+            return False
+        if os.environ.get("WA_API_KEY") is None:
+            self.logger.warning(
+                f"Can't load {self.get_name()} because WA_API_KEY is not set "
+                "(see https://products.wolframalpha.com/api/documentation/)"
+            )
+            return False
+        return True
 
     def wa_query_factors(self, n, safe=True):
         tmp = []

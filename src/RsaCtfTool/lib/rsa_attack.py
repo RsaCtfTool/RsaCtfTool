@@ -163,7 +163,7 @@ class RSAAttack(object):
                     # that exists but fails on its own third-party imports
                     # (e.g. missing z3) must not vanish silently.
                     if exc.name is None or not exc.name.startswith("RsaCtfTool."):
-                        self.logger.debug(f"[-] Attack {attack} unavailable: {exc}")
+                        self.logger.warning(f"[!] Attack {attack} unavailable: {exc}")
         self.implemented_attacks.sort(key=lambda x: x.speed, reverse=True)
 
     def priv_key_send2fdb(self):
