@@ -5,9 +5,9 @@ import math
 import sys
 import time
 from array import array
+from itertools import permutations
 from random import randint
 
-import sympy
 from tqdm import tqdm
 
 from RsaCtfTool.lib.coppersmith import (
@@ -1198,6 +1198,45 @@ STEREOTYPED_MAX_E = 17
 SHORT_PAD_MAX_E = 5
 
 
+def _short_pad_resultant_coefficients(e, c1, c2):
+    """Return the resultant coefficients as a polynomial in y**e."""
+    matrix = [[[0] * (e + 1) for _ in range(e)] for _ in range(e)]
+
+    # In Z[y][x] / (x**e - c1), multiplication by (x + y)**e - c2
+    # has a determinant equal to the resultant.
+    for column in range(e):
+        for x_power in range(e + 1):
+            row = (column + x_power) % e
+            reduction = c1 if column + x_power >= e else 1
+            y_power = e - x_power
+            matrix[row][column][y_power] += math.comb(e, x_power) * reduction
+            if x_power == 0:
+                matrix[row][column][0] -= c2
+
+    determinant = [0]
+    for permutation in permutations(range(e)):
+        term = [1]
+        inversions = sum(
+            permutation[i] > permutation[j]
+            for i in range(e)
+            for j in range(i + 1, e)
+        )
+        for row, column in enumerate(permutation):
+            factor = matrix[row][column]
+            product = [0] * (len(term) + len(factor) - 1)
+            for left_degree, left in enumerate(term):
+                for right_degree, right in enumerate(factor):
+                    product[left_degree + right_degree] += left * right
+            term = product
+        if len(determinant) < len(term):
+            determinant.extend([0] * (len(term) - len(determinant)))
+        sign = -1 if inversions % 2 else 1
+        for degree, coefficient in enumerate(term):
+            determinant[degree] += sign * coefficient
+
+    return [determinant[degree * e] for degree in range(e + 1)]
+
+
 def stereotyped_message(n, e, c, A, B, X):
     """
     Recover x from c = (A * x + B)^e mod n where x < X.
@@ -1248,21 +1287,9 @@ def short_pad(n, e, c1, c2):
         )
         return None, None
 
-    x, y = sympy.symbols('x y')
-    g1 = x**e - c1
-    g2 = (x + y)**e - c2
-    
-    res = sympy.resultant(g1, g2, x)
-    res_poly = sympy.Poly(res, y)
-    coeffs = res_poly.all_coeffs()
-    
-    # The resultant is a polynomial in z = y^e
-    z_coeffs = []
-    for i in range(e + 1):
-        z_coeffs.append(coeffs[len(coeffs) - 1 - i * e])
-        
-    coeffs_mod_n = [int(c) % n for c in z_coeffs]
-    
+    z_coeffs = _short_pad_resultant_coefficients(e, c1, c2)
+    coeffs_mod_n = [coefficient % n for coefficient in z_coeffs]
+
     f = Polynomial(coeffs_mod_n, n)
     try:
         f = f.monic()
@@ -1482,7 +1509,5 @@ def partial_d(n, e, dLow, known_bits=None):
                 return p, n // p
 
     return None, None
-
-
 
 

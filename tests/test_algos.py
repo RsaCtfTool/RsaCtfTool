@@ -14,6 +14,7 @@ from RsaCtfTool.lib.algos import (
     _build_qs_factor_base,
     _collect_dixon_relations,
     _gaussian_elimination_gf2,
+    _short_pad_resultant_coefficients,
     _qs_sieve_interval,
     _try_smooth_dependency,
     brent,
@@ -625,6 +626,21 @@ def _has_sage_all():
         return False
 
 
+class TestShortPadResultant:
+    """Tests for the short-pad resultant calculation."""
+
+    @pytest.mark.parametrize("e", [2, 3, 4, 5])
+    def test_resultant_has_known_related_message_root(self, e):
+        m, delta = 2, 3
+        coefficients = _short_pad_resultant_coefficients(
+            e, m**e, (m + delta) ** e
+        )
+        assert sum(
+            coefficient * delta ** (degree * e)
+            for degree, coefficient in enumerate(coefficients)
+        ) == 0
+
+
 @pytest.mark.skipif(not _has_sage_all(), reason="SageMath Python module sage.all is not available")
 class TestCoppersmithAlgos:
     """Sage-gated tests for Coppersmith-based factoring algorithms in algos.py."""
@@ -663,12 +679,9 @@ class TestCoppersmithAlgos:
     def test_small_fraction_2048_bit_no_overflow(self):
         # 2048-bit N where ratio p/q is close to 2/3
         # Show that isqrt(n * den // num) handles 2048-bit integers without float overflow
-        import sympy
         p_base = (1 << 1023) + 1234567
         q_base = (3 * (1 << 1023)) // 2 + 7654321
-        p = sympy.nextprime(p_base)
-        q = sympy.nextprime(q_base)
-        n = p * q
+        n = p_base * q_base
         assert n.bit_length() >= 2046
         hint = isqrt(n * 3 // 2)
         assert hint > 0
@@ -703,4 +716,3 @@ class TestCoppersmithAlgos:
         assert res is not None
         assert res[0] * res[1] == n
         assert set(res) == {p, q}
-
