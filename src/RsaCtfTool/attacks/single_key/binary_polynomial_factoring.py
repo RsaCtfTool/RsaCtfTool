@@ -47,3 +47,15 @@ class Attack(AbstractAttack):
 
         q = publickey.n // p
         return self.create_private_key_from_pqe(p, q, publickey.e, publickey.n)
+
+    def test(self):
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
+
+        # p and q each have 8 set bits, chosen so that multiplying them
+        # never carries: n's bit polynomial is then poly(p) * poly(q).
+        key_data = """-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBEAQAAMAwAAABAAAADIAgAAACAIEAKAAc
+BYAoAAAAcAWZBQAGDCAFQAEAAQEkCAAAABkgIQAgAIEIAAgAAACBAIECAwEAAQ==
+-----END PUBLIC KEY-----"""
+        result = self.attack(PublicKey(key_data), progress=False)
+        return result != (None, None)
