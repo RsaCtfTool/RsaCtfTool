@@ -95,24 +95,9 @@ class AbstractAttack(object):
         Returns:
             Tuple of (PrivateKey, None) on success or (None, None) on failure
         """
-        from RsaCtfTool.lib.keys_wrapper import PrivateKey
-
-        if publickey.p is not None and publickey.q is not None:
-            try:
-                priv_key = PrivateKey(
-                    n=publickey.n,
-                    p=int(publickey.p),
-                    q=int(publickey.q),
-                    e=int(publickey.e),
-                )
-                if priv_key.key is None:
-                    # RSA.construct failed inside PrivateKey; the factors
-                    # are not a valid split of n - do not hand back a key.
-                    return None, None
-                return priv_key, None
-            except (ValueError, TypeError):
-                return None, None
-        return None, None
+        return self.create_private_key_from_pqe(
+            publickey.p, publickey.q, publickey.e, publickey.n
+        )
 
     def create_private_key_from_pqe(
         self, p, q, e, n
@@ -134,6 +119,11 @@ class AbstractAttack(object):
             try:
                 priv_key = PrivateKey(p=int(p), q=int(q), e=int(e), n=int(n))
                 if priv_key.key is None:
+                    # A valid factorization whose e has no inverse mod phi
+                    # is still useful (decryption via e-th roots); the
+                    # caller decides whether to keep it.
+                    if priv_key.d is None and int(p) * int(q) == int(n):
+                        return priv_key, None
                     return None, None
                 return priv_key, None
             except (ValueError, TypeError):

@@ -69,6 +69,7 @@ docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 - [Small CRT exponent](https://en.wikipedia.org/wiki/Chinese_remainder_theorem)
 - Partial q / Partial d
 - dp / dq leak (`--dp` or `--dq`)
+- e not coprime with φ(n), incl. Rabin (e = 2): once n is factored, decrypts via e-th roots mod p and q
 - [Lattice reduction](https://en.wikipedia.org/wiki/Lattice_reduction)
 
 ### Coppersmith Attacks

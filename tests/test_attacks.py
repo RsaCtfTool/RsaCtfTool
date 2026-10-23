@@ -121,6 +121,30 @@ class TestDpLeakAttack:
         assert "dp_leak attack requires --dp or --dq" in result.stderr
 
 
+class TestENotCoprime:
+    # Rabin: e = 2 shares a factor with phi, so no d exists; the message
+    # is recovered via square roots mod p and q.
+    P = "170141183460469231750134047789593657423"
+    Q = "340282366920938464643966228149179514981"
+    C = "15331948597475339333641900631525440016925987446565129"
+
+    def test_rabin_decrypt_with_p_q(self):
+        result = _run(
+            "-n",
+            str(int(self.P) * int(self.Q)),
+            "-e",
+            "2",
+            "-p",
+            self.P,
+            "-q",
+            self.Q,
+            "--decrypt",
+            self.C,
+        )
+        assert result.returncode == 0
+        assert "flag{rabin}" in result.stdout + result.stderr
+
+
 class TestWienerAttack:
     def test_wiener_attack(self):
         result = _run(
