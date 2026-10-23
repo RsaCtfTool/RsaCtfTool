@@ -651,10 +651,14 @@ def _handle_fully_specified_key(args, logger):
     try:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)
     except ValueError:
-        logger.error(
-            "Looks like the values for generating key are not ok... (no invmod)"
-        )
-        sys.exit(1)
+        # e.g. an even e (Rabin) has no RSA key object, but a ciphertext
+        # can still be decrypted via e-th roots mod p and q.
+        if args.decrypt is None or args.createpub:
+            logger.error(
+                "Looks like the values for generating key are not ok... (no invmod)"
+            )
+            sys.exit(1)
+        priv_key = PrivateKey(p=args.p, q=args.q, e=args.e, n=args.n)
 
     if args.createpub:
         pub_key, priv_key = generate_keys_from_p_q_e_n(args.p, args.q, args.e, args.n)

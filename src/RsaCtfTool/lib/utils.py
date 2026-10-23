@@ -79,6 +79,9 @@ def _print_private_key(args, private_keys, logger):
                 logger.info(f"e: {priv_key.e}")
             if priv_key.d is not None:
                 logger.info(f"d: {priv_key.d}")
+            if priv_key.p is not None and priv_key.q is not None:
+                logger.info(f"p: {priv_key.p}")
+                logger.info(f"q: {priv_key.q}")
         else:
             logger.info(priv_key)
 

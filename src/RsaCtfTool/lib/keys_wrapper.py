@@ -9,7 +9,12 @@ from cryptography.hazmat.backends import default_backend
 from RsaCtfTool.lib.crypto_wrapper import RSA
 from RsaCtfTool.lib.crypto_wrapper import PKCS1_OAEP
 from RsaCtfTool.lib.conspicuous_check import privatekey_check
-from RsaCtfTool.lib.number_theory import powmod, invert
+from RsaCtfTool.lib.number_theory import (
+    powmod,
+    invert,
+    nth_roots_mod_prime,
+    chinese_remainder,
+)
 
 
 logger = logging.getLogger("global_logger")
@@ -238,6 +243,34 @@ class PrivateKey(object):
             logger.error(f"{msg}")
         return is_con
 
+    def _nth_root_candidates(self, c, max_shown=16):
+        """Plaintexts m with m^e == c (mod n), for keys whose e shares a
+        factor with phi so that no d exists. Printable ones are preferred.
+        """
+        if self.d is not None or None in (self.p, self.q, self.e, self.n):
+            return []
+        if self.p == self.q or self.p * self.q != self.n:
+            return []
+        roots_p = nth_roots_mod_prime(c, self.e, self.p)
+        roots_q = nth_roots_mod_prime(c, self.e, self.q)
+        if not roots_p or not roots_q or len(roots_p) * len(roots_q) > 1 << 16:
+            return []
+        msgs = []
+        for a in roots_p:
+            for b in roots_q:
+                m = int(chinese_remainder([self.p, self.q], [a, b]))
+                msgs.append(m.to_bytes(max(1, (m.bit_length() + 7) // 8), "big"))
+        printable = [
+            m for m in msgs if all(32 <= ch < 127 or ch in (9, 10, 13) for ch in m)
+        ]
+        if printable:
+            return printable
+        if len(msgs) > max_shown:
+            logger.warning(
+                f"[!] {len(msgs)} e-th root candidates, showing {max_shown}"
+            )
+        return msgs[:max_shown]
+
     def decrypt(self, cipher):
         """Decrypt data with private key
         :param cipher: input cipher
@@ -278,6 +311,13 @@ class PrivateKey(object):
                     continue
                 except Exception:
                     pass
+
+            # e not coprime with phi (e.g. Rabin, e = 2): no d exists, but
+            # the plaintext is one of the e-th roots of c mod p and mod q.
+            candidates = self._nth_root_candidates(int.from_bytes(c, "big"))
+            if candidates:
+                plain += candidates
+                continue
 
             # Nothing worked - keep the raw ciphertext so the caller sees
             # an entry for this input instead of a silently dropped one.

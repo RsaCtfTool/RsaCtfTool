@@ -350,6 +350,18 @@ class RSAAttack(object):
             getattr(self.priv_key, "d", None) is None
             and getattr(self.priv_key, "key", None) is None
         ):
+            p = getattr(self.priv_key, "p", None)
+            q = getattr(self.priv_key, "q", None)
+            if p is not None and q is not None and p * q == self.priv_key.n:
+                # n is factored but e shares a factor with phi, so there is
+                # no d; a ciphertext can still be decrypted via e-th roots.
+                if getattr(self, "cipher", None):
+                    return
+                logging.getLogger("global_logger").warning(
+                    "[!] n factored, but e is not coprime with phi(n): no "
+                    "private key exists. Pass the ciphertext (--decrypt or "
+                    "--decryptfile) to recover the message via e-th roots."
+                )
             self.priv_key = None
 
     def _execute_single_attack(self, attack_module):
