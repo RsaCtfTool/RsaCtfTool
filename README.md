@@ -51,6 +51,18 @@ source venv/bin/activate
 pip install -e .
 ```
 
+### SageMath (optional)
+
+Debian, Ubuntu and Kali no longer package Sage; install it with conda/mamba ([Miniforge](https://github.com/conda-forge/miniforge)):
+
+```bash
+mamba create -n sage sage
+ln -s ~/miniforge3/envs/sage/bin/sage ~/.local/bin/sage   # put sage on PATH
+~/miniforge3/envs/sage/bin/python -m pip install -e .     # Sage scripts import RsaCtfTool
+```
+
+The last step is needed because some Sage scripts (`lattice`, `partial_d`, `smallfraction`) import RsaCtfTool modules and run under Sage's own Python.
+
 ### Docker
 
 ```bash
