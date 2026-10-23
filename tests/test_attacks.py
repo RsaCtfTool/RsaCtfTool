@@ -121,6 +121,41 @@ class TestDpLeakAttack:
         assert "dp_leak attack requires --dp or --dq" in result.stderr
 
 
+class TestBellcoreAttack:
+    # examples/bellcore.pub: 1024-bit key; FAULT is an RSA-CRT signature of
+    # MSG with a fault in the q half, GOOD the correct one.
+    MSG = "0x1234567890abcdef"
+    FAULT = "82515269436245477408654544426636384432311369156478430065940750442878664566979299782607409730886679851582144730406261916175604096113792348429783788025821898960581646534840780086061227577673632697821111609892168291094375015759054076054019618285596057026042753494235074772790622797665391121820944433211140045631"
+    GOOD = "90848010603466029881228715130032000804426885669476741334930326169287265026237827954347530692811029055922663454328293993418419079102408265801296588359975070163849002436201041125799734817751891945949990096227140716628271703671592849963886279481974601698159433871741454308035058996113889149628611264421177444212"
+
+    def _run_bellcore(self, *extra):
+        return _run(
+            "--publickey",
+            "examples/bellcore.pub",
+            "--private",
+            "--attack",
+            "bellcore",
+            "--fault-sig",
+            self.FAULT,
+            *extra,
+        )
+
+    def test_bellcore_with_message(self):
+        result = self._run_bellcore("--fault-msg", self.MSG)
+        assert result.returncode == 0
+        assert "BEGIN RSA PRIVATE KEY" in result.stdout + result.stderr
+
+    def test_bellcore_with_good_signature(self):
+        result = self._run_bellcore("--good-sig", self.GOOD)
+        assert result.returncode == 0
+        assert "BEGIN RSA PRIVATE KEY" in result.stdout + result.stderr
+
+    def test_bellcore_requires_message_or_good_signature(self):
+        result = self._run_bellcore()
+        assert result.returncode != 0
+        assert "bellcore attack requires" in result.stderr
+
+
 class TestWienerAttack:
     def test_wiener_attack(self):
         result = _run(
