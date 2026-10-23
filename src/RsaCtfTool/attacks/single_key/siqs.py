@@ -11,6 +11,7 @@
 # @CTFKris - https://github.com/sourcekris/RsaCtfTool/
 #
 
+import os
 import subprocess
 import re
 import logging
@@ -22,7 +23,7 @@ class SiqsAttack(object):
     def __init__(self, n, timeout=180):
         """Configuration"""
         self.logger = logging.getLogger("global_logger")
-        self.threads = 2  # number of threads
+        self.threads = os.cpu_count() or 1  # number of threads
         self.timeout = timeout  # max time to try the sieve
 
         self.n = n
@@ -31,7 +32,7 @@ class SiqsAttack(object):
 
     def doattack(self):
         """Perform attack"""
-        yafurun = subprocess.check_output(
+        result = subprocess.run(
             [
                 "yafu",
                 "-siqsT",
@@ -43,8 +44,18 @@ class SiqsAttack(object):
             # yafu's own -siqsT budget is self.timeout; give the process a
             # grace period on top so it can print results before we kill it.
             timeout=self.timeout + 30,
-            stderr=subprocess.DEVNULL,
+            capture_output=True,
         )
+        if result.returncode != 0:
+            # Say why yafu failed (e.g. a crash) instead of only reporting
+            # that nothing was factored.
+            err = result.stderr.decode(errors="replace").strip().splitlines()
+            self.logger.error(
+                f"[-] yafu exited with status {result.returncode}: "
+                f"{err[-1] if err else 'no error output'}"
+            )
+            return
+        yafurun = result.stdout
 
         if b"input too big for SIQS" in yafurun:
             self.logger.error("[-] Modulus too big for SIQS method.")
