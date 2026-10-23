@@ -15,10 +15,15 @@ from RsaCtfTool.lib.number_theory import is_prime, isqrt, gcd
 
 
 class RSAAttack(object):
+    # A second Ctrl+C within this many seconds stops the whole run instead
+    # of merely skipping the current attack.
+    INTERRUPT_WINDOW = 2.0
+
     def __init__(self, args):
         """Main class managing the attacks"""
         self.args = args
         self.logger = logging.getLogger("global_logger")
+        self._last_interrupt = None
 
         # Load ciphertext
         self.cipher = args.decrypt if args.decrypt is not None else None
@@ -26,6 +31,28 @@ class RSAAttack(object):
         self.priv_keys = []
         self.decrypted = []
         self.implemented_attacks = []
+
+    def _handle_interrupt(self):
+        """React to a Ctrl+C raised inside an attack.
+
+        A single Ctrl+C skips the current attack and lets the loop move on,
+        preserving the long-standing behaviour. A second Ctrl+C within
+        INTERRUPT_WINDOW seconds stops the whole run with exit code 130, so a
+        run can actually be aborted (also when its output is piped).
+        """
+        now = time.monotonic()
+        if (
+            self._last_interrupt is not None
+            and now - self._last_interrupt <= self.INTERRUPT_WINDOW
+        ):
+            self.logger.warning("[!] Interrupted twice, stopping.")
+            sys.exit(130)
+        self._last_interrupt = now
+        self.logger.warning(
+            "[!] Interrupted, skipping current attack "
+            "(press Ctrl+C again within %gs to stop the run)."
+            % self.INTERRUPT_WINDOW
+        )
 
     def get_boolean_results(self):
         """Return a boolean value according to requested
@@ -263,7 +290,7 @@ class RSAAttack(object):
                 except NotImplementedError:
                     self.logger.warning("[!] This attack module is not implemented yet")
                 except KeyboardInterrupt:
-                    self.logger.warning("[!] Interrupted")
+                    self._handle_interrupt()
                 except Exception as e:
                     self.logger.error(
                         "[!] An exception has occurred during the attack. Please check your inputs."
@@ -423,7 +450,7 @@ class RSAAttack(object):
             except NotImplementedError:
                 self.logger.warning("[!] This attack module is not implemented yet")
             except KeyboardInterrupt:
-                self.logger.warning("[!] Interrupted")
+                self._handle_interrupt()
             except Exception as e:
                 self.logger.error(
                     "[!] An exception has occurred during the attack. Please check your inputs."
