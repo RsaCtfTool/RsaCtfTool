@@ -80,12 +80,12 @@ class Attack(AbstractAttack):
     def test(self):
         from RsaCtfTool.lib.keys_wrapper import PublicKey
 
+        # n = p * q with a 20-digit p (10000000000000012363) and a 512-bit
+        # q: ECM finds p in seconds, so the self-test is not flaky.
         key_data = """-----BEGIN PUBLIC KEY-----
-MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgRBNZTe9G/tNqNNwNZz4JDgmOVmk
-ZheJybt5Ew4jKnUjKcfLY8rs8nGCbVdYyKUdq3WQSKCsYy2StxBSZn4qgxoA7G5n
-DGWWBFisWHeLM+lUr3jfnOTbnAZt3utu8plSMbv2irXohbDRxN/6NgzoQMVcmhIQ
-bD3qa8mMScpXZXD2qwIDAQAB
+MGMwDQYJKoZIhvcNAQEBBQADUgAwTwJIUcBhY93ubhT3u1BsiZsdMynJ6uSvl4BA
+v3RYAQDnrduyM4fYQMN2Z5Sq9GsOR+GfddI/7Ni1PME0SlOGgGfh/gB63OkM2l9h
+AgMBAAE=
 -----END PUBLIC KEY-----"""
-        self.timeout = 180
         result = self.attack(PublicKey(key_data), progress=False)
         return result != (None, None)
