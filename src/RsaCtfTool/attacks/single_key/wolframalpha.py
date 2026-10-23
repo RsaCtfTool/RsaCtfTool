@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import importlib.util
-import json
 import os
 from RsaCtfTool.attacks.abstract_attack import AbstractAttack
 from RsaCtfTool.lib.keys_wrapper import PrivateKey
@@ -43,12 +42,16 @@ class Attack(AbstractAttack):
             res = self.wa_client.query(q)
             if pods := list(res.pods):
                 for pod in pods:
-                    x = str(pod).replace("@", "").replace("'", '"')
-                    pod = json.loads(x)
-                    tmp = pod["subpod"]["plaintext"]
-                    if tmp.find("×") > 0:
-                        tmp = tmp.split(" ")[0]
-                        return list(map(int, tmp.split("×")))
+                    # e.g. "3×5 (2 distinct prime factors)"; the pod's repr
+                    # is not JSON, so read the subpod text directly.
+                    for tmp in pod.texts:
+                        if tmp and tmp.find("×") > 0:
+                            tmp = tmp.split("(")[0].replace(" ", "")
+                            factors = []
+                            for f in tmp.split("×"):
+                                base, _, exp = f.partition("^")
+                                factors += [int(base)] * int(exp or 1)
+                            return factors
             else:
                 self.logger.error(
                     "[!] Could not get factorization from RsaCtfTool.wolfram alpha"
