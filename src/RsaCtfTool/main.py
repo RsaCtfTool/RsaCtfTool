@@ -491,6 +491,9 @@ def cleanup(args):
 
 def _setup_logging(args):
     logging.basicConfig(level=logger_levels[args.verbosity])
+    # httpx logs every request URL at INFO; the wolframalpha attack sends
+    # its API key in the query string, so that would print the key.
+    logging.getLogger("httpx").setLevel(logging.WARNING)
     ch = logging.StreamHandler(sys.stderr)
     ch.setFormatter(CustomFormatter())
     logger = logging.getLogger("global_logger")
