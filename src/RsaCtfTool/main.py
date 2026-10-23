@@ -177,6 +177,18 @@ def parse_args():
         "--dq",
         help="dp_leak attack: leaked dq = d mod (q-1). format : int or 0xhex",
     )
+    parser.add_argument(
+        "--fault-sig",
+        help="bellcore attack: faulty RSA-CRT signature. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--fault-msg",
+        help="bellcore attack: the signed (padded) message as an integer. format : int or 0xhex",
+    )
+    parser.add_argument(
+        "--good-sig",
+        help="bellcore attack: correct signature of the same message. format : int or 0xhex",
+    )
 
     # If no arguments, display help and exit
     if len(sys.argv) == 1:
@@ -539,6 +551,9 @@ def _parse_numeric_args(args):
         args.dp = get_numeric_value(args.dp)
     if args.dq is not None:
         args.dq = get_numeric_value(args.dq)
+    for name in ("fault_sig", "fault_msg", "good_sig"):
+        if getattr(args, name) is not None:
+            setattr(args, name, get_numeric_value(getattr(args, name)))
 
     return args
 
@@ -727,6 +742,13 @@ def _validate_args(args, logger):
     if "dp_leak" in args.attack and "all" not in args.attack:
         if args.dp is None and args.dq is None:
             logger.error("[!] dp_leak attack requires --dp or --dq")
+            sys.exit(1)
+
+    if "bellcore" in args.attack and "all" not in args.attack:
+        if args.fault_sig is None or (args.fault_msg is None and args.good_sig is None):
+            logger.error(
+                "[!] bellcore attack requires --fault-sig and --fault-msg or --good-sig"
+            )
             sys.exit(1)
 
 
