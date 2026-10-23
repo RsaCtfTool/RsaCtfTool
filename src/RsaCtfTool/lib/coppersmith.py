@@ -8,6 +8,7 @@ is actually executed.
 """
 import math
 from dataclasses import dataclass
+from typing import Optional
 
 __all__ = [
     "CoppersmithError",
@@ -30,8 +31,9 @@ class CoppersmithParameters:
 
     beta: float
     X: int
-    m: int | None = None
-    t: int | None = None
+    # Optional[] rather than "int | None": that syntax needs Python 3.10.
+    m: Optional[int] = None
+    t: Optional[int] = None
 
     def __post_init__(self):
         if not 0 < self.beta <= 1:
