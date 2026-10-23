@@ -179,6 +179,26 @@ class RSAAttack(object):
                         if privkey.p is not None and privkey.q is not None:
                             send2fdb(privkey.n, [privkey.p, privkey.q])
 
+    def _label_priv_keys(self):
+        """Tag each key recovered in multi-key mode with the file of the
+        public key it breaks, so the results say which key is which.
+        """
+        names = {pub.n: pub.filename for pub in self.publickey}
+        for key in self._priv_key_list():
+            key.pubkey_file = names.get(key.n)
+
+    def _priv_key_list(self):
+        keys = self.priv_key if isinstance(self.priv_key, list) else [self.priv_key]
+        return [key for key in keys if key is not None]
+
+    def cracked_filenames(self):
+        """Files whose key was recovered by the multi-key phase."""
+        return {
+            key.pubkey_file
+            for key in self._priv_key_list()
+            if getattr(key, "pubkey_file", None)
+        }
+
     def attack_multiple_keys(self, publickeys, attacks_list):
         """Run attacks on multiple keys"""
         self.logger.info("[*] Multikey mode using keys: " + ", ".join(publickeys))
@@ -252,6 +272,7 @@ class RSAAttack(object):
                         f"[!] {attack_module.get_name()}: {type(e).__name__}: {e}"
                     )
 
+        self._label_priv_keys()
         public_key_name = ",".join(publickeys)
         self.print_results_details(public_key_name)
         self.priv_key_send2fdb()

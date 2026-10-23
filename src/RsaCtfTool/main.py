@@ -303,13 +303,18 @@ def run_attacks(args, logger):
     args.cracked = False
 
     # Attack multiple keys
+    cracked = set()
     if args.publickey is not None and len(args.publickey) > 1:
         result = attackobj.attack_multiple_keys(args.publickey, selected_attacks)
         args.cracked |= result is True or attackobj.has_results()
+        cracked = attackobj.cracked_filenames()
 
     # Attack key
     if args.publickey is not None:
         for publickey in args.publickey:
+            if publickey in cracked:
+                logger.info("\n[*] Key %s already cracked, skipping." % publickey)
+                continue
             attackobj.implemented_attacks = []
             attackobj.decrypted = []
             # Without this reset a private key recovered for an earlier
@@ -630,7 +635,13 @@ def _load_public_keys(args):
         args = load_keys(args, logging.getLogger("global_logger"))
     elif args.publickey is not None:
         if "*" in args.publickey or "?" in args.publickey:
-            args.publickey = glob(args.publickey)
+            pattern = args.publickey
+            args.publickey = sorted(glob(pattern))
+            if not args.publickey:
+                logging.getLogger("global_logger").error(
+                    f"[!] No file matches {pattern}"
+                )
+                sys.exit(1)
         elif "," in args.publickey:
             args.publickey = args.publickey.split(",")
         else:
