@@ -621,6 +621,78 @@ def tonelli(n, p):
     return r
 
 
+def _prime_rth_roots(a, r, p):
+    """All x with x^r == a (mod p), for prime p and prime r
+    (Adleman-Manders-Miller: one root, times the r-th roots of unity).
+    """
+    a %= p
+    if a == 0:
+        return [0]
+    if (p - 1) % r != 0:
+        return [int(powmod(a, invmod(r, p - 1), p))]
+    if powmod(a, (p - 1) // r, p) != 1:
+        return []  # a is not an r-th power
+    s, t = 0, p - 1
+    while t % r == 0:
+        s, t = s + 1, t // r
+    # c generates the Sylow r-subgroup (order r^s); zeta has order r.
+    z = 2
+    while powmod(z, (p - 1) // r, p) == 1:
+        z += 1
+    c = powmod(z, t, p)
+    zeta = powmod(c, r ** (s - 1), p)
+    # x = a^alpha with r*alpha == 1 (mod t) leaves an error b = x^r / a in
+    # the Sylow subgroup; find b = c^L by Pohlig-Hellman, then divide
+    # c^(L/r) out of x.
+    alpha = int(invmod(r, t)) if t > 1 else 0
+    x = powmod(a, alpha, p)
+    b = mulmod(powmod(x, r, p), invmod(a, p), p)
+    L = 0
+    for i in range(s):
+        h = powmod(mulmod(b, invmod(powmod(c, L, p), p), p), r ** (s - 1 - i), p)
+        g, digit = 1, 0
+        while g != h:
+            g, digit = mulmod(g, zeta, p), digit + 1
+        L += digit * r**i
+    x = mulmod(x, invmod(powmod(c, L // r, p), p), p)
+    roots = [int(x)]
+    for _ in range(r - 1):
+        roots.append(int(mulmod(roots[-1], zeta, p)))
+    return roots
+
+
+def _small_prime_factors(e, bound=10**6):
+    """Prime factors of e with multiplicity; a cofactor above bound is
+    returned as is (prime or not)."""
+    factors, f = [], 2
+    while f * f <= e and f <= bound:
+        while e % f == 0:
+            factors.append(f)
+            e //= f
+        f += 1
+    if e > 1:
+        factors.append(e)
+    return factors
+
+
+def nth_roots_mod_prime(c, e, p, limit=1 << 16):
+    """All x with x^e == c (mod p) for prime p, also when gcd(e, p-1) > 1.
+    Returns None if there are more than limit roots or e has a large
+    composite factor sharing a factor with p-1."""
+    roots = [c % p]
+    for r in _small_prime_factors(e):
+        if gcd(r, p - 1) == 1:
+            d = invmod(r, p - 1)
+            roots = [int(powmod(x, d, p)) for x in roots]
+            continue
+        if not is_prime(r):
+            return None
+        roots = list({y for x in roots for y in _prime_rth_roots(x, r, p)})
+        if len(roots) > limit:
+            return None
+    return roots
+
+
 def is_cube(n):
     b = False
     if (n % 9) in [0, 1, 8]:

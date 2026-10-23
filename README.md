@@ -70,6 +70,7 @@ docker run -it --rm -v $PWD:/data rsactftool/rsactftool <arguments>
 - Partial q / Partial d
 - dp / dq leak (`--dp` or `--dq`)
 - [Bellcore](https://link.springer.com/chapter/10.1007/3-540-69053-0_4) RSA-CRT fault attack (`--fault-sig` with `--fault-msg` or `--good-sig`)
+- e not coprime with φ(n), incl. Rabin (e = 2): once n is factored, decrypts via e-th roots mod p and q
 - [Lattice reduction](https://en.wikipedia.org/wiki/Lattice_reduction)
 
 ### Coppersmith Attacks

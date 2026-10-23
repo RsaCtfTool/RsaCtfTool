@@ -21,6 +21,7 @@ from RsaCtfTool.lib.number_theory import (
     phi,
     list_prod,
     chinese_remainder,
+    nth_roots_mod_prime,
     ilogb,
     cuberoot,
     iroot,
@@ -608,3 +609,30 @@ class TestTrivialFactorization:
         assert result is not None
         p, q = result
         assert {p, q} == {3, 5}
+
+
+class TestNthRootsModPrime:
+    """x^e == c (mod p) when gcd(e, p-1) > 1 (e.g. Rabin, e = 2)."""
+
+    @pytest.mark.parametrize(
+        "p,e",
+        [
+            (13, 2),  # p = 1 mod 4
+            (13, 3),  # 3 | p-1
+            (13, 4),
+            (13, 12),  # every unit is a root of unity
+            (97, 16),  # 2^5 | p-1
+            (7681, 2 * 3 * 5),  # 7681 - 1 = 2^9 * 3 * 5
+            (101, 7),  # gcd(e, p-1) = 1: single root
+        ],
+    )
+    def test_all_roots_found(self, p, e):
+        for x in range(1, p):
+            c = pow(x, e, p)
+            roots = nth_roots_mod_prime(c, e, p)
+            assert sorted(roots) == sorted(
+                y for y in range(1, p) if pow(y, e, p) == c
+            )
+
+    def test_non_residue_has_no_roots(self):
+        assert nth_roots_mod_prime(2, 2, 13) == []  # 2 is not a square mod 13
