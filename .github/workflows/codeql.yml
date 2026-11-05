@@ -11,7 +11,7 @@ on:
 jobs:
   analyze:
     name: Analyze (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
