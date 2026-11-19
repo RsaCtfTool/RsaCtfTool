@@ -279,3 +279,27 @@ def test_all_attack_modules_import():
     for package in (single_key, multi_keys):
         for module in pkgutil.iter_modules(package.__path__):
             importlib.import_module(f"{package.__name__}.{module.name}")
+
+
+@pytest.mark.parametrize(
+    "flags",
+    [["-n", "abc"], ["-e", "abc"], ["-n", "0xzz"], ["-d", "notanumber"]],
+)
+def test_cli_non_numeric_argument_reports_error(flags):
+    """A non-numeric -n/-e/-d must be reported, not raise a ValueError."""
+    result = subprocess.run(
+        [sys.executable, "-m", "RsaCtfTool.main"] + flags,
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+
+    assert "ValueError" not in result.stderr and "Traceback" not in result.stderr, (
+        f"CLI crashed on non-numeric input:\nSTDERR:\n{result.stderr}"
+    )
+    combined = result.stdout + result.stderr
+    assert "expects an integer or a 0x-prefixed hex value" in combined, (
+        f"No argument error reported.\nSTDERR:\n{result.stderr}\nSTDOUT:\n{result.stdout}"
+    )
+    assert result.returncode == 1
