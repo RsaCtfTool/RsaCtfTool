@@ -523,17 +523,32 @@ def _setup_logging(args):
     return logger
 
 
-def _parse_numeric_args(args):
+def _parse_numeric_args(args, logger=None):
+    if logger is None:
+        logger = logging.getLogger("global_logger")
+
+    def numeric(flag, value):
+        # A non-numeric value used to reach int() directly, so "--n abc"
+        # ended in a ValueError traceback. Report it like every other
+        # argument error instead.
+        try:
+            return get_numeric_value(value)
+        except ValueError:
+            logger.error(
+                f"[!] {flag} expects an integer or a 0x-prefixed hex value, got {value!r}"
+            )
+            sys.exit(1)
+
     if args.p is not None:
-        args.p = get_numeric_value(args.p)
+        args.p = numeric("-p", args.p)
     if args.q is not None:
-        args.q = get_numeric_value(args.q)
+        args.q = numeric("-q", args.q)
     if args.d is not None:
-        args.d = get_numeric_value(args.d)
+        args.d = numeric("-d", args.d)
     if args.n is not None:
-        args.n = get_numeric_value(args.n)
+        args.n = numeric("-n", args.n)
     if args.e is not None:
-        e_array = [get_numeric_value(e) for e in args.e.split(",")]
+        e_array = [numeric("-e", e) for e in args.e.split(",")]
         args.e = e_array if len(e_array) > 1 else e_array[0]
     elif args.n is not None or (args.p is not None and args.q is not None):
         # _compute_n_from_pq() derives n from p*q later, so cover that case
@@ -542,18 +557,18 @@ def _parse_numeric_args(args):
         args.e = 65537
 
     if args.fr_a is not None:
-        args.fr_a = get_numeric_value(args.fr_a)
+        args.fr_a = numeric("--fr-a", args.fr_a)
     if args.fr_b is not None:
-        args.fr_b = get_numeric_value(args.fr_b)
+        args.fr_b = numeric("--fr-b", args.fr_b)
     if args.p_high is not None:
-        args.p_high = get_numeric_value(args.p_high)
+        args.p_high = numeric("--p-high", args.p_high)
     if args.dp is not None:
-        args.dp = get_numeric_value(args.dp)
+        args.dp = numeric("--dp", args.dp)
     if args.dq is not None:
-        args.dq = get_numeric_value(args.dq)
+        args.dq = numeric("--dq", args.dq)
     for name in ("fault_sig", "fault_msg", "good_sig"):
         if getattr(args, name) is not None:
-            setattr(args, name, get_numeric_value(getattr(args, name)))
+            setattr(args, name, numeric("--" + name.replace("_", "-"), getattr(args, name)))
 
     return args
 
@@ -755,7 +770,7 @@ def _validate_args(args, logger):
 def main():
     args = parse_args()
     logger = _setup_logging(args)
-    args = _parse_numeric_args(args)
+    args = _parse_numeric_args(args, logger)
     args = _compute_missing_values(args, logger)
     args = _handle_decrypt_input(args, logger)
 
