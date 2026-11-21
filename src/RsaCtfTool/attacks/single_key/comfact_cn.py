@@ -35,5 +35,19 @@ class Attack(AbstractAttack):
         return self.comfact(cipher, publickey) if cipher is not None else (None, None)
 
     def test(self):
-        """FIXME: Implement testcase"""
-        raise NotImplementedError
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAYxmYOA1V/wFffgnwCAjSLWjE4irnfdwp
+mg0J9pXMLzqiItNvbHSdtI7l9/73nPt/9Rf+H+YN7bq3CGxmoYSMMQIDAQAB
+-----END PUBLIC KEY-----"""
+
+        p = 61428984774565994706291272379929830963007270789353687756549059578695208771059
+        # Ciphertext sharing the factor p with n: gcd(n, c) = p.
+        c = p * 12345
+        cipher = [c.to_bytes((c.bit_length() + 7) // 8, "big")]
+
+        priv_key, _ = self.attack(PublicKey(key_data), cipher, progress=False)
+        return priv_key is not None and int(priv_key.n) == int(priv_key.p) * int(
+            priv_key.q
+        )

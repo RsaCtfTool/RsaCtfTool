@@ -38,3 +38,21 @@ class Attack(AbstractAttack):
             priv_keys = None
 
         return (priv_keys, None)
+
+    def test(self):
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
+
+        # Two moduli sharing one 256-bit prime.
+        key_1 = """-----BEGIN PUBLIC KEY-----
+MFswDQYJKoZIhvcNAQEBBQADSgAwRwJAXsYatEUEBniVPUwbEHhTuDL1CfDqCCQu
+pYGag4J7CC1uxD25dVJzLSn0Wfzim578bWQbiGVSIXkYjxrXWrusKwIDAQAB
+-----END PUBLIC KEY-----"""
+        key_2 = """-----BEGIN PUBLIC KEY-----
+MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAJJyxJ4wwVfZrUaAM8esE+MmLXqah/HI
+7bE2mqD0y8ut5MdOU+RqHFy98ffFUCTYFavtYqOzwI8PrHNRWmoY6JcCAwEAAQ==
+-----END PUBLIC KEY-----"""
+
+        priv_keys, _ = self.attack(
+            [PublicKey(key_1), PublicKey(key_2)], progress=False
+        )
+        return priv_keys is not None and len(priv_keys) == 2

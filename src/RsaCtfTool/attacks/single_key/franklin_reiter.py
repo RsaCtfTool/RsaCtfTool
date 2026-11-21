@@ -86,4 +86,20 @@ class Attack(AbstractAttack):
         return None, [m1_bytes, m2_bytes]
 
     def test(self):
-        raise NotImplementedError
+        from RsaCtfTool.lib.keys_wrapper import PublicKey
+
+        key_data = """-----BEGIN PUBLIC KEY-----
+MFkwDQYJKoZIhvcNAQEBBQADSAAwRQJAYxmYOA1V/wFffgnwCAjSLWjE4irnfdwp
+mg0J9pXMLzqiItNvbHSdtI7l9/73nPt/9Rf+H+YN7bq3CGxmoYSMMQIBAw==
+-----END PUBLIC KEY-----"""
+
+        c1 = 200065961090444982821410813524200319267123558825668237467143276690409228522981642248090365212354264933095552220112863703958388567556866956714304
+        c2 = 200065961090444982821410813524200319267123558832851715442692664528739401644096342577665828306058223538948486531718898821755064951973099208775171
+
+        self.fr_a, self.fr_b = 1, 7
+        cipher = [
+            c.to_bytes((c.bit_length() + 7) // 8, "big") for c in (c1, c2)
+        ]
+        _, plains = self.attack(PublicKey(key_data), cipher, progress=False)
+        expected = b"franklin-reiter test"
+        return plains is not None and expected in plains
