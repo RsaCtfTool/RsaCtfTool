@@ -412,8 +412,16 @@ def load_keys(args, logger):
 
 
 def dump_key_parameters(args):
-    key_data = open(args.key, "rb").read()
-    key = RSA.importKey(key_data)
+    logger = logging.getLogger("global_logger")
+    try:
+        with open(args.key, "rb") as key_data_fd:
+            key = RSA.importKey(key_data_fd.read())
+    except OSError as e:
+        logger.error(f"[!] {e}")
+        sys.exit(1)
+    except ValueError:
+        logger.error(f"[!] Could not parse the key file {args.key}")
+        sys.exit(1)
     print(f"n: {str(key.n)}")
     print(f"e: {str(key.e)}")
     if key.has_private():
@@ -486,10 +494,17 @@ def pubkey_detail(args, logger):
 
     for publickey in publickeys:
         logger.info(f"Details for {publickey}:")
-        with open(publickey, "rb") as key_data_fd:
-            key = RSA.importKey(key_data_fd.read())
-            print(f"n: {str(key.n)}")
-            print(f"e: {str(key.e)}")
+        try:
+            with open(publickey, "rb") as key_data_fd:
+                key = RSA.importKey(key_data_fd.read())
+        except OSError as e:
+            logger.error(f"[!] {e}")
+            sys.exit(1)
+        except ValueError:
+            logger.error(f"[!] Could not parse the key file {publickey}")
+            sys.exit(1)
+        print(f"n: {str(key.n)}")
+        print(f"e: {str(key.e)}")
 
 
 def cleanup(args):
