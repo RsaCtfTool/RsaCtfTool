@@ -245,7 +245,8 @@ class PrivateKey(object):
 
     def _nth_root_candidates(self, c, max_shown=16):
         """Plaintexts m with m^e == c (mod n), for keys whose e shares a
-        factor with phi so that no d exists. Printable ones are preferred.
+        factor with phi so that no d exists. All candidates are returned
+        (up to max_shown): picking the right one is left to the caller.
         """
         if self.d is not None or None in (self.p, self.q, self.e, self.n):
             return []
@@ -260,11 +261,6 @@ class PrivateKey(object):
             for b in roots_q:
                 m = int(chinese_remainder([self.p, self.q], [a, b]))
                 msgs.append(m.to_bytes(max(1, (m.bit_length() + 7) // 8), "big"))
-        printable = [
-            m for m in msgs if all(32 <= ch < 127 or ch in (9, 10, 13) for ch in m)
-        ]
-        if printable:
-            return printable
         if len(msgs) > max_shown:
             logger.warning(
                 f"[!] {len(msgs)} e-th root candidates, showing {max_shown}"

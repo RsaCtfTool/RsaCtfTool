@@ -634,5 +634,15 @@ class TestNthRootsModPrime:
                 y for y in range(1, p) if pow(y, e, p) == c
             )
 
+    def test_limit_enforced_before_generation(self):
+        # p = 2r + 1 with r prime: x^r == 1 has r roots. Over the limit,
+        # it must refuse up front rather than build all r of them.
+        r = 70001
+        while not (is_prime(r) and is_prime(2 * r + 1)):
+            r += 2
+        p = 2 * r + 1
+        assert nth_roots_mod_prime(1, r, p, limit=1 << 16) is None
+        assert len(nth_roots_mod_prime(1, r, p, limit=r)) == r
+
     def test_non_residue_has_no_roots(self):
         assert nth_roots_mod_prime(2, 2, 13) == []  # 2 is not a square mod 13

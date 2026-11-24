@@ -677,8 +677,12 @@ def _small_prime_factors(e, bound=10**6):
 
 def nth_roots_mod_prime(c, e, p, limit=1 << 16):
     """All x with x^e == c (mod p) for prime p, also when gcd(e, p-1) > 1.
-    Returns None if there are more than limit roots or e has a large
+    Returns None if there could be more than limit roots or e has a large
     composite factor sharing a factor with p-1."""
+    # A unit has either 0 or gcd(e, p-1) e-th roots: refuse before any
+    # root is generated, so a hostile e cannot force a huge root list.
+    if c % p and gcd(e, p - 1) > limit:
+        return None
     roots = [c % p]
     for r in _small_prime_factors(e):
         if gcd(r, p - 1) == 1:
@@ -688,8 +692,6 @@ def nth_roots_mod_prime(c, e, p, limit=1 << 16):
         if not is_prime(r):
             return None
         roots = list({y for x in roots for y in _prime_rth_roots(x, r, p)})
-        if len(roots) > limit:
-            return None
     return roots
 
 
