@@ -1,8 +1,10 @@
 import shutil
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
 
+import RsaCtfTool.attacks.abstract_attack as abstract_attack
 from RsaCtfTool.attacks.single_key import (
     binary_polynomial_factoring,
     lattice,
@@ -12,17 +14,29 @@ from RsaCtfTool.attacks.single_key import (
     smallfraction,
     stereotyped_message,
 )
-from RsaCtfTool.lib.keys_wrapper import PrivateKey
-
+from RsaCtfTool.lib.keys_wrapper import PrivateKey, PublicKey
 
 def test_sage_attacks_declare_their_runtime_dependency():
-    assert partial_d.Attack().required_binaries == ["sage"]
-    assert lattice.Attack().required_binaries == ["sage"]
-    assert binary_polynomial_factoring.Attack().required_binaries == ["sage"]
-    assert smallfraction.Attack().required_binaries == ["sage"]
-    assert partial_p.Attack().required_binaries == ["sage"]
-    assert short_pad.Attack().required_binaries == ["sage"]
-    assert stereotyped_message.Attack().required_binaries == ["sage"]
+    # These attacks import Sage in the current Python process.
+    in_process = (partial_p, short_pad, stereotyped_message)
+
+    for module in in_process:
+        attack = module.Attack()
+        assert attack.required_python_modules == ["sage.all"]
+        assert attack.required_binaries == []
+
+    # These attacks invoke Sage as an external process.
+    subprocess_attacks = (
+        partial_d,
+        lattice,
+        binary_polynomial_factoring,
+        smallfraction,
+    )
+
+    for module in subprocess_attacks:
+        attack = module.Attack()
+        assert attack.required_binaries == ["sage"]
+        assert attack.required_python_modules == []
 
 def test_partial_d_parses_sage_factors(monkeypatch):
     key = object.__new__(PrivateKey)
@@ -58,7 +72,27 @@ def test_lattice_parses_sage_factor_list(monkeypatch):
     assert private_key.p * private_key.q == key.n
 
 
+def test_partial_p_recovers_factors():
+    pytest.importorskip("sage.all")
 
+    fixture = Path(__file__).resolve().parents[1] / "examples" / "partial_p.pub"
+    key = PublicKey(fixture.read_bytes())
+
+    p = int("11814314815079808793202754845823415996236940468297640287934698158609319560359607901183228305190944525696915884370873052504610782679806230947564723036978431")
+    q = int("6850324446788129079827624526540564637521699316237423751807524631616380311577742212267150797376483718097199550312926103390141403454742728224455964881423377")
+
+    p_high = p & ((1 << 512) - (1 << 212))
+
+    attack = partial_p.Attack(
+        p_high=p_high,
+        p_unknown_bits=212,
+    )
+
+    priv, _ = attack.attack(key, progress=False)
+
+    expected = { p, q }
+    assert priv is not None
+    assert {int(priv.p), int(priv.q)} == expected
 
 
 def test_binary_polynomial_factoring_parses_sage_factor_list(monkeypatch):
@@ -146,5 +180,43 @@ def test_sage_functions_delegates_to_shared_backend(monkeypatch):
     assert captured["params"].X == 2**100
 
 
+@pytest.mark.parametrize(
+    "module",
+    [partial_p, short_pad, stereotyped_message],
+)
+def test_in_process_sage_attack_can_run_when_sage_importable(
+    monkeypatch, module
+):
+    def fake_import(name):
+        assert name == "sage.all"
+        return object()
 
+    monkeypatch.setattr(
+        abstract_attack.importlib, "import_module", fake_import
+    )
+
+    assert module.Attack().can_run()
+
+
+@pytest.mark.parametrize(
+    "module",
+    [partial_p, short_pad, stereotyped_message],
+)
+def test_in_process_sage_attack_can_run_when_sage_importable(
+    monkeypatch, module
+):
+    def fake_import(name):
+        assert name == "sage.all"
+        return object()
+
+    monkeypatch.setattr(
+        abstract_attack.importlib, "import_module", fake_import
+    )
+
+    # Sage executable is unavailable, but Python can import Sage.
+    monkeypatch.setattr(
+        abstract_attack.shutil, "which", lambda _: None
+    )
+
+    assert module.Attack().can_run()
 
