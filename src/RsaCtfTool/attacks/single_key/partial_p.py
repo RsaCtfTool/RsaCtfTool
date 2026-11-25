@@ -5,12 +5,11 @@ from RsaCtfTool.lib.algos import partial_p
 from RsaCtfTool.lib.coppersmith import CoppersmithError
 from RsaCtfTool.lib.keys_wrapper import PrivateKey, PublicKey
 
-
 class Attack(AbstractAttack):
     def __init__(self, timeout=60, p_high=None, p_unknown_bits=None):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
-        self.required_binaries = ["sage"]
+        self.required_python_modules = ["sage.all"]
         self.p_high = p_high
         self.p_unknown_bits = p_unknown_bits
 
@@ -61,15 +60,30 @@ class Attack(AbstractAttack):
             return None, None
 
     def test(self):
-        n = 10103734139880193134105432658825866164227306239169601614210080645607316139414594625574542861614947937397753696147493139818816434444080183149867086884639911 * 13197779919106263590458129202517036640822606828551139453738096181958434773489812423719918239272304919149791481136453186259836952873839211322237554904771617
+        from RsaCtfTool.lib.crypto_wrapper import RSA
+
+        p = int(
+            "11814314815079808793202754845823415996236940468297640287934698158609319560359607901183228305190944525696915884370873052504610782679806230947564723036978431"
+        )
+
+        q = int(
+            "6850324446788129079827624526540564637521699316237423751807524631616380311577742212267150797376483718097199550312926103390141403454742728224455964881423377"
+        )
+
+        n = p * q
         e = 65537
-        key = PublicKey(n, e)
-        p = 10103734139880193134105432658825866164227306239169601614210080645607316139414594625574542861614947937397753696147493139818816434444080183149867086884639911
+
+        pub_pem = RSA.construct((n, e)).publickey().exportKey()
+        key = PublicKey(pub_pem)
+
         mask = (1 << 512) - (1 << 212)
-        self.p_high = str(p & mask)
+        self.p_high = p & mask
         self.p_unknown_bits = 212
-        
-        priv, _ = self.attack(key, [])
-        if priv is not None and priv.p == p:
-            return True
-        return False
+
+        priv, _ = self.attack(key, progress=False)
+
+        return (
+            priv is not None
+            and priv.n == n
+            and {int(priv.p), int(priv.q)} == {p, q}
+        )

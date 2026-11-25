@@ -733,9 +733,9 @@ class TestFranklinReiterAttack:
         assert "Franklin-Reiter attack found no solution" in result.stderr
 
 
-@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestStereotypedMessageAttack:
     def test_stereotyped_message_known_prefix(self):
+        pytest.importorskip("sage.all")
         result = _run(
             "--publickey", "examples/stereotyped_message.pub",
             "--decryptfile", "examples/stereotyped_message_prefix.cipher",
@@ -747,6 +747,7 @@ class TestStereotypedMessageAttack:
         assert "4142" in result.stdout or "AB" in result.stdout or "AB" in result.stderr
 
     def test_stereotyped_message_known_suffix(self):
+        pytest.importorskip("sage.all")
         result = _run(
             "--publickey", "examples/stereotyped_message.pub",
             "--decryptfile", "examples/stereotyped_message_suffix.cipher",
@@ -757,9 +758,9 @@ class TestStereotypedMessageAttack:
         assert result.returncode == 0
         assert "4243" in result.stdout or "BC" in result.stdout or "BC" in result.stderr
 
-@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestShortPadAttack:
     def test_short_pad_attack(self):
+        pytest.importorskip("sage.all")
         result = _run(
             "--publickey", "examples/short_pad.pub",
             "--decryptfile", "examples/short_pad1.cipher,examples/short_pad2.cipher",
@@ -768,22 +769,35 @@ class TestShortPadAttack:
         assert result.returncode == 0
         assert "123456789" in result.stdout or "123456789" in result.stderr
 
-@pytest.mark.skipif(shutil.which("sage") is None, reason="SageMath is not available")
 class TestPartialPAttack:
-    def test_partial_p_attack(self):
-        p = 10103734139880193134105432658825866164227306239169601614210080645607316139414594625574542861614947937397753696147493139818816434444080183149867086884639911
-        mask = (1 << 512) - (1 << 212)
-        p_high = p & mask
-        
+    def test_partial_p_attack(self, tmp_path):
+        pytest.importorskip("sage.all")
+
+        p = int("11814314815079808793202754845823415996236940468297640287934698158609319560359607901183228305190944525696915884370873052504610782679806230947564723036978431")
+
+        q = int("6850324446788129079827624526540564637521699316237423751807524631616380311577742212267150797376483718097199550312926103390141403454742728224455964881423377")
+
+        p_high = p & ((1 << 512) - (1 << 212))
+        output_key = tmp_path / "recovered.pem"
+
         result = _run(
             "--publickey", "examples/partial_p.pub",
             "--attack", "partial_p",
             "--p-high", str(p_high),
             "--p-unknown-bits", "212",
-            "--private"
+            "--private",
+            "--output", str(output_key),
         )
+
         assert result.returncode == 0
-        assert "partial_p attack found factorization" in result.stdout or "partial_p attack found factorization" in result.stderr
+        assert output_key.is_file()
+
+        from RsaCtfTool.lib.crypto_wrapper import RSA
+
+        recovered = RSA.importKey(output_key.read_bytes())
+
+        assert recovered.n == p * q
+        assert {int(recovered.p), int(recovered.q)} == {p, q}
 
 class TestExitCode:
     def test_failed_crack_exits_nonzero(self):

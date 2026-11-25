@@ -12,7 +12,7 @@ class Attack(AbstractAttack):
     def __init__(self, timeout=60, sm_prefix=None, sm_suffix=None, sm_len=None):
         super().__init__(timeout)
         self.speed = AbstractAttack.speed_enum["slow"]
-        self.required_binaries = ["sage"]
+        self.required_python_modules = ["sage.all"]
         self.sm_prefix = sm_prefix
         self.sm_suffix = sm_suffix
         self.sm_len = sm_len

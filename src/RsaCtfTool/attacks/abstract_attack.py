@@ -1,12 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import importlib
 import logging
 import os
-from pathlib import Path
-import sys
-from typing import List, Any, Optional, Tuple
 import shutil
+import sys
+from pathlib import Path
+from typing import List, Any, Optional, Tuple
 from RsaCtfTool.lib.utils import timeout, TimeoutError
 
 # Package root (the directory containing the sage/ helper scripts),
@@ -28,6 +29,9 @@ class AbstractAttack(object):
         self.speed = AbstractAttack.speed_enum["medium"]
         self.timeout = timeout
         self.required_binaries = []
+        self.required_python_modules = []
+        # Python modules that must be importable by the current interpreter.
+
         # Helper scripts (relative to the repository root) that must exist
         # for the attack to run; e.g. "sage/boneh_durfee.sage".
         self.required_scripts = []
@@ -51,6 +55,15 @@ class AbstractAttack(object):
                 self.logger.warning(
                     f"Can't load {self.get_name()} because helper script "
                     f"{required_script} is missing"
+                )
+                return False
+        for module in self.required_python_modules:
+            try:
+                importlib.import_module(module)
+            except Exception as exc:
+                self.logger.warning(
+                    f"Can't load {self.get_name()} because Python module "
+                    f"{module} could not be imported: {exc}"
                 )
                 return False
         return True
