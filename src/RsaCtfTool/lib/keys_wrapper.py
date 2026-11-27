@@ -9,7 +9,10 @@ from cryptography.hazmat.backends import default_backend
 from RsaCtfTool.lib.crypto_wrapper import RSA
 from RsaCtfTool.lib.crypto_wrapper import PKCS1_OAEP
 from RsaCtfTool.lib.conspicuous_check import privatekey_check
-from RsaCtfTool.lib.number_theory import powmod, invert
+from RsaCtfTool.lib.number_theory import (
+    powmod,
+    invert,
+)
 
 
 logger = logging.getLogger("global_logger")
@@ -238,10 +241,12 @@ class PrivateKey(object):
             logger.error(f"{msg}")
         return is_con
 
-    def decrypt(self, cipher):
+    def decrypt(self, cipher, max_candidates=16):
         """Decrypt data with private key
         :param cipher: input cipher
         :type cipher: string
+        :param max_candidates: when e is not coprime with phi, how many
+            e-th root candidates to return per cipher (None: all)
         """
         if not isinstance(cipher, list):
             cipher = [cipher]
@@ -278,6 +283,23 @@ class PrivateKey(object):
                     continue
                 except Exception:
                     pass
+
+            # e not coprime with phi (e.g. Rabin, e = 2): no d exists, but
+            # the plaintext is one of the e-th roots of c mod p and mod q.
+            candidates = []
+            if (
+                self.d is None
+                and None not in (self.n, self.p, self.q, self.e)
+                and self.p * self.q == self.n
+            ):
+                from RsaCtfTool.attacks.single_key.rabin import _nth_root_candidates
+
+                candidates, _ = _nth_root_candidates(
+                    self.p, self.q, self.e, int.from_bytes(c, "big"), max_candidates
+                )
+            if candidates:
+                plain += candidates
+                continue
 
             # Nothing worked - keep the raw ciphertext so the caller sees
             # an entry for this input instead of a silently dropped one.

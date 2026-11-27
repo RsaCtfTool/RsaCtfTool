@@ -156,6 +156,45 @@ class TestBellcoreAttack:
         assert "bellcore attack requires" in result.stderr
 
 
+class TestENotCoprime:
+    # Rabin: e = 2 shares a factor with phi, so no d exists; the message
+    # is recovered via square roots mod p and q.
+    P = "170141183460469231750134047789593657423"
+    Q = "340282366920938464643966228149179514981"
+    C = "15331948597475339333641900631525440016925987446565129"
+
+    def test_rabin_decrypt_with_p_q(self):
+        result = _run(
+            "-n",
+            str(int(self.P) * int(self.Q)),
+            "-e",
+            "2",
+            "-p",
+            self.P,
+            "-q",
+            self.Q,
+            "--decrypt",
+            self.C,
+        )
+        assert result.returncode == 0
+        assert "flag{rabin}" in result.stdout + result.stderr
+
+    def test_rabin_attack_selftest(self):
+        from RsaCtfTool.attacks.single_key.rabin import Attack
+
+        assert Attack().test()
+
+    def test_candidates_truncation_is_reported(self):
+        from RsaCtfTool.attacks.single_key.rabin import _nth_root_candidates
+
+        # 13 = 1 mod 12 and 37 = 1 mod 12: c = 1 has 12 * 12 roots mod n.
+        p, q = 13, 37
+        msgs, total = _nth_root_candidates(p, q, 12, 1, max_candidates=16)
+        assert total == 144 and len(msgs) == 16
+        msgs, total = _nth_root_candidates(p, q, 12, 1, max_candidates=None)
+        assert total == 144 and len(set(msgs)) == 144
+
+
 class TestWienerAttack:
     def test_wiener_attack(self):
         result = _run(
