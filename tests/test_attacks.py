@@ -179,6 +179,21 @@ class TestENotCoprime:
         assert result.returncode == 0
         assert "flag{rabin}" in result.stdout + result.stderr
 
+    def test_rabin_attack_selftest(self):
+        from RsaCtfTool.attacks.single_key.rabin import Attack
+
+        assert Attack().test()
+
+    def test_candidates_truncation_is_reported(self):
+        from RsaCtfTool.attacks.single_key.rabin import _nth_root_candidates
+
+        # 13 = 1 mod 12 and 37 = 1 mod 12: c = 1 has 12 * 12 roots mod n.
+        p, q = 13, 37
+        msgs, total = _nth_root_candidates(p, q, 12, 1, max_candidates=16)
+        assert total == 144 and len(msgs) == 16
+        msgs, total = _nth_root_candidates(p, q, 12, 1, max_candidates=None)
+        assert total == 144 and len(set(msgs)) == 144
+
 
 class TestWienerAttack:
     def test_wiener_attack(self):

@@ -12,8 +12,6 @@ from RsaCtfTool.lib.conspicuous_check import privatekey_check
 from RsaCtfTool.lib.number_theory import (
     powmod,
     invert,
-    nth_roots_mod_prime,
-    chinese_remainder,
 )
 
 
@@ -243,34 +241,12 @@ class PrivateKey(object):
             logger.error(f"{msg}")
         return is_con
 
-    def _nth_root_candidates(self, c, max_shown=16):
-        """Plaintexts m with m^e == c (mod n), for keys whose e shares a
-        factor with phi so that no d exists. All candidates are returned
-        (up to max_shown): picking the right one is left to the caller.
-        """
-        if self.d is not None or None in (self.p, self.q, self.e, self.n):
-            return []
-        if self.p == self.q or self.p * self.q != self.n:
-            return []
-        roots_p = nth_roots_mod_prime(c, self.e, self.p)
-        roots_q = nth_roots_mod_prime(c, self.e, self.q)
-        if not roots_p or not roots_q or len(roots_p) * len(roots_q) > 1 << 16:
-            return []
-        msgs = []
-        for a in roots_p:
-            for b in roots_q:
-                m = int(chinese_remainder([self.p, self.q], [a, b]))
-                msgs.append(m.to_bytes(max(1, (m.bit_length() + 7) // 8), "big"))
-        if len(msgs) > max_shown:
-            logger.warning(
-                f"[!] {len(msgs)} e-th root candidates, showing {max_shown}"
-            )
-        return msgs[:max_shown]
-
-    def decrypt(self, cipher):
+    def decrypt(self, cipher, max_candidates=16):
         """Decrypt data with private key
         :param cipher: input cipher
         :type cipher: string
+        :param max_candidates: when e is not coprime with phi, how many
+            e-th root candidates to return per cipher (None: all)
         """
         if not isinstance(cipher, list):
             cipher = [cipher]
@@ -310,7 +286,17 @@ class PrivateKey(object):
 
             # e not coprime with phi (e.g. Rabin, e = 2): no d exists, but
             # the plaintext is one of the e-th roots of c mod p and mod q.
-            candidates = self._nth_root_candidates(int.from_bytes(c, "big"))
+            candidates = []
+            if (
+                self.d is None
+                and None not in (self.n, self.p, self.q, self.e)
+                and self.p * self.q == self.n
+            ):
+                from RsaCtfTool.attacks.single_key.rabin import _nth_root_candidates
+
+                candidates, _ = _nth_root_candidates(
+                    self.p, self.q, self.e, int.from_bytes(c, "big"), max_candidates
+                )
             if candidates:
                 plain += candidates
                 continue
